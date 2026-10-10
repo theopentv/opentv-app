@@ -428,6 +428,7 @@ export default function CloudBackupScreen() {
               value={url}
               onChangeText={setUrl}
               placeholder={t('cloudBackup.serverHint')}
+              accessibilityLabel={t('cloudBackup.serverHint')}
               placeholderTextColor={colors.faint}
               autoCapitalize="none"
               autoCorrect={false}
@@ -439,6 +440,7 @@ export default function CloudBackupScreen() {
               value={user}
               onChangeText={setUser}
               placeholder={t('cloudBackup.username')}
+              accessibilityLabel={t('cloudBackup.username')}
               placeholderTextColor={colors.faint}
               autoCapitalize="none"
               autoCorrect={false}
@@ -449,6 +451,7 @@ export default function CloudBackupScreen() {
               value={password}
               onChangeText={setPassword}
               placeholder={t('cloudBackup.password')}
+              accessibilityLabel={t('cloudBackup.password')}
               placeholderTextColor={colors.faint}
               secureTextEntry
               textContentType="password"

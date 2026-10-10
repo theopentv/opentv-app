@@ -3255,6 +3255,9 @@
     "nextMonth": "Mese successivo",
     "bestEpisode": "Episodio migliore",
     "worstEpisode": "Episodio peggiore",
-    "favourite": "Preferito"
+    "favourite": "Preferito",
+    "showPassword": "Mostra la password",
+    "hidePassword": "Nascondi la password",
+    "colour": "Colore {{n}}"
   }
 }
