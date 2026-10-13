@@ -466,7 +466,7 @@ export default function CloudBackupScreen() {
           </View>
         ) : (
           <>
-            <Text style={styles.sectionTitle}>{t('cloudBackup.chooseTitle')}</Text>
+            <Text accessibilityRole="header" style={styles.sectionTitle}>{t('cloudBackup.chooseTitle')}</Text>
             {/* ON A SERVER OF THEIR OWN the first row is their server, not
                 ours, and it is free — the same row under its own name. */}
             <MenuRow
