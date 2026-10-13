@@ -7998,3 +7998,24 @@ export function sortWatchList<T extends WatchListEntry>(items: readonly T[], sor
           byName(a, b);
   return [...items].sort((a, b) => (a.started ? 0 : 1) - (b.started ? 0 : 1) || cmp(a, b));
 }
+
+/**
+ * A label with its emoji taken out, for a screen reader.
+ *
+ * "📺 TV time" is read "television, TV time" by VoiceOver: the emoji is a
+ * picture on the card and a word in the ear, and the word is noise in front of
+ * every stat (VoiceOver audit, 14 Oct). The emoji stays on screen; only what
+ * is SPOKEN loses it.
+ *
+ * Code-point ranges rather than `\p{Extended_Pictographic}`, so it cannot
+ * depend on which Unicode tables the JS engine shipped with. The ranges are
+ * the pictograph blocks plus the variation selector and the joiner that glue
+ * emoji sequences together; letters in every script the app ships are outside
+ * them.
+ */
+export function withoutEmoji(text: string): string {
+  return text
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}

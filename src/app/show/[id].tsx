@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Image } from 'expo-image';
 
-import { a11yAction } from '@/a11y';
+import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { posterSpeech } from '@/components/poster';
 import { useSwipeDown } from '@/components/swipe-down';
@@ -878,7 +878,9 @@ export default function ShowScreen() {
             and a fabricated one is worse than both.
           */}
           {meta?.rating != null && meta.rating > 0 && (
-            <View style={styles.match}>
+            // One stop, "TheTVDB score, 77%": the badge's T alone was read as
+            // a letter, and the figure after it as a number from nowhere.
+            <View style={styles.match} accessible accessibilityLabel={t('a11y.tvdbScore', { percent: Math.round(meta.rating * 10) })}>
               <View style={styles.tBadgeSm}>
                 <Text style={{ fontWeight: '800', color: colors.onYellow, fontSize: 12 }}>T</Text>
               </View>
@@ -944,7 +946,7 @@ export default function ShowScreen() {
           scrollEventThrottle={16}
           bounces>
           <View style={styles.rowBetween}>
-            <Text style={styles.h2}>{t('media.whereToWatch')}</Text>
+            <Text style={styles.h2} accessibilityRole="header">{t('media.whereToWatch')}</Text>
           </View>
           <View style={styles.providers}>
             {(meta?.providers ?? []).map((p, i) => (
@@ -968,7 +970,7 @@ export default function ShowScreen() {
 
           {/* interests poll, like the real app (kept on-device) */}
           <View style={styles.divider} />
-          <Text style={styles.pollLabel}>{t('show.interestsPollLabel')}</Text>
+          <Text style={styles.pollLabel} accessibilityRole="header">{t('show.interestsPollLabel')}</Text>
           <View style={styles.interestRow}>
           {INTERESTS.map((labelKey, i) => (
             <Pressable
@@ -1002,13 +1004,18 @@ export default function ShowScreen() {
           )}
 
           <View style={styles.divider} />
-          <Text style={[styles.h2, { paddingHorizontal: space.lg }]}>{t('show.showInfoTitle')}</Text>
+          <Text style={[styles.h2, { paddingHorizontal: space.lg }]} accessibilityRole="header">{t('show.showInfoTitle')}</Text>
           <Text style={styles.caption}>
             {meta
               ? `${meta.year ?? '—'}${meta.endYear && meta.endYear !== meta.year ? ` - ${meta.endYear}` : ''} · ${meta.genres.join(', ') || '—'}`
               : t('show.metadataUnavailable')}
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: space.lg, marginTop: 8 }}>
+          {/* ONE SENTENCE, "TheTVDB rating, 3.9 out of 5". Read piece by
+              piece it was "T", then "black star" five times, then "3.9/5". */}
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: space.lg, marginTop: 8 }}
+            accessible
+            accessibilityLabel={meta?.rating ? t('a11y.tvdbRating', { score: (meta.rating / 2).toFixed(1) }) : t('a11y.tvdbUnrated')}>
             <View style={styles.tBadge}>
               <Text style={{ fontWeight: '800', color: colors.onYellow, fontSize: 13 }}>T</Text>
             </View>
@@ -1040,8 +1047,17 @@ export default function ShowScreen() {
           </ContentColumn>
 
           <View style={[styles.divider, { marginTop: 16, marginHorizontal: space.lg }]} />
+          {/* The meaning of these two is in their icons, which are not read:
+              "Thu" and "56m" alone say nothing. Each fact says what it is. */}
           <View style={styles.factsRow}>
-            <View style={styles.fact}>
+            <View
+              style={styles.fact}
+              accessible
+              accessibilityLabel={
+                meta?.lastAir
+                  ? t('a11y.airDay', { day: new Date(`${meta.lastAir}T12:00:00`).toLocaleDateString(currentLocale(), { weekday: 'long' }) })
+                  : undefined
+              }>
               <Ionicons name="time-outline" size={22} color={colors.text} />
               <Text style={styles.factText}>
                 {meta?.lastAir
@@ -1049,7 +1065,10 @@ export default function ShowScreen() {
                   : '—'}
               </Text>
             </View>
-            <View style={styles.fact}>
+            <View
+              style={styles.fact}
+              accessible
+              accessibilityLabel={meta?.runtime ? t('a11y.runtime', { count: meta.runtime }) : undefined}>
               <Ionicons name="stopwatch-outline" size={22} color={colors.text} />
               <Text style={styles.factText}>{meta?.runtime ? t('duration.minutesOnly', { m: meta.runtime }) : '—'}</Text>
             </View>
@@ -1064,7 +1083,7 @@ export default function ShowScreen() {
           {!!meta?.cast?.length && (
             <>
               <View style={[styles.divider, { marginTop: 18 }]} />
-              <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]}>{t('media.castTitle')}</Text>
+              <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]} accessibilityRole="header">{t('media.castTitle')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.lg, gap: 10 }}>
                 {meta.cast.map((c, i) => (
                   // Pressable ONLY when there is an id to follow. Cast cached
@@ -1120,7 +1139,7 @@ export default function ShowScreen() {
           {!!meta?.similar?.length && (
             <>
               <View style={[styles.divider, { marginTop: 18 }]} />
-              <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]}>{t('show.peopleAlsoWatched')}</Text>
+              <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]} accessibilityRole="header">{t('show.peopleAlsoWatched')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.lg, gap: 10 }}>
                 {meta.similar.map((sim) => {
                   const tracked = isSimilarTracked(sim);
@@ -1184,7 +1203,7 @@ export default function ShowScreen() {
                 return (
                   <>
                     <View style={styles.rowBetween}>
-                      <Text style={styles.h2}>
+                      <Text style={styles.h2} accessibilityRole="header">
                         {t(shown.community ? 'show.communityRatings' : 'show.tmdbRatings')}
                       </Text>
                       <Text style={styles.caption2}>{t('show.season', { n: shown.season })}</Text>
@@ -1571,7 +1590,8 @@ export default function ShowScreen() {
                 </Text>
               )}
             </View>
-            <Text style={{ color: colors.dim, fontSize: 15 }}>›</Text>
+            {/* drawn, not said: "Comments, ›" */}
+            <Text style={{ color: colors.dim, fontSize: 15 }} {...a11yHidden()}>›</Text>
           </Pressable>
         </ScrollView>
       ) : (
@@ -1588,7 +1608,7 @@ export default function ShowScreen() {
           {/* Episodes tab is grey with black cards, like the real app */}
           <View style={styles.trackPanel}>
           <View style={styles.rowBetween}>
-            <Text style={styles.h2}>{t('show.continueTracking')}</Text>
+            <Text style={styles.h2} accessibilityRole="header">{t('show.continueTracking')}</Text>
             {/* jump the carousel back to the next episode to watch — handy after
                 scrolling ahead to peek at later episodes without marking any */}
             <Pressable
@@ -1636,7 +1656,8 @@ export default function ShowScreen() {
             renderItem={({ item }) => {
               if (item.kind === 'finished') {
                 return (
-                  <View style={[styles.carCard, { width: CARD_W, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]}>
+                  // one stop: "Finished, That's all, folks!"
+                  <View style={[styles.carCard, { width: CARD_W, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]} accessible>
                     {backdropUri && (
                       <>
                         <Image source={{ uri: backdropUri }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -1656,7 +1677,7 @@ export default function ShowScreen() {
                   style={[styles.carCard, { width: CARD_W }]}
                   accessible={false}
                   onPress={() => router.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
-                  <View style={styles.carThumb} accessible={false} importantForAccessibility="no-hide-descendants">
+                  <View style={styles.carThumb} {...a11yHidden()}>
                     {em?.still ? (
                       <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
                     ) : (
@@ -1684,6 +1705,8 @@ export default function ShowScreen() {
                     <CheckCircle
                       size={36}
                       watched={item.watched}
+                      opensMarkAs
+                      what={t('a11y.seasonEpisode', { season: item.season, episode: item.episode })}
                       onPress={() => {
                         if (item.watched) {
                           router.push(`/mark-as?show=${show.tvdbId}&s=${item.season}&e=${item.episode}`);
@@ -1805,7 +1828,13 @@ export default function ShowScreen() {
                     accessible
                     accessibilityRole="button"
                     accessibilityState={{ expanded: isOpen }}
-                    accessibilityLabel={`${sr.season === 0 ? t('show.specials') : t('show.season', { n: sr.season })}, ${sr.watched}/${total ?? '—'}`}>
+                    accessibilityLabel={[
+                      sr.season === 0 ? t('show.specials') : t('show.season', { n: sr.season }),
+                      // "2 of 8 watched" — "2/8" was read "2 slash 8"
+                      total != null ? t('a11y.ofWatched', { n: sr.watched, total }) : null,
+                    ]
+                      .filter(Boolean)
+                      .join(', ')}>
                     <Text style={styles.seasonName}>{sr.season === 0 ? t('show.specials') : t('show.season', { n: sr.season })}</Text>
                     <Ionicons name={isOpen ? 'chevron-up' : 'chevron-down'} size={18} color={colors.text} />
                   </View>
@@ -1816,6 +1845,7 @@ export default function ShowScreen() {
                     <CheckCircle
                       size={36}
                       iconSize={18}
+                      what={sr.season === 0 ? t('show.specials') : t('show.season', { n: sr.season })}
                       watched={complete || (total == null && sr.watched > 0)}
                       onPress={() => {
                         if (!total) return;
@@ -1967,7 +1997,7 @@ export default function ShowScreen() {
                         style={styles.epRow}
                         accessible={false}
                         onPress={() => router.push(`/episode/${show.tvdbId}-s${sr.season}e${epNum}`)}>
-                        <View style={styles.epThumb} accessible={false} importantForAccessibility="no-hide-descendants">
+                        <View style={styles.epThumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
                           ) : (
@@ -2013,6 +2043,8 @@ export default function ShowScreen() {
                             size={43}
                             iconSize={22}
                             watched={w != null}
+                            opensMarkAs
+                            what={t('a11y.seasonEpisode', { season: sr.season, episode: epNum })}
                             onPress={() => {
                               if (w) {
                                 router.push(`/mark-as?show=${show.tvdbId}&s=${sr.season}&e=${epNum}`);

@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Image } from 'expo-image';
 
+import { a11yHidden } from '@/a11y';
 import { useSwipeDown } from '@/components/swipe-down';
 import { CheckCircle, ContentColumn, useDetailPaneStyle, useDetailWidth } from '@/components/ui';
 import seed from '@/seed';
@@ -131,6 +132,7 @@ function EpisodePage({
   simRef,
   onAdded,
   tvdbId,
+  offscreen,
 }: {
   show?: Show;
   season: number;
@@ -147,6 +149,8 @@ function EpisodePage({
   /** The id from the ROUTE. `show` is undefined for a title that is not in the
    *  library, and that is exactly when it is needed. */
   tvdbId: number;
+  /** A neighbour the pager keeps mounted but is not showing — see the pager. */
+  offscreen?: boolean;
 }) {
   // real watch state from the database — toggling writes back to it
   const existing = show ? getWatch(show.tvdbId, season, ep) : null;
@@ -605,7 +609,7 @@ function EpisodePage({
   const W = useDetailWidth();
 
   return (
-    <View style={{ width: W, flex: 1 }}>
+    <View style={{ width: W, flex: 1 }} {...a11yHidden(!!offscreen)}>
       <ScrollView
         contentContainerStyle={{ paddingBottom: watched ? 96 : 30 }}
         showsVerticalScrollIndicator={false}
@@ -657,7 +661,15 @@ function EpisodePage({
             </Pressable>
             {/* TV Time overlays the code + title on the still's bottom edge */}
             <View style={styles.titleOverlay}>
-              <Text style={styles.code}>
+              <Text
+                style={styles.code}
+                // "Season 1, episode 5", not "S01 | E05" read letter by letter
+                accessibilityLabel={[
+                  t('a11y.seasonEpisode', { season, episode: ep }),
+                  abs != null ? t('a11y.episode', { n: abs }) : null,
+                ]
+                  .filter(Boolean)
+                  .join(', ')}>
                 {code}
                 {abs != null ? ` (E${String(abs).padStart(2, '0')})` : ''}
               </Text>
@@ -688,13 +700,23 @@ function EpisodePage({
           </View>
           <View style={styles.metaRow}>
             <Ionicons name="calendar-outline" size={16} color={colors.dim} />
-            <Text style={styles.metaText}>{em?.air ? shortDate(em.air) : '—'}</Text>
+            {/* The calendar and the eye are what say which date is which, and
+                icons are not read — so each date says it in words. */}
+            <Text style={styles.metaText} accessibilityLabel={em?.air ? t('a11y.aired', { date: shortDate(em.air) }) : undefined}>
+              {em?.air ? shortDate(em.air) : '—'}
+            </Text>
             <Ionicons name="eye-outline" size={17} color={colors.dim} style={{ marginStart: 10 }} />
             {/* first watch, with every rewatch date stacked directly beneath it */}
             <View style={{ flex: 1, marginStart: 6 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <Text style={styles.metaText}>{watchedAt ? shortDate(watchedAt) : t('media.notWatched')}</Text>
-                {rewatches > 0 && <Text style={[styles.metaText, { color: colors.yellow }]}>{`↻ ×${rewatches}`}</Text>}
+                <Text style={styles.metaText} accessibilityLabel={watchedAt ? t('show.watchedOnDate', { date: shortDate(watchedAt) }) : undefined}>
+                  {watchedAt ? shortDate(watchedAt) : t('media.notWatched')}
+                </Text>
+                {rewatches > 0 && (
+                  <Text style={[styles.metaText, { color: colors.yellow }]} accessibilityLabel={t('a11y.rewatches', { count: rewatches })}>
+                    {`↻ ×${rewatches}`}
+                  </Text>
+                )}
               </View>
               {rwDates.length > 0 && (
                 <Text style={[styles.metaText, { color: colors.yellow, marginTop: 3 }]}>
@@ -703,7 +725,13 @@ function EpisodePage({
               )}
             </View>
             <View style={{ marginStart: 'auto' }}>
-              <CheckCircle watched={watched} onPress={toggleWatched} size={42} />
+              <CheckCircle
+                watched={watched}
+                onPress={toggleWatched}
+                size={42}
+                opensMarkAs
+                what={t('a11y.seasonEpisode', { season, episode: ep })}
+              />
             </View>
           </View>
         </View>
@@ -711,7 +739,7 @@ function EpisodePage({
         {/* the tracking questions only exist once you've watched it, like the real app */}
         {watched && (
           <View style={styles.card}>
-            <Text style={styles.label}>{t('media.whereDidYouWatchPoll')}</Text>
+            <Text style={styles.label} accessibilityRole="header">{t('media.whereDidYouWatchPoll')}</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -763,7 +791,7 @@ function EpisodePage({
             </ScrollView>
 
             <View style={styles.hair} />
-            <Text style={styles.label}>{t('episode.ratePollLabel')}</Text>
+            <Text style={styles.label} accessibilityRole="header">{t('episode.ratePollLabel')}</Text>
             {/* stars in the box, names and figures under it — the design's
                 layout (design/referance/12-episode-page-top.png), and the only
                 one that leaves room for a percentage per column */}
@@ -781,7 +809,15 @@ function EpisodePage({
                 </Pressable>
               ))}
             </View>
-            <View style={styles.starLegend}>
+            {/* SAID ONCE, OR NOT AT ALL. Until there are figures the words
+                only repeat what each star already says ("3 stars, GOOD"), and
+                the held blank lines below were focusable spaces — so the
+                legend is hidden. With figures it is one sentence. */}
+            <View
+              style={styles.starLegend}
+              {...(starPct != null
+                ? { accessible: true, accessibilityLabel: STARS.map((k, i) => `${t(k)}, ${starPct[i] ?? 0}%`).join('; ') }
+                : a11yHidden())}>
               {STARS.map((lblKey, i) => (
                 // the label keeps its own colour until there are figures to
                 // rank it against — an unrated episode must look exactly as it
@@ -803,7 +839,7 @@ function EpisodePage({
             </View>
 
             <View style={styles.hair} />
-            <Text style={styles.label}>{t('media.howDidYouFeelPoll')}</Text>
+            <Text style={styles.label} accessibilityRole="header">{t('media.howDidYouFeelPoll')}</Text>
             <View style={styles.emoGrid}>
               {EMOTIONS.map((e, i) => {
                 // a tile shows a figure only where the community has one: an
@@ -837,7 +873,7 @@ function EpisodePage({
             {!!(sm?.characters?.length || sm?.cast?.length) && (
               <>
                 <View style={styles.hair} />
-                <Text style={styles.label}>{t('media.whoWasFavoritePoll')}</Text>
+                <Text style={styles.label} accessibilityRole="header">{t('media.whoWasFavoritePoll')}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
                   {sm?.characters?.length
                     ? orderPollCast(sm.characters.slice(0, 20), charPct).map((c, i) => {
@@ -923,7 +959,7 @@ function EpisodePage({
 
         <View style={styles.card}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={styles.h2}>{t('media.whereToWatch')}</Text>
+            <Text style={styles.h2} accessibilityRole="header">{t('media.whereToWatch')}</Text>
             <Ionicons name="settings-outline" size={18} color={colors.dim} />
           </View>
           <Text style={{ color: colors.text, fontSize: 15, marginTop: 10 }}>
@@ -931,8 +967,13 @@ function EpisodePage({
           </Text>
 
           <View style={styles.hair} />
-          <Text style={styles.h2}>{t('episode.episodeInfoTitle')}</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }}>
+          <Text style={styles.h2} accessibilityRole="header">{t('episode.episodeInfoTitle')}</Text>
+          {/* One stop, "TheTVDB rating, 4.1 out of 5": the badge's T alone
+              was read as a letter, and the stars as ten symbols. */}
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10 }}
+            accessible
+            accessibilityLabel={rating5 ? t('a11y.tvdbRating', { score: rating5.toFixed(1) }) : t('a11y.tvdbUnrated')}>
             <View style={styles.tBadge}>
               <Text style={{ fontWeight: '800', color: colors.onYellow, fontSize: 12 }}>T</Text>
             </View>
@@ -1165,7 +1206,8 @@ export default function EpisodePagerScreen() {
             // the parent re-rendered, so without this the percentages only
             // appeared on a SECOND visit, once the cache was warm enough to be
             // read synchronously during the first render.
-            extraData={aggregates}
+            // `index` too: which page is hidden from VoiceOver changes with it
+            extraData={[aggregates, index]}
             keyExtractor={(n) => String(n)}
             initialScrollIndex={Math.min(startEp - 1, episodes.length - 1)}
             contentOffset={{ x: W * Math.min(startEp - 1, episodes.length - 1), y: 0 }}
@@ -1186,6 +1228,10 @@ export default function EpisodePagerScreen() {
                 ep={item}
                 agg={aggregates[item]}
                 simRef={panRef}
+                // Only the page on screen is read. The pager keeps about ten
+                // neighbours mounted, and every one of them was in VoiceOver's
+                // order — ten COMMENTS buttons, whole episodes off the edge.
+                offscreen={i !== index}
                 onScroll={(e) => {
                   const y = e.nativeEvent.contentOffset.y;
                   pageOffsets.current[i] = y;
