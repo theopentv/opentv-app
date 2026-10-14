@@ -13,7 +13,7 @@ import { I18nManager } from 'react-native';
 import { getMeta, setMeta } from '@/db';
 import { isRtlLocale, resolveLocale, type Locale } from '@/locale-resolve';
 import type { LocaleKey } from '@/locales/keys';
-import { needsDirectionChange } from '@/pure';
+import { needsDirectionChange, plotTmdbLang, plotTvdbLangs, type PlotLanguage } from '@/pure';
 
 import ar from '@/locales/ar.json';
 import en from '@/locales/en.json';
@@ -133,6 +133,33 @@ export function setLocale(locale: Locale | null): { needsRestart: boolean } {
     return { needsRestart: true };
   }
   return { needsRestart: false };
+}
+
+/**
+ * WHICH LANGUAGE A PLOT IS FETCHED IN: the app's (the default, stored as '')
+ * or English. English is today's behaviour exactly — kept as a choice for
+ * readers whose language TheTVDB translates badly, or who know a show by its
+ * English synopsis. Only the plot follows it; titles never do, because search
+ * and matching rely on them.
+ */
+const PLOT_KEY = 'plotLanguage';
+
+export function plotLanguage(): PlotLanguage {
+  return getMeta(PLOT_KEY) === 'eng' ? 'eng' : 'app';
+}
+
+export function setPlotLanguage(v: PlotLanguage): void {
+  setMeta(PLOT_KEY, v === 'eng' ? 'eng' : '');
+}
+
+/** TheTVDB translation codes to try for a plot, best first, always ending in `eng`. */
+export function plotTvdbCodes(): string[] {
+  return plotTvdbLangs(plotLanguage(), currentLocale());
+}
+
+/** TMDB `language=` for a plot, or null when English is what is wanted. */
+export function plotTmdbCode(): string | null {
+  return plotTmdbLang(plotLanguage(), currentLocale());
 }
 
 /** Look up a string. The key is typechecked against en.json. */

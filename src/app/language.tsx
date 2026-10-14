@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
-import { currentLocale, hasLocaleOverride, setLocale, t } from '@/i18n';
+import { currentLocale, hasLocaleOverride, plotLanguage, setLocale, setPlotLanguage, t } from '@/i18n';
+import type { PlotLanguage } from '@/pure';
 import { SUPPORTED, type Locale } from '@/locale-resolve';
 import { colors, radius, space } from '@/theme';
 
@@ -21,6 +22,16 @@ export const NAMES: Record<Locale, string> = {
 export default function LanguageScreen() {
   const [active, setActive] = useState<Locale>(currentLocale());
   const [isSystem, setIsSystem] = useState<boolean>(() => !hasLocaleOverride());
+  const [plot, setPlot] = useState<PlotLanguage>(plotLanguage);
+
+  /* Nothing is refetched here. Every cached plot carries the language it was
+     asked in, `showMetaIsStale` / `tvdbMovieDetail` compare it with this
+     choice, and the normal background pass replaces them — old text on screen
+     until the new arrives. Changing the app language above does the same. */
+  const pickPlot = (v: PlotLanguage) => {
+    setPlotLanguage(v);
+    setPlot(v);
+  };
 
   const pick = (locale: Locale | null) => {
     const { needsRestart } = setLocale(locale);
@@ -56,6 +67,19 @@ export default function LanguageScreen() {
               {!isSystem && active === locale && <Ionicons name="checkmark" size={20} color={colors.yellow} />}
             </Pressable>
           ))}
+          <Text accessibilityRole="header" style={styles.section}>{t('plotLanguage.title')}</Text>
+          {(['app', 'eng'] as const).map((v) => (
+            <Pressable
+              key={v}
+              style={styles.row}
+              onPress={() => pickPlot(v)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: plot === v }}>
+              <Text style={styles.name}>{v === 'eng' ? t('plotLanguage.english') : t('plotLanguage.app')}</Text>
+              {plot === v && <Ionicons name="checkmark" size={20} color={colors.yellow} />}
+            </Pressable>
+          ))}
+          <Text style={styles.hint}>{t('plotLanguage.hint')}</Text>
         </ContentColumn>
       </ScrollView>
     </Screen>
@@ -75,4 +99,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   name: { color: colors.text, fontSize: 16, fontWeight: '700' },
+  section: { color: colors.dim, fontSize: 13, fontWeight: '700', marginHorizontal: space.lg, marginTop: 20, marginBottom: 8 },
+  hint: { color: colors.faint, fontSize: 13, marginHorizontal: space.lg, marginTop: 2 },
 });

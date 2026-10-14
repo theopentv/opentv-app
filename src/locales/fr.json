@@ -3528,5 +3528,11 @@
     "inLibrary": "Dans votre bibliothèque",
     "beatMe": "Ferez-vous mieux ?",
     "playFree": "Jouez gratuitement sur OpenTV"
+  },
+  "plotLanguage": {
+    "title": "Langue des résumés",
+    "app": "Langue de l’app",
+    "english": "Anglais",
+    "hint": "Résumés des séries et des films. Les titres ne changent pas, et l’anglais est utilisé quand il n’existe pas de traduction."
   }
 }

@@ -98,6 +98,10 @@ export type ShowMeta = {
    */
   airsTime?: string | null;
   overview: string | null;
+  /** TheTVDB code the plot was ASKED for (`ita`, `pt`, `eng`). Compared with
+   *  the current choice by `showMetaIsStale`; absent means `eng`, which is what
+   *  every record written before plots followed the app's language holds. */
+  plotLang?: string;
   rating: number;
   votes?: number;
   lastAir?: string | null;

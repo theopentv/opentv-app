@@ -3528,5 +3528,11 @@
     "inLibrary": "Nella tua libreria",
     "beatMe": "Riesci a battermi?",
     "playFree": "Gioca gratis su OpenTV"
+  },
+  "plotLanguage": {
+    "title": "Lingua delle trame",
+    "app": "Lingua dell’app",
+    "english": "Inglese",
+    "hint": "Trame di serie e film. I titoli restano invariati e, se manca una traduzione, si usa l’inglese."
   }
 }

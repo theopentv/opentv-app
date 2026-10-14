@@ -10,7 +10,8 @@
  * Key lives in src/tvdb-key.ts (gitignored) — see tvdb-key.example.ts.
  */
 import { getMeta, setMeta } from '@/db';
-import { artworkUrl, pickMovieMatch, rankByQuery, tvdbHitName } from '@/pure';
+import { plotTvdbCodes } from '@/i18n';
+import { artworkUrl, firstPlot, pickMovieMatch, rankByQuery, tvdbHitName } from '@/pure';
 import { THETVDB_API_KEY } from '@/tvdb-key';
 import { isNetworkError, netGuard, netReachable, netUnreachable } from '@/net-circuit';
 
@@ -358,6 +359,8 @@ export type TvdbMovieDetail = {
   cast: { name: string | null; character: string | null; photo: string | null; charPhoto: string | null }[];
   /** ms epoch of the fetch that produced this — drives cache staleness. */
   fetchedAt: number;
+  /** TheTVDB code the plot was asked for — see `ShowMeta.plotLang`. */
+  plotLang?: string;
 };
 
 // A released film's runtime/genres/cast essentially never change — the same
@@ -373,26 +376,38 @@ const MOVIE_DETAIL_STALE_MS = 30 * 24 * 3600 * 1000;
  */
 export async function tvdbMovieDetail(id: number, force = false): Promise<TvdbMovieDetail | null> {
   const key = `tvdbMovieDetail:${id}`;
+  // A stale copy is still served when the refetch fails — offline, a switch
+  // of plot language must not cost a film its cast and synopsis.
+  let stale: TvdbMovieDetail | null = null;
   if (!force) {
     const cached = getMeta(key);
     if (cached) {
       try {
         const parsed = JSON.parse(cached) as TvdbMovieDetail;
+        stale = parsed;
         // Same rule as `showMetaIsStale`: a cast cached before `charPhoto`
         // existed holds only the PERFORMER, which is what put a voice actor
         // under an animated favourite and a present-day face under an old one.
         // Absent (not null) is the tell — a character with genuinely no art is
         // stored as null and must not refetch for ever.
         const missingCharPhoto = (parsed.cast ?? []).some((c) => !('charPhoto' in c));
-        if (!missingCharPhoto && Date.now() - (parsed.fetchedAt ?? 0) < MOVIE_DETAIL_STALE_MS) return parsed;
+        // A plot cached in another language than the one now wanted (Settings
+        // → Plot language, or the app's own) — absent is English, so an
+        // English reader's cache stays valid.
+        const wrongPlot = (parsed.plotLang ?? 'eng') !== plotTvdbCodes()[0];
+        if (!missingCharPhoto && !wrongPlot && Date.now() - (parsed.fetchedAt ?? 0) < MOVIE_DETAIL_STALE_MS) return parsed;
       } catch {
         // corrupt cache entry — fall through and refetch
       }
     }
   }
   try {
-    const [ext, eng] = await Promise.all([tvdbMovieExtended(id), tvdbMovieTranslation(id, 'eng')]);
-    if (!ext) return null;
+    const plotLangs = plotTvdbCodes();
+    const [ext, plots] = await Promise.all([
+      tvdbMovieExtended(id),
+      Promise.all(plotLangs.map((l) => tvdbMovieTranslation(id, l))),
+    ]);
+    if (!ext) return stale;
     // featured leads first, then TheTVDB's own sort — same rule fetchTvdbStructure uses for series
     const chars = (ext.characters ?? [])
       .slice()
@@ -401,7 +416,8 @@ export async function tvdbMovieDetail(id: number, force = false): Promise<TvdbMo
       runtime: ext.runtime ?? null,
       genres: (ext.genres ?? []).map((g) => g.name).filter((n): n is string => !!n),
       release: (ext.first_release?.date ?? '').trim() || null,
-      overview: eng?.overview ?? null,
+      overview: firstPlot(...plots.map((p) => p?.overview)),
+      plotLang: plotLangs[0],
       poster: bestArtwork(ext.artworks, TVDB_ART_MOVIE_POSTER) ?? artworkUrl(ext.image),
       backdrop: bestArtwork(ext.artworks, TVDB_ART_MOVIE_BACKGROUND),
       cast: chars.slice(0, 20).map((c) => ({
@@ -415,7 +431,7 @@ export async function tvdbMovieDetail(id: number, force = false): Promise<TvdbMo
     setMeta(key, JSON.stringify(detail));
     return detail;
   } catch {
-    return null;
+    return stale;
   }
 }
 

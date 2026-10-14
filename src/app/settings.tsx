@@ -20,7 +20,7 @@ import { hapticsOn, setHapticsOn, tapLight } from '@/haptics';
 import { MenuRow, NavHeader, PillButton, Screen, TopTabs } from '@/components/ui';
 import seed from '@/seed';
 import { getMeta, setMeta, wipeAllData } from '@/db';
-import { currentLocale, monthYear, t } from '@/i18n';
+import { currentLocale, monthYear, plotLanguage, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
 import { usePlus, usePlusUi } from '@/plus';
 import { manageSubscriptionUrl, plusStatus } from '@/purchases';
@@ -92,7 +92,15 @@ export default function SettingsScreen() {
   // language picker — force one on every focus, the same pattern used for
   // exactly this problem in movie/[name].tsx
   const [, refresh] = useReducer((x: number) => x + 1, 0);
-  useFocusEffect(useCallback(() => refresh(), []));
+  // Chosen on the language screen, so re-read on the way back. In state, not
+  // a render-time read: React Compiler would memoise a no-argument call.
+  const [plotLang, setPlotLang] = useState(plotLanguage);
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+      setPlotLang(plotLanguage());
+    }, []),
+  );
   /** `?tab=Data` opens straight onto a tab. The backup nudge sends people here
    *  to turn Drive on, and landing on Account with nothing highlighted makes
    *  them hunt for the thing they just asked for. */
@@ -595,6 +603,13 @@ export default function SettingsScreen() {
               onPress={() => router.push('/puzzle-settings')}
             />
             <MenuRow trackId="language.title" title={t('language.title')} value={NAMES[currentLocale()]} onPress={() => router.push('/language')} />
+            {/* Next to the language because it IS the language, of the plots:
+                the choice itself lives on the same screen, under the list. */}
+            <MenuRow trackId="plotLanguage.title"
+              title={t('plotLanguage.title')}
+              value={plotLang === 'eng' ? t('plotLanguage.english') : t('plotLanguage.app')}
+              onPress={() => router.push('/language')}
+            />
             <MenuRow trackId="settings.app.startTab"
               title={t('settings.app.startTab')}
               sub={t('settings.app.startTabSub')}

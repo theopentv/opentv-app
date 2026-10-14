@@ -6245,6 +6245,51 @@ export const TVDB_LANG: Record<string, string> = {
   pt: 'por',
 };
 
+/**
+ * WHICH TheTVDB TRANSLATIONS TO ASK FOR A PLOT, best first.
+ *
+ * Asked for by an Italian reader on Play (Oct 2026): the whole app in Italian
+ * and every synopsis in English, because the fetch hard-coded `eng`. The plot
+ * now follows the app's language unless the reader chose English in Settings.
+ *
+ * ENGLISH IS ALWAYS LAST, so a title TheTVDB never translated still gets the
+ * English text it had before rather than the original language (Japanese, for
+ * anime) — the caller falls back to the base record only after all of these.
+ *
+ * Portuguese is the one language where TheTVDB's two codes differ, checked
+ * against the live API on 14 Oct 2026: `pt` is Brazilian (Breaking Bad's reads
+ * "O drama narra a história…") and `por` is European ("professor do
+ * secundário", "cancro"). Our locale is pt-BR, so `pt` first and `por` before
+ * English, because Portugal's Portuguese still beats a language you don't read.
+ * (`TVDB_LANG` keeps `por` for biographies and search, where it is right.)
+ *
+ * The first code is also the stamp a cached record carries (`plotLang`), so
+ * changing the setting or the app's language makes it stale.
+ */
+export type PlotLanguage = 'app' | 'eng';
+
+export function plotTvdbLangs(setting: PlotLanguage, locale: string): string[] {
+  if (setting === 'eng') return ['eng'];
+  const two = locale.slice(0, 2).toLowerCase();
+  if (two === 'pt') return ['pt', 'por', 'eng'];
+  const code = TVDB_LANG[two];
+  return !code || code === 'eng' ? ['eng'] : [code, 'eng'];
+}
+
+/** TMDB's `language=` for a plot, or null for "don't ask, English is what we
+ *  have". TMDB takes our locale tags as they are (`it`, `ar`, `pt-BR` — checked
+ *  live on 14 Oct 2026) and answers an untranslated overview with "". */
+export function plotTmdbLang(setting: PlotLanguage, locale: string): string | null {
+  if (setting === 'eng' || locale.slice(0, 2).toLowerCase() === 'en') return null;
+  return locale;
+}
+
+/** The first plot with any text in it. An empty string from a translation
+ *  endpoint means "not translated", never "this show has no plot". */
+export function firstPlot(...plots: (string | null | undefined)[]): string | null {
+  return plots.find((p) => !!p && p.trim().length > 0) ?? null;
+}
+
 export function pickBiography(
   list: readonly { biography?: string | null; language?: string | null }[],
   locale = 'en',

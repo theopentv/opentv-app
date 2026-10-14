@@ -3528,5 +3528,11 @@
     "inLibrary": "Na sua biblioteca",
     "beatMe": "Consegue me vencer?",
     "playFree": "Jogue grátis no OpenTV"
+  },
+  "plotLanguage": {
+    "title": "Idioma das sinopses",
+    "app": "Idioma do app",
+    "english": "Inglês",
+    "hint": "Sinopses de séries e filmes. Os títulos não mudam e, quando não há tradução, aparece em inglês."
   }
 }

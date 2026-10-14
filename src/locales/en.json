@@ -3528,5 +3528,11 @@
     "inLibrary": "In your library",
     "beatMe": "Can you beat me?",
     "playFree": "Play free in OpenTV"
+  },
+  "plotLanguage": {
+    "title": "Plot language",
+    "app": "App language",
+    "english": "English",
+    "hint": "Show and film synopses. Titles stay as they are, and English is used when there is no translation."
   }
 }

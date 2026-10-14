@@ -39,7 +39,7 @@ import { movieMeta, type MovieMeta } from '@/movie-metadata';
 import { franchiseRows, nextUp, progress, type Row } from '@/franchise';
 import { cachedFranchise, fetchFranchise, type Franchise } from '@/franchise-fetch';
 import { useMovieTvdbRevision } from '@/movie-tvdb-match';
-import { characterFace, characterPercents, emotionNames, emotionPercents, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey } from '@/pure';
+import { characterFace, characterPercents, emotionNames, emotionPercents, firstPlot, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey } from '@/pure';
 import { useJoined } from '@/community-session';
 import {
   clearCharacterVote,
@@ -56,7 +56,7 @@ import { colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
 import { isPlus } from '@/plus';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, plotTmdbCode, t } from '@/i18n';
 import { a11yHidden } from '@/a11y';
 import { HalfStarControl, HalfStarHint } from '@/components/half-stars';
 import { CommunityRating } from '@/components/rating-breakdown';
@@ -249,6 +249,12 @@ export default function MovieScreen() {
   // there is a tvdbId rather than only when TMDB missed the film.
   const [tvdbCast, setTvdbCast] = useState<CastMeta[] | null>(null);
   const [trailer, setTrailer] = useState<string | null>(null);
+  /** The synopsis in the reader's language, when TMDB has one. Everything
+   *  else in `mm` — the bundled metadata included — is English, and stays the
+   *  answer until (or unless) this arrives: offline, or untranslated, the
+   *  screen reads exactly as it did. A separate request because `language=`
+   *  on the main one would also translate the title. */
+  const [localPlot, setLocalPlot] = useState<string | null>(null);
   const mm: MovieMeta | RemoteMeta | undefined = bundled ?? remote ?? undefined;
 
   // Source precedence, everywhere this screen renders a poster/year/runtime:
@@ -375,6 +381,13 @@ export default function MovieScreen() {
             providers: [],
           }),
         )
+        .catch(() => {});
+    }
+    // read here, in the effect, not in render: React Compiler (see CLAUDE.md)
+    const plotLang = plotTmdbCode();
+    if (plotLang) {
+      tmdb<{ overview?: string }>(`/movie/${tmdbId}?language=${plotLang}`)
+        .then((d) => setLocalPlot(firstPlot(d.overview)))
         .catch(() => {});
     }
     tmdb<{ results?: { site?: string; type?: string; key?: string; official?: boolean }[] }>(`/movie/${tmdbId}/videos`)
@@ -1137,7 +1150,7 @@ export default function MovieScreen() {
                     line; everything else on this tab is a row/band */}
                 <ContentColumn>
                   <Text style={[styles.body, { paddingHorizontal: space.lg, marginTop: 10 }]}>
-                    {mm?.overview ?? t('movie.noSynopsis')}
+                    {localPlot ?? mm?.overview ?? t('movie.noSynopsis')}
                   </Text>
                 </ContentColumn>
 

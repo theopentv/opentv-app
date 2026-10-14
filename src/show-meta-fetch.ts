@@ -7,11 +7,13 @@
 import db, { getAllShowIds, getMeta, getMoviesMissingPoster, markMovieGuessed, getPlannedMoviesMissingRelease, getShowsMissingName, getShowsMissingPoster, markShowNameTried, setMeta, setShowName, setMoviePoster, setMovieRelease, setShowBackdrop, setShowPoster } from '@/db';
 import { registerShowMeta, showMeta, type CastMeta, type CharacterMeta, type EpisodeMeta, type SeasonMeta, type ShowMeta } from '@/metadata';
 import * as Localization from 'expo-localization';
+import { plotTmdbCode, plotTvdbCodes } from '@/i18n';
 
 import {
   WATCH_REGION_KEY,
   artworkUrl,
   deviceWatchRegion,
+  firstPlot,
   matchStillsByTitle,
   mergeEnrichment,
   pickMovieMatch,
@@ -604,6 +606,12 @@ export function showMetaIsStale(m: ShowMeta): boolean {
   // no amount of waiting fixes it. Absent forces one refetch; after that the
   // stamp matches and this costs nothing.
   if (m.watchRegion !== watchRegion()) return true;
+  // Same again for the PLOT's language (Settings → Plot language, or the app's
+  // language itself). ABSENT reads as `eng`, NOT as stale: every record cached
+  // before this was English, so an English reader refetches nothing and only a
+  // reader who actually wants another language pays one refetch per show —
+  // through this same background pass, with the old text on screen meanwhile.
+  if ((m.plotLang ?? 'eng') !== plotTvdbCodes()[0]) return true;
   const ended = m.status === 'Ended' || m.status === 'Canceled';
   return Date.now() - (m.fetchedAt ?? 0) > (ended ? STALE_ENDED_MS : STALE_RUNNING_MS);
 }
@@ -705,6 +713,15 @@ type TmdbMovie = {
 export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Promise<ShowMeta | null> {
   try {
     const d = await tmdb<TmdbMovie>(`/movie/${tmdbMovieId}?append_to_response=credits,watch/providers`);
+    // The plot in the reader's language is a SECOND request, deliberately:
+    // `language=` on the one above would translate the title too, and titles
+    // stay as they are. Untranslated comes back "", which falls through to
+    // the English overview we already have; a failure costs only the plot.
+    const plotLang = plotTmdbCode();
+    const localPlot = plotLang
+      ? await tmdb<{ overview?: string }>(`/movie/${tmdbMovieId}?language=${plotLang}`).then((x) => x.overview, () => null)
+      : null;
+    const overview = firstPlot(localPlot, d.overview);
     const title = d.title ?? d.original_title ?? null;
     const year = (d.release_date || '').slice(0, 4) || null;
     const m: ShowMeta = {
@@ -723,7 +740,10 @@ export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Prom
       genres: (d.genres ?? []).map((g) => g.name),
       network: null,
       runtime: d.runtime ?? null,
-      overview: d.overview ?? null,
+      overview,
+      // what was ASKED for, not what came back — or an untranslated film
+      // would read as stale and refetch on every launch
+      plotLang: plotTvdbCodes()[0],
       rating: d.vote_average ?? 0,
       votes: d.vote_count,
       lastAir: d.release_date ?? null,
@@ -751,7 +771,7 @@ export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Prom
           air: d.release_date ?? null,
           still: img(d.backdrop_path, 'w300'),
           rating: d.vote_average ? Math.round(d.vote_average * 10) / 10 : undefined,
-          overview: d.overview || null,
+          overview,
         },
       },
     };
@@ -776,8 +796,10 @@ export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Prom
  * 1208-episode season where TheTVDB — and the export — has 34).
  *
  * Three requests: the extended record (genres, characters, artwork), the
- * English translation (the base record is in the original language, i.e.
- * Japanese for anime), and the paginated episode list.
+ * translations (the base record is in the original language, i.e. Japanese
+ * for anime), and the paginated episode list. The NAME is always the English
+ * translation's; the PLOT is the first non-empty of `plotTvdbCodes()` — the
+ * app's language, then English — and only then the original language.
  *
  * Returns null on ANY failure, including a partial paginated fetch: a gutted
  * episode list must never be cached as a show's true shape.
@@ -788,11 +810,15 @@ async function fetchTvdbStructure(tvdbId: number): Promise<ShowMeta | null> {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const t = require('@/tvdb') as typeof import('@/tvdb');
-    const [s, eng, eps] = await Promise.all([
+    const plotLangs = plotTvdbCodes();
+    const [s, plots, eps] = await Promise.all([
       t.tvdbSeriesExtended(tvdbId),
-      t.tvdbTranslation(tvdbId, 'eng'),
+      // ['eng'] in English mode — one request, exactly as before
+      Promise.all(plotLangs.map((l) => t.tvdbTranslation(tvdbId, l))),
       t.tvdbEpisodes(tvdbId),
     ]);
+    // always last in the list, see plotTvdbLangs
+    const eng = plots[plots.length - 1];
     if (!s) return null;
     // null = the fetch failed or came back incomplete; [] = TheTVDB genuinely
     // lists no episodes. Neither is a structure worth caching.
@@ -878,7 +904,8 @@ async function fetchTvdbStructure(tvdbId: number): Promise<ShowMeta | null> {
       // kept, since it costs nothing and a clue may want it back.
       country: s.originalCountry ?? null,
       runtime: s.averageRuntime ?? null,
-      overview: eng?.overview ?? s.overview ?? null,
+      overview: firstPlot(...plots.map((p) => p?.overview), s.overview),
+      plotLang: plotLangs[0],
       // TheTVDB's `score` is a popularity count, not a 0-10 rating — left to TMDB
       rating: 0,
       lastAir: s.lastAired ?? null,
