@@ -788,6 +788,23 @@ export async function tvdbSeriesByImdbId(imdbId: string): Promise<number | null>
   }
 }
 
+/**
+ * The raw `/search/remoteid/{tt…}` reply, for the IMDb importer, which needs
+ * the series AND the episode entries (`imdbRemoteHit` reads them). THROWS on
+ * failure instead of answering null: "TheTVDB has no such id" and "the phone
+ * is offline" must reach the import summary as different reasons. TheTVDB
+ * answers an unknown id with `data: null`, not a 404.
+ */
+export async function tvdbRemoteId(imdbId: string): Promise<unknown> {
+  return get<unknown>(`/search/remoteid/${encodeURIComponent(imdbId)}`);
+}
+
+/** One episode's record by its TheTVDB id -- where the season and number live,
+ *  which the remote-id reply leaves null. Throws on failure, like the above. */
+export async function tvdbEpisodeRecord(id: number): Promise<{ seriesId?: number; seasonNumber?: number | null; number?: number | null }> {
+  return get<{ seriesId?: number; seasonNumber?: number | null; number?: number | null }>(`/episodes/${id}`);
+}
+
 export async function tvdbMatchMovie(name: string, year: number | null): Promise<TvdbMovieMatch> {
   try {
     const raw = await get<{ tvdb_id?: string; name?: string; year?: string }[]>(
