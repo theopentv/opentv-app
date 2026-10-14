@@ -8,7 +8,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import { strFromU8, unzipSync } from 'fflate';
 
-import { classifyForeignJson, cp1252, detectForeignSource, imdbRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRows, simklRows, traktRows, type SerializdLink, type SerializdRecord } from '@/foreign-import';
+import { classifyForeignJson, cp1252, detectForeignSource, imdbRows, imdbRemoteHit, imdbTvRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRows, simklRows, traktRows, type ImdbTvHit, type ImdbTvRef, type SerializdLink, type SerializdRecord } from '@/foreign-import';
 import { importVerdict, type ImportDiagnosis } from '@/pure';
 
 import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, deletedShowIds, getMeta, hasLibrary, libraryOwner, mergeImportedCustomLists, recountShow, setMeta, unmarkedEpisodeKeys, wipeAllData } from '@/db';
@@ -698,6 +698,77 @@ async function serializdLinks(
   return link;
 }
 
+/**
+ * IMDB KNOWS A TITLE BY ITS `tt…` ID; this app keys shows by TheTVDB id. So,
+ * like Serializd, the television half of an IMDb file needs one networked
+ * answer per row before it means anything (1.7.1, 14 Oct 2026).
+ *
+ * A series is one call: `/search/remoteid/{tt…}` returns the series with its
+ * name. An episode is two: the same search returns the episode's id and its
+ * `seriesId` but a NULL season and number, so `/episodes/{id}` is asked for
+ * those -- and then the show's name, from the metadata already on the phone
+ * where it can, because `shows.name` is NOT NULL and the episode row only
+ * names the episode. One name lookup per show, however many of its episodes
+ * the file rated.
+ *
+ * Eight at a time through `pool`, like every other batch here. Offline costs
+ * nothing extra: `net-circuit` opens after the first unreachable call, every
+ * later one throws at once, and each row lands in not-imported as `failed`
+ * rather than hanging the import. Not cached between imports -- a re-import
+ * asks again, and the merge makes that harmless.
+ */
+async function imdbTvLinks(refs: readonly ImdbTvRef[], onProgress: (p: Progress) => void): Promise<Map<string, ImdbTvHit>> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { tvdbEpisodeRecord, tvdbRemoteId, tvdbSeries } = require('@/tvdb') as typeof import('@/tvdb');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { showMeta } = require('@/metadata') as typeof import('@/metadata');
+  const names = new Map<number, Promise<string>>();
+  const nameOf = (id: number): Promise<string> => {
+    let p = names.get(id);
+    if (!p) {
+      const known = showMeta(id)?.name;
+      p = known ? Promise.resolve(known) : tvdbSeries(id).then((s) => s?.name ?? '');
+      names.set(id, p);
+    }
+    return p;
+  };
+
+  const ids = [...new Set(refs.map((r) => r.imdbId).filter((id) => /^tt\d+$/.test(id)))];
+  const link = new Map<string, ImdbTvHit>();
+  await pool(
+    ids,
+    async (tt) => {
+      try {
+        const hit = imdbRemoteHit(await tvdbRemoteId(tt));
+        if (!hit) {
+          link.set(tt, 'none');
+        } else if (hit.kind === 'series') {
+          link.set(tt, { ...hit, name: hit.name || (await nameOf(hit.tvdbId)) });
+        } else {
+          const ep = await tvdbEpisodeRecord(hit.episodeId);
+          const season = Number(ep.seasonNumber);
+          const episode = Number(ep.number);
+          const name = await nameOf(hit.seriesId);
+          // No number, or no name to hang a rating on: TheTVDB holds the
+          // episode but cannot place it, which is a "none", not a retry.
+          link.set(
+            tt,
+            Number.isInteger(season) && season >= 0 && episode > 0 && name
+              ? { kind: 'episode', tvdbId: hit.seriesId, name, season, episode, episodeId: hit.episodeId }
+              : 'none',
+          );
+        }
+      } catch {
+        link.set(tt, 'failed');
+      }
+      return null;
+    },
+    8,
+    (done) => onProgress({ phase: 'Parsing your history…', done, total: ids.length }),
+  );
+  return link;
+}
+
 /** The whole import pipeline from raw ZIP bytes — shared by the file picker
  * and the iCloud restore path. Merges when a real library already exists:
  * local rows always win, export rows only fill gaps, nothing is deleted. */
@@ -872,19 +943,32 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
    * carries `Const`, and `isLetterboxdImportCsv` refuses anything that does.
    */
   if (v2all.length === 0 && showRows.length === 0 && v1.length === 0) {
+    const imdbTv: ImdbTvRef[] = [];
     for (const k of Object.keys(files)) {
       if (!k.toLowerCase().endsWith('.csv') || k.includes('__MACOSX')) continue;
       const parsed = parseCsv(decodeCsv(files[k]));
       if (parsed.length === 0) continue;
       const header = Object.keys(parsed[0]);
-      const mapped = isImdbCsv(header)
-        ? imdbRows(parsed)
-        : isLetterboxdImportCsv(header)
-          ? letterboxdImportRows(parsed)
-          : null;
-      if (!mapped) continue;
+      if (isImdbCsv(header)) {
+        const mapped = imdbRows(parsed);
+        imdbTv.push(...mapped.imdbTv);
+        v1 = [...v1, ...mapped.movieRows];
+        foreignMovieRatings = [...foreignMovieRatings, ...mapped.movieRatings];
+        continue;
+      }
+      if (!isLetterboxdImportCsv(header)) continue;
+      const mapped = letterboxdImportRows(parsed);
       v1 = [...v1, ...mapped.movieRows];
       foreignMovieRatings = [...foreignMovieRatings, ...mapped.movieRatings];
+    }
+    // IMDb's series and episodes, once every file is read so a show rated in
+    // one and its episodes in another resolve together -- see `imdbTvLinks`.
+    if (imdbTv.length > 0) {
+      const { rows, misses } = imdbTvRows(imdbTv, await imdbTvLinks(imdbTv, onProgress));
+      showRows = rows.showRows;
+      v2all = rows.episodeRows;
+      foreignEpRatings = rows.episodeRatings ?? [];
+      for (const m of misses) notImported.push(m);
     }
   }
 

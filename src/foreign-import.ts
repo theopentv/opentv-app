@@ -165,13 +165,22 @@ export function letterboxdRows(files: Record<string, Record<string, string>[]>):
  * imdb.com/list/ratings behind an Export button; the Watchlist and any custom
  * list export the same way.
  *
- * FILMS ONLY, for the same reason Letterboxd is, and it has to be said before
- * somebody imports and finds half an app. IMDb's export carries no series
- * column and no season or episode number -- a rated episode is a row whose
- * Title is the EPISODE's name and nothing else -- so there is no way to place
- * a television watch. `tvSeries` rows would add a show with nothing in it and
- * `tvEpisode` rows cannot be placed at all, so both are skipped rather than
- * imported wrong.
+ * TELEVISION TOO, since 1.7.1 (14 Oct 2026). Until then this read films only,
+ * and a support email said exactly what that looks like from outside: "the
+ * file contains both movies and TV series, but only the movies appeared". The
+ * reason it was skipped still holds -- IMDb's export carries no series column
+ * and no season or episode number, and a rated episode is a row whose Title is
+ * the EPISODE's own name -- so nothing in the FILE can place a television
+ * watch. The `Const` can: TheTVDB indexes IMDb ids for series AND for single
+ * episodes, so `tt0959621` answers "episode 349232 of series 81189", and that
+ * episode's own record carries the season and number. That needs the network,
+ * which nothing in this file touches, so it is the Serializd shape again: this
+ * function sets the television rows aside as `imdbTv`, the importer resolves
+ * their ids, and `imdbTvRows` maps them through that answer.
+ *
+ * A SERIES ROW IS A FOLLOW, NOTHING MORE. Rating a show on IMDb says you have
+ * an opinion of it, not which episodes you saw, and inventing a season of
+ * watches for it would be the one thing worse than skipping it.
  *
  * A RATING IS THE ONLY EVIDENCE OF A WATCH. IMDb has no watch history: it
  * knows what you scored and when you scored it, so an import has to decide
@@ -202,6 +211,27 @@ const IMDB_FILM_TYPES = new Set([
   'tv special',
   'documentary',
 ]);
+
+/*
+ * Television, in both spellings: `tvSeries` / `tvMiniSeries` / `tvEpisode`
+ * since 2017, and "TV Series" / "Mini-Series" / "TV Episode" before. Read with
+ * spaces and hyphens squeezed out so one set answers for both generations.
+ */
+const IMDB_SERIES_TYPES = new Set(['tvseries', 'tvminiseries', 'miniseries']);
+const IMDB_EPISODE_TYPES = new Set(['tvepisode', 'episode']);
+const squeeze = (v: string): string => v.toLowerCase().replace(/[\s-]/g, '');
+
+/** One television row of an IMDb export, waiting for TheTVDB to place it. */
+export type ImdbTvRef = {
+  /** `Const`, e.g. "tt0959621". */
+  imdbId: string;
+  /** The row's own Title: the SHOW's name for a series, the EPISODE's for an episode. */
+  title: string;
+  kind: 'series' | 'episode';
+  /** `Date Rated` (or `Created`), as `created_at` wants it; '' when undated. */
+  at: string;
+  stars: number | null;
+};
 
 /** A day as `created_at` wants it, from the handful of shapes IMDb has used. */
 function imdbDay(raw: string | undefined): string {
@@ -344,8 +374,8 @@ export function isImdbCsv(header: readonly string[]): boolean {
   return keys.has('const') && (keys.has('title type') || keys.has('title_type'));
 }
 
-export function imdbRows(table: readonly Record<string, string>[]): ForeignRows {
-  const rows: ForeignRows = { showRows: [], episodeRows: [], movieRows: [], movieRatings: [] };
+export function imdbRows(table: readonly Record<string, string>[]): ForeignRows & { imdbTv: ImdbTvRef[] } {
+  const rows: ForeignRows & { imdbTv: ImdbTvRef[] } = { showRows: [], episodeRows: [], movieRows: [], movieRatings: [], imdbTv: [] };
 
   for (const raw of table) {
     // Lowercased once per row so both header generations read as one shape.
@@ -354,7 +384,19 @@ export function imdbRows(table: readonly Record<string, string>[]): ForeignRows 
 
     const name = r.title || r['original title'];
     if (!name) continue;
-    if (!IMDB_FILM_TYPES.has((r['title type'] || r['title_type']).toLowerCase())) continue;
+    const type = (r['title type'] || r['title_type'] || '').toLowerCase();
+    const tv = IMDB_SERIES_TYPES.has(squeeze(type)) ? 'series' : IMDB_EPISODE_TYPES.has(squeeze(type)) ? 'episode' : null;
+    if (tv) {
+      rows.imdbTv.push({
+        imdbId: r.const ?? '',
+        title: name,
+        kind: tv,
+        at: imdbDay(r['date rated'] || r.created),
+        stars: starsFromTen(Number(r['your rating'] || r['you rated'])),
+      });
+      continue;
+    }
+    if (!IMDB_FILM_TYPES.has(type)) continue;
 
     const year = r.year ?? '';
     const score = Number(r['your rating'] || r['you rated']);
@@ -384,6 +426,114 @@ export function imdbRows(table: readonly Record<string, string>[]): ForeignRows 
   }
 
   return rows;
+}
+
+/**
+ * What TheTVDB said about one IMDb id. `none` is an answer (it has no such
+ * record); `failed` is not (offline, or it would not say), and the difference
+ * is what the not-imported list tells the reader to do about it.
+ */
+export type ImdbTvHit =
+  | { kind: 'series'; tvdbId: number; name: string }
+  | { kind: 'episode'; tvdbId: number; name: string; season: number; episode: number; episodeId: number }
+  | 'none'
+  | 'failed';
+
+/**
+ * The useful part of a `/search/remoteid/{tt…}` reply. Same rule as
+ * `tvdbSeriesByImdbId`: read only the record types asked about, because the
+ * reply mixes types. An EPISODE's entry carries its id and `seriesId` but --
+ * checked against the live API on 14 Oct 2026 with the Breaking Bad pilot --
+ * a null season and number, so the caller asks `/episodes/{id}` for those.
+ */
+export function imdbRemoteHit(
+  data: unknown,
+): { kind: 'series'; tvdbId: number; name: string } | { kind: 'episode'; episodeId: number; seriesId: number } | null {
+  if (!Array.isArray(data)) return null;
+  for (const r of data) {
+    if (!isObject(r)) continue;
+    const series = r.series;
+    if (isObject(series) && Number(series.id) > 0) {
+      return { kind: 'series', tvdbId: Number(series.id), name: strOf(series.name) };
+    }
+    const ep = r.episode;
+    if (isObject(ep) && Number(ep.id) > 0 && Number(ep.seriesId) > 0) {
+      return { kind: 'episode', episodeId: Number(ep.id), seriesId: Number(ep.seriesId) };
+    }
+  }
+  return null;
+}
+
+/**
+ * IMDb's television rows, placed. A series becomes a followed show; an episode
+ * becomes its show (followed, if the file did not already bring it) plus one
+ * watch dated like a film's, and its score on the app's whole-star scale --
+ * the same `starsFromTen` every other ten-point source goes through. An
+ * episode row with no score is a list entry, not a watch, so it brings only
+ * its show, the way an unrated film goes to the watchlist rather than the
+ * library.
+ *
+ * DEDUPED HERE, because a ratings export and a watchlist export of the same
+ * account repeat rows, and the importer is merge-safe against the library but
+ * not against a file that says the same thing twice. Every row the link could
+ * not place comes back in `misses` with a reason -- never silently dropped.
+ */
+export function imdbTvRows(
+  refs: readonly ImdbTvRef[],
+  link: ReadonlyMap<string, ImdbTvHit>,
+): { rows: ForeignRows; misses: { kind: 'show' | 'episodes'; name: string; reason: string }[] } {
+  const shows = new Map<number, string>();
+  const episodeRows: Record<string, string>[] = [];
+  const episodeRatings: NonNullable<ForeignRows['episodeRatings']> = [];
+  const misses: { kind: 'show' | 'episodes'; name: string; reason: string }[] = [];
+  const seenEp = new Set<string>();
+  const seenMiss = new Set<string>();
+
+  // Series rows first, so a show is named by its own row when the file has one.
+  const ordered = [...refs].sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'series' ? -1 : 1));
+  for (const ref of ordered) {
+    const hit = link.get(ref.imdbId) ?? 'none';
+    if (hit === 'none' || hit === 'failed') {
+      if (seenMiss.has(ref.imdbId)) continue;
+      seenMiss.add(ref.imdbId);
+      misses.push({
+        kind: ref.kind === 'series' ? 'show' : 'episodes',
+        name: ref.title,
+        reason:
+          hit === 'failed'
+            ? 'TheTVDB could not be reached — import the file again online; nothing already imported is added twice'
+            : ref.kind === 'series'
+              ? 'TheTVDB has no show with this IMDb id — add it from Search'
+              : 'TheTVDB has no episode with this IMDb id — mark it watched from its show',
+      });
+      continue;
+    }
+    if (!shows.has(hit.tvdbId)) shows.set(hit.tvdbId, hit.name);
+    if (hit.kind !== 'episode' || ref.stars == null) continue;
+    const key = `${hit.tvdbId}-${hit.season}-${hit.episode}`;
+    if (seenEp.has(key)) continue;
+    seenEp.add(key);
+    const name = shows.get(hit.tvdbId) || hit.name;
+    episodeRows.push({
+      s_id: String(hit.tvdbId),
+      season_number: String(hit.season),
+      episode_number: String(hit.episode),
+      episode_id: String(hit.episodeId),
+      created_at: ref.at,
+      series_name: name,
+    });
+    // Keyed by name downstream, exactly like the GDPR votes file.
+    if (name) episodeRatings.push({ name, season: hit.season, episode: hit.episode, stars: ref.stars });
+  }
+
+  const showRows = [...shows].map(([tvdbId, name]) => ({
+    tv_show_id: String(tvdbId),
+    tv_show_name: name,
+    is_followed: '1',
+    is_favorited: '0',
+    archived: '0',
+  }));
+  return { rows: { showRows, episodeRows, movieRows: [], movieRatings: [], episodeRatings }, misses };
 }
 
 /** What a foreign export turned out to be, for the screen that reports it. */

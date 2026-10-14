@@ -1,4 +1,4 @@
-import { classifyForeignJson, cp1252, detectForeignSource, imdbRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRecords, serializdRows, simklRows, traktRows } from '@/foreign-import';
+import { classifyForeignJson, cp1252, detectForeignSource, imdbRemoteHit, imdbRows, imdbTvRows, isImdbCsv, type ImdbTvHit, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRecords, serializdRows, simklRows, traktRows } from '@/foreign-import';
 
 /**
  * Real Letterboxd export headers, from their own documented format. The
@@ -323,17 +323,17 @@ describe('imdb', () => {
   });
 
   /**
-   * TELEVISION IS SKIPPED, and this is the honest limit rather than an
-   * oversight. The export has no series column and no season or episode
-   * number, so a rated episode is a row whose Title is the episode's own name
-   * — there is nothing to hang a watch on. Importing those as films would put
-   * "Ozymandias" in somebody's film library.
+   * TELEVISION IS SET ASIDE, NOT IMPORTED AS FILMS (1.7.1). The export has no
+   * series column and no season or episode number, so the rows wait in
+   * `imdbTv` for TheTVDB to place them by their `Const`. Importing them as
+   * films would put "Ozymandias" in somebody's film library.
    */
-  it('skips series and episodes rather than importing them as films', () => {
+  it('sets series and episodes aside for TheTVDB rather than importing them as films', () => {
     const rows = imdbRows(
       csv([
         'Const,Your Rating,Date Rated,Title,Title Type,Year'.split(','),
         'tt0903747,10,2026-01-01,Breaking Bad,tvSeries,2008'.split(','),
+        'tt7366338,9,2026-01-04,Chernobyl,tvMiniSeries,2019'.split(','),
         'tt2301451,10,2026-01-02,Ozymandias,tvEpisode,2013'.split(','),
         'tt0110912,8,2026-01-03,Pulp Fiction,movie,1994'.split(','),
       ]),
@@ -341,6 +341,28 @@ describe('imdb', () => {
     expect(rows.movieRows.map((r) => r.movie_name)).toEqual(['Pulp Fiction']);
     expect(rows.showRows).toEqual([]);
     expect(rows.episodeRows).toEqual([]);
+    expect(rows.imdbTv).toEqual([
+      { imdbId: 'tt0903747', title: 'Breaking Bad', kind: 'series', at: '2026-01-01 12:00:00', stars: 5 },
+      { imdbId: 'tt7366338', title: 'Chernobyl', kind: 'series', at: '2026-01-04 12:00:00', stars: 5 },
+      { imdbId: 'tt2301451', title: 'Ozymandias', kind: 'episode', at: '2026-01-02 12:00:00', stars: 5 },
+    ]);
+  });
+
+  it('reads the pre-2018 television types and columns too', () => {
+    const rows = imdbRows(
+      csv([
+        'position,const,created,modified,description,Title,Title type,Directors,You rated,IMDb Rating'.split(','),
+        '1,tt0903747,2015-03-02,2015-03-02,,Breaking Bad,TV Series,,9,9.5'.split(','),
+        '2,tt0306414,2015-03-03,2015-03-03,,The Wire,Mini-Series,,,9.3'.split(','),
+        '3,tt0959621,2015-03-04,2015-03-04,,Pilot,TV Episode,,8,9.0'.split(','),
+      ]),
+    );
+    expect(rows.imdbTv.map((r) => [r.imdbId, r.kind, r.stars, r.at])).toEqual([
+      ['tt0903747', 'series', 5, '2015-03-02 12:00:00'],
+      ['tt0306414', 'series', null, '2015-03-03 12:00:00'],
+      ['tt0959621', 'episode', 4, '2015-03-04 12:00:00'],
+    ]);
+    expect(rows.movieRows).toEqual([]);
   });
 
   /** TV movies and shorts ARE films — they are in a film library everywhere
@@ -623,5 +645,82 @@ describe('serializd', () => {
       expect(classifyForeignJson([trakt])?.source).toBe('trakt');
       expect(classifyForeignJson([{ shows: [{ title: 'Dark', ids: { tmdb: 70523 } }] }])?.source).toBe('simkl');
     });
+  });
+});
+
+/**
+ * TheTVDB's answers to `/search/remoteid/{tt…}`, shaped exactly as the live API
+ * gave them on 14 Oct 2026 (trimmed): Breaking Bad's series, its pilot's
+ * episode -- season and number NULL there, which is why the importer asks
+ * `/episodes/{id}` -- Pulp Fiction's film, and an unknown id's `null`.
+ */
+describe('imdbRemoteHit', () => {
+  it('reads a series', () => {
+    expect(imdbRemoteHit([{ series: { id: 81189, name: 'Breaking Bad' } }])).toEqual({ kind: 'series', tvdbId: 81189, name: 'Breaking Bad' });
+  });
+  it('reads an episode, with the series it belongs to', () => {
+    expect(
+      imdbRemoteHit([{ episode: { id: 349232, seriesId: 81189, name: null, number: null, seasonNumber: null } }]),
+    ).toEqual({ kind: 'episode', episodeId: 349232, seriesId: 81189 });
+  });
+  it('ignores a film, and answers nothing for an unknown id', () => {
+    expect(imdbRemoteHit([{ movie: { id: 228, name: 'Pulp Fiction' } }])).toBeNull();
+    expect(imdbRemoteHit(null)).toBeNull();
+    expect(imdbRemoteHit([])).toBeNull();
+  });
+});
+
+describe('imdbTvRows', () => {
+  const refs = [
+    { imdbId: 'tt0903747', title: 'Breaking Bad', kind: 'series' as const, at: '2026-01-01 12:00:00', stars: 5 },
+    { imdbId: 'tt7366338', title: 'Chernobyl', kind: 'series' as const, at: '', stars: null },
+    { imdbId: 'tt0959621', title: 'Pilot', kind: 'episode' as const, at: '2026-01-02 12:00:00', stars: 4 },
+    { imdbId: 'tt2301451', title: 'Ozymandias', kind: 'episode' as const, at: '2026-01-03 12:00:00', stars: 5 },
+    { imdbId: 'tt1000001', title: 'Some Episode', kind: 'episode' as const, at: '', stars: null },
+    { imdbId: 'tt9999991', title: 'Nobody', kind: 'series' as const, at: '', stars: null },
+    { imdbId: 'tt9999992', title: 'Offline Ep', kind: 'episode' as const, at: '', stars: 3 },
+  ];
+  const link = new Map<string, ImdbTvHit>([
+    ['tt0903747', { kind: 'series', tvdbId: 81189, name: 'Breaking Bad' }],
+    ['tt7366338', { kind: 'series', tvdbId: 360893, name: 'Chernobyl' }],
+    ['tt0959621', { kind: 'episode', tvdbId: 81189, name: 'Breaking Bad', season: 1, episode: 1, episodeId: 349232 }],
+    ['tt2301451', { kind: 'episode', tvdbId: 81189, name: 'Breaking Bad', season: 5, episode: 14, episodeId: 4553040 }],
+    ['tt1000001', { kind: 'episode', tvdbId: 79168, name: 'Friends', season: 1, episode: 1, episodeId: 303821 }],
+    ['tt9999991', 'none'],
+    ['tt9999992', 'failed'],
+  ]);
+
+  it('follows each series once, and marks only the RATED episodes watched', () => {
+    const { rows } = imdbTvRows(refs, link);
+    expect(rows.showRows.map((r) => [r.tv_show_id, r.tv_show_name, r.is_followed])).toEqual([
+      ['81189', 'Breaking Bad', '1'],
+      ['360893', 'Chernobyl', '1'],
+      // An unrated episode brings its show and no watch.
+      ['79168', 'Friends', '1'],
+    ]);
+    expect(rows.episodeRows).toEqual([
+      { s_id: '81189', season_number: '1', episode_number: '1', episode_id: '349232', created_at: '2026-01-02 12:00:00', series_name: 'Breaking Bad' },
+      { s_id: '81189', season_number: '5', episode_number: '14', episode_id: '4553040', created_at: '2026-01-03 12:00:00', series_name: 'Breaking Bad' },
+    ]);
+    expect(rows.episodeRatings).toEqual([
+      { name: 'Breaking Bad', season: 1, episode: 1, stars: 4 },
+      { name: 'Breaking Bad', season: 5, episode: 14, stars: 5 },
+    ]);
+  });
+
+  it('reports every row it could not place, with a reason that says what to do', () => {
+    const { misses } = imdbTvRows(refs, link);
+    expect(misses).toEqual([
+      { kind: 'show', name: 'Nobody', reason: expect.stringContaining('no show with this IMDb id') },
+      { kind: 'episodes', name: 'Offline Ep', reason: expect.stringContaining('could not be reached') },
+    ]);
+    // A row nobody asked about (no entry in the link) is a miss too, never a drop.
+    expect(imdbTvRows([refs[0]], new Map()).misses).toHaveLength(1);
+  });
+
+  it('says the same thing once, however many times the file says it', () => {
+    const once = imdbTvRows(refs, link);
+    const twice = imdbTvRows([...refs, ...refs], link);
+    expect(twice).toEqual(once);
   });
 });
