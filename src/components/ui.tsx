@@ -9,7 +9,7 @@ import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
 import { detailPaneLayout } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
-import { t } from '@/i18n';
+import { currentLocale, t } from '@/i18n';
 
 /**
  * The status bar's height, even inside a modal.
@@ -567,9 +567,9 @@ export function StatTable({
     <View style={{ gap: 9 }}>
       {headers && (
         <View style={s.tableRow}>
-          <Text style={[s.tableHead, { flex: 1 }]}>{headers.name.toUpperCase()}</Text>
-          <Text style={[s.tableHead, s.tableColA]}>{headers.a.toUpperCase()}</Text>
-          {headers.b != null && <Text style={[s.tableHead, s.tableColB]}>{headers.b.toUpperCase()}</Text>}
+          <Text style={[s.tableHead, { flex: 1 }]}>{headers.name.toLocaleUpperCase(currentLocale())}</Text>
+          <Text style={[s.tableHead, s.tableColA]}>{headers.a.toLocaleUpperCase(currentLocale())}</Text>
+          {headers.b != null && <Text style={[s.tableHead, s.tableColB]}>{headers.b.toLocaleUpperCase(currentLocale())}</Text>}
         </View>
       )}
       {rows.map((r, i) => (

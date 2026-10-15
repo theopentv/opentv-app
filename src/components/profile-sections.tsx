@@ -21,7 +21,7 @@ import { useContext } from 'react';
 
 import { CONTENT_MAX_WIDTH, GRID_GUTTER, gridMetrics } from '@/components/ui';
 import { Poster, posterSpeech } from '@/components/poster';
-import { t } from '@/i18n';
+import { currentLocale, t } from '@/i18n';
 import { mixHex, withoutEmoji } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 
@@ -417,7 +417,7 @@ export function StatsGrid({
             // to "EPISODES WATC…" there too — the fix that was applied to the
             // four-across body was needed one size up.
             numberOfLines={2}>
-            {c.title.toUpperCase()}
+            {c.title.toLocaleUpperCase(currentLocale())}
           </Text>
           {/* Only the parts that are non-zero, largest first: "0m 24d 22h"
               spends a third of a small card saying nothing. A brand-new

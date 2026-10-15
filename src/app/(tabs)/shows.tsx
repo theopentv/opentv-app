@@ -472,7 +472,7 @@ export default function ShowsScreen() {
                           {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${w.showId}`))}>
                           <Pressable style={styles.showPill} onPress={() => router.push(`/show/${w.showId}`)} accessibilityRole="button" accessibilityLabel={w.name}>
                             <Text style={styles.showPillText} numberOfLines={1}>
-                              {w.name.toUpperCase()} ›
+                              {w.name.toLocaleUpperCase(currentLocale())} ›
                             </Text>
                           </Pressable>
                           <Text style={styles.epCode}>
@@ -512,7 +512,7 @@ export default function ShowsScreen() {
               return (
                 <View style={styles.pillRow}>
                   <Text style={styles.sectionPill} accessibilityRole="header">
-                    {item.label.toUpperCase()}
+                    {item.label.toLocaleUpperCase(currentLocale())}
                   </Text>
                 </View>
               );
@@ -588,7 +588,7 @@ export default function ShowsScreen() {
                     {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${sp.tvdbId}`))}>
                     <Pressable style={styles.showPill} onPress={() => router.push(`/show/${sp.tvdbId}`)} accessibilityRole="button" accessibilityLabel={sp.name}>
                       <Text style={styles.showPillText} numberOfLines={1}>
-                        {sp.name.toUpperCase()} ›
+                        {sp.name.toLocaleUpperCase(currentLocale())} ›
                       </Text>
                     </Pressable>
                     {/*
@@ -699,7 +699,7 @@ export default function ShowsScreen() {
                   </View>
                   <View style={styles.cardBody}>
                     <View style={styles.showPill}>
-                      <Text style={styles.showPillText} numberOfLines={1}>{u.showName.toUpperCase()} ›</Text>
+                      <Text style={styles.showPillText} numberOfLines={1}>{u.showName.toLocaleUpperCase(currentLocale())} ›</Text>
                     </View>
                     <Text style={styles.epCode}>
                       S{String(u.season).padStart(2, '0')} | E{String(u.episode).padStart(2, '0')}

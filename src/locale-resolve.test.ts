@@ -16,12 +16,22 @@ describe('resolveLocale', () => {
   });
 
   it('walks the device list rather than giving up on the first miss', () => {
-    expect(resolveLocale(null, ['de-DE', 'it-IT'])).toBe('it');
+    expect(resolveLocale(null, ['ja-JP', 'it-IT'])).toBe('it');
   });
 
   it('falls back to English for anything unsupported', () => {
     expect(resolveLocale(null, ['ja-JP'])).toBe('en');
     expect(resolveLocale(null, [])).toBe('en');
+  });
+
+  it('maps German, Turkish and Polish regions to their one file each', () => {
+    expect(resolveLocale(null, ['de-AT'])).toBe('de');
+    expect(resolveLocale(null, ['de-CH'])).toBe('de');
+    expect(resolveLocale(null, ['de-DE'])).toBe('de');
+    expect(resolveLocale(null, ['tr-TR'])).toBe('tr');
+    expect(resolveLocale(null, ['pl-PL'])).toBe('pl');
+    expect(resolveLocale('pl', ['en-US'])).toBe('pl');
+    expect(resolveLocale(null, ['nl-NL'])).toBe('en');
   });
 
   it('ignores an override naming a locale that is not shipped', () => {

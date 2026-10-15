@@ -652,7 +652,7 @@ function EpisodePage({
                 exactly the shows somebody most wants to look up. */}
             <Pressable style={styles.showPill} onPress={() => tvdbId && router.push(`/show/${tvdbId}`)} accessibilityRole="button" accessibilityLabel={showName}>
               <Text style={styles.showPillText} numberOfLines={1}>
-                {showName.toUpperCase()} ›
+                {showName.toLocaleUpperCase(currentLocale())} ›
               </Text>
             </Pressable>
             <Pressable
@@ -781,7 +781,7 @@ function EpisodePage({
                           .map((w) => w[0])
                           .join('')
                           .slice(0, 3)
-                          .toUpperCase()}
+                          .toLocaleUpperCase(currentLocale())}
                       </Text>
                     ) : (
                       <Ionicons
@@ -792,7 +792,7 @@ function EpisodePage({
                     )}
                   </View>
                   <Text style={styles.provLabel} numberOfLines={2}>
-                    {(tile.labelKey ? t(tile.labelKey) : tile.name).toUpperCase()}
+                    {(tile.labelKey ? t(tile.labelKey) : tile.name).toLocaleUpperCase(currentLocale())}
                   </Text>
                 </Pressable>
               ))}
@@ -946,7 +946,7 @@ function EpisodePage({
                               )}
                             </View>
                             <Text style={[styles.charName, picked && { color: colors.yellow }]} numberOfLines={1}>
-                              {c.name.toUpperCase()}
+                              {c.name.toLocaleUpperCase(currentLocale())}
                             </Text>
                             {charPct[c.name] != null && <Text style={styles.charPct}>{`${charPct[c.name]}%`}</Text>}
                           </Pressable>
@@ -984,7 +984,7 @@ function EpisodePage({
                               )}
                             </View>
                             <Text style={[styles.charName, picked && { color: colors.yellow }]} numberOfLines={1}>
-                              {label.toUpperCase()}
+                              {label.toLocaleUpperCase(currentLocale())}
                             </Text>
                             {charPct[label] != null && <Text style={styles.charPct}>{`${charPct[label]}%`}</Text>}
                           </Pressable>

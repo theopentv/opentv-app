@@ -17,6 +17,9 @@ export const NAMES: Record<Locale, string> = {
   es: 'Español',
   'pt-BR': 'Português (Brasil)',
   fr: 'Français',
+  de: 'Deutsch',
+  tr: 'Türkçe',
+  pl: 'Polski',
 };
 
 export default function LanguageScreen() {

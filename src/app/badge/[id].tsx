@@ -57,7 +57,7 @@ function longDate(iso?: string | null): string | null {
   if (!iso) return null;
   const d = new Date(`${iso}T12:00:00`);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString(currentLocale(), { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+  return d.toLocaleDateString(currentLocale(), { month: 'long', day: 'numeric', year: 'numeric' }).toLocaleUpperCase(currentLocale());
 }
 
 export default function BadgeScreen() {

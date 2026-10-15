@@ -242,7 +242,7 @@ function Figure({ n, label }: { n: number | null; label: string }) {
   return (
     <View>
       <Text style={s.figure}>{n}</Text>
-      <Text style={s.figureLabel}>{label.toUpperCase()}</Text>
+      <Text style={s.figureLabel}>{label.toLocaleUpperCase(currentLocale())}</Text>
     </View>
   );
 }

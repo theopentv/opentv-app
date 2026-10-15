@@ -69,7 +69,7 @@ function counts(d: Wrapped): string {
 function frames(d: Wrapped) {
   return [
     ...d.topShows.map((s) => ({ poster: s.poster, title: s.name, note: `${n(s.episodes)} EP` })),
-    ...d.filmList.map((f) => ({ poster: f.poster, title: f.title, note: f.at ? shortDate(f.at).toUpperCase() : '' })),
+    ...d.filmList.map((f) => ({ poster: f.poster, title: f.title, note: f.at ? shortDate(f.at).toLocaleUpperCase(currentLocale()) : '' })),
   ];
 }
 

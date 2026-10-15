@@ -2,7 +2,7 @@
  * Which language the app runs in. Pure so it can be tested without a device:
  * the wrapper that reads the phone and the database lives in src/i18n.ts.
  */
-export const SUPPORTED = ['en', 'ar', 'it', 'es', 'pt-BR', 'fr'] as const;
+export const SUPPORTED = ['en', 'ar', 'it', 'es', 'pt-BR', 'fr', 'de', 'tr', 'pl'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 
 const isSupported = (tag: string): tag is Locale => (SUPPORTED as readonly string[]).includes(tag);
@@ -43,7 +43,7 @@ export function formatCount(n: number, locale: Locale): string {
 
 /**
  * A Wrapped period as a person reads it: 'July 2026' for '2026-07', and the
- * bare year for '2026'. Month names come from Intl, so all six languages are
+ * bare year for '2026'. Month names come from Intl, so every shipped language is
  * covered without a key each.
  *
  * Here rather than beside the screen because the period picker and the

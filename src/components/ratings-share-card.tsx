@@ -20,6 +20,7 @@
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { currentLocale } from '@/i18n';
 import { ls } from '@/theme';
 
 /** The app's own black and yellow, written down rather than read from the
@@ -91,7 +92,7 @@ export function RatingsShareCard({
           <View style={[s.poster, s.posterEmpty]} />
         )}
         <View style={{ flex: 1 }}>
-          <Text style={s.heading}>{heading.toUpperCase()}</Text>
+          <Text style={s.heading}>{heading.toLocaleUpperCase(currentLocale())}</Text>
           <Text style={s.title} numberOfLines={2}>
             {show}
           </Text>
@@ -104,12 +105,12 @@ export function RatingsShareCard({
             {average != null && (
               <View>
                 <Text style={s.figure}>{average.toFixed(1)}</Text>
-                <Text style={s.figureLabel}>{averageLabel.toUpperCase()}</Text>
+                <Text style={s.figureLabel}>{averageLabel.toLocaleUpperCase(currentLocale())}</Text>
               </View>
             )}
             <View>
               <Text style={s.figure}>{rated}</Text>
-              <Text style={s.figureLabel}>{ratedLabel.toUpperCase()}</Text>
+              <Text style={s.figureLabel}>{ratedLabel.toLocaleUpperCase(currentLocale())}</Text>
             </View>
           </View>
         </View>

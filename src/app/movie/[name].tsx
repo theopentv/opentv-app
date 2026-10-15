@@ -1199,7 +1199,7 @@ export default function MovieScreen() {
                             {c.name ?? ''}
                           </Text>
                           <Text style={styles.charName} numberOfLines={1}>
-                            {(c.character ?? '').toUpperCase()}
+                            {(c.character ?? '').toLocaleUpperCase(currentLocale())}
                           </Text>
                         </View>
                       ))}
@@ -1230,7 +1230,7 @@ export default function MovieScreen() {
                       <View style={[styles.provTile, watchedOn === i && { borderWidth: 1.5, borderColor: colors.yellow }]}>
                         <Ionicons name={tile.icon} size={30} color={tile.tint} />
                       </View>
-                      <Text style={styles.provLabel}>{t(tile.labelKey).toUpperCase()}</Text>
+                      <Text style={styles.provLabel}>{t(tile.labelKey).toLocaleUpperCase(currentLocale())}</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -1365,7 +1365,7 @@ export default function MovieScreen() {
                               )}
                             </View>
                             <Text style={[styles.charName, picked && { color: colors.yellow }]} numberOfLines={1}>
-                              {label.toUpperCase()}
+                              {label.toLocaleUpperCase(currentLocale())}
                             </Text>
                             {charPct[label] != null && <Text style={styles.charPct}>{`${charPct[label]}%`}</Text>}
                           </Pressable>

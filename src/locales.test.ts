@@ -2,7 +2,7 @@ import { SUPPORTED } from './locale-resolve';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { I18n, useMakePlural } from 'i18n-js';
-import { ar as arPluralRule, fr as frPluralRule } from 'make-plural';
+import { ar as arPluralRule, fr as frPluralRule, pl as plPluralRule } from 'make-plural';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { leaves, isPluralLeaf, getAtPath } = require('./locale-keys') as {
@@ -56,6 +56,12 @@ describe('locale files', () => {
   const pluralI18n = new I18n({});
   pluralI18n.pluralization.register('ar', useMakePlural({ pluralizer: arPluralRule }));
   pluralI18n.pluralization.register('fr', useMakePlural({ pluralizer: frPluralRule }));
+  pluralI18n.pluralization.register('pl', useMakePlural({ pluralizer: plPluralRule }));
+
+  // Polish `other` is CLDR's form for fractions ("1,5 odcinka"); no integer
+  // reaches it, so the sweep below can't, but dropping it would print
+  // "[missing …]" for the first fractional count. Required, not dead.
+  const FRACTION_ONLY: Record<string, string[]> = { pl: ['other'] };
 
   // Every count from 0-200: enough to hit every CLDR Arabic boundary (zero,
   // one, two, few 3-10, many 11-99, other) AND its n%100 repeats across
@@ -95,7 +101,10 @@ describe('locale files', () => {
           }
         }
 
-        const unreachable = available.filter((key) => !reached.has(key));
+        const unreachable = available.filter((key) => !reached.has(key) && !(FRACTION_ONLY[locale] ?? []).includes(key));
+        for (const key of FRACTION_ONLY[locale] ?? []) {
+          if (!available.includes(key)) problems.push(`${locale}.${path}: missing "${key}" (fractions)`);
+        }
         for (const key of unreachable) {
           problems.push(`${locale}.${path}: "${key}" is never selected by the ${locale} pluralizer — dead category`);
         }

@@ -158,7 +158,7 @@ export function PuzzleShareCard({
       </View>
       <View style={s.titleRow}>
         <Text style={[s.heading, { color: accent }]} numberOfLines={1}>
-          {t('puzzle.title').toUpperCase()}
+          {t('puzzle.title').toLocaleUpperCase(currentLocale())}
         </Text>
         <Text style={s.date} numberOfLines={1}>
           {date}

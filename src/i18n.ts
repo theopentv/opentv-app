@@ -7,7 +7,7 @@
  */
 import * as Localization from 'expo-localization';
 import { I18n, useMakePlural } from 'i18n-js';
-import { ar as arPluralRule, fr as frPluralRule } from 'make-plural';
+import { ar as arPluralRule, fr as frPluralRule, pl as plPluralRule } from 'make-plural';
 import { I18nManager } from 'react-native';
 
 import { getMeta, setMeta } from '@/db';
@@ -16,15 +16,18 @@ import type { LocaleKey } from '@/locales/keys';
 import { needsDirectionChange, plotTmdbLang, plotTvdbLangs, type PlotLanguage } from '@/pure';
 
 import ar from '@/locales/ar.json';
+import de from '@/locales/de.json';
 import en from '@/locales/en.json';
 import es from '@/locales/es.json';
 import fr from '@/locales/fr.json';
 import it from '@/locales/it.json';
+import pl from '@/locales/pl.json';
 import ptBR from '@/locales/pt-BR.json';
+import tr from '@/locales/tr.json';
 
 const META_KEY = 'locale';
 
-const i18n = new I18n({ en, ar, it, es, 'pt-BR': ptBR, fr });
+const i18n = new I18n({ en, ar, it, es, 'pt-BR': ptBR, fr, de, tr, pl });
 i18n.enableFallback = true;
 i18n.defaultLocale = 'en';
 
@@ -46,6 +49,16 @@ i18n.pluralization.register('ar', useMakePlural({ pluralizer: arPluralRule }));
 // same false positive already accepted for the 'ar' registration above.
 // eslint-disable-next-line react-hooks/rules-of-hooks
 i18n.pluralization.register('fr', useMakePlural({ pluralizer: frPluralRule }));
+
+// Polish has three integer forms — 1 odcinek, 2–4 odcinki, 5–21 odcinków, and
+// 22–24 back to odcinki — which the one/other default would read as "5
+// odcinki", wrong for most counts. pl.json carries one/few/many plus `other`,
+// which CLDR keeps for fractions; no count here is fractional today, but a
+// missing `other` would print "[missing …]" the day one is. German and
+// Turkish are one/other like English (Turkish keeps the noun singular after a
+// number, so its two forms are usually the same text) and need no rule.
+// eslint-disable-next-line react-hooks/rules-of-hooks
+i18n.pluralization.register('pl', useMakePlural({ pluralizer: plPluralRule }));
 
 let active: Locale = 'en';
 
@@ -95,6 +108,13 @@ export function initI18n(): boolean {
   return mismatched;
 }
 
+/**
+ * Also the argument for every display upper-casing: `toUpperCase()` turns
+ * Turkish "dizi" into "DIZI" — dotless I, a different letter — where Turkish
+ * writes "DİZİ". Labels, titles and dates shown in capitals use
+ * `toLocaleUpperCase(currentLocale())`; codes, hex and handles' initials keep
+ * plain `toUpperCase()`.
+ */
 export function currentLocale(): Locale {
   return active;
 }
