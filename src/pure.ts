@@ -6233,8 +6233,14 @@ export function upsertPreset(list: readonly FilterPreset[], preset: FilterPreset
  * the fallback and then simply the first one that has text, because a biography
  * in a language you do not read still beats a blank section.
  *
- * TheTVDB's language codes are three letters (`eng`, `ara`, `spa`), so a match
- * is on the first two of ours: `pt-BR` finds `por`.
+ * TheTVDB's language codes are mostly three letters (`eng`, `ara`, `spa`), keyed
+ * here by the first two of our locale. Portuguese is the exception, checked
+ * against GET /languages on 15 Oct 2026: `pt` is "Portuguese - Brazil" and `por`
+ * is "Portuguese - Portugal". This said `pt: 'por'` until then, so a Brazilian
+ * reader searched and read biographies in Portugal's Portuguese ("Breaking Bad:
+ * Ruptura Total", "professor do secundário"). Our locale is pt-BR, so `pt`;
+ * `TVDB_NEAR` keeps `por` as the next best before English.
+ * de/tr/pl (`deu`, `tur`, `pol`) verified against the same list.
  */
 export const TVDB_LANG: Record<string, string> = {
   en: 'eng',
@@ -6242,8 +6248,22 @@ export const TVDB_LANG: Record<string, string> = {
   fr: 'fra',
   it: 'ita',
   es: 'spa',
-  pt: 'por',
+  pt: 'pt',
+  de: 'deu',
+  tr: 'tur',
+  pl: 'pol',
 };
+
+/** A sibling translation that beats English when ours is missing. */
+const TVDB_NEAR: Record<string, string> = { pt: 'por' };
+
+/** TheTVDB codes to try for this locale, best first, always ending in `eng`. */
+export function tvdbLangChain(locale: string): string[] {
+  const code = TVDB_LANG[locale.slice(0, 2).toLowerCase()];
+  if (!code || code === 'eng') return ['eng'];
+  const near = TVDB_NEAR[code];
+  return near ? [code, near, 'eng'] : [code, 'eng'];
+}
 
 /**
  * WHICH TheTVDB TRANSLATIONS TO ASK FOR A PLOT, best first.
@@ -6260,8 +6280,8 @@ export const TVDB_LANG: Record<string, string> = {
  * against the live API on 14 Oct 2026: `pt` is Brazilian (Breaking Bad's reads
  * "O drama narra a história…") and `por` is European ("professor do
  * secundário", "cancro"). Our locale is pt-BR, so `pt` first and `por` before
- * English, because Portugal's Portuguese still beats a language you don't read.
- * (`TVDB_LANG` keeps `por` for biographies and search, where it is right.)
+ * English, because Portugal's Portuguese still beats a language you don't read
+ * — the same chain search and biographies use (`tvdbLangChain`).
  *
  * The first code is also the stamp a cached record carries (`plotLang`), so
  * changing the setting or the app's language makes it stale.
@@ -6269,11 +6289,7 @@ export const TVDB_LANG: Record<string, string> = {
 export type PlotLanguage = 'app' | 'eng';
 
 export function plotTvdbLangs(setting: PlotLanguage, locale: string): string[] {
-  if (setting === 'eng') return ['eng'];
-  const two = locale.slice(0, 2).toLowerCase();
-  if (two === 'pt') return ['pt', 'por', 'eng'];
-  const code = TVDB_LANG[two];
-  return !code || code === 'eng' ? ['eng'] : [code, 'eng'];
+  return setting === 'eng' ? ['eng'] : tvdbLangChain(locale);
 }
 
 /** TMDB's `language=` for a plot, or null for "don't ask, English is what we
@@ -6296,10 +6312,10 @@ export function pickBiography(
 ): string | null {
   const withText = list.filter((b) => (b.biography ?? '').trim().length > 0);
   if (withText.length === 0) return null;
-  const want = TVDB_LANG[locale.slice(0, 2).toLowerCase()];
-  const mine = want ? withText.find((b) => b.language === want) : undefined;
-  const english = withText.find((b) => b.language === 'eng');
-  return ((mine ?? english ?? withText[0])!.biography ?? '').trim();
+  const best = tvdbLangChain(locale)
+    .map((code) => withText.find((b) => b.language === code))
+    .find(Boolean);
+  return ((best ?? withText[0])!.biography ?? '').trim();
 }
 
 /**
@@ -8013,7 +8029,7 @@ export function tvdbHitName(
   lang: string,
 ): string {
   const tr = hit.translations ?? {};
-  return tr[lang] || tr.eng || hit.name || '';
+  return tr[lang] || tr[TVDB_NEAR[lang] ?? ''] || tr.eng || hit.name || '';
 }
 
 export function rankByQuery<T>(items: T[], query: string, nameOf: (t: T) => string): T[] {

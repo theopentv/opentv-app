@@ -27,7 +27,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { addMovieToWatchlist, addShow, markWatched, setMovieWatched } from '@/db';
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
-import { TVDB_LANG, artworkUrl, gridGeometry } from '@/pure';
+import { TVDB_LANG, artworkUrl, gridGeometry, tvdbLangChain } from '@/pure';
 import { leaveOnboarding } from '@/session-store';
 import { colors, space, ls } from '@/theme';
 import { pool } from '@/tmdb';
@@ -110,12 +110,13 @@ function PickGrid({ kind, onSkip, onContinue }: { kind: 'tv' | 'movie'; onSkip: 
       setTrending(list);
       // Trending carries ORIGINAL titles (兰香如故, らんま½): the reader's
       // language, else English, else that. Shown first, renamed as they land.
-      const lang = TVDB_LANG[currentLocale().slice(0, 2)] ?? 'eng';
+      const langs = tvdbLangChain(currentLocale());
       const tr = film ? tvdbMovieTranslation : tvdbTranslation;
       const named = await pool(
         list,
         async (p) => {
-          const name = (await tr(p.tvdbId, lang))?.name ?? (lang === 'eng' ? null : (await tr(p.tvdbId, 'eng'))?.name);
+          let name: string | null | undefined = null;
+          for (const lang of langs) if (!name) name = (await tr(p.tvdbId, lang))?.name;
           return name ? { ...p, name } : p;
         },
         6,

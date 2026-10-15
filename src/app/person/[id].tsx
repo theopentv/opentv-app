@@ -31,7 +31,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { NavHeader, Screen } from '@/components/ui';
-import { t } from '@/i18n';
+import { currentLocale, t } from '@/i18n';
 import { artworkUrl, personCredits, personLife, pickBiography, type PersonCredit } from '@/pure';
 import { colors, radius, space } from '@/theme';
 import { tvdbPerson, type TvdbPerson } from '@/tvdb';
@@ -59,7 +59,9 @@ export default function PersonScreen() {
   // The name from the card we came from, shown while the request is in flight
   // so the header is never a spinner over an empty title.
   const title = person?.name ?? name ?? '';
-  const bio = pickBiography(person?.biographies ?? []);
+  // The reader's language first (15 Oct): this passed no locale, so the
+  // default 'en' won and every biography was English in every language.
+  const bio = pickBiography(person?.biographies ?? [], currentLocale());
   const life = personLife(person ?? {});
   const credits = personCredits(person?.characters ?? []);
 
