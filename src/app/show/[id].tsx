@@ -942,11 +942,19 @@ export default function ShowScreen() {
           </View>
           <View style={styles.providers}>
             {(meta?.providers ?? []).map((p, i) => (
-              <View key={p.name ?? i} style={[styles.provider, i === 0 ? { backgroundColor: '#F47521' } : styles.providerDark]}>
+              <View
+                key={p.name ?? i}
+                style={[styles.provider, i === 0 ? { backgroundColor: '#F47521' } : styles.providerDark]}
+                accessible
+                accessibilityLabel={p.kind ? `${p.name ?? ''}, ${t(`watchKind.${p.kind}`)}` : (p.name ?? '')}>
                 <Ionicons name="play-circle-outline" size={20} color="#FFF" />
                 <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 13, letterSpacing: 0.5 }}>
                   {(p.name ?? '').toUpperCase()}
                 </Text>
+                {/* Which KIND of way to watch — subscription, rental… — only
+                    when TMDB said so. A provider cached before the kind was
+                    kept shows its name alone rather than a guessed label. */}
+                {p.kind ? <Text style={styles.providerKind}>{t(`watchKind.${p.kind}`)}</Text> : null}
               </View>
             ))}
             {!meta?.providers?.length && <Text style={styles.caption2}>{t('show.providersUnavailable')}</Text>}
@@ -2318,6 +2326,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   providerDark: { backgroundColor: 'transparent', paddingHorizontal: 8 },
+  providerKind: { color: '#FFF', opacity: 0.7, fontSize: 11.5, fontWeight: '600' },
   divider: { height: 1, backgroundColor: colors.line, marginBottom: 14 },
   pollLabel: {
     color: colors.text,

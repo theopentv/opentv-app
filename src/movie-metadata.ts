@@ -1,6 +1,9 @@
 /** Bundled movie metadata fetched from TMDB (scripts/fetch-movie-metadata.py). */
+import type { WatchKind } from '@/pure';
+
 export type MovieCast = { name: string | null; character: string | null; photo: string | null };
-export type MovieProvider = { name: string | null; logo: string | null };
+/** `kind` only on a live fetch: the bundle never recorded one. */
+export type MovieProvider = { name: string | null; logo: string | null; kind?: WatchKind };
 export type MovieMeta = {
   runtime: number | null;
   genres: string[];

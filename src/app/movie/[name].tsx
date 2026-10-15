@@ -35,11 +35,11 @@ import {
 import { runtimeLabel } from '@/duration';
 import { tapSelection } from '@/haptics';
 import type { CastMeta } from '@/metadata';
-import { movieMeta, type MovieMeta } from '@/movie-metadata';
+import { movieMeta, type MovieMeta, type MovieProvider } from '@/movie-metadata';
 import { franchiseRows, nextUp, progress, type Row } from '@/franchise';
 import { cachedFranchise, fetchFranchise, type Franchise } from '@/franchise-fetch';
 import { useMovieTvdbRevision } from '@/movie-tvdb-match';
-import { characterFace, characterPercents, emotionNames, emotionPercents, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey } from '@/pure';
+import { characterFace, characterPercents, emotionNames, emotionPercents, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey, watchOptions, type WatchKind } from '@/pure';
 import { useJoined } from '@/community-session';
 import {
   clearCharacterVote,
@@ -50,6 +50,7 @@ import {
   useTargetAggregate,
   useVoteSettling,
 } from '@/community-ratings';
+import { watchRegion } from '@/show-meta-fetch';
 import { tmdb } from '@/tmdb';
 import type { TvdbMovieMeta } from '@/tvdb';
 import { colors, radius, space } from '@/theme';
@@ -242,7 +243,23 @@ export default function MovieScreen() {
   // there is a tvdbId rather than only when TMDB missed the film.
   const [tvdbCast, setTvdbCast] = useState<CastMeta[] | null>(null);
   const [trailer, setTrailer] = useState<string | null>(null);
+  /*
+   * WHERE TO WATCH, ASKED LIVE. The bundle's providers are subscriptions only,
+   * for whichever of four countries answered first, and a film outside the
+   * bundle had none at all — so "Inception" read as streaming nowhere while it
+   * was for rent everywhere. Asked for the phone's own region, every kind, the
+   * same way a show's are. Offline it falls back to the bundle, unlabelled,
+   * because the bundle never recorded which kind it was.
+   */
+  const [liveProviders, setLiveProviders] = useState<MovieProvider[] | null>(null);
   const mm: MovieMeta | RemoteMeta | undefined = bundled ?? remote ?? undefined;
+  const providers = liveProviders ?? mm?.providers ?? [];
+  const providerLines: [WatchKind | undefined, string[]][] = [];
+  for (const p of providers) {
+    const last = providerLines[providerLines.length - 1];
+    if (last && last[0] === p.kind) last[1].push(p.name ?? '');
+    else providerLines.push([p.kind, [p.name ?? '']]);
+  }
 
   // Source precedence, everywhere this screen renders a poster/year/runtime:
   // TMDB metadata (`mm` — bundled, or fetched below when a tmdbId is known)
@@ -370,6 +387,11 @@ export default function MovieScreen() {
         )
         .catch(() => {});
     }
+    tmdb<{ results?: Record<string, Partial<Record<WatchKind, { provider_name?: string; logo_path?: string | null }[]>>> }>(
+      `/movie/${tmdbId}/watch/providers`,
+    )
+      .then((d) => setLiveProviders(watchOptions(d.results?.[watchRegion()])))
+      .catch(() => {});
     tmdb<{ results?: { site?: string; type?: string; key?: string; official?: boolean }[] }>(`/movie/${tmdbId}/videos`)
       .then((v) => {
         const vids = (v.results ?? []).filter((x) => x.site === 'YouTube' && x.key);
@@ -1039,9 +1061,18 @@ export default function MovieScreen() {
                   <Text style={styles.h2}>{t('media.whereToWatch')}</Text>
                   <Ionicons name="settings-outline" size={18} color={colors.dim} />
                 </View>
-                <Text style={[styles.body, { paddingHorizontal: space.lg, marginTop: 2 }]}>
-                  {mm?.providers?.length ? mm.providers.map((p) => p.name).join(' · ') : t('media.providersUnavailable')}
-                </Text>
+                {providers.length ? (
+                  // one line per kind, in the order watchOptions already sorts
+                  // them (subscription first); the kind leads its line quietly
+                  providerLines.map(([kind, names]) => (
+                    <Text key={kind ?? 'any'} style={[styles.body, { paddingHorizontal: space.lg, marginTop: 2 }]}>
+                      {kind ? <Text style={styles.providerKind}>{t(`watchKind.${kind}`)}  </Text> : null}
+                      {names.join(' · ')}
+                    </Text>
+                  ))
+                ) : (
+                  <Text style={[styles.body, { paddingHorizontal: space.lg, marginTop: 2 }]}>{t('media.providersUnavailable')}</Text>
+                )}
 
                 {/* the interests poll only shows for movies in your library */}
                 {inDb && (
@@ -1353,6 +1384,7 @@ const styles = StyleSheet.create({
   },
   h2: { color: colors.text, fontSize: 20, fontWeight: '800' },
   body: { color: colors.text, fontSize: 14.5, lineHeight: 20 },
+  providerKind: { color: colors.dim, fontSize: 12.5, fontWeight: '600' },
   caption2: { color: colors.dim, fontSize: 13.5 },
   divider: { height: 1, backgroundColor: colors.line, marginVertical: 16 },
   pollLabel: {

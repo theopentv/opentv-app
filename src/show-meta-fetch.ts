@@ -30,7 +30,7 @@ import {
  * until now, and why Discord reported the streaming list as "not up to date".
  * It was current. It was simply about America.
  */
-function watchRegion(): string {
+export function watchRegion(): string {
   return validWatchRegion(getMeta(WATCH_REGION_KEY)) ?? deviceWatchRegion(Localization.getLocales());
 }
 import { pool, tmdb } from '@/tmdb';
@@ -604,6 +604,10 @@ export function showMetaIsStale(m: ShowMeta): boolean {
   // no amount of waiting fixes it. Absent forces one refetch; after that the
   // stamp matches and this costs nothing.
   if (m.watchRegion !== watchRegion()) return true;
+  // Same shape once more, for `kind`: providers cached before it was kept
+  // cannot say which is a subscription and which is a rental, and the page
+  // would rather say nothing than guess. Absent forces one refetch.
+  if ((m.providers ?? []).some((p) => !('kind' in p))) return true;
   const ended = m.status === 'Ended' || m.status === 'Canceled';
   return Date.now() - (m.fetchedAt ?? 0) > (ended ? STALE_ENDED_MS : STALE_RUNNING_MS);
 }
@@ -740,10 +744,7 @@ export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Prom
         charPhoto: null,
       })),
       similar: [],
-      providers: watchOptions(d['watch/providers']?.results?.[watchRegion()]).map((p) => ({
-        name: p.name,
-        logo: p.logo,
-      })),
+      providers: watchOptions(d['watch/providers']?.results?.[watchRegion()]),
       seasons: { '1': { count: 1, name: 'Season 1' } },
       episodes: {
         '1-1': {
@@ -931,11 +932,7 @@ async function fetchTmdbGapFields(tvdbId: number, tmdbIdHint?: number | null): P
           const brand = (s: string) =>
             s.toLowerCase().replace(/\s*(amazon channel|apple tv channel|roku premium channel|plus|\+)\s*/g, ' ').trim();
           return arr.findIndex((q) => brand(q.name) === brand(p.name)) === i;
-        })
-        .map((p) => ({
-          name: p.name,
-          logo: p.logo,
-        })),
+        }),
     };
   } catch {
     return null;

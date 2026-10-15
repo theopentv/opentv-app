@@ -3627,5 +3627,18 @@
   },
   "serializd": {
     "from": "بياناتك من serializd.com كملف JSON. ما عند Serializd زر تصدير بعد — لحد ما يصير، انقل تاريخك إلى Trakt واستورد ذاك التصدير بدلاً عنه."
+  },
+  "watchListSort": {
+    "recent": "الأحدث",
+    "releaseDate": "تاريخ العرض",
+    "mostBehind": "الأكثر تأخّرًا",
+    "a11y": "ترتيب قائمة المشاهدة، الحالي: {{sort}}"
+  },
+  "watchKind": {
+    "flatrate": "اشتراك",
+    "free": "مجاني",
+    "ads": "بإعلانات",
+    "rent": "إيجار",
+    "buy": "شراء"
   }
 }

@@ -3183,5 +3183,18 @@
   },
   "serializd": {
     "from": "Seus dados do serializd.com como arquivo JSON. O Serializd ainda não tem botão de exportação — enquanto isso, leve seu histórico para o Trakt e importe essa exportação no lugar."
+  },
+  "watchListSort": {
+    "recent": "Recentes",
+    "releaseDate": "Data de lançamento",
+    "mostBehind": "Mais atrasadas",
+    "a11y": "Ordenar a lista. Agora: {{sort}}"
+  },
+  "watchKind": {
+    "flatrate": "Assinatura",
+    "free": "Grátis",
+    "ads": "Com anúncios",
+    "rent": "Aluguel",
+    "buy": "Compra"
   }
 }
