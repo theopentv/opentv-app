@@ -57,7 +57,7 @@ import { colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
 import { isPlus } from '@/plus';
-import { currentLocale, plotTmdbCode, t } from '@/i18n';
+import { currentLocale, genreText, plotTmdbCode, t } from '@/i18n';
 import { a11yHidden } from '@/a11y';
 import { HalfStarControl, HalfStarHint } from '@/components/half-stars';
 import { CommunityRating } from '@/components/rating-breakdown';
@@ -944,7 +944,7 @@ export default function MovieScreen() {
                   {title}
                 </Text>
                 <Text style={styles.subtitle}>
-                  {[runtimeLabel(displayRuntime), mm?.genres?.join(', ')].filter(Boolean).join(' • ') || t('movie.genericLabel')}
+                  {[runtimeLabel(displayRuntime), mm?.genres?.map(genreText).join(', ')].filter(Boolean).join(' • ') || t('movie.genericLabel')}
                 </Text>
               </View>
               {/* always rendered so favoriting never reflows/squeezes the title */}

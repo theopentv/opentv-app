@@ -37,7 +37,7 @@ import {
   usePresets,
 } from '@/filters-store';
 import { tapLight } from '@/haptics';
-import { t } from '@/i18n';
+import { genreText, t } from '@/i18n';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
 import {
   DEFAULT_FILTERS,
@@ -62,7 +62,8 @@ const SORTS: { value: FilterSort; key: 'filters.sortLastWatched' | 'filters.sort
   { value: 'alpha', key: 'filters.sortAlpha' },
 ];
 
-/** Values that have a translation; genres and networks are data, not copy. */
+/** Values that have a translation; networks are data, not copy, and genres
+ *  go through the same table as the show page's. */
 function labelOf(axis: FilterAxis, value: string, kind: FilterKind): string {
   if (axis === 'progress') {
     if (kind === 'movie') return value === 'watched' ? t('movieFilters.progressWatched') : t('movieFilters.progressNotWatched');
@@ -81,6 +82,7 @@ function labelOf(axis: FilterAxis, value: string, kind: FilterKind): string {
     if (value === 'standard') return t('filters.runtimeStandard');
     if (value === 'long') return t('filters.runtimeLong');
   }
+  if (axis === 'genres') return genreText(value);
   return value;
 }
 

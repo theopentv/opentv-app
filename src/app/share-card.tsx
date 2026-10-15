@@ -12,7 +12,7 @@ import { episodeMeta, showMeta } from '@/metadata';
 import { movieMeta } from '@/movie-metadata';
 import { colors, radius, ls } from '@/theme';
 import { tapSelection } from '@/haptics';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, statusText, t } from '@/i18n';
 import { runtimeLabel } from '@/duration';
 import { withLink } from '@/share-link';
 import { StarRow } from '@/components/half-stars';
@@ -532,7 +532,7 @@ export default function ShareCardScreen() {
                   {em.title}
                 </Text>
               ) : !isMovie && !isEpisode && meta?.status ? (
-                <Text style={styles.voted}>{meta.inProduction ? t('shareCard.watching') : meta.status}</Text>
+                <Text style={styles.voted}>{meta.inProduction ? t('shareCard.watching') : statusText(meta.status)}</Text>
               ) : null}
             </View>
           </View>

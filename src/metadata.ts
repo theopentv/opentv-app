@@ -287,13 +287,6 @@ export function absoluteEpisode(tvdbId: number, season: number, episode: number)
 }
 
 /** "Ended" / "Returning" style label for the show header meta line. */
-export function statusLabel(m: ShowMeta): string {
-  // the two databases word this differently — TMDB "Returning Series",
-  // TheTVDB "Continuing" — and TV Time itself said "Returning"
-  if (m.status === 'Returning Series' || m.status === 'Continuing') return 'Returning';
-  return m.status ?? '—';
-}
-
 // reverse index: TMDB id → our TVDB id, for linking "people also watched"
 // posters back to shows you already track
 const byTmdb = new Map<number, number>(

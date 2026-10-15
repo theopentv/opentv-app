@@ -8267,3 +8267,13 @@ export function withoutEmoji(text: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+/** The `showEnums.<group>` key for a TheTVDB/TMDB status or genre: its letters
+ *  alone, lower-cased ("Sci-Fi & Fantasy" → `scififantasy`). The two databases
+ *  word the same state differently — TheTVDB "Continuing", TMDB "Returning
+ *  Series" — and TV Time said "Returning", so those share one key. */
+export function showEnumKey(group: 'status' | 'genre', raw: string): string {
+  const slug = raw.toLowerCase().replace(/[^a-z]/g, '');
+  return group === 'status' ? (STATUS_ALIAS[slug] ?? slug) : slug;
+}
+const STATUS_ALIAS: Record<string, string> = { continuing: 'returning', returningseries: 'returning', cancelled: 'canceled' };

@@ -24,7 +24,7 @@ import { View, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 
 import { goalShareLine } from '@/components/yearly-goal';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, genreText, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
 import { monthlyActivity, pickArtwork, titlesInGenre, watchingType, type ArtSource } from '@/pure';
 import type { Wrapped } from '@/stats-calc';
@@ -225,8 +225,9 @@ export function WrappedObsession({ d, label, unit, width, handle }: CardProps) {
  */
 export function WrappedTaste({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
-  const primary = d.topGenres[0]?.name ?? '';
-  const secondary = d.topGenres[1]?.name ?? null;
+  // translated for the words only: deckArt above matches pictures by the raw name
+  const primary = genreText(d.topGenres[0]?.name ?? '');
+  const secondary = d.topGenres[1] ? genreText(d.topGenres[1].name) : null;
   const { tasteA, tasteB } = deckArt(d);
   const lines = wordLines(primary, 2);
   const size = fitSize(primary, width - 36, 108, 40, lines);

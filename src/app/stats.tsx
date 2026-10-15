@@ -8,7 +8,7 @@ import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs } from '@/compone
 import { badges, charVotes } from '@/bundled-data';
 import { tapLight } from '@/haptics';
 import { getCharacterVoteStats } from '@/db';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, genreText, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
 import { formatCount } from '@/locale-resolve';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
@@ -241,7 +241,7 @@ export default function StatsScreen() {
               <StatCard title={t('stats.shows.topGenres')}>
                 <StatTable
                   headers={{ name: t('stats.headers.genre'), a: t('stats.headers.shows') }}
-                  rows={s.genres.map((g) => ({ name: g.name, a: String(g.count) }))}
+                  rows={s.genres.map((g) => ({ name: genreText(g.name), a: String(g.count) }))}
                 />
               </StatCard>
             )}
@@ -441,7 +441,7 @@ export default function StatsScreen() {
               <StatCard title={t('stats.movies.topGenres')}>
                 <StatTable
                   headers={{ name: t('stats.headers.genre'), a: t('stats.headers.movies') }}
-                  rows={m.genres.map((g) => ({ name: g.name, a: String(g.count) }))}
+                  rows={m.genres.map((g) => ({ name: genreText(g.name), a: String(g.count) }))}
                 />
               </StatCard>
             )}

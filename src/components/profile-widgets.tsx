@@ -42,7 +42,7 @@ import {
   watchStreak,
   watchlistCount,
 } from '@/db';
-import { t } from '@/i18n';
+import { genreText, t } from '@/i18n';
 import { documentFileUri } from '@/library';
 import { currentLocale } from '@/i18n';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
@@ -341,7 +341,7 @@ export function renderWidget(
     return (
       <WidgetBox label={t('profile.widgetGenre')} span={span}>
         <Text style={s.name} numberOfLines={2}>
-          {g.name}
+          {genreText(g.name)}
         </Text>
         {wide ? <Bar pct={Number(g.pct ?? 0)} /> : null}
         <Text style={s.sub}>{t('profile.widgetGenreShare', { pct: Number(g.pct ?? 0) })}</Text>

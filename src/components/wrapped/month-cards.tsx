@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { PixelRatio, StyleSheet, View, type LayoutChangeEvent, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, genreText, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
 import { WRAPPED_SUMMARY, filmOfTheMonth, watchingType, wrappedSummaryLayout, wrappedSummaryRoomGuess } from '@/pure';
 import { starsValue, starText } from '@/star-rating';
@@ -504,7 +504,7 @@ export function MonthGenres({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
   const top = d.topGenres.slice(0, 4);
   const total = Math.max(1, top.reduce((a, g) => a + g.minutes, 0));
-  const first = top[0]?.name ?? '';
+  const first = genreText(top[0]?.name ?? '');
   const size = fitSize(first, width - 36, 92, 36, wordLines(first, 2));
   const shades = [C.YELLOW, '#E9E9EE', '#8C8C96', '#46464E'];
   const barW = width - 36;
@@ -514,7 +514,7 @@ export function MonthGenres({ d, label, width, handle }: CardProps) {
       <Head label={label} kicker={m('genresKicker')} />
       <View style={abs({ left: 18, right: 18, top: H * 0.17 })}>
         <Display size={size} lines={wordLines(first, 2)} minScale={0.3} colour={C.YELLOW} style={{ textTransform: 'uppercase', letterSpacing: ls(-size * 0.04) }}>{first}</Display>
-        {top[1] ? <Display size={26} lines={1} colour={C.INK} style={{ marginTop: 8 }}>{m('genresLine', { genre: top[1].name })}</Display> : null}
+        {top[1] ? <Display size={26} lines={1} colour={C.INK} style={{ marginTop: 8 }}>{m('genresLine', { genre: genreText(top[1].name) })}</Display> : null}
         <View style={{ flexDirection: 'row', height: 26, marginTop: 30, borderRadius: 6, overflow: 'hidden', width: barW }}>
           {top.map((g, i) => (
             <View key={g.name} style={{ width: (barW * g.minutes) / total, backgroundColor: shades[i] }} />
@@ -524,7 +524,7 @@ export function MonthGenres({ d, label, width, handle }: CardProps) {
           {top.map((g, i) => (
             <View key={g.name} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: shades[i] }} />
-              <Text numberOfLines={1} style={{ flex: 1, color: C.INK, fontSize: 17, fontWeight: '800' }}>{g.name}</Text>
+              <Text numberOfLines={1} style={{ flex: 1, color: C.INK, fontSize: 17, fontWeight: '800' }}>{genreText(g.name)}</Text>
               <Text style={{ color: i === 0 ? C.YELLOW : C.GREY, fontSize: 17, fontWeight: '900', fontVariant: ['tabular-nums'] }}>{Math.round((g.minutes / total) * 100)}%</Text>
             </View>
           ))}

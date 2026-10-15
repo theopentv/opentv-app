@@ -13,7 +13,7 @@ import { I18nManager } from 'react-native';
 import { getMeta, setMeta } from '@/db';
 import { isRtlLocale, resolveLocale, type Locale } from '@/locale-resolve';
 import type { LocaleKey } from '@/locales/keys';
-import { needsDirectionChange, plotTmdbLang, plotTvdbLangs, type PlotLanguage } from '@/pure';
+import { needsDirectionChange, plotTmdbLang, plotTvdbLangs, showEnumKey, type PlotLanguage } from '@/pure';
 
 import ar from '@/locales/ar.json';
 import de from '@/locales/de.json';
@@ -205,3 +205,19 @@ export function monthYear(iso: string): string {
   if (Number.isNaN(d.getTime())) return '';
   return d.toLocaleDateString(currentLocale(), { month: 'long', year: 'numeric' });
 }
+
+/**
+ * SHOW STATUS AND GENRES ARE ENUMS, NOT NAMES (15 Oct). TheTVDB and TMDB send
+ * "Ended", "Continuing", "Science Fiction" in English whatever the app speaks,
+ * and the show page printed them as they came. Known values are looked up in
+ * `showEnums` by their letters alone ("Sci-Fi & Fantasy" → `scififantasy`);
+ * anything else — a value either database adds later, or a genre TMDB already
+ * sent translated — is shown as it came rather than hidden.
+ */
+function enumText(group: 'status' | 'genre', raw: string): string {
+  const key = showEnumKey(group, raw);
+  return key in en.showEnums[group] ? t(`showEnums.${group}.${key}` as LocaleKey) : raw;
+}
+
+export const statusText = (raw: string): string => enumText('status', raw);
+export const genreText = (raw: string): string => enumText('genre', raw);

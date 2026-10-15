@@ -12,6 +12,7 @@
  * its key has been revoked, Discover keeps working rather than going blank.
  */
 import { runtimeLabel } from '@/duration';
+import { genreText } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
 import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, tvdbHitName } from '@/pure';
 import { pool, tmdb } from '@/tmdb';
@@ -67,11 +68,11 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
       if (kind === 'tv') {
         const series = ext as import('@/tvdb').TvdbSeriesExtended | null;
         const network = series?.originalNetwork?.name ?? null;
-        const genres = (series?.genres ?? []).map((g) => g.name).filter(Boolean).slice(0, 2).join(', ');
+        const genres = (series?.genres ?? []).map((g) => genreText(g.name ?? '')).filter(Boolean).slice(0, 2).join(', ');
         sub = [genres || null, network].filter(Boolean).join(' • ');
       } else {
         const movie = ext as import('@/tvdb').TvdbMovieExtended | null;
-        const genres = (movie?.genres ?? []).map((g) => g.name).filter(Boolean).slice(0, 2).join(', ');
+        const genres = (movie?.genres ?? []).map((g) => genreText(g.name ?? '')).filter(Boolean).slice(0, 2).join(', ');
         sub = [runtimeLabel(movie?.runtime ?? raw.runtime ?? null), genres || null].filter(Boolean).join(' • ');
       }
 
@@ -132,7 +133,7 @@ async function tvdbSearch(query: string): Promise<CatalogItem[] | null> {
         backdrop: null,
         poster: artworkUrl(h.image_url),
         overview: h.overview ?? '',
-        sub: [h.year, (h.genres ?? []).slice(0, 2).join(', ')].filter(Boolean).join(' • '),
+        sub: [h.year, (h.genres ?? []).slice(0, 2).map(genreText).join(', ')].filter(Boolean).join(' • '),
         votes: 0,
       };
     });
@@ -178,7 +179,7 @@ async function tmdbFeed(limit: number): Promise<CatalogItem[]> {
         backdrop: `${TMDB_IMG}/w780${r.backdrop_path}`,
         poster: r.poster_path ? `${TMDB_IMG}/w342${r.poster_path}` : null,
         overview: r.overview ?? '',
-        sub: [runtimeLabel(d.runtime), d.genres?.slice(0, 2).map((g) => g.name).join(', ')].filter(Boolean).join(' • '),
+        sub: [runtimeLabel(d.runtime), d.genres?.slice(0, 2).map((g) => genreText(g.name)).join(', ')].filter(Boolean).join(' • '),
         votes: d.vote_count ?? 0,
       };
     },

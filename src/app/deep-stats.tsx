@@ -19,7 +19,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { PeriodSheet } from '@/components/period-picker';
 import { Bars, MenuRow, NavHeader, Screen, StatCard, StatTable } from '@/components/ui';
 import { tapLight, tapSelection } from '@/haptics';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, genreText, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
 import { requirePlus, usePlus } from '@/plus';
 import { computeCrowdCompare, computeDeepStats, watchYears } from '@/stats-calc';
@@ -192,7 +192,7 @@ export default function DeepStatsScreen() {
               <StatCard title={t('plus.stats.tasteDna')}>
                 <StatTable
                   headers={{ name: t('stats.headers.genre'), a: t('stats.headers.hours') }}
-                  rows={d.genres.map((g) => ({ name: g.name, a: hours(g.minutes) }))}
+                  rows={d.genres.map((g) => ({ name: genreText(g.name), a: hours(g.minutes) }))}
                 />
                 {d.decades.length > 0 && (
                   <>
@@ -307,7 +307,7 @@ export default function DeepStatsScreen() {
                 onPress={() => setPicking(true)}
               />
 
-              <ShareRow genres={d.genres.slice(0, 3).map((g) => g.name)} score={crowd.score} />
+              <ShareRow genres={d.genres.slice(0, 3).map((g) => genreText(g.name))} score={crowd.score} />
             </>
           )}
         </ScrollView>

@@ -29,7 +29,7 @@ import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, 
 import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
 import { showTvdbIdForTmdb } from '@/catalog';
-import { absoluteEpisode, episodeMeta, seasonTotal, showMeta, statusLabel, tvdbIdForTmdb, type SimilarMeta, orderedEpisodes } from '@/metadata';
+import { absoluteEpisode, episodeMeta, seasonTotal, showMeta, tvdbIdForTmdb, type SimilarMeta, orderedEpisodes } from '@/metadata';
 import { airCountdown, communityScore, communityScoreFromCounts, ratingSeries, characterFace } from '@/pure';
 import { filledStarText } from '@/star-rating';
 import { readSeasonAggregates, useSeasonAggregates } from '@/community-ratings';
@@ -40,7 +40,7 @@ import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
 import { isPlus } from '@/plus';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, genreText, statusText, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
 import { communityErrorText } from '@/community-error-text';
 import { startTogether } from '@/community-together';
@@ -865,7 +865,7 @@ export default function ShowScreen() {
                     typeof meta.totalSeasons === 'number' && meta.totalSeasons > 0
                       ? t('show.seasonsCount', { count: meta.totalSeasons })
                       : null,
-                    statusLabel(meta),
+                    meta.status ? statusText(meta.status) : '—',
                     meta.network ?? '—',
                   ]
                     .filter(Boolean)
@@ -1034,7 +1034,7 @@ export default function ShowScreen() {
           <Text style={[styles.h2, { paddingHorizontal: space.lg }]} accessibilityRole="header">{t('show.showInfoTitle')}</Text>
           <Text style={styles.caption}>
             {meta
-              ? `${meta.year ?? '—'}${meta.endYear && meta.endYear !== meta.year ? ` - ${meta.endYear}` : ''} · ${meta.genres.join(', ') || '—'}`
+              ? `${meta.year ?? '—'}${meta.endYear && meta.endYear !== meta.year ? ` - ${meta.endYear}` : ''} · ${meta.genres.map(genreText).join(', ') || '—'}`
               : t('show.metadataUnavailable')}
           </Text>
           {/* ONE SENTENCE, "TheTVDB rating, 3.9 out of 5". Read piece by
