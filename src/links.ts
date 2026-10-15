@@ -33,7 +33,7 @@ export type AppLink = { key: string; label: string; url: string };
    translate one. The rule is right about everything else; this is the case it
    is not for. */
 export const DEFAULT_LINKS: readonly AppLink[] = [
-  { key: 'discord', label: 'Discord', url: 'https://discord.gg/AUVPR5sfK' },
+  { key: 'discord', label: 'Discord', url: 'https://theopentv.com/discord' },
   { key: 'reddit', label: 'Reddit', url: 'https://www.reddit.com/r/opentv_app/' },
   { key: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/opentvapp/' },
   { key: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@theopentv' },
