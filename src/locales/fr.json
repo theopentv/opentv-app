@@ -3594,5 +3594,18 @@
       "awardsshow": "Cérémonie de remise de prix",
       "short": "Court métrage"
     }
+  },
+  "widgets": {
+    "upNext": "À suivre",
+    "movies": "Films",
+    "moviesToWatch": "Films à voir",
+    "caughtUp": "Tout est à jour 🎉",
+    "watchlistEmpty": "Aucun film à voir",
+    "watching": "Visionnages",
+    "emptyHint": "Ouvrez OpenTV pour le remplir",
+    "watched": {
+      "one": "{{count}} vu",
+      "other": "{{count}} vus"
+    }
   }
 }

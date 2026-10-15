@@ -21,14 +21,15 @@
 import React from 'react';
 import { FlexWidget, TextWidget } from 'react-native-android-widget';
 
+import { currentLocale, t } from '../src/i18n';
 import type { HeatWidgetData } from '../src/pure';
+import { widgetLabels } from './labels';
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/** 'YYYY-MM' → 'Mar'. Falls back to the raw month rather than rendering junk. */
+/** 'YYYY-MM' → 'Mar', in the app's language. Falls back to the raw month rather than rendering junk. */
 function shortMonth(month: string): string {
   const m = Number(month.slice(5, 7));
-  return MONTH_NAMES[m - 1] ?? month;
+  if (!(m >= 1 && m <= 12)) return month;
+  return new Date(2000, m - 1, 1).toLocaleDateString(currentLocale(), { month: 'short' }).replace('.', '');
 }
 
 const GAP = 3;
@@ -93,10 +94,10 @@ export function HeatmapWidget({ data, cell }: { data: HeatWidgetData; cell: numb
           around a grid left the grid the smallest thing on its own widget. */}
       <FlexWidget
         style={{ flexDirection: 'row', width: 'match_parent', alignItems: 'center', marginBottom: 5 }}>
-        <TextWidget text="WATCHING" style={{ fontSize: 11, color: '#F5C518', letterSpacing: 1.2 }} />
+        <TextWidget text={widgetLabels().watching} style={{ fontSize: 11, color: '#F5C518', letterSpacing: 1.2 }} />
         <FlexWidget style={{ flex: 1 }} />
         <TextWidget
-          text={`${data.total} watched`}
+          text={t('widgets.watched', { count: data.total })}
           style={{ fontSize: 11, color: '#8A8A90' }}
         />
       </FlexWidget>

@@ -8,6 +8,8 @@ import React from 'react';
 import { FlexWidget, ImageWidget, TextWidget } from 'react-native-android-widget';
 
 import type { WidgetPayload } from '../src/widget-sync';
+import { t } from '../src/i18n';
+import { widgetLabels } from './labels';
 
 type Props = {
   items: WidgetPayload['upNext'];
@@ -17,6 +19,7 @@ type Props = {
 };
 
 export function UpNextWidget({ items, movies = [], tall = false }: Props) {
+  const L = widgetLabels();
   return (
     <FlexWidget
       style={{
@@ -29,11 +32,11 @@ export function UpNextWidget({ items, movies = [], tall = false }: Props) {
       }}
       clickAction="OPEN_APP">
       <TextWidget
-        text="UP NEXT"
+        text={L.upNext}
         style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 6 }}
       />
       {items.length === 0 ? (
-        <TextWidget text="All caught up 🎉" style={{ fontSize: 14, color: '#EDEDED', marginTop: 8 }} />
+        <TextWidget text={L.caughtUp} style={{ fontSize: 14, color: '#EDEDED', marginTop: 8 }} />
       ) : (
         items.slice(0, tall ? 4 : 3).map((e) => (
           <FlexWidget
@@ -59,7 +62,7 @@ export function UpNextWidget({ items, movies = [], tall = false }: Props) {
                 style={{ fontSize: 13, color: '#FFFFFF' }}
               />
               <TextWidget
-                text={e.title ?? `Episode ${e.episode}`}
+                text={e.title ?? t('show.episodeFallbackTitle', { n: e.episode })}
                 truncate="END"
                 maxLines={1}
                 style={{ fontSize: 12, color: '#9A9AA0' }}
@@ -71,7 +74,7 @@ export function UpNextWidget({ items, movies = [], tall = false }: Props) {
       {tall && movies.length > 0 ? (
         <FlexWidget style={{ flexDirection: 'column', width: 'match_parent', marginTop: 10 }}>
           <TextWidget
-            text="MOVIES TO WATCH"
+            text={L.moviesToWatch}
             style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 6 }}
           />
           <FlexWidget style={{ flexDirection: 'row', width: 'match_parent' }}>

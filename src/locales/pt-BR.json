@@ -3594,5 +3594,18 @@
       "awardsshow": "Premiação",
       "short": "Curta-metragem"
     }
+  },
+  "widgets": {
+    "upNext": "A seguir",
+    "movies": "Filmes",
+    "moviesToWatch": "Filmes para assistir",
+    "caughtUp": "Tudo em dia 🎉",
+    "watchlistEmpty": "Nenhum filme na lista",
+    "watching": "Atividade",
+    "emptyHint": "Abra o OpenTV para preencher",
+    "watched": {
+      "one": "{{count}} assistido",
+      "other": "{{count}} assistidos"
+    }
   }
 }

@@ -7,10 +7,12 @@ import React from 'react';
 import { FlexWidget, ImageWidget, TextWidget } from 'react-native-android-widget';
 
 import type { WidgetPayload } from '../src/widget-sync';
+import { widgetLabels } from './labels';
 
 type Props = { items: WidgetPayload['upNext']; movies: WidgetPayload['movies'] };
 
 export function CombinedWidget({ items, movies }: Props) {
+  const L = widgetLabels();
   return (
     <FlexWidget
       style={{
@@ -23,9 +25,9 @@ export function CombinedWidget({ items, movies }: Props) {
       }}
       clickAction="OPEN_APP">
       <FlexWidget style={{ flexDirection: 'column', flex: 1 }}>
-        <TextWidget text="UP NEXT" style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 6 }} />
+        <TextWidget text={L.upNext} style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 6 }} />
         {items.length === 0 ? (
-          <TextWidget text="All caught up 🎉" style={{ fontSize: 13, color: '#EDEDED' }} />
+          <TextWidget text={L.caughtUp} style={{ fontSize: 13, color: '#EDEDED' }} />
         ) : (
           items.slice(0, 2).map((e) => (
             <FlexWidget
@@ -40,7 +42,7 @@ export function CombinedWidget({ items, movies }: Props) {
         )}
       </FlexWidget>
       <FlexWidget style={{ flexDirection: 'column', marginLeft: 10 }}>
-        <TextWidget text="MOVIES" style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 6 }} />
+        <TextWidget text={L.movies} style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 6 }} />
         <FlexWidget style={{ flexDirection: 'row' }}>
           {movies.slice(0, 2).map((m) => (
             <FlexWidget

@@ -3594,5 +3594,18 @@
       "awardsshow": "Entrega de premios",
       "short": "Cortometraje"
     }
+  },
+  "widgets": {
+    "upNext": "A continuación",
+    "movies": "Películas",
+    "moviesToWatch": "Películas por ver",
+    "caughtUp": "Todo al día 🎉",
+    "watchlistEmpty": "No hay películas pendientes",
+    "watching": "Actividad",
+    "emptyHint": "Abre OpenTV para llenarlo",
+    "watched": {
+      "one": "{{count}} visto",
+      "other": "{{count}} vistos"
+    }
   }
 }

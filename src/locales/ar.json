@@ -4130,5 +4130,22 @@
       "awardsshow": "حفل جوائز",
       "short": "قصير"
     }
+  },
+  "widgets": {
+    "upNext": "التالي",
+    "movies": "الأفلام",
+    "moviesToWatch": "أفلام للمشاهدة",
+    "caughtUp": "لا شيء فاتك 🎉",
+    "watchlistEmpty": "قائمة المشاهدة فارغة",
+    "watching": "نشاط المشاهدة",
+    "emptyHint": "افتح OpenTV لملء هذا",
+    "watched": {
+      "zero": "لا مشاهدات",
+      "one": "مشاهدة واحدة",
+      "two": "مشاهدتان",
+      "few": "{{count}} مشاهدات",
+      "many": "{{count}} مشاهدة",
+      "other": "{{count}} مشاهدة"
+    }
   }
 }

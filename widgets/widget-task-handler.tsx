@@ -16,6 +16,9 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
   const { widgetInfo, renderWidget } = props;
   // computed lazily so the module load stays cheap for the app itself
   const { upNextList, moviesToWatch, heatmapData } = await import('../src/widget-data');
+  // Headless, the app may never have started in this process: the widgets'
+  // words follow the app's language only once the stored choice is read.
+  (await import('../src/i18n')).initI18n();
 
   switch (props.widgetAction) {
     case 'WIDGET_ADDED':

@@ -3594,5 +3594,18 @@
       "awardsshow": "Awards Show",
       "short": "Short"
     }
+  },
+  "widgets": {
+    "upNext": "Up next",
+    "movies": "Movies",
+    "moviesToWatch": "Movies to watch",
+    "caughtUp": "All caught up 🎉",
+    "watchlistEmpty": "Watchlist is empty",
+    "watching": "Watching",
+    "emptyHint": "Open OpenTV to fill this in",
+    "watched": {
+      "one": "{{count}} watched",
+      "other": "{{count}} watched"
+    }
   }
 }

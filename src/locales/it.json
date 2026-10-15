@@ -3594,5 +3594,18 @@
       "awardsshow": "Premiazione",
       "short": "Cortometraggio"
     }
+  },
+  "widgets": {
+    "upNext": "Prossimi episodi",
+    "movies": "Film",
+    "moviesToWatch": "Film da vedere",
+    "caughtUp": "Tutto in pari 🎉",
+    "watchlistEmpty": "Nessun film da vedere",
+    "watching": "Visioni",
+    "emptyHint": "Apri OpenTV per riempirlo",
+    "watched": {
+      "one": "{{count}} visto",
+      "other": "{{count}} visti"
+    }
   }
 }

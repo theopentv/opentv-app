@@ -3594,5 +3594,18 @@
       "awardsshow": "Ödül Töreni",
       "short": "Kısa"
     }
+  },
+  "widgets": {
+    "upNext": "Sıradaki",
+    "movies": "Filmler",
+    "moviesToWatch": "İzlenecek filmler",
+    "caughtUp": "Hepsi izlendi 🎉",
+    "watchlistEmpty": "İzleme listesi boş",
+    "watching": "İzleme",
+    "emptyHint": "Doldurmak için OpenTV'yi aç",
+    "watched": {
+      "one": "{{count}} izlendi",
+      "other": "{{count}} izlendi"
+    }
   }
 }

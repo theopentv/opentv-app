@@ -7,10 +7,12 @@ import React from 'react';
 import { FlexWidget, ImageWidget, TextWidget } from 'react-native-android-widget';
 
 import type { WidgetPayload } from '../src/widget-sync';
+import { widgetLabels } from './labels';
 
 type Props = { movies: WidgetPayload['movies'] };
 
 export function MoviesWidget({ movies }: Props) {
+  const L = widgetLabels();
   return (
     <FlexWidget
       style={{
@@ -23,11 +25,11 @@ export function MoviesWidget({ movies }: Props) {
       }}
       clickAction="OPEN_APP">
       <TextWidget
-        text="MOVIES TO WATCH"
+        text={L.moviesToWatch}
         style={{ fontSize: 12, color: '#F5C518', letterSpacing: 1.2, marginBottom: 8 }}
       />
       {movies.length === 0 ? (
-        <TextWidget text="Watchlist is empty" style={{ fontSize: 14, color: '#EDEDED', marginTop: 8 }} />
+        <TextWidget text={L.watchlistEmpty} style={{ fontSize: 14, color: '#EDEDED', marginTop: 8 }} />
       ) : (
         <FlexWidget style={{ flexDirection: 'row', width: 'match_parent' }}>
           {movies.slice(0, 5).map((m) => (

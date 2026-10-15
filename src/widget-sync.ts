@@ -17,6 +17,8 @@ import { Platform } from 'react-native';
 import { heatmapData, upNextList, moviesToWatch, type UpNextItem, type WatchlistMovie } from '@/widget-data';
 import type { HeatWidgetData } from '@/pure';
 
+import { widgetLabels } from '../widgets/labels';
+
 export const APP_GROUP = 'group.com.insightfy.opentv';
 
 export type WidgetPayload = {
@@ -32,6 +34,8 @@ export type WidgetPayload = {
    * hundred bytes and keeps one payload shape across both platforms.
    */
   heat: Record<string, HeatWidgetData>;
+  /** The widgets' headings and empty states in the app's language — see widgets/labels.ts. */
+  labels: ReturnType<typeof widgetLabels>;
 };
 
 function groupDir(): Directory | null {
@@ -71,6 +75,7 @@ export async function syncWidgets(): Promise<void> {
       })),
       movies: movies.map((m) => ({ ...m, thumb: null })),
       heat: { '1': heatmapData(1), '3': heatmapData(3), '6': heatmapData(6) },
+      labels: widgetLabels(),
     };
 
     if (Platform.OS === 'ios') {

@@ -3862,5 +3862,20 @@
       "awardsshow": "Gala wręczenia nagród",
       "short": "Krótkometrażowy"
     }
+  },
+  "widgets": {
+    "upNext": "Następne",
+    "movies": "Filmy",
+    "moviesToWatch": "Filmy do obejrzenia",
+    "caughtUp": "Wszystko nadrobione 🎉",
+    "watchlistEmpty": "Lista do obejrzenia jest pusta",
+    "watching": "Oglądanie",
+    "emptyHint": "Otwórz OpenTV, aby to wypełnić",
+    "watched": {
+      "one": "{{count}} obejrzany",
+      "few": "{{count}} obejrzane",
+      "many": "{{count}} obejrzanych",
+      "other": "{{count}} obejrzanego"
+    }
   }
 }
