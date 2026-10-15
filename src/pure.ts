@@ -7930,3 +7930,57 @@ export function libraryOwnerFrom(value: string | null | undefined, seedShipped: 
  */
 export const namelessListShow = (it: { kind: string; tvdbId?: number | null; name: string }): boolean =>
   it.kind === 'show' && !!it.tvdbId && (!it.name.trim() || it.name.trim() === String(it.tvdbId));
+
+/**
+ * How the Watch List is ordered. 'recent' is the list as it has always been —
+ * WATCH NEXT, then HAVEN'T WATCHED FOR A WHILE, then not started — and stays
+ * the default; the other two flatten it into one list.
+ */
+export type WatchListSort = 'recent' | 'releaseDate' | 'mostBehind';
+
+export const WATCH_LIST_SORTS: readonly WatchListSort[] = ['recent', 'releaseDate', 'mostBehind'];
+
+export function validWatchListSort(v: string | null | undefined): WatchListSort {
+  return (WATCH_LIST_SORTS as readonly string[]).includes(v ?? '') ? (v as WatchListSort) : 'recent';
+}
+
+/** What a card already knows about itself, which is all the sort may use. */
+export type WatchListEntry = {
+  name: string;
+  lastWatchedAt: string | null;
+  /** any episode watched, ever — a show never started always goes last */
+  started: boolean;
+  /** air date of the episode the card SHOWS; null when nobody knows it */
+  nextAir: string | null;
+  /** the "+140" on the card; null when there is no metadata to count from */
+  left: number | null;
+};
+
+/**
+ * One flat list for the two non-default sorts.
+ *
+ * NOT STARTED GOES LAST WHATEVER THE SORT. A show you followed and never began
+ * is "140 behind" by arithmetic, and putting it above the show you are three
+ * episodes into answers a question nobody asked.
+ *
+ * UNKNOWN IS LAST, NEVER ZERO. A card with no air date or no count yet has not
+ * been measured; sorting it as the oldest or the least behind would claim
+ * something the metadata never said. Ties fall back to recency (most behind) or
+ * the show's name (release date), so the order never shuffles between visits.
+ */
+export function sortWatchList<T extends WatchListEntry>(items: readonly T[], sort: Exclude<WatchListSort, 'recent'>): T[] {
+  const recent = (a: T, b: T) => (b.lastWatchedAt ?? '').localeCompare(a.lastWatchedAt ?? '');
+  const byName = (a: T, b: T) => a.name.localeCompare(b.name);
+  const cmp =
+    sort === 'releaseDate'
+      ? (a: T, b: T) =>
+          (a.nextAir == null ? 1 : 0) - (b.nextAir == null ? 1 : 0) ||
+          (a.nextAir ?? '').localeCompare(b.nextAir ?? '') ||
+          byName(a, b)
+      : (a: T, b: T) =>
+          (a.left == null ? 1 : 0) - (b.left == null ? 1 : 0) ||
+          (b.left ?? 0) - (a.left ?? 0) ||
+          recent(a, b) ||
+          byName(a, b);
+  return [...items].sort((a, b) => (a.started ? 0 : 1) - (b.started ? 0 : 1) || cmp(a, b));
+}

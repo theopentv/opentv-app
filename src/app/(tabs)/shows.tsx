@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
+import { ActionSheet } from '@/components/action-sheet';
 import { Poster } from '@/components/poster';
 import { CheckCircle, EmptyState, Screen, TopTabs } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
@@ -11,13 +12,19 @@ import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
 import { episodeMeta, showMeta } from '@/metadata';
 import { hasOriginalZip } from '@/migrations';
-import { gridGeometry, importLostHistory, seasonAirState } from '@/pure';
+import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
 import { colors, radius, space } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 
 const TABS = ['Watch List', 'Upcoming'] as const;
+
+const SORT_ICON: Record<WatchListSort, 'time-outline' | 'calendar-outline' | 'layers-outline'> = {
+  recent: 'time-outline',
+  releaseDate: 'calendar-outline',
+  mostBehind: 'layers-outline',
+};
 
 function shortDate(iso: string): string {
   const d = new Date(iso.replace(' ', 'T'));
@@ -116,6 +123,11 @@ export default function ShowsScreen() {
   // 12 Oct). Plus keeps it: it is their feature, not an offer.
   const [tonightClosed, setTonightClosed] = useState(() => getMeta('tonightRowClosed') === '1');
   const [tick, setTick] = useState(0);
+  // Read once into state and written back on every change: the rows memo below
+  // depends on it, which is how a new choice redraws the list (React Compiler —
+  // a render-time getMeta would be memoised past the change).
+  const [sort, setSort] = useState<WatchListSort>(() => validWatchListSort(getMeta('watchListSort')));
+  const [sortOpen, setSortOpen] = useState(false);
 
   // re-read the library whenever this tab regains focus — a show deleted or
   // unfollowed on its page must disappear from here immediately
@@ -151,11 +163,42 @@ export default function ShowsScreen() {
     ];
     const notStarted = all.filter((s) => s.lastWatchedAt == null && s.episodesSeen === 0 && s.watched === 0);
 
-    const sections: [string, ShowProgress[]][] = [
-      [t('shows.sectionWatchNext'), watchNext],
-      [t('shows.sectionStale'), stale],
-      [t('shows.sectionNotStarted'), notStarted],
-    ];
+    /*
+     * A CHOSEN SORT IS ONE LIST, NAMED BY ITS PILL. The three sections are an
+     * answer to "what was I watching lately", and re-ordering inside each of
+     * them would answer neither question. The pill carries the sort's name
+     * where WATCH NEXT was, so nobody wonders where their sections went.
+     *
+     * Measured from exactly what the card prints: the air date of the episode
+     * the card points at (via the same `nextCoords`), and the same "+N".
+     */
+    const sections: [string, ShowProgress[]][] =
+      sort === 'recent'
+        ? [
+            [t('shows.sectionWatchNext'), watchNext],
+            [t('shows.sectionStale'), stale],
+            [t('shows.sectionNotStarted'), notStarted],
+          ]
+        : [
+            [
+              t(`watchListSort.${sort}`),
+              sortWatchList(
+                all.map((sp) => {
+                  const next = realNext(sp);
+                  const c = nextCoords(sp, next);
+                  return {
+                    sp,
+                    name: sp.name,
+                    lastWatchedAt: sp.lastWatchedAt,
+                    started: sp.lastWatchedAt != null || sp.episodesSeen > 0 || sp.watched > 0,
+                    nextAir: next === 'unknown' ? null : (episodeMeta(sp.tvdbId, c.season, c.episode)?.air ?? null),
+                    left: episodesLeft(sp),
+                  };
+                }),
+                sort,
+              ).map((x) => x.sp),
+            ],
+          ];
 
     const out: Row[] = [];
     for (const [label, shows] of sections) {
@@ -171,7 +214,7 @@ export default function ShowsScreen() {
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, tick, gridCols]);
+  }, [view, tick, gridCols, sort]);
 
   const markNext = (sp: ShowProgress) => {
     const next = realNext(sp);
@@ -598,17 +641,40 @@ export default function ShowsScreen() {
             );
           }}
         />
-        {/* the list/grid toggle floats at the top right, like the real app */}
-        <Pressable
-          style={styles.gridToggle}
-          hitSlop={10}
-          onPress={() => {
-            const next = view === 'list' ? 'grid' : 'list';
-            setView(next);
-            setMeta('showsView', next);
-          }}>
-          <Ionicons name={view === 'list' ? 'grid' : 'list'} size={22} color={colors.text} />
-        </Pressable>
+        {/* the list/grid toggle floats at the top right, like the real app;
+            the sort sits beside it and turns yellow while it is not the default */}
+        <View style={styles.gridToggle}>
+          <Pressable
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel={t('watchListSort.a11y', { sort: t(`watchListSort.${sort}`) })}
+            onPress={() => setSortOpen(true)}>
+            <Ionicons name="swap-vertical" size={22} color={sort === 'recent' ? colors.text : colors.yellow} />
+          </Pressable>
+          <Pressable
+            hitSlop={10}
+            onPress={() => {
+              const next = view === 'list' ? 'grid' : 'list';
+              setView(next);
+              setMeta('showsView', next);
+            }}>
+            <Ionicons name={view === 'list' ? 'grid' : 'list'} size={22} color={colors.text} />
+          </Pressable>
+        </View>
+        <ActionSheet
+          visible={sortOpen}
+          title={t('filters.sortByTitle')}
+          onClose={() => setSortOpen(false)}
+          actions={WATCH_LIST_SORTS.map((s) => ({
+            text: t(`watchListSort.${s}`),
+            icon: SORT_ICON[s],
+            selected: s === sort,
+            onPress: () => {
+              setSort(s);
+              setMeta('watchListSort', s);
+            },
+          }))}
+        />
         </View>
       ) : upcoming.length === 0 ? (
         <EmptyState
@@ -701,7 +767,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     overflow: 'hidden',
   },
-  gridToggle: { position: 'absolute', end: 14, top: 16 },
+  gridToggle: { position: 'absolute', end: 14, top: 16, flexDirection: 'row', gap: 18 },
   // history cards read as "done": dimmed like the real app
   histCard: { opacity: 0.55 },
   card: {
