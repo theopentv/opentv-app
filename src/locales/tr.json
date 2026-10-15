@@ -1,0 +1,3538 @@
+{
+  "common": {
+    "cancel": "Vazgeç",
+    "done": "Bitti",
+    "remove": "Kaldır",
+    "on": "Açık",
+    "off": "Kapalı",
+    "later": "Sonra",
+    "openSettings": "Ayarları Aç",
+    "ok": "Tamam",
+    "share": "Paylaş",
+    "storageFullTitle": "Telefonun dolu",
+    "storageFullBody": "iPhone'unda ya da Android telefonunda yer kalmadığı için OpenTV bunu kaydedemedi. Ayarlar'dan biraz yer aç, sonra tekrar dene.",
+    "saveFailedTitle": "Kaydedilemedi"
+  },
+  "duration": {
+    "hoursMinutes": "{{h}} sa {{m}} dk",
+    "minutesOnly": "{{m}} dk",
+    "monthsDaysHours": "{{mo}} ay {{d}} g {{h}} sa",
+    "daysHours": "{{d}} g {{h}} sa",
+    "hoursOnly": "{{h}} sa"
+  },
+  "ui": {
+    "dismiss": "KAPAT",
+    "refresh": "YENİLE"
+  },
+  "popcornGame": {
+    "best": "En iyi: {{score}}",
+    "timesUp": "Süre doldu!",
+    "newBest": "Yeni rekor!",
+    "playAgain": "TEKRAR OYNA",
+    "shuffle": "Başka oyun",
+    "snakeOver": "Oyun bitti"
+  },
+  "promptModal": {
+    "save": "Kaydet"
+  },
+  "markPrevPrompt": {
+    "title": "Önceki bölümler işaretlensin mi?",
+    "body": "Önceki tüm bölümleri izlendi olarak işaretlemek ister misin?",
+    "yes": "Evet",
+    "no": "Hayır",
+    "neverForThisShow": "Bu dizi için asla"
+  },
+  "localNotifications": {
+    "movieNightTitle": "Film Gecesi 🍿",
+    "stillWatchingTitle": "Hâlâ izliyor musun?",
+    "popcornTitle": "🍿 Rekorunu kır",
+    "episodeTitle": "{{show}} — yeni bölüm",
+    "seasonFinaleTitle": "{{show}} — sezon finali",
+    "seriesFinaleTitle": "{{show}} — dizi finali",
+    "episodeBody": "{{code}} bugün yayında",
+    "episodeBodyNamed": "{{code}} · {{title}} bugün yayında",
+    "seasonFinaleBody": "🔥 Sezon finali bu akşam!",
+    "seriesFinaleBody": "🎬 Final bölümü bugün yayında",
+    "catchupBody": {
+      "one": "Sezon {{season}}: yalnızca {{count}} bölüm kaldı",
+      "other": "Sezon {{season}}: yalnızca {{count}} bölüm kaldı"
+    },
+    "movieNightBody": {
+      "one": "İzleme listende {{count}} film var",
+      "other": "İzleme listende {{count}} film var"
+    },
+    "inactivityBody": {
+      "one": "Seni bekleyen {{count}} bölüm var",
+      "other": "Seni bekleyen {{count}} bölüm var"
+    },
+    "popcornBody": "Patlamış mısır rekorun: {{score}}. Geçebilir misin?",
+    "wrappedTitle": "{{period}} özetin hazır",
+    "wrappedBody": "Nasıl izlediğine bir bak — Wrapped'ini açmak için dokun."
+  },
+  "updateGate": {
+    "title": "Güncelleme gerekli",
+    "body": "OpenTV'nin bu sürümü artık desteklenmiyor. Takibe devam etmek için App Store'dan güncelle — kitaplığın ve iCloud yedeğin olduğu gibi kalır.",
+    "cta": "APP STORE'DA GÜNCELLE",
+    "suggestTitle": "Yeni sürüm çıktı",
+    "suggestBody": "En yeni özellikler, düzeltmeler ve güvenlik güncellemeleriyle en iyi deneyimi yaşarsın.",
+    "later": "Şimdi değil"
+  },
+  "startupRepair": {
+    "body": "İçe aktardığın kitaplık iyileştiriliyor. Bu, güncellemeden sonra bir kez çalışır ve biraz sürebilir — lütfen uygulamayı açık tut."
+  },
+  "shareCard": {
+    "untitled": "Adsız",
+    "watched": "İZLENDİ",
+    "watchlist": "İZLEME LİSTESİ",
+    "tracked": "TAKİPTE",
+    "iRated": "PUANIM:",
+    "watching": "İzleniyor",
+    "dialogTitle": "Paylaş: {{name}}",
+    "shareMessage": "{{name}} · OpenTV",
+    "buildNeededTitle": "Bir derleme daha gerekli",
+    "buildNeededBody": "Paylaşım kartı yakalama bir sonraki derlemeyle geliyor (npx expo run:ios --device).",
+    "shareFailedTitle": "Paylaşılamadı",
+    "shareMovieTitle": "Filmi paylaş",
+    "shareEpisodeTitle": "Bölümü paylaş",
+    "shareShowTitle": "Diziyi paylaş",
+    "openSourceTagline": "Açık kaynak · verilerin, sonsuza dek",
+    "share": "PAYLAŞ",
+    "shapeCard": "Kart",
+    "shapePost": "Gönderi",
+    "shapeStory": "Hikâye"
+  },
+  "shareProfile": {
+    "title": "Profili paylaş",
+    "dialogTitle": "OpenTV kartını paylaş",
+    "shareMessage": "{{username}} · OpenTV",
+    "episodes": "bölüm",
+    "movies": "film",
+    "ofShowTime": "dizi süresi",
+    "ofMovieTime": "film süresi"
+  },
+  "explore": {
+    "search": "Ara",
+    "pills": {
+      "feed": "Akış",
+      "discover": "Keşfet",
+      "groups": "Gruplar",
+      "activity": "Etkinlik"
+    },
+    "feedNeedsInternetTitle": "Akış için internet gerekli",
+    "feedNeedsInternetCaption": "Trend diziler ve filmler internetten yüklenir. Kendi kitaplığın her zamanki gibi çevrimdışı çalışır.",
+    "discoverCaption": "Dizilere ve filmlere uyum puanlarıyla göz at.",
+    "openDiscover": "Keşfet'i aç",
+    "sortBy": "SIRALA",
+    "popular": "Popüler",
+    "noActivityTitle": "Henüz etkinlik yok",
+    "noActivityCaption": "Takip ettiğin kişiler puan verdiğinde, tepki gösterdiğinde ya da yorum yaptığında burada görünür.",
+    "watchedBy": "İzleyenler",
+    "groups": {
+      "anime": "Anime",
+      "kdrama": "Kore Dizisi",
+      "horror": "Korku",
+      "sitcoms": "Sitcom",
+      "romcom": "Romantik Komedi",
+      "disney": "Disney"
+    }
+  },
+  "allMovies": {
+    "title": "Filmler",
+    "searchPlaceholder": "Filmlerinde ara",
+    "noMatches": "“{{query}}” ile eşleşen film yok.",
+    "sectionWatched": "İZLENDİ",
+    "sectionNotWatched": "İZLENMEDİ",
+    "filters": "FİLTRELER"
+  },
+  "allShows": {
+    "title": "Diziler",
+    "searchPlaceholder": "Dizilerinde ara",
+    "noMatches": "“{{query}}” ile eşleşen dizi yok.",
+    "openShow": "Diziyi aç",
+    "filters": "Filtreler"
+  },
+  "coverPicker": {
+    "noArtwork": "Bu yapım için görsel yok.",
+    "couldNotSetCoverTitle": "Kapak ayarlanamadı",
+    "searchPlaceholder": "Dizi ve film ara",
+    "tabArt": "Görseller",
+    "coverSetThemeFailedTitle": "Banner değişti, renk değişmedi",
+    "coverSetThemeFailedBody": "Renk kaydedilemedi ama banner'ın ayarlandı.",
+    "tabUpload": "Yükle",
+    "uploadTitle": "Kendi GIF'in ya da fotoğrafın",
+    "uploadBody": "Banner'ın için telefonundan bir GIF ya da fotoğraf seç. GIF'ler en fazla 8 MB, fotoğraflar en fazla 5 MB. Sonra görünecek kısmı sürükleyip yakınlaştırarak seç.",
+    "uploadButton": "Fotoğraflar'dan seç",
+    "uploadTooBig": "Dosya çok büyük. GIF'ler en fazla 8 MB, fotoğraflar en fazla 5 MB olabilir.",
+    "takeColours": "Banner'ın renklerini al",
+    "takeColoursSub": "Profilinin renkleri görsele uyar. Kapalıyken mevcut renklerin kalır.",
+    "tabOurs": "OpenTV"
+  },
+  "posterPicker": {
+    "customizeArtwork": "Görseli özelleştir",
+    "postersSection": "POSTERLER",
+    "noPosters": "Bu dizi için poster yok.",
+    "backdropsSection": "ARKA PLANLAR",
+    "noBackdrops": "Bu dizi için arka plan görseli yok."
+  },
+  "badge": {
+    "share": "PAYLAŞ",
+    "shareMessage": "{{title}} — {{desc}} (OpenTV)",
+    "marathonerTitle": "Maratoncu",
+    "marathonerDesc": "{{show}} dizisinden {{hours}} saat içinde {{episodes}} bölüm izledin",
+    "quickWatcherTitle": "Hızlı İzleyici",
+    "quickWatcherDesc": "{{show}} dizisinden {{count}} bölümü yayınlanır yayınlanmaz izledin",
+    "serialWatcherTitle": "Seri İzleyici",
+    "serialWatcherDesc": "{{count}} farklı diziden bölüm izledin",
+    "defaultTitle": "Rozet",
+    "desc": {
+      "votedCharacter": "Bir oyuncuya oy verdin",
+      "gotCommentLike": "Biri yorumunu beğendi",
+      "commentedEpisode": "Bir bölüme yorum yaptın",
+      "createdMeme": "Bir meme oluşturdun",
+      "gaveCommentLike": "Bir yorumu beğendin",
+      "choseEmotion": "Bir duygu seçtin",
+      "usedMobileVersion": "Mobil uygulamayı kullandın",
+      "checkedUserProfile": "Bir kullanıcı profiline baktın",
+      "displayedComments": "Yorumları görüntüledin",
+      "clearedWatchlist": "İzleme listeni temizledin",
+      "reportedSpoiler": "Bir spoiler bildirdin",
+      "usedWebVersion": "Web sürümünü kullandın",
+      "commentedShow": "Bir diziye yorum yaptın",
+      "archivedShow": "Bir diziyi arşivledin"
+    }
+  },
+  "reviewMovies": {
+    "title": "Filmleri gözden geçir",
+    "emptyTitle": "Gözden geçirecek bir şey yok",
+    "emptyCaption": "Kitaplığındaki her film, güvenle tanımlayabildiğimiz bir filmle eşleşti.",
+    "intro": "Dışa aktarman bu filmleri yalnızca adlarıyla verdi ve her adı birden fazla gerçek film taşıyor. En olası olanı seçtik — posterin doğru göründüğünü kontrol et.",
+    "matchedToYear": "{{year}} yapımı filmle eşleşti",
+    "wrong": "Yanlış",
+    "allLookRight": "Hepsi doğru görünüyor ({{count}})"
+  },
+  "listsIndex": {
+    "title": "Listeler",
+    "createNewList": "Yeni liste oluştur",
+    "importedNote": "TV Time dışa aktarmandan içe aktarıldı",
+    "emptyNote": "Henüz liste yok — ilkini oluştur.",
+    "sortTitle": "Listeleri sırala",
+    "sortCustom": "Benim sıram",
+    "sortAZ": "Ad (A–Z)",
+    "sortRecent": "Oluşturma tarihi",
+    "sortSize": "En çok yapım",
+    "reorder": "Yeniden düzenle",
+    "reorderDone": "Bitti",
+    "capReached": "Ücretsiz planda en fazla {{max}} liste",
+    "capBody": "{{count}} / {{max}} liste kullanıyorsun. OpenTV Plus sınırı kaldırır.",
+    "hiddenBadge": "Gizli",
+    "profileCap": "Profilinde ilk {{count}} liste görünür. Hangileri olacağını sürükleyerek seç.",
+    "joinWithCode": "Kodla katıl"
+  },
+  "listCreate": {
+    "editTitle": "Listeyi düzenle",
+    "createTitle": "Yeni liste oluştur",
+    "nameRequiredTitle": "Ad gerekli",
+    "nameRequiredBody": "Listene bir ad ver.",
+    "nameTakenTitle": "Bu ad alınmış",
+    "nameTakenBody": "Bu adda bir listen zaten var — başka bir ad seç.",
+    "nameLabel": "Ad",
+    "namePlaceholder": "Yeni liste",
+    "descriptionLabel": "Açıklama",
+    "descriptionPlaceholder": "(isteğe bağlı)",
+    "hideFromProfile": "Profilde gizle 🔒",
+    "saveChanges": "Değişiklikleri kaydet",
+    "createList": "Liste oluştur",
+    "kindJustMe": "Sadece ben",
+    "kindWithFriends": "Arkadaşlarla",
+    "kindHint": "Ortak liste, başkalarının da ekleme yapabildiği listedir. Kodu verdiğin herkes katılabilir."
+  },
+  "listAddRemove": {
+    "searchPlaceholder": "Dizilerinde ve filmlerinde ara",
+    "kindSeries": "Dizi",
+    "kindMovie": "Film",
+    "emptyNoMatches": "Kitaplığında eşleşme yok.",
+    "emptySearchToAdd": "Bu listeye dizi ve film eklemek için kitaplığında ara."
+  },
+  "listDetail": {
+    "addShowsMovies": "Dizi ve film ekle",
+    "dragHint": "POSTERİ YENİ YERİNE SÜRÜKLE",
+    "editHint": "KALDIRMAK İÇİN ✕ SİMGESİNE DOKUN · YUKARIDAKİ BUTONLA EKLE",
+    "sortBy": "SIRALA",
+    "userOrder": "Kullanıcı sırası",
+    "removeConfirmTitle": "Listeden kaldır",
+    "removeConfirmBody": "\"{{item}}\", \"{{list}}\" listesinden kaldırılsın mı?",
+    "itemsCountPartial": "{{shown}} / {{total}} öğe · gerisi hiç takip edilmediği için TV Time dışa aktarımına adları eklenmedi",
+    "itemsCountFull": {
+      "one": "{{count}} öğe · senin sıranla",
+      "other": "{{count}} öğe · senin sıranla"
+    }
+  },
+  "setupProfile": {
+    "title": "Sana ne diyelim?",
+    "sub": "Sadece görünen ad — telefonunda kalır ve istediğin zaman değiştirebilirsin. Kullanıcı adı yalnızca topluluğa katılırsan gelir.",
+    "placeholder": "Adın",
+    "startTracking": "TAKİBE BAŞLA",
+    "freshLibraryTitle": "Sıfırdan bir kitaplık mı?",
+    "freshLibraryBody": "Bu, telefondaki mevcut kitaplığı siler. Saklamak istiyorsan önce Ayarlar'dan dışa aktar.",
+    "eraseAndStart": "Sil ve sıfırdan başla",
+    "addPhoto": "Fotoğraf ekle (isteğe bağlı)",
+    "changePhoto": "Fotoğrafı değiştir"
+  },
+  "filters": {
+    "sortByTitle": "Sırala",
+    "sortLastWatched": "Son izlenen",
+    "sortLastAdded": "Son eklenen",
+    "sortAlpha": "Alfabetik",
+    "progressTitle": "İlerleme",
+    "progressWatching": "İzliyorum",
+    "progressNotStarted": "Başlamadım",
+    "progressUpToDate": "Güncel",
+    "progressFinished": "Bitti",
+    "progressStopped": "Bıraktım",
+    "genreTitle": "Tür",
+    "networkTitle": "Kanal",
+    "decadeTitle": "On yıl",
+    "ratingTitle": "Puanın",
+    "runtimeTitleShow": "Bölüm süresi",
+    "runtimeTitleMovie": "Süre",
+    "watchedYearTitle": "İzlendiği yıl",
+    "runtimeShort": "Kısa",
+    "runtimeStandard": "Standart",
+    "runtimeLong": "Uzun",
+    "ratingUnrated": "Puanlanmamış",
+    "ratingMin": {
+      "one": "{{count}} yıldız ve üstü",
+      "other": "{{count}} yıldız ve üstü"
+    },
+    "resultShows": {
+      "one": "{{n}} / {{count}} dizi",
+      "other": "{{n}} / {{count}} dizi"
+    },
+    "resultMovies": {
+      "one": "{{n}} / {{count}} film",
+      "other": "{{n}} / {{count}} film"
+    },
+    "presetsTitle": "Hazır ayarlar",
+    "presetsHint": "Sık kullandığın bir kombinasyonu kaydet, tek dokunuşla geri getir.",
+    "savePreset": "Hazır ayar kaydet",
+    "presetNameTitle": "Bu hazır ayara ad ver",
+    "presetRename": "Yeniden adlandır",
+    "presetDelete": "Sil",
+    "showMore": "Daha fazla",
+    "showLess": "Daha az",
+    "reset": "SIFIRLA",
+    "apply": "UYGULA",
+    "airedTitle": "Sezon",
+    "airedFull": "Tamamı yayınlandı",
+    "airedStill": "Hâlâ yayında"
+  },
+  "group": {
+    "defaultName": "Grup",
+    "topic1": "Sosyal özellikler geldiğinde üyelerin konuları burada görünecek.",
+    "topic2": "O zamana kadar bu sayfa grubun tam düzenini gösterir.",
+    "discussWith": "{{name}} hakkında diğer hayranlarla konuş — konular, anketler ve iddialı yorumlar.",
+    "join": "○ Katıl",
+    "sortBy": "SIRALA",
+    "newest": "En yeni"
+  },
+  "findPeople": {
+    "title": "Takip edecek kişiler bul",
+    "findX": "X'teki arkadaşlarını bul",
+    "findContacts": "Kişilerini bul",
+    "soonValue": "yakında"
+  },
+  "popcorn": {
+    "title": "Patlamış Mısır",
+    "hint": "Kovayı kaydır. Mısırları yakala. Hepsi bu."
+  },
+  "favorites": {
+    "addRemoveShows": "Dizi ekle/kaldır",
+    "addRemoveMovies": "Film ekle/kaldır",
+    "sortBy": "SIRALA",
+    "userOrder": "Kullanıcı sırası",
+    "reorder": "Yeniden sırala",
+    "dragHint": "POSTERİ YENİ YERİNE SÜRÜKLE",
+    "profileCap": "Profilinde ilk {{count}} tanesi görünür. Hangileri olacağını sürükleyerek seç.",
+    "notOnProfile": "PROFİLİNDE YOK",
+    "shareThese": "Bunları paylaş",
+    "shareRecent": "İzlediklerimi paylaş"
+  },
+  "markAs": {
+    "title": "İşaretle…",
+    "rewatched": "Yeniden izlendi",
+    "changeDate": "İzleme tarihi…",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "pickDate": "Tarih seç…"
+  },
+  "listMenu": {
+    "editDetails": "Ayrıntıları düzenle",
+    "reorderItems": "Öğeleri yeniden sırala",
+    "delete": "Sil",
+    "deleteListTitle": "Listeyi sil",
+    "deleteConfirmBody": "\"{{name}}\" silinsin mi? Bu geri alınamaz."
+  },
+  "following": {
+    "followersTitle": "Takipçiler",
+    "followingTitle": "Takip edilenler",
+    "followersSection": "Takipçiler · {{count}}",
+    "followingSection": "Takip ettiklerin · {{count}}",
+    "unnamedNote": "+{{count}} kişi daha — seni dışa aktarımın bildirim geçmişi başlamadan önce takip ettikleri için adları dahil edilmedi.",
+    "defaultMemberName": "TV Time üyesi",
+    "inviteMessage": "OpenTV'de bana katıl — tüm TV Time geçmişimi buraya taşıdım. {{name}} 👋",
+    "invite": "Davet et"
+  },
+  "fixMatch": {
+    "title": "Eşleşmeyi düzelt",
+    "noTitleAlertBody": "Bu ekran eşleştirilecek bir yapım olmadan açıldı. Dizi sayfasından yeniden aç.",
+    "applyFailedTitle": "Eşleşme uygulanamadı",
+    "subShow": "“{{name}}” için doğru diziyi seç — posteri, bölüm listeleri ve ayrıntıları izleme geçmişine bağlanır. Aslında tek seferlik bir TV filmiyse Filmler'e geç.",
+    "subMovie": "“{{name}}” için doğru filmi seç — posteri, yılı ve ayrıntıları izleme geçmişine bağlanır.",
+    "searchPlaceholderShow": "Dizi ve film ara",
+    "searchPlaceholderMovie": "Film ara",
+    "tabShows": "Diziler",
+    "tabMovies": "Filmler",
+    "emptyNoTvMovies": "Eşleşen TV filmi yok — çoğu yapım Diziler altında.",
+    "emptyNoShowMatches": "Eşleşen dizi yok — tek seferlik bir TV filmiyse Filmler'e bak.",
+    "emptyNoResults": "Sonuç yok — farklı bir yazım ya da orijinal adı dene.",
+    "kindShow": "Dizi",
+    "kindMovie": "Film",
+    "sourceTvdb": "TheTVDB",
+    "sourceTmdb": "TMDB"
+  },
+  "addToList": {
+    "title": "Listeye ekle",
+    "createNewList": "Yeni liste oluştur",
+    "emptyLists": "Henüz liste yok — ilkini yukarıdan oluştur.",
+    "newListTitle": "Yeni liste",
+    "nameTakenTitle": "Bu ad alınmış",
+    "nameTakenBody": "Bu adda bir listen zaten var."
+  },
+  "notifyOptin": {
+    "perkNewEpisode": "Takip ettiğin bir dizinin yeni bölümü yayınlandığında",
+    "perkFinale": "Sezon ya da dizi finali olduğunda",
+    "perkMovieNight": "Cuma akşamı izleme listende bir film olduğunda",
+    "title": "Hiçbir bölümü kaçırma",
+    "sub": "OpenTV sana haber verebilir:",
+    "privacy": "Hatırlatıcılar yayın tarihlerine göre bu cihazda planlanır. Ne izlediğine dair hiçbir şey telefonundan çıkmaz.",
+    "turnOnReminders": "HATIRLATICILARI AÇ",
+    "notNow": "Şimdi değil"
+  },
+  "comments": {
+    "title": "Yorumlar",
+    "sortBy": "SIRALA",
+    "mostRecent": "En yeni",
+    "emptyText": "Henüz yorum yok.",
+    "replyNote": "Yanıtın",
+    "deleteComment": "Yorumu sil",
+    "copyLink": "Bağlantıyı kopyala",
+    "saveImageTitle": "Görseli kaydet",
+    "saveImageBody": "Fotoğraf arşivine kaydetme gelecek bir sürümde geliyor.",
+    "more": "Daha fazla…",
+    "shareMessage": "{{entity}}: {{text}} — OpenTV ile",
+    "archiveNote": "Bunlar TV Time'da yazdığın yorumlar. Bu telefonda duruyorlar.",
+    "showAll": "Tümü",
+    "onlyMine": "Benimkiler",
+    "emptyWritable": "Henüz yorum yok — ilkini sen yaz.",
+    "writePlaceholder": "Yorum yaz…",
+    "localImageNote": "Bu telefonda kalır. Topluluğa katılırsan göndermek için OpenTV Plus gerekir.",
+    "privateNote": {
+      "one": "{{count}} yorum · yalnızca sen görebilirsin",
+      "other": "{{count}} yorum · yalnızca sen görebilirsin"
+    },
+    "wroteTitle": "{{count}} yorum yazdın",
+    "wroteBody": "Henüz kimse tek kelimesini okumadı. Katılırsan görünür olurlar — eski yorumların sen aksini söylemedikçe gizli kalır.",
+    "wroteAction": "Kimler burada, gör",
+    "joinCta": "Topluluğa katıl"
+  },
+  "about": {
+    "version": "Sürüm {{version}}",
+    "intro": "TV Time'ın açık kaynaklı yuvası. Dizileri ve filmleri takip et, tüm TV Time geçmişini içe aktar ve istediğin zaman her şeyi dışa aktar — kitaplığın sana ait.",
+    "privacyTitle": "Gizliliğin",
+    "privacyBody": "Kitaplığın, izleme geçmişin, oyların, yorumların ve fotoğrafların cihazındaki yerel bir veritabanında durur. Topluluğa katılmadıkça ya da bir yedeği açmadıkça hiçbir şey hiçbir yere gönderilmez. Katılmak yalnızca profilinde görünenleri gönderir: yorumların ve puanların, toplamların ve hangi dizileri ve filmleri izlediğin. Tarihleriyle birlikte bölüm bölüm geçmişin, yalnızca OpenTV Yedek veya Senkronizasyon'u açarsan bu telefondan çıkar; bunlar senin için sunucumuzda bir kopya tutar. iCloud ve Google Drive yedekleri kendi hesabına gider. Bunun dışında uygulama yalnızca görseller ve dizi bilgileri için TheTVDB ve TMDB'ye istek gönderir — hesap yok, analiz yok, takip yok.",
+    "dataSourcesTitle": "Veri kaynakları",
+    "dataSourcesBody": "Dizi ve film bilgileri ile görseller — bölüm listeleri, adlar, yayın tarihleri, görseller, türler ve oyuncular — TV Time'ın da üzerine kurulduğu veritabanı olan TheTVDB'den gelir. Eksik bilgileri oraya eklemeyi ya da onları desteklemek için abone olmayı düşünebilirsin.",
+    "tvdbLink": "thetvdb.com",
+    "supportTvdb": "TheTVDB'yi destekle",
+    "tmdbNote": "Bu ürün TMDB API'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır. TMDB; yayın platformu bilgilerini, benzer dizileri ve yıldız puanlarını sağlar.",
+    "tmdbLink": "themoviedb.org",
+    "linksTitle": "Bağlantılar",
+    "privacyPolicy": "Gizlilik politikası",
+    "terms": "Kullanım Koşulları",
+    "rateApp": "OpenTV'yi puanla"
+  },
+  "movieFilters": {
+    "progressWatched": "İzlendi",
+    "progressNotWatched": "İzlenmedi"
+  },
+  "editProfile": {
+    "title": "Profili düzenle",
+    "save": "KAYDET",
+    "add": "Ekle",
+    "choosePhoto": "Profil fotoğrafı seç",
+    "chooseCover": "Kapak fotoğrafı seç",
+    "displayName": "Görünen ad",
+    "personalInfo": "Kişisel bilgiler",
+    "birthYear": "Doğum yılı",
+    "gender": "Cinsiyet",
+    "genderMale": "Erkek",
+    "genderFemale": "Kadın",
+    "genderNonBinary": "Non-binary",
+    "genderPreferNotSay": "Belirtmek istemiyorum",
+    "country": "Ülke",
+    "photoBuildNeededBody": "Fotoğraf seçme bir sonraki derlemeyle geliyor (npx expo run:ios --device).",
+    "couldNotSetPhotoTitle": "Fotoğraf ayarlanamadı",
+    "visibility": {
+      "title": "Profilinde insanların gördükleri",
+      "note": "Yayınlamak istemediğin her şeyi kapat. Kitaplığınla ilgili geri kalan her şey her durumda bu telefonda kalır.",
+      "activitySub": "Yalnızca kendi profilinde — ısı haritası asla yayınlanmaz.",
+      "failedTitle": "Kaydedilemedi",
+      "comments": "Yorumlar",
+      "freeNote": "Tek tek bölümleri gizlemek OpenTV Plus ile. Tüm profilini gizlemek ücretsiz: Ayarlar → Profili gizli yap."
+    },
+    "handle": "Kullanıcı adı",
+    "adjustCover": "Banner'ı ayarla",
+    "themeColours": "Tema renkleri",
+    "themeColoursSub": "Kendi renklerini seç. Yeni bir banner seçersen renkler yine ondan alınır.",
+    "decoration": "Avatar süsü",
+    "decorationFree": "Kalsın ya da çıkar. OpenTV Plus ile istediğin süsü seç.",
+    "decorationPlus": "İstediğin süsü seç, hangi mevsim olursa olsun.",
+    "lookSection": "Profilinin görünümü",
+    "arrange": "Blokları düzenle",
+    "arrangeSub": "Profilindeki blokları taşı, boyutlandır ya da yer değiştir — veya oradaki herhangi bir bloğa basılı tut.",
+    "aboutSection": "Hakkında"
+  },
+  "welcome": {
+    "pages": {
+      "discover": "Yeni favori diziyi keşfet",
+      "remember": "Kaldığın yeri hatırla",
+      "privacy": "Verilerin cihazında kalır"
+    },
+    "openSource": "TV Time'ın açık kaynaklı yuvası",
+    "getStarted": "BAŞLA",
+    "icloudOffTitle": "iCloud Drive hâlâ kapalı",
+    "icloudOffBody": "iCloud'a giriş yap ve iCloud Drive'ın açık olduğundan emin ol, sonra tekrar kontrol et.",
+    "turnOnIcloudTitle": "iCloud Drive'ı aç",
+    "turnOnIcloudBody": "OpenTV, kitaplığının yedeğini kendi iCloud Drive'ında tutar; böylece uygulamayı silsen bile verilerin silinmez. Devam etmek için iCloud'a giriş yap ve iCloud Drive'ı aç.",
+    "icloudSteps": "Ayarlar → adın → iCloud → iCloud Drive",
+    "openSettings": "AYARLARI AÇ",
+    "recheckIcloud": "AÇTIM — TEKRAR KONTROL ET",
+    "continueWithoutBackup": "YEDEKSİZ DEVAM ET",
+    "icloudLaterNote": "iCloud'u sonra da açabilirsin — açıldığında kitaplığın otomatik yüklenir.",
+    "continueWith": "Şununla devam et",
+    "continueAs": "{{name}} OLARAK DEVAM ET",
+    "defaultName": "Ben",
+    "restoreFromIcloud": "ICLOUD'DAN GERİ YÜKLE",
+    "importTvTimeData": "VERİLERİNİ İÇE AKTAR",
+    "startFresh": "SIFIRDAN BAŞLA",
+    "noAccountIos": "Hesap gerekmez — verilerin cihazında ve kendi iCloud'unda durur.",
+    "noAccountAndroid": "Hesap gerekmez — verilerin cihazında kalır.",
+    "languageButtonLabel": "Dili değiştir",
+    "restoreFromDrive": "Google Drive'dan geri yükle",
+    "noDriveBackupTitle": "Bu Drive'da yedek yok",
+    "noDriveBackupBody": "Bu Google hesabının Drive'ında OpenTV yedeği yok. Başka bir hesap dene ya da sıfırdan başla.",
+    "driveTitle": "Google Drive'a yedekle",
+    "driveBody": "Kitaplığın bu telefonda duruyor. Kendi Google Drive'ındaki bir kopya sayesinde uygulamayı silsen ya da telefonu kaybetsen bile kaybolmaz. Ücretsiz, OpenTV hesabı gerekmez.",
+    "driveLaterNote": "Daha sonra Ayarlar → Yedek'ten açabilirsin.",
+    "icloudOffNote": "iCloud Drive kapalı — iCloud yedeğini geri yüklemek için aç."
+  },
+  "language": {
+    "title": "Dil",
+    "system": "Telefonla aynı",
+    "restartTitle": "Neredeyse bitti",
+    "restartBody": "Geçişi tamamlamak için OpenTV'yi kapatıp yeniden aç. Düzenin yönü değişmesi gerekiyor ve bu yalnızca açılışta oluyor.",
+    "restartConfirm": "Anladım"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "tabs": {
+      "account": "Sen",
+      "app": "Uygulama",
+      "data": "Kitaplık"
+    },
+    "account": {
+      "identificationSection": "Kimlik",
+      "memberSince": "Üyelik tarihi",
+      "yourDataSection": "Verilerin",
+      "exportData": "Verilerimi dışa aktar",
+      "exportDataSub": "TV Time biçiminde ZIP — istediğin zaman geri içe aktarabilirsin",
+      "privacySection": "Gizlilik",
+      "privateProfile": "Profili gizli yap",
+      "privateProfileSub": "Yeni takipçiler önce istek gönderir, kararı sen verirsin. Profilini sadece takipçilerin görür.",
+      "privateFailedTitle": "Bu değiştirilemedi",
+      "logOut": "Çıkış yap",
+      "logOutNote": "Çıkış yapınca kitaplığın bu cihazda kalır — karşılama ekranından tekrar girebilirsin.",
+      "logOutConfirmTitle": "Çıkış yapılsın mı?",
+      "logOutConfirmBody": "Kitaplığın bu cihazda güvende kalır — sadece karşılama ekranına dönersin.",
+      "hideUnseenSpoilers": "İzlemediklerin için spoiler'ları gizle",
+      "hideUnseenSpoilersSub": "Henüz izlemediğin diziler ve filmlerle ilgili yorumları gizler.",
+      "personalSection": "Sana özel",
+      "spoilersSection": "Spoiler'lar",
+      "accountRow": "Hesap",
+      "accountRowSub": "Yedekleme ve senkronizasyon için gerekir. Seni bulunabilir yapmaz.",
+      "accountSection": "Hesap",
+      "accountRowSignedInSub": "Plus, yedekleme ve senkronizasyon. Hiçbir şey herkese açık değil.",
+      "deleteAccountRow": "Hesabımı sil",
+      "deleteAccountRowSub": "Hesabını ve paylaştığın her şeyi sunucudan kaldırır"
+    },
+    "app": {
+      "notificationsSection": "Bildirimler",
+      "newEpisodeReminders": "Yeni bölüm hatırlatıcıları",
+      "newEpisodeRemindersSub": "Yayın tarihlerine göre cihazda planlanır",
+      "finaleReminders": "Sezon ve dizi finalleri",
+      "finaleRemindersSub": "Sıradan bir hatırlatma yerine finali öne çıkarır",
+      "almostDone": "Az kaldı",
+      "almostDoneSub": "Bir sezonu bitirmene bir iki bölüm kaldığında",
+      "movieNight": "Film gecesi",
+      "movieNightSub": "Cuma akşamı, izleme listen boş değilse",
+      "comeBackReminders": "Geri dön hatırlatıcıları",
+      "comeBackRemindersSub": "Bir hafta uzak kalınca, sadece bekleyen bölümler varsa",
+      "popcornChallenges": "Patlamış mısır meydan okumaları",
+      "popcornChallengesSub": "Cumartesi öğleden sonraları — kendi rekorunu kırmaya davet eder",
+      "notificationsOffTitle": "Bildirimler kapalı",
+      "notificationsOffBody": "Bölüm hatırlatmaları almak için sistem Ayarları'ndan OpenTV bildirimlerine izin ver.",
+      "themeSection": "Tema",
+      "startTab": "Açılış sekmesi",
+      "startTabSub": "Uygulamanın hangi sekmede açılacağı",
+      "metadataSection": "Meta veriler",
+      "tvdbKey": "TheTVDB anahtarı",
+      "tvdbKeyOwnSub": "Kendi anahtarın kullanılıyor",
+      "tvdbKeyFailedSub": "Ortak anahtar çalışmıyor — kendi anahtarını ekle",
+      "tvdbKeyDefaultSub": "İsteğe bağlı — ortak anahtar çalışmazsa eşleştirmeyi iyileştirir",
+      "undoMigration": "Bölüm numaralandırma güncellemesini geri al",
+      "undoMigrationSub": "Geçmişini {{date}} tarihindeki haline geri yükle",
+      "undoMigrationConfirmTitle": "Bölüm numaralandırma güncellemesi geri alınsın mı?",
+      "undoMigrationConfirmBody": "İzleme geçmişin güncellemeden önceki haline birebir döner — {{date}} tarihinde {{count}} satır kaydedildi.\n\nO tarihten sonra izlendi olarak işaretlediğin her şey kaybolur. Sezonlar da eski görünümüne döner.",
+      "undoMigrationRestore": "Geri yükle",
+      "undoMigrationDelete": "Kayıtlı kopyayı sil",
+      "undoMigrationRestoredTitle": "Geri yüklendi",
+      "undoMigrationRestoredBody": "Geçmişin güncelleme öncesi haline döndü. Her yerde görmek için uygulamayı yeniden başlat.",
+      "undoMigrationRestoreFailedTitle": "Geri yüklenemedi",
+      "undoMigrationRestoreFailedBody": "Kayıtlı kopya okunamadı. Mevcut verilerin değişmedi.",
+      "resumedImportSummary": "Son içe aktarmanın özetini gör",
+      "resumedImportSummarySub": "Arka planda bir içe aktarma tamamlandı — neler geldiğini ve ilgilenmen gerekenleri gör",
+      "reviewMatchedMovies": "Eşleşen filmleri gözden geçir",
+      "reviewMatchedMoviesSub": {
+        "one": "Bir film başka bir filmle aynı adı taşıyor — doğru seçip seçmediğimize bak",
+        "other": "{{count}} film başka bir filmle aynı adı taşıyor — doğru seçip seçmediğimize bak"
+      },
+      "refreshMetadata": "Tüm meta verileri yenile",
+      "refreshMetadataSub": "Her dizinin bölümlerini, görsellerini ve oyuncularını yeniden indir",
+      "refreshingProgress": "Yenileniyor… {{done}}/{{total}}",
+      "refreshFailedTitle": "Yenileme başarısız",
+      "refreshFailedBody": "Meta veri hizmetine ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
+      "refreshPartialTitle": "Kısmen yenilendi",
+      "refreshPartialBody": "{{ok}}/{{total}} dizi güncellendi. Kalanlar sonraki birkaç açılışta kendiliğinden tamamlanır.",
+      "funSection": "Eğlence",
+      "popcornGame": "Patlamış mısır oyunu",
+      "popcornGameSub": "En yüksek skor: {{score}}",
+      "aboutSection": "Hakkında",
+      "generalSection": "Genel",
+      "onThisDay": "Bugün geçmişte",
+      "onThisDaySub": "Kendi geçmişinden bir anı, profilinde ve akşamları",
+      "haptics": "Titreşim",
+      "hapticsSub": "Bir şeyi izlendi olarak işaretlediğinde ya da puanladığında kısa bir titreşim.",
+      "communitySection": "Topluluk",
+      "reminderTime": "Hatırlatma saati",
+      "reminderTimeSub": "Yeni bölüm hatırlatmasının geleceği saat",
+      "theme": "Tema",
+      "themeSub": "Açık, koyu ya da telefonuna uysun",
+      "theme_light": "Açık",
+      "theme_dark": "Koyu",
+      "theme_system": "Cihaz",
+      "notificationsRowSub": "Yeni bölümler, finaller ve kapatabileceğin diğerleri.",
+      "advanced": "Gelişmiş",
+      "advancedSub": "Kendi TheTVDB anahtarın, görselleri yenileme ve kurtarma araçları",
+      "linksSection": "Bizi bul",
+      "seasonal": "Mevsimlik süslemeler",
+      "seasonalSub": "Profilin için Cadılar Bayramı ve Noel süslemeleri ile temaları"
+    },
+    "data": {
+      "icloudSection": "iCloud yedeği",
+      "icloudDrive": "iCloud Drive",
+      "icloudDriveSub": "Uygulamayı silsen bile kitaplığın kalır",
+      "lastBackedUp": "Son yedekleme",
+      "never": "Hiç",
+      "backupNow": "Şimdi yedekle",
+      "backupNowSub": "OpenTV Backup.zip dosyasını Dosyalar → iCloud Drive → OpenTV'ye yazar",
+      "icloudOffTitle": "iCloud Drive kapalı",
+      "icloudOffBody": "Ayarlar'dan iCloud'a giriş yapıp iCloud Drive'ı aç, sonra tekrar dene. O zamana kadar bir kopyayı güvende tutmak için \"Verilerimi dışa aktar\"ı kullan.",
+      "backedUpTitle": "Yedeklendi ✓",
+      "backedUpBody": "Kitaplığın iCloud Drive'ında güvende — uygulamayı silsen bile kalır.",
+      "backupFailedTitle": "Yedekleme başarısız",
+      "yourDataSection": "Verilerin",
+      "import": "Verilerini içe aktar",
+      "importSub": "Tüm geçmişini getir",
+      "export": "Verilerimi dışa aktar",
+      "exportSub": "TV Time biçiminde ZIP",
+      "exportFailedTitle": "Dışa aktarma başarısız",
+      "backupJsonShareTitle": "OpenTV verilerini yedekle",
+      "backupJson": "JSON olarak yedekle",
+      "backupJsonSub": "Ham tam yedek",
+      "upcomingSection": "Yakında",
+      "hideWatched": "İzlenen bölümleri gizle",
+      "dangerSection": "Tehlikeli bölge",
+      "eraseAll": "Tüm verileri sil",
+      "eraseAllSub": "Yerel veritabanını siler. Geri alınamaz.",
+      "eraseAllConfirmTitle": "Tüm veriler silinsin mi?",
+      "eraseAllConfirmBodyIcloud": "Bu, tüm kitaplığını bu cihazdan siler. iCloud yedeğin kalır — karşılama ekranından geri yükleyebilirsin.",
+      "eraseAllConfirmBodyNoIcloud": "Bu, tüm kitaplığını bu cihazdan siler. Saklamak istiyorsan önce bir kopyasını dışa aktar.",
+      "eraseAllConfirmAction": "Sil",
+      "driveSection": "Google Drive",
+      "driveBackup": "Google Drive'a yedekle",
+      "driveBackupSub": "Tüm kitaplığın ve fotoğrafları, kendi Drive'ında. Burada giriş yapmak seni topluluğa katmaz.",
+      "driveBackupNowSub": "OpenTV Backup.zip dosyasını Google Drive'ına yazar",
+      "driveBackedUpBody": "Kitaplığın Google Drive'da güvende.",
+      "driveFailedTitle": "Google Drive'a bağlanılamadı",
+      "driveFailedBody": "Hiçbir şey yedeklenmedi. Bağlantını kontrol edip tekrar dene.",
+      "driveUnauthorised": "Uygulamanın bu kopyasının Google'a giriş yetkisi yok. Drive yedeklemesinin çalışması için imza sertifikasının kaydedilmesi gerekir — mağaza sürümünde bu yapılmış olur.",
+      "driveNoPlay": "Bu telefonda Google Play hizmetleri eksik ya da güncel değil, bu yüzden Drive yedeklemesi giriş yapamıyor.",
+      "serverSection": "Sunucu",
+      "server": "Topluluk sunucusu",
+      "serverSub": "Yorumların, puanların ve profillerin bulunduğu yer",
+      "serverOfficial": "Resmi",
+      "serverCustom": "Kendi sunucun",
+      "serverBadTitle": "Bu adres çalışmaz",
+      "serverBadBody": "Tam bir https:// adresi kullan, ör. https://opentv.example.com",
+      "serverConfirmTitle": "Sunucu değiştirilsin mi?",
+      "serverConfirmBody": "Topluluktan çıkış yapılacak. Kitaplığın, izleme geçmişin ve yedeklerin olduğu gibi kalır.",
+      "serverConfirmAction": "Değiştir ve çıkış yap",
+      "crashReports": "Çökme raporları",
+      "crashReportsSub": "Uygulama çöktüğünde bir hata izi gönderir — kitaplığından asla bir şey göndermez. Kapalıysa bir sonraki çökme kimseye ulaşmaz.",
+      "backupFailedSub": "Son otomatik yedeklemen tamamlanmadı. Bu telefondan hiçbir şey kaybolmadı ama dışarıda güncel bir kopya yok. Genelde sebebi iCloud'un dolu olmasıdır."
+    },
+    "about": {
+      "title": "OpenTV hakkında",
+      "sub": "Sürüm, veri kaynakları, gizlilik"
+    },
+    "backup": {
+      "title": "Yedekleme",
+      "intro": "Kitaplığın bu telefonda duruyor. Bir kopyasını başka bir yerde tutmanın yolları şunlar.",
+      "automaticSection": "Otomatik",
+      "cloudSection": "Cihazların arasında",
+      "yourselfSection": "Kendi elindeki kopya"
+    }
+  },
+  "stats": {
+    "title": "İstatistikler",
+    "tabs": {
+      "shows": "Diziler",
+      "movies": "Filmler"
+    },
+    "comingSoonTitle": "Çok yakında",
+    "comingSoonBody": "Takip ettiğin kişilerle karşılaştırma hesaplarla birlikte geliyor.",
+    "compareWithFollowers": "TAKİP ETTİKLERİNLE KARŞILAŞTIR",
+    "clock": {
+      "months": "AY",
+      "days": "GÜN",
+      "hours": "SAAT",
+      "monthsShort": "ay",
+      "daysShort": "g",
+      "hoursShort": "sa"
+    },
+    "axis": {
+      "perWeek": "HAFTALIK",
+      "perMonth": "AYLIK",
+      "episodes": "BÖLÜM",
+      "movies": "FİLM",
+      "hours": "SAAT"
+    },
+    "headers": {
+      "show": "Dizi",
+      "episodes": "Bölümler",
+      "hours": "Saat",
+      "genre": "Tür",
+      "shows": "Diziler",
+      "network": "Kanal",
+      "rating": "Puan",
+      "movies": "Filmler",
+      "character": "Karakter"
+    },
+    "character": "Karakter",
+    "allTime": "TÜM ZAMANLAR",
+    "hoursLast7Days": {
+      "one": "Son 7 günde {{count}} saat",
+      "other": "Son 7 günde {{count}} saat"
+    },
+    "countLast7Days": "Son 7 günde {{count}}",
+    "caughtUp": "Her şeyi yakaladın!",
+    "neverAtThisPace": "Bu hızla asla 😅",
+    "votedRatings": "Verilen puanlar",
+    "earnedLikes": "Kazanılan beğeniler",
+    "characterVotes": "Karakter oyları",
+    "timeToWatch": "İzleme süresi",
+    "hoursLabel": "saat",
+    "futureWatchTime": "Gelecekteki izleme süresi",
+    "catchingUpTitle": "Ne kadar hızlı yetişiyorsun?",
+    "shows": {
+      "timeSpent": "Bölüm izlemeye harcanan süre",
+      "episodesWatched": "İzlenen bölümler",
+      "biggestMarathons": "En büyük maratonlar",
+      "addedShows": "Eklenen diziler",
+      "inProduction": "{{count}} dizi yapımda",
+      "topGenres": "En sevilen dizi türleri",
+      "topNetworks": "En çok izlenen dizi kanalları",
+      "onShows": {
+        "one": "{{count}} dizide",
+        "other": "{{count}} dizide"
+      },
+      "mostVotedRating": "Dizi başına en çok oylanan puan",
+      "mostVotedCharacters": "Dizi başına en çok oylanan karakterler",
+      "comments": "Dizi yorumları",
+      "likesPerComment": {
+        "one": "Dizi yorumu başına {{count}} beğeni",
+        "other": "Dizi yorumu başına {{count}} beğeni"
+      },
+      "episodeComments": "Bölüm yorumları",
+      "remaining": "Kalan bölümler",
+      "onStartedShows": {
+        "one": "başladığın {{count}} dizide",
+        "other": "başladığın {{count}} dizide"
+      },
+      "upcoming": "Yaklaşan bölümler",
+      "pace": "Haftada {{pace}} bölüm",
+      "basedOnRecent": "son iki ayda izlediğin bölümlere göre",
+      "catchUpTitle": "Bölümlerine ne zaman yetişeceksin",
+      "appBadges": "Uygulama rozetleri · {{count}}",
+      "watchBadges": "İzleme rozetleri · {{count}}",
+      "ratingsBadges": "Puan rozetleri",
+      "commentBadges": "Yorum rozetleri",
+      "followBadges": "Takip rozetleri"
+    },
+    "movies": {
+      "timeSpent": "Film izlemeye harcanan süre",
+      "watched": "İzlenen filmler",
+      "added": "Eklenen filmler",
+      "onWatchlist": "İzleme listende {{count}} film",
+      "topGenres": "En sevilen film türleri",
+      "onMovies": {
+        "one": "{{count}} filmde",
+        "other": "{{count}} filmde"
+      },
+      "comments": "Film yorumları",
+      "overMovies": {
+        "one": "{{count}} filmde",
+        "other": "{{count}} filmde"
+      },
+      "likesPerComment": {
+        "one": "Film yorumu başına {{count}} beğeni",
+        "other": "Film yorumu başına {{count}} beğeni"
+      },
+      "commentsPerMonth": "Aylık film yorumları",
+      "remaining": "Kalan filmler",
+      "notYetReleased": "izleme listende, henüz vizyona girmemiş",
+      "upcoming": "Yaklaşan filmler",
+      "pace": "Haftada {{pace}} film",
+      "basedOnRecent": "son iki ayda izlediğin filmlere göre",
+      "catchUpTitle": "Filmlerine ne zaman yetişeceksin"
+    }
+  },
+  "media": {
+    "whereToWatch": "Nerede izlenir",
+    "castTitle": "Oyuncular",
+    "howDidYouFeelPoll": "NE HİSSETTİN?",
+    "interests": {
+      "cast": "Oyuncular",
+      "premise": "Konusu",
+      "creators": "Yaratıcıları",
+      "franchise": "Serisi ya da evreni",
+      "other": "Diğer"
+    },
+    "actions": {
+      "addFavorite": "Favorilere ekle",
+      "removeFavorite": "Favorilerden çıkar",
+      "addToList": "Listeye ekle",
+      "share": "Paylaş",
+      "changeMatch": "Eşleşmeyi değiştir",
+      "removeFromLibrary": "Kitaplıktan kaldır…",
+      "customizeArtwork": "Görselleri özelleştir"
+    },
+    "removeConfirmTitle": "{{title}} kaldırılsın mı?",
+    "emotions": {
+      "shocked": "Şoke oldum",
+      "frustrated": "Sinirlendim",
+      "sad": "Üzüldüm",
+      "reflective": "Düşündürdü",
+      "touched": "Duygulandım",
+      "amused": "Eğlendim",
+      "scared": "Korktum",
+      "bored": "Sıkıldım",
+      "understood": "Anlaşıldım",
+      "thrilled": "Heyecanlandım",
+      "confused": "Kafam karıştı",
+      "tense": "Gerildim"
+    },
+    "stars": {
+      "bad": "KÖTÜ",
+      "ok": "İDARE EDER",
+      "good": "İYİ",
+      "super": "SÜPER",
+      "wow": "VAY BE"
+    },
+    "whereDidYouWatchPoll": "NEREDE İZLEDİN?",
+    "whoWasFavoritePoll": "FAVORİN KİMDİ?",
+    "commentsPill": "YORUMLAR",
+    "notWatched": "İzlenmedi",
+    "providersUnavailable": "Mevcut değil",
+    "watchTiles": {
+      "other": "Diğer",
+      "unofficial": "Resmi olmayan"
+    },
+    "addedOn": "Eklendi: {{date}}"
+  },
+  "movie": {
+    "genericLabel": "Film",
+    "tabs": {
+      "about": "Hakkında",
+      "more": "Daha fazla"
+    },
+    "fixMatchTitle": "Bu filmi tanımlayamadık",
+    "fixMatchSub": "Afişini, yılını ve detaylarını eklemek için doğru olanı seç.",
+    "interestsPollLabel": "BU FİLMDE SENİ EN ÇOK NE İLGİLENDİRİYOR?",
+    "interests": {
+      "studio": "Stüdyosu"
+    },
+    "movieInfoTitle": "Film bilgileri",
+    "ratingsCount": "{{count}} puan",
+    "noSynopsis": "Özet yok.",
+    "watchTrailer": "Fragmanı izle",
+    "watchTiles": {
+      "theater": "Sinema"
+    },
+    "ratePollLabel": "BU FİLMİ PUANLA",
+    "addMovieButton": "FİLMİ EKLE",
+    "matchToDatabase": "Eşleşmeyi düzelt",
+    "removeConfirmBody": "Bu, filmi ve puanlarını bu cihazdan siler. Dışa aktardığın dosyayı yeniden içe aktarmak onu GERİ GETİRMEZ.",
+    "requireWatchedTitle": "Bu filmi izledin mi?",
+    "requireWatchedBody": "Oyunu kaydetmek için filmin izlendi olarak işaretlenmesi gerekiyor.",
+    "markAsWatched": "İzlendi olarak işaretle",
+    "spoilersTitle": "Spoiler uyarısı!",
+    "spoilersBody": "Bu filmi izlemedin. Yorumları okumak istediğine emin misin?",
+    "displayAnyway": "Yine de göster",
+    "watchedThisMovie": "Bu filmi izledim"
+  },
+  "show": {
+    "loadFailed": "Bu dizi yüklenemedi — bağlantını kontrol edip tekrar dene.",
+    "tabs": {
+      "about": "Hakkında",
+      "episodes": "Bölümler"
+    },
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "interests": {
+      "network": "Kanalı/platformu"
+    },
+    "interestsPollLabel": "BU DİZİDE SENİ EN ÇOK NE İLGİLENDİRİYOR?",
+    "actions": {
+      "stopFollowing": "Takibi bırak",
+      "follow": "Takip et",
+      "resumeWatching": "İzlemeye devam et",
+      "stopWatching": "İzlemeyi bırak",
+      "markNotFinished": "Bitmedi olarak işaretle",
+      "markFinished": "Bitti olarak işaretle",
+      "customizePosterBackdrop": "Afişi ve arka planı özelleştir"
+    },
+    "removeConfirmBody": "Bu, diziyi ve tüm izleme geçmişini, puanlarını ve oylarını bu cihazdan siler. Dışa aktardığın dosyayı yeniden içe aktarmak onu GERİ GETİRMEZ.",
+    "fixMatchTitle": "Bu diziyi tanımlayamadık",
+    "fixMatchSub": "Görselleri ve bölüm listelerini eklemek için doğru olanı seç.",
+    "providersUnavailable": "Bölgende mevcut değil",
+    "similarTo": "Benzerleri",
+    "showInfoTitle": "Dizi bilgileri",
+    "metadataUnavailable": "Bu dizi için meta veri yok.",
+    "seasonsCount": {
+      "one": "{{count}} sezon",
+      "other": "{{count}} sezon"
+    },
+    "addedCount": "{{count}} kişi bu diziyi ekledi",
+    "peopleAlsoWatched": "Bunu izleyenler şunları da izledi",
+    "communityRatings": "Topluluk puanları",
+    "season": "Sezon {{n}}",
+    "specials": "Özel bölümler",
+    "commentsTitle": "Yorumlar",
+    "continueTracking": "Takibe devam et",
+    "catchUpMinutes": "Yetişmek için {{m}} dk",
+    "catchUpHours": "Yetişmek için {{h}} sa",
+    "catchUpDaysHours": "Yetişmek için {{d}} g {{h}} sa",
+    "finishedCardTitle": "Bitti",
+    "finishedCardSub": "Hepsi bu kadar!",
+    "episodeFallbackTitle": "Bölüm {{n}}",
+    "watchedOnDate": "İzlendi: {{date}}",
+    "allEpisodesTitle": "Tüm bölümler",
+    "markAllTitle": "{{title}}: hepsi işaretlensin mi?",
+    "markAllBody": {
+      "one": "{{count}} bölüm izlendi olarak işaretlenecek.",
+      "other": "{{count}} bölüm izlendi olarak işaretlenecek."
+    },
+    "markAll": "Hepsini işaretle",
+    "unmarkAllTitle": "{{title}}: tüm işaretler kaldırılsın mı?",
+    "unmarkAllBody": "Tüm bölümler izlenmedi durumuna döner.",
+    "unmarkAll": "Tüm işaretleri kaldır",
+    "unmarkSeasonTitle": "{{label}}: işaret kaldırılsın mı?",
+    "unmarkSeasonBody": "Tüm bölümleri izlenmedi durumuna döner.",
+    "unmarkSeason": "İşareti kaldır",
+    "markSeasonTitle": "{{label}} izlendi olarak işaretlensin mi?",
+    "markSeasonBody": {
+      "one": "{{count}} bölüm işaretlenecek.",
+      "other": "{{count}} bölüm işaretlenecek."
+    },
+    "markSeason": "Sezonu işaretle",
+    "showMoreLeft": {
+      "one": "Daha fazla göster · {{count}} kaldı",
+      "other": "Daha fazla göster · {{count}} kaldı"
+    },
+    "noEpisodeData": "Bu dizi için henüz bölüm verisi yok.",
+    "tmdbStructureNote": "Bölüm listesi TMDB'den — tam numaralandırma için Ayarlar'dan bir TheTVDB anahtarı ekle",
+    "addShowButton": "DİZİYİ EKLE",
+    "episodesWatchedCount": {
+      "one": "{{count}} bölüm izlendi",
+      "other": "{{count}} bölüm izlendi"
+    },
+    "following": "Takip ediliyor",
+    "notFollowing": "Takip edilmiyor",
+    "progressSeen": {
+      "one": "İlerlemen: {{count}} bölüm izlendi.",
+      "other": "İlerlemen: {{count}} bölüm izlendi."
+    },
+    "episodeNotInCatalogue": "Katalogda yok — TV Time geçmişinden korundu",
+    "episodeUnknownTitle": "Bilinmeyen bölüm",
+    "tmdbRatings": "TMDB puanları",
+    "communityVotes": {
+      "one": "OpenTV · {{count}} oyla {{avg}}/5",
+      "other": "OpenTV · {{count}} oyla {{avg}}/5"
+    },
+    "upcomingLeftTitle": "Yayınlanmamış bölümlere dokunulmadı",
+    "upcomingLeftBody": "Henüz yayınlanmamış bölümler işaretlenmedi. Yayınlanınca işaretle ya da yayınlandıklarında haber almak için bildirimleri aç.",
+    "notOnTvdb": "Bu TheTVDB'de yok, bu yüzden açılamıyor ya da eklenemiyor.",
+    "removeWithHistory": {
+      "one": "Bu, kitaplığında {{count}} izlenmiş bölümle duruyor. Kaldırırsan o da silinir.",
+      "other": "Bu, kitaplığında {{count}} izlenmiş bölümle duruyor. Kaldırırsan onlar da silinir."
+    },
+    "removeAnyway": "Yine de kaldır",
+    "extremes": {
+      "title": "En iyi ve en kötü",
+      "onlyOne": "Bu sezon sadece bir bölüm puanlandı.",
+      "best": "En iyi sezon",
+      "worst": "En kötü sezon",
+      "episodes": "{{count}} puanlı"
+    },
+    "ratingsGrid": {
+      "title": "Tüm puanların",
+      "avg": "ORT",
+      "specials": "Öz",
+      "empty": "Burada henüz puanlanan bir şey yok — ne senden ne başkasından."
+    },
+    "chartHint": "Hangi bölüm olduğunu görmek için grafiğe dokun",
+    "chartKeyYou": "Sen",
+    "chartKeyCommunity": "Topluluk",
+    "chartKeyTmdb": "TMDB",
+    "chartNoRating": "Bunu henüz kimse puanlamadı",
+    "markThrough": {
+      "one": "Bunu ve öncekilerin hepsini işaretle ({{count}})",
+      "other": "Bunu ve öncekilerin hepsini işaretle ({{count}})"
+    },
+    "markSeasonBodyEarlier": "Burada {{count}} yayınlanmış bölüm var, önceki sezonlarda da hâlâ izlenmemiş {{earlier}} bölüm."
+  },
+  "import": {
+    "titleImport": "Geçmişini içe aktar",
+    "titleRestore": "iCloud'dan geri yükle",
+    "subImport": "Tüm geçmişini getir — diziler, bölümler, filmler, puanlar, duygular ve listeler.",
+    "subRestore": "Yedeğin iCloud Drive'ından indiriliyor.",
+    "steps": {
+      "step1": "İndirdiğin dışa aktarma dosyasını bul — TV Time'dan bir ZIP, Trakt ya da Simkl'den bir JSON veya Letterboxd ya da IMDb'den bir CSV.",
+      "step2": "Dosyalar'a, İndirilenler'e ya da TV Time'ın gönderdiği e-postaya bak.",
+      "step3": "O dosyayı burada seç — içinde ne varsa bu telefona aktarılır."
+    },
+    "buildNeededTitle": "Bir derleme daha gerekiyor",
+    "buildNeededBody": "Dosya seçici yerel bir modül — uygulamayı bir kez yeniden derle (npx expo run:ios --device), sonra çalışacak.",
+    "restoreFailedTitle": "Geri yükleme başarısız",
+    "importFailedTitle": "İçe aktarma başarısız",
+    "failedBody": "Bir şeyler ters gitti: {{message}}",
+    "existingLibraryTitle": "Bu telefonda zaten bir kitaplığın var",
+    "existingLibraryBody": "İçe aktarılanları mevcut kitaplığın üzerine mi ekleyelim (hiçbir şey silinmez), yoksa önce bu kitaplığı silip sıfırdan mı aktaralım?",
+    "mergeIntoLibrary": "Kitaplığımla birleştir",
+    "eraseAndImportClean": "Sil ve sıfırdan aktar",
+    "gettingEpisodeData": "Bölüm verileri alınıyor…",
+    "restoringLists": "Listelerindeki filmler geri yükleniyor…",
+    "countShows": "dizi",
+    "countEpisodes": "bölüm",
+    "countMovies": "film",
+    "keepOpenBody": "İçe aktarma sürerken OpenTV'yi açık tut — sadece birkaç saniye sürer. Telefonun kilitlenirse ya da başka uygulamaya geçersen hiçbir şey kaybolmaz veya yarım kaydedilmez; geri dönüp içe aktarmayı yeniden başlatman yeterli.",
+    "donePhase": "İçe aktarma tamamlandı — oyununu bitir, kitaplığın seni bekliyor",
+    "doneCta": "ÖZETİ GÖR",
+    "chooseFileButton": "DOSYA SEÇ",
+    "alreadyOnDevice": "Verilerim zaten bu cihazda →",
+    "summary": {
+      "completed": "İçe aktarma tamamlandı",
+      "completedMerged": "İçe aktarma tamamlandı — kitaplığınla birleştirildi",
+      "title": "İçe Aktarma Özeti",
+      "allSet": "Bu dosyadaki her şey zaten uygulamada — \"Uygulamada\" sütununa bak. \"Yeni\" 0 çünkü iki kez içe aktarmak asla kopya oluşturmaz.",
+      "colTotal": "Toplam",
+      "colInApp": "Uygulamada",
+      "colNew": "Yeni",
+      "colIssues": "Sorunlar",
+      "rowShows": "Diziler",
+      "rowEpisodes": "Bölümler",
+      "rowMovies": "Filmler",
+      "rowWatchlist": "İzleme listesi",
+      "movieAudit": {
+        "one": "Dışa aktarma dosyanda {{count}} izlenmiş film kaydı vardı ve {{imported}} tanesi kitaplığına ulaştı.",
+        "other": "Dışa aktarma dosyanda {{count}} izlenmiş film kaydı vardı ve {{imported}} tanesi kitaplığına ulaştı."
+      },
+      "movieAuditWithTitles": {
+        "one": "Dışa aktarma dosyanda {{count}} izlenmiş film kaydı ({{titles}} farklı film) vardı ve {{imported}} tanesi kitaplığına ulaştı.",
+        "other": "Dışa aktarma dosyanda {{count}} izlenmiş film kaydı ({{titles}} farklı film) vardı ve {{imported}} tanesi kitaplığına ulaştı."
+      },
+      "movieAuditDuplicatesMerged": {
+        "one": "{{count}} tanesi başka bir filmle aynı adı taşıyordu ve birleştirildi.",
+        "other": "{{count}} tanesi başka bir filmle aynı adı taşıyordu ve birleştirildi."
+      },
+      "movieAuditNameless": {
+        "one": "{{count}} tanesinin adı kayıtlı değildi.",
+        "other": "{{count}} tanesinin adı kayıtlı değildi."
+      },
+      "libraryNow": "Kitaplığın şu an: {{shows}} dizi · {{episodes}} bölüm · {{movies}} film · izleme listesinde {{watchlist}}",
+      "nameOnlyNote": "\"Uygulamada\" sütunundaki +{{count}} = adı ve geçmişinle kaydedildi ama henüz veritabanında eşleşmesi yok.",
+      "duplicatesFoldedNote": {
+        "one": "{{count}} yinelenen TV Time kaydı (gerçek dizinin yanında boş bir “(yıl)” yer tutucusu) gerçek diziyle birleştirildi — \"Uygulamada\" sayısının Toplam'dan {{count}} az olmasının sebebi bu. Hiçbir şey kaybolmadı.",
+        "other": "{{count}} yinelenen TV Time kaydı (gerçek dizinin yanında boş bir “(yıl)” yer tutucusu) gerçek diziyle birleştirildi — \"Uygulamada\" sayısının Toplam'dan {{count}} az olmasının sebebi bu. Hiçbir şey kaybolmadı."
+      },
+      "mergedNote": "\"Uygulamada\", bu dosyadan kitaplığında bulunan her şeyi sayar — zaten sahip olduğun öğeler olduğu gibi korundu, asla kopyalanmadı ya da üzerine yazılmadı.",
+      "needsAttentionTitle": "İlgilenmen gerekenler ({{count}})",
+      "copiedCheck": "Kopyalandı ✓",
+      "copyAll": "Tümünü kopyala",
+      "missNameMovie": "Film: {{name}}",
+      "missNameShow": "Dizi: {{name}}",
+      "copiedToClipboard": "Panoya kopyalandı ✓",
+      "reasonPrefix": "Sebep: {{reason}}",
+      "fixed": "DÜZELTİLDİ",
+      "find": "BUL",
+      "showAll": "Tümünü göster ({{count}})",
+      "tapToCopyHint": "Adını kopyalamak için bir öğeye dokun ya da elle eşleştirmek için BUL'a bas.",
+      "whyEmptyTitle": "Bazı diziler neden boş görünüyor ({{count}})",
+      "whyEmptyExplanation": "Burada yapman gereken bir şey yok — bunlar doğru eşleşti. TV Time'ın kendi dışa aktarma dosyası bunlar hakkında kendisiyle çelişiyor; OpenTV de gerisini uydurmak yerine gerçekten listelenen bölümleri esas alıyor.",
+      "letsGo": "HADİ BAŞLAYALIM",
+      "yourComments": {
+        "one": "Yazdığın {{count}} yorum",
+        "other": "Yazdığın {{count}} yorum"
+      },
+      "yourFriends": {
+        "one": "Takip ettiğin {{count}} kişi",
+        "other": "Takip ettiğin {{count}} kişi"
+      },
+      "yourPrivateNote": "Şu an bunların hiçbirini senden başkası göremez."
+    },
+    "from": {
+      "tvtime": "TV Time kapanmadan önce sana gönderdiği ZIP dosyası — Dosyalar'a, İndirilenler'e ya da o e-postaya bak.",
+      "trakt": "trakt.tv'den aldığın dışa aktarma (Settings → Data → Export) — bir JSON ya da ZIP dosyası.",
+      "simkl": "simkl.com'dan aldığın yedek (Settings → Export) — bir JSON dosyası.",
+      "letterboxd": "letterboxd.com'dan aldığın dışa aktarma (Settings → Import & Export) — bir ZIP ya da CSV dosyası.",
+      "imdb": "imdb.com'dan puanların ya da izleme listen (⋯ menüsü → Export) — bir CSV dosyası.",
+      "title": "Geçmişin nereden geliyor?",
+      "change": "Başka bir uygulama",
+      "opentv": "Diğer telefonundaki dışa aktarma dosyası — oradaki OpenTV'de: Ayarlar → Kitaplık → Yedekleme → Verilerimi dışa aktar. Bir ZIP dosyası."
+    }
+  },
+  "episode": {
+    "genericShowLabel": "Dizi",
+    "watchTiles": {
+      "computer": "Bilgisayar",
+      "tv": "TV"
+    },
+    "ratePollLabel": "BU BÖLÜMÜ PUANLA",
+    "episodeInfoTitle": "Bölüm bilgileri",
+    "noSynopsis": "Bu bölüm için özet yok."
+  },
+  "shows": {
+    "tabs": {
+      "watchList": "İzleme Listesi",
+      "upcoming": "Yakında"
+    },
+    "sectionWatchNext": "Sıradaki",
+    "sectionStale": "Bir süredir izlemediklerin",
+    "sectionNotStarted": "Başlamadıkların",
+    "watchedHistorySection": "İZLEME GEÇMİŞİ",
+    "emptyTrackingTitle": "Henüz hiçbir diziyi takip etmiyorsun!",
+    "emptyTrackingCaption": "Dizileri takip et, izledikçe bölümleri işaretle.",
+    "discoverShows": "Dizi keşfet",
+    "emptyUpcomingTitle": "Yakında listen boş!",
+    "emptyUpcomingCaption": "Takip ettiğin dizilerin yeni bölümleri yayın tarihleriyle burada görünür.",
+    "browseAllShows": "Tüm dizilere göz at",
+    "upgradeBannerTitle": "Kitaplığının yükseltmesini tamamla",
+    "upgradeBannerBody": "TV Time ZIP dosyanı bir kez daha seç ki OpenTV geçmişini otomatik olarak onarmaya devam edebilsin. Hiçbir şey silinmez ya da çoğaltılmaz.",
+    "notStartedYet": "Henüz başlanmadı",
+    "lastWatched": "Son izleme: {{date}}",
+    "today": "Bugün",
+    "tomorrow": "Yarın",
+    "lostHistoryTitle": "İzleme geçmişin eksik",
+    "lostHistoryBody": "Puanların ve yorumların aktarıldı ama izlediğin bölümler aktarılmadı. Onları da getirmek için tekrar içe aktar.",
+    "lostHistoryRejected": "Dosyada {{rows}} bölüm satırı vardı ve hiçbiri okunamadı.",
+    "lostHistoryNoFile": "Dışa aktarılan dosyada bölüm dosyası yoktu.",
+    "allAired": "Hepsi yayınlandı",
+    "toCome": {
+      "one": "{{count}} bölüm kaldı",
+      "other": "{{count}} bölüm kaldı"
+    }
+  },
+  "movies": {
+    "tabs": {
+      "watchList": "İzleme Listesi",
+      "upcoming": "Yakında"
+    },
+    "watchNextSection": "SIRADAKİ",
+    "notOutYetSection": "HENÜZ ÇIKMADI",
+    "emptyWatchlistTitle": "İzleme listen boş!",
+    "emptyWatchlistCaption": "İzlemek istediğin filmleri ekle.",
+    "browseAllMovies": "Tüm filmlere göz at",
+    "emptyUpcomingTitle": "Ufukta bir şey yok",
+    "emptyUpcomingCaption": "Eklediğin ama henüz çıkmamış filmler burada geri sayımla görünür."
+  },
+  "search": {
+    "placeholder": "Dizi ve film ara",
+    "tabs": {
+      "showsMovies": "Diziler ve Filmler",
+      "users": "Kullanıcılar",
+      "groups": "Gruplar"
+    },
+    "kindSeries": "Dizi",
+    "kindMovie": "Film",
+    "noMatches": "Sonuç bulunamadı.",
+    "emptyHint": "Kitaplığında ve her yerde ara.",
+    "comingSoon": "{{tab}} araması sosyal katmanla geliyor — ÇOK YAKINDA.",
+    "addFailedTitle": "Bu dizi eklenemedi",
+    "addFailedBody": "Eklemek için gereken sorgu az önce başarısız oldu — bağlantını kontrol edip tekrar dene.",
+    "users": {
+      "hint": "Birini bulmak için kullanıcı adı yaz.",
+      "noMatch": "Bu kullanıcı adıyla kimse yok."
+    },
+    "recent": "Son aramalar",
+    "clear": "Temizle"
+  },
+  "discover": {
+    "title": "Daha fazlasını keşfet",
+    "tabs": {
+      "shows": "Diziler",
+      "movies": "Filmler"
+    },
+    "trendingThisWeek": "Bu haftanın trendleri"
+  },
+  "profile": {
+    "notifOffBody": "iOS, OpenTV bildirimlerini engelliyor. Ayarlar'dan tekrar açabilirsin — hatırlatıcılar tamamen bu cihazda çalışmaya devam eder.",
+    "backupTitle": "Kitaplığını yedekle",
+    "backupBody": "Kitaplığının bir kopyasını güvenli bir yerde tut: fotoğraflarıyla birlikte dışa aktar ve dosyayı Google Drive'a ya da Dosyalar'a kaydet. Uygulamayı yeniden yüklersen veya telefon değiştirirsen, her şeyi geri almak için o dosyayı içe aktar. Otomatik olsun mu? Google Drive yedeklemesini aç, bu iş kendiliğinden olsun.",
+    "exportNow": "Şimdi dışa aktar",
+    "turnOnDrive": "Drive yedeklemesini aç",
+    "turnOnIcloudTitle": "iCloud Drive'ı aç",
+    "turnOnIcloudBody": "Kitaplığın yedeklenmiyor — uygulamayı silersen verilerin de gider. iCloud Drive'ı aç, OpenTV her şeyi otomatik yedeklesin.\n\nAyarlar → adın → iCloud → iCloud Drive",
+    "cloudBannerText": "Kitaplığın yedeklenmiyor — iCloud Drive'ı açmak için dokun",
+    "signedOutBanner": "Topluluktan çıkış yaptın — tekrar giriş yapmak için dokun",
+    "listFixBanner": {
+      "one": "Listelerinde adı olmayan {{count}} film var — geri yüklemek için dokun",
+      "other": "Listelerinde adı olmayan {{count}} film var — geri yüklemek için dokun"
+    },
+    "listFixWorking": "Listelerindeki filmler geri yükleniyor…",
+    "listFixTitle": "Listelerin",
+    "listFixDone": {
+      "one": "{{count}} film geri yüklendi.",
+      "other": "{{count}} film geri yüklendi."
+    },
+    "listFixNone": "Henüz bir şey bulunamadı. TV Time bu başlıkları hiç vermedi, bu yüzden katalog büyüdükçe geri yükleniyorlar — sonra tekrar dene.",
+    "listFixOffline": "Kataloğa ulaşılamadı. İnternete bağlandığında tekrar dene.",
+    "backupBannerText": "Kitaplığını yedekle — güvende tutmak için bir kopyasını dışa aktar",
+    "notifBannerText": "Yeni bölüm yayınlanınca haberin olsun — hatırlatıcıları aç",
+    "tvdbBannerText": "Dizi/film eşleştirme sınırlı — kendi ücretsiz TheTVDB anahtarını ekle ya da boş ver (TMDB ile çalışmaya devam eder)",
+    "statFollowing": "takip edilen",
+    "statFollowers": "takipçi",
+    "statComments": "yorum",
+    "sectionLists": "Listeler",
+    "sectionFavoriteShows": "Favori diziler",
+    "sectionFavoriteMovies": "Favori filmler",
+    "tvTimeCard": "📺 Dizi süresi",
+    "episodesWatchedCard": "📺 İzlenen bölümler",
+    "movieTimeCard": "🎬 Film süresi",
+    "moviesWatchedCard": "🎬 İzlenen filmler",
+    "emptyTitle": "Henüz takip edilen bir şey yok",
+    "emptyCaption": "İzlediğin dizi ve filmleri ekle ya da tüm geçmişini TV Time'dan getir.",
+    "emptyCta": "İZLEYECEK BİR ŞEY BUL",
+    "edit": "Düzenle",
+    "joined": "Katılma: {{date}}",
+    "privateBadge": "Gizli",
+    "blockSince": "Takip başlangıcı",
+    "blockSinceYears": "{{count}} yıl",
+    "blockCharacter": "Favori karakter",
+    "blockStreak": "Seri",
+    "blockStreakDays": "gün üst üste",
+    "widgetGenre": "En sevilen tür",
+    "widgetGenreShare": "İzlediklerinin %{{pct}} kadarı",
+    "widgetThisYear": "{{year}} şimdiye kadar",
+    "widgetEpisodes": "bölüm",
+    "widgetBinge": "En uzun maraton",
+    "widgetPrimeTime": "İzleme saatin",
+    "widgetFinished": "Bitirilen",
+    "widgetShows": "dizi",
+    "widgetRated": "Puanlanan",
+    "widgetRatedAvg": "ortalama {{avg}}",
+    "widgetFirstEver": "İlk izlediğin",
+    "widgetWatchlist": "İzleme listesi",
+    "widgetFilms": "film bekliyor",
+    "widgetEmotions": "Nasıl hissettirdi",
+    "widgetVotes": "{{count}} oy",
+    "widgetTopRated": "En yüksek puanların",
+    "widgetNowWatching": "Şu an izlenen",
+    "widgetPhoto": "Afiş",
+    "widgetGif": "GIF",
+    "widgetBanner": "Kapak",
+    "widgetIntro": "Biyografi",
+    "widgetCounts": "Takipçiler",
+    "widgetActivity": "Isı haritası",
+    "widgetExtra": "Ekstralar",
+    "widgetThisYearShort": "Bu yıl",
+    "widgetLinks": "Beni bul",
+    "widgetEmotionCalendar": "Duygu takvimi",
+    "widgetEmotionCalendarEmpty": "Bir bölümün nasıl hissettirdiğine dokun, burası gün gün dolsun.",
+    "plusBackupOff": "OpenTV Yedekleme kapalı — Plus'ın bunu içeriyor. Kurmak için dokun",
+    "plusBackupStalled": "OpenTV Yedekleme son zamanlarda çalışmadı — kontrol etmek için dokun"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "emptyText": "Burada henüz bir şey yok. TV Time bildirim geçmişin içe aktarmayla gelir; topluluğa katıldığında takipler, beğeniler ve yanıtlar burada görünür."
+  },
+  "createTopic": {
+    "post": "Paylaş",
+    "placeholder": "Bir konu başlat…"
+  },
+  "tvdbKey": {
+    "title": "TheTVDB anahtarı",
+    "warningText": "Uygulamanın ortak TheTVDB anahtarı şu an çalışmıyor. Kendi ücretsiz anahtarını eklersen dizi ve film eşleştirme tamamen geri gelir. İstersen boş da verebilirsin — OpenTV, TMDB ile çalışmaya devam eder.",
+    "body": "OpenTV dizi ve filmleri önce TMDB ile eşleştirir, TMDB'nin dolduramadığını TheTVDB ile tamamlar. Uygulama ortak bir TheTVDB anahtarıyla gelir, yani senin bir anahtara ihtiyacın yok. O ortak anahtar bir gün çalışmazsa, en güvenilir eşleştirme için kendi anahtarını buraya ekle.",
+    "bodyDim": "Ücretsiz: thetvdb.com'da hesap aç, Dashboard → API'yi aç ve v4 API anahtarını kopyala. Yalnızca bu cihazda saklanır.",
+    "placeholder": "TheTVDB v4 API anahtarını yapıştır",
+    "saveKey": "Anahtarı kaydet",
+    "clearKey": "Anahtarı sil",
+    "save": "Kaydet",
+    "getFreeKey": "thetvdb.com'dan ücretsiz anahtar al →",
+    "statusOwn": "Şu an kullanılan: kendi anahtarın",
+    "statusSharedFailed": "Ortak anahtar: çalışmıyor — TMDB kullanılıyor",
+    "statusShared": "Şu an kullanılan: ortak anahtar",
+    "keySavedTitle": "Anahtar kaydedildi",
+    "keyClearedTitle": "Anahtar silindi",
+    "keySavedBody": "OpenTV, TheTVDB eşleştirmesi için senin anahtarını kullanacak. Bir sonraki sorguda geçerli olur.",
+    "keyClearedBody": "Silindi — OpenTV önce ortak anahtarına, sonra TMDB'ye geri döner."
+  },
+  "tabBar": {
+    "shows": "Diziler",
+    "movies": "Filmler",
+    "explore": "Keşfet",
+    "profile": "Profil"
+  },
+  "profileMenu": {
+    "settings": "Ayarlar",
+    "share": "Paylaş",
+    "helpCenter": "Yardım merkezi",
+    "findPeople": "Kişi bul",
+    "memories": "Anılar"
+  },
+  "notOnTvdb": {
+    "title": "Henüz TheTVDB'de yok",
+    "body": "OpenTV bölümleri TheTVDB ile takip eder ve \"{{name}}\" henüz oraya eklenmemiş — yeni yayınlanmaya başlayan dizilerde bu sık görülür.\n\nGenelde birkaç hafta içinde eklenir; eklendiğinde normal şekilde ekleyebilirsin."
+  },
+  "community": {
+    "join": {
+      "title": "OpenTV topluluğu burada",
+      "sub": "Bir bölüm hakkında başkalarının ne düşündüğünü gör, yorum oku ve yaz, TV Time'daki arkadaşlarını bul.",
+      "perkRatings": "Bu akşamki bölüme herkesin kaç puan verdiğini gör",
+      "perkComments": "Tepkileri oku, sen de kendininkini ekle",
+      "perkFriends": "TV Time arkadaşların katıldıkça onları bul",
+      "promise": "Her iki durumda da takip özelliği şu an nasılsa öyle çalışmaya devam eder. İzleme geçmişin bu telefonda kalır; katılırsan bunun bir özeti (toplamların, dizilerin ve filmlerin) daha önce yazdığın yorumlar ve puanlarla birlikte profiline eşitlenir. Katılırsan uygulama, gelişmesine yardımcı olmak için anonim kullanım analitiği de toplar; katılmayan kimse için asla toplamaz.",
+      "continueApple": "APPLE İLE DEVAM ET",
+      "continueGoogle": "GOOGLE İLE DEVAM ET",
+      "notNow": "Şimdi değil",
+      "failedTitle": "Giriş yapılamadı",
+      "continueEmail": "E-posta ile devam et",
+      "terms": "Kullanım Koşulları",
+      "agree": "Katılarak Kullanım Koşulları'nı kabul etmiş olursun. Uygunsuz içeriğe ve taciz edici davranışlara kesinlikle tolerans gösterilmez.",
+      "lastSignedIn": "Burada şu hesapla giriş yapmıştın:",
+      "lastEmail": "Profilin, yorumların ve takipçilerin geri gelsin diye aynı adresi kullan.",
+      "tvtimeLabel": "TV Time'da kullandığın:",
+      "tvtimeApple": "Apple ile devam et, yorumların aynı adla gelsin.",
+      "tvtimeAppleNoApple": "TV Time'da Apple kullanmıştın, ama Android'de Apple ile giriş yok. Bu adresle e-posta üzerinden devam et; senden bir şifre belirlemen istenecek.",
+      "tvtimeGoogle": "Google ile devam et, yorumların aynı adla gelsin.",
+      "tvtimeEmail": "Aynı adresi kullan, yorumların aynı adla gelsin.",
+      "tvtimeFacebook": "OpenTV'de Facebook ile giriş yok. Bunun yerine e-posta adresini kullan; TV Time'da kayıtlı olan adres bu.",
+      "lastGoogle": "Aynı profili geri almak için Google ile devam et.",
+      "lastApple": "Aynı profili geri almak için Apple ile devam et.",
+      "lastSignIn": "Giriş yap",
+      "useDifferent": "Başka bir hesap kullan",
+      "friendsHere": {
+        "one": "TV Time arkadaşlarından {{count}} kişi zaten burada",
+        "other": "TV Time arkadaşlarından {{count}} kişi zaten burada"
+      }
+    },
+    "handle": {
+      "title": "Kullanıcı adını seç",
+      "sub": "Toplulukta insanlar seni bununla bulur.",
+      "placeholder": "adin",
+      "rule": "3–20 karakter: küçük harf, rakam, alt çizgi ve nokta.",
+      "available": "Bu boşta.",
+      "taken": "Alınmış, başka bir tane dene.",
+      "claim": "AL",
+      "note": "Sonra değiştirebilirsin. Kitaplığınla ilgili hiçbir şey paylaşılmaz.",
+      "failedTitle": "Kullanıcı adı kaydedilemedi",
+      "errTooShort": "Biraz daha uzun: en az 3 karakter.",
+      "errTooLong": "Biraz daha kısa: en fazla 20 karakter.",
+      "errCharacters": "Yalnızca küçük harf, rakam, alt çizgi ve nokta. Başta ya da sonda nokta olamaz, iki nokta yan yana gelemez.",
+      "errReserved": "Bu ayrılmış. Başka bir tane dene."
+    },
+    "error": {
+      "network": "Bağlantı yok. Ağını kontrol edip tekrar dene.",
+      "rateLimited": "Çok fazla deneme. Bir dakika bekle.",
+      "signInRejected": "Giriş kabul edilmedi. Tekrar dene.",
+      "handleTaken": "Bu kullanıcı adı alınmış.",
+      "handleInvalid": "Bu kullanıcı adına izin verilmiyor.",
+      "generic": "Bir şeyler ters gitti. Tekrar dene.",
+      "emailUnverified": "Önce e-posta adresini onayla."
+    },
+    "banner": {
+      "text": "OpenTV topluluğuna katıl"
+    },
+    "settings": {
+      "section": "Topluluk",
+      "joinRow": "Topluluğa katıl",
+      "joinRowSub": "Puanlar, yorumlar ve eski TV Time arkadaşların",
+      "handleRow": "Kullanıcı adın",
+      "seedRow": "TV Time arşivini getir",
+      "seedRowSub": "Kendi yorumların, puanların ve favorilerin, orijinal tarihleriyle",
+      "seedRowDone": "Getirildi",
+      "leaveRow": "Topluluktan ayrıl",
+      "leaveRowSub": "Oturumun açık kalır; Plus, yedekleme ve eşitleme çalışmaya devam eder",
+      "leaveConfirmTitle": "Topluluktan ayrılsın mı?",
+      "leaveConfirmBody": "Bu telefon yayınlamayı bırakır ve topluluktan ayrılırsın. Profilin, yorumların ve puanların sunucuda kalır; bunları kaldırmak için hesabını sil. Kitaplığına dokunulmaz.",
+      "leaveConfirmAction": "Ayrıl",
+      "deleteRow": "Topluluk hesabımı sil",
+      "deleteRowSub": "Profilini ve paylaştığın her şeyi sunucudan kaldırır",
+      "deleteConfirmTitle": "Topluluk hesabın silinsin mi?",
+      "deleteConfirmBody": "Bu işlem topluluk profilini, yorumlarını, beğenilerini ve puanlarını, takip ettiklerini ve seni takip edenleri, engellediklerini, yayınladığın listeleri ve bildirimlerini kalıcı olarak kaldırır.\n\nTekrar giriş yapınca yepyeni bir profil oluşur; kullanıcı adın senin için saklanmaz.\n\nKitaplığın, izleme geçmişin ve içe aktardığın veriler bu telefonda kalır. Yalnızca topluluktaki varlığın kaldırılır.",
+      "deleteContinue": "Devam et",
+      "deleteFinalTitle": "Geri dönüşü yok",
+      "deleteFinalBody": "Topluluk hesabın ve orada paylaştığın her şey tamamen silinecek.\n\nBu telefondaki hiçbir şeye dokunulmaz; kitaplığın ve izleme geçmişin olduğu gibi kalır.",
+      "deleteFinalAction": "Hesabımı sil",
+      "deleting": "Siliniyor…",
+      "deletedTitle": "Hesap silindi",
+      "deletedBody": "Topluluk hesabın silindi. Bu telefondaki kitaplığın aynen duruyor.",
+      "deleteFailedTitle": "Hesabın silinemedi",
+      "deleteFailedStillSignedIn": "Oturumun hâlâ açık ve hesabın hâlâ duruyor. Lütfen tekrar dene.",
+      "setPasswordRow": "Şifre belirle",
+      "setPasswordRowSub": "Google veya Apple'ın yanı sıra e-postanla da giriş yap",
+      "leaveConfirm": "Ayrıl"
+    },
+    "ratings": {
+      "label": "TOPLULUK",
+      "votes": {
+        "one": "{{count}} oy",
+        "other": "{{count}} oy"
+      }
+    },
+    "time": {
+      "now": "az önce",
+      "minutes": {
+        "one": "{{count}} dakika önce",
+        "other": "{{count}} dakika önce"
+      },
+      "hours": {
+        "one": "{{count}} saat önce",
+        "other": "{{count}} saat önce"
+      },
+      "days": {
+        "one": "{{count}} gün önce",
+        "other": "{{count}} gün önce"
+      },
+      "weeks": {
+        "one": "{{count}} hafta önce",
+        "other": "{{count}} hafta önce"
+      },
+      "months": {
+        "one": "{{count}} ay önce",
+        "other": "{{count}} ay önce"
+      },
+      "years": {
+        "one": "{{count}} yıl önce",
+        "other": "{{count}} yıl önce"
+      }
+    },
+    "comments": {
+      "title": "Yorumlar",
+      "row": "Topluluk yorumları",
+      "rowSub": "Herkesin ne düşündüğünü oku",
+      "empty": "Henüz bir şey yok. İlk sözü sen söyle.",
+      "placeholder": "Yorum ekle…",
+      "send": "Gönder",
+      "spoilerToggle": "Spoiler",
+      "spoilerHidden": "Spoiler: görmek için dokun",
+      "joinToComment": "Yorum yapmak için topluluğa katıl",
+      "reply": "Yanıtla",
+      "replyingTo": "Yanıtlanan: @{{handle}}",
+      "replies": {
+        "one": "{{count}} yanıt",
+        "other": "{{count}} yanıt"
+      },
+      "hideReplies": "Yanıtları gizle",
+      "imported": "TV Time'dan",
+      "edited": "düzenlendi",
+      "errTooLong": "Bu 2.000 karakterden uzun.",
+      "errGone": "Bu yorum artık yok.",
+      "failedTitle": "Gönderilemedi",
+      "deleteTitle": "Yorumu sil",
+      "deleteBody": "Yorumun silinsin mi? Bu geri alınamaz.",
+      "delete": "Sil",
+      "deleteFailedTitle": "Silinemedi",
+      "report": "Bildir",
+      "block": "Kullanıcıyı engelle",
+      "orphanReply": "↩ Yanıt: asıl yorum OpenTV'de yok",
+      "openTitle": "Neyle ilgili olduğunu aç",
+      "gone": "Bu yorum artık burada değil.",
+      "unseenHidden": "Bunu henüz izlemedin, görmek için dokun",
+      "unseenConfirmTitle": "Bu yorum gösterilsin mi?",
+      "unseenConfirmBody": "Henüz izlemediğin bir şey: {{title}}. Bu yorum spoiler içerebilir.",
+      "unseenConfirmOpen": "Yine de göster",
+      "translate": "Çevir",
+      "showOriginal": "Orijinalini göster",
+      "translating": "Çevriliyor…",
+      "translateFailed": "Çevrilemedi. Tekrar denemek için dokun.",
+      "translated": "Çevrildi",
+      "attach": "Resim ekle",
+      "attachPlus": "Yorumlara resim eklemek OpenTV Plus'ın bir parçası.",
+      "inReview": "Resmin inceleniyor; onaylanınca görünecek.",
+      "pickPhoto": "Fotoğraf",
+      "pickGif": "GIF",
+      "tooBig": "Bu resim çok büyük.",
+      "uploadFailed": "Yorum gönderildi ama resim yüklenemedi.",
+      "pictureWaiting": "Onay bekliyor",
+      "willReview": "Kimse görmeden önce incelenir.",
+      "closeWriting": "Kapat",
+      "sending": "Gönderiliyor…",
+      "gateTitle": "Yorumlar topluluk için",
+      "gateBody": "İnsanların ne dediğini okumak ve kendi yorumunu yazmak için topluluğa katıl. Kitaplığın her durumda telefonunda kalır.",
+      "gateCta": "Topluluğa katıl"
+    },
+    "report": {
+      "title": "Bu yorumu bildir",
+      "sub": "Her bildirimi bir insan okur. Hiçbir şeye otomatik karar verilmez.",
+      "spam": "Spam veya dolandırıcılık",
+      "harassment": "Taciz veya zorbalık",
+      "hate": "Nefret söylemi",
+      "sexual": "Cinsel içerik",
+      "violence": "Şiddet veya tehdit",
+      "spoiler": "İşaretlenmemiş spoiler",
+      "other": "Başka bir şey",
+      "sentTitle": "Bildirim gönderildi",
+      "sentBody": "Teşekkürler. Bir moderatör genellikle 24 saat içinde buna bakar.",
+      "failedTitle": "Bildirim gönderilemedi"
+    },
+    "block": {
+      "title": "@{{handle}} engellensin mi?",
+      "body": "Artık birbirinizin yorumlarını görmeyeceksiniz ve aranızdaki takipler kaldırılacak.",
+      "confirm": "Engelle",
+      "doneTitle": "Engellendi",
+      "doneBody": "Toplulukta artık @{{handle}} kullanıcısını görmeyeceksin.",
+      "failedTitle": "Bu hesap engellenemedi"
+    },
+    "profile": {
+      "follow": "Takip et",
+      "following": "Takip ediliyor",
+      "request": "İstek gönder",
+      "requested": "İstek gönderildi",
+      "requestPending": "Bu profil gizli. İsteğin yanıt bekliyor.",
+      "joinToFollow": "İnsanları takip etmek için topluluğa katıl",
+      "private": "Bu profil gizli. Biyografisini, listelerini ve sayılarını görmek için takip et.",
+      "notFound": "Bu profili bulamadık.",
+      "plus": "PLUS",
+      "lists": "Listeler",
+      "listsTitle": "Yayınlanan listeler",
+      "followFailedTitle": "Bu yapılamadı",
+      "followerLine": "{{followers}} takipçi · {{following}} takip",
+      "photoComment": "📷 Fotoğraf",
+      "tvTime": "TV süresi",
+      "episodesWatched": "İzlenen bölüm",
+      "showsTitle": "Diziler",
+      "favouriteShows": "Favori diziler",
+      "moviesTitle": "Filmler",
+      "favouriteMovies": "Favori filmler",
+      "months": "AY",
+      "days": "GÜN",
+      "hours": "SAAT",
+      "blocked": "Engellendi",
+      "blockConfirm": "@{{handle}} engellensin mi?",
+      "blockBody": "O seni görmeyecek, sen de onu görmeyeceksin. Aranızdaki takipler kaldırılır.",
+      "reportedTitle": "Bildirildi",
+      "reportedBody": "Teşekkürler, bir insan buna bakacak.",
+      "peopleEmpty": "Henüz kimse yok."
+    },
+    "list": {
+      "items": {
+        "one": "{{count}} öğe",
+        "other": "{{count}} öğe"
+      },
+      "by": "Liste sahibi: @{{handle}}",
+      "empty": "Bu liste boş.",
+      "notFound": "Bu liste kullanılamıyor.",
+      "none": "Henüz liste yok"
+    },
+    "notifications": {
+      "tabCommunity": "Topluluk",
+      "tabArchive": "TV Time",
+      "empty": "Henüz bir şey yok. Yanıtlar, beğeniler ve yeni takipçiler burada görünür.",
+      "reply": "@{{handle}} yorumuna yanıt verdi",
+      "replyAnon": "Biri yorumuna yanıt verdi",
+      "like": "@{{handle}} yorumunu beğendi",
+      "likeAnon": "Biri yorumunu beğendi",
+      "follow": "@{{handle}} seni takip etmeye başladı",
+      "followAnon": "Biri seni takip etmeye başladı",
+      "friendFound": "@{{handle}} burada, TV Time arkadaşlarından biri",
+      "friendFoundAnon": "TV Time arkadaşlarından biri burada",
+      "moderation": "Bir moderatör paylaştığın bir şey hakkında işlem yaptı",
+      "unknown": "Toplulukta yeni bir şey oldu"
+    },
+    "seed": {
+      "title": "Arşivini yanında getir",
+      "count": {
+        "one": "{{count}} yorum içe aktardın.",
+        "other": "{{count}} yorum içe aktardın."
+      },
+      "countRatings": {
+        "one": "Kayıtlı {{count}} puanın veya tepkin var.",
+        "other": "Kayıtlı {{count}} puanın ve tepkin var."
+      },
+      "countCharacters": {
+        "one": "{{count}} favori karakter seçtin.",
+        "other": "{{count}} favori karakter seçtin."
+      },
+      "ask": "Bunları topluluğa getirelim mi?",
+      "onlyYours": "Yalnızca kendi yazdıkların ve verdiğin puanlar gönderilir. İzleme geçmişin ve kitaplığın bu telefonda kalır.",
+      "datesKept": "Orijinal tarihlerini korurlar; 2019'dan bir yorum yine 2019 olarak görünür.",
+      "onePerShow": "Topluluk her dizi için tek bir favori karakter tutar, bu yüzden bölüm bölüm seçimlerin her dizi için tek bir favoride birleştirilir.",
+      "bring": "GETİR",
+      "notNow": "Şimdi değil",
+      "working": "Getiriliyor…",
+      "progress": "{{done}} / {{total}}",
+      "resultAll": {
+        "one": "{{count}} yorum getirildi.",
+        "other": "{{count}} yorum getirildi."
+      },
+      "resultAlready": {
+        "one": "{{count}} yorum zaten oradaydı.",
+        "other": "{{count}} yorum zaten oradaydı."
+      },
+      "resultMixed": "{{imported}} getirildi, {{skipped}} zaten oradaydı, {{unmappable}} hiçbir dizi veya filmle eşleştirilemedi.",
+      "resultNone": "Getirilecek bir şey kalmamıştı.",
+      "ratingsAll": {
+        "one": "{{count}} puan getirildi.",
+        "other": "{{count}} puan getirildi."
+      },
+      "ratingsAlready": {
+        "one": "{{count}} puan zaten oradaydı.",
+        "other": "{{count}} puan zaten oradaydı."
+      },
+      "ratingsMixed": "{{imported}} puan getirildi, {{skipped}} zaten oradaydı, {{unmappable}} hiçbir dizi veya filmle eşleştirilemedi.",
+      "ratingsNone": "Getirilecek puan kalmamıştı.",
+      "charactersAll": {
+        "one": "{{count}} favori karakter getirildi.",
+        "other": "{{count}} favori karakter getirildi."
+      },
+      "charactersAlready": {
+        "one": "{{count}} seçim zaten sayılmıştı; topluluk her dizi için tek favori tutar.",
+        "other": "{{count}} seçim zaten sayılmıştı; topluluk her dizi için tek favori tutar."
+      },
+      "charactersMixed": "{{imported}} favori getirildi. Topluluk her dizi için tek favori tuttuğundan {{skipped}} seçim daha bunlara katıldı; {{unmappable}} seçimin gönderilecek karakter adı yoktu.",
+      "charactersNone": "Getirilecek favori karakter kalmamıştı.",
+      "nothingToBring": "Getirilecek yorum yok.",
+      "interrupted": "Tamamlanmadı. Hiçbir şey kaybolmadı; yeniden başlatınca kaldığı yerden devam eder.",
+      "tryAgain": "TEKRAR DENE",
+      "close": "Tamam",
+      "friendsFound": {
+        "one": "TV Time'da takip ettiğin {{count}} kişi burada",
+        "other": "TV Time'da takip ettiğin {{count}} kişi burada"
+      }
+    },
+    "reconnect": {
+      "title": "TV Time'dan arkadaşlar",
+      "findRowSub": "Eski arkadaş listenden kimlerin zaten OpenTV'de olduğunu gör",
+      "hereSection": "Zaten burada",
+      "notHereSection": "Henüz burada değil",
+      "noExportTitle": "Aranacak arkadaş listesi yok",
+      "noExportBody": "Yeniden bağlanma, arkadaş listesini TV Time dışa aktarımından okur. Kendininkini içe aktar, OpenTV listedeki herkesi arasın.",
+      "importCta": "TV TIME DIŞA AKTARIMINI İÇE AKTAR",
+      "noneYetTitle": "TV Time arkadaşlarından henüz kimse burada değil",
+      "noneYetBody": "Erken geldin. Arkadaş listen her yeni hesapla karşılaştırılıyor, yani geldikleri an burada kendiliğinden görünecekler; dönüp kontrol etmene gerek yok.",
+      "inviteCta": "ARKADAŞ DAVET ET",
+      "inviteMessage": "OpenTV'de bana katıl; tüm TV Time geçmişimi buraya taşıdım. 👋",
+      "allHere": "Herkes burada: TV Time listendeki tüm arkadaşların zaten burada.",
+      "bannerTitle": {
+        "one": "TV Time'dan {{count}} arkadaşın burada",
+        "other": "TV Time'dan {{count}} arkadaşın burada"
+      },
+      "bannerBody": "Onları takip et, kaldığınız yerden devam edin."
+    },
+    "email": {
+      "createAction": "Hesap oluştur",
+      "createTitle": "Hesap oluştur",
+      "emailPlaceholder": "E-posta adresi",
+      "failedTitle": "Giriş yapılamadı",
+      "forgotLink": "Şifreni mi unuttun?",
+      "forgotNeedsEmail": "Önce e-posta adresini yaz.",
+      "forgotSent": "Bu adrese ait bir hesap varsa e-posta yolda.",
+      "forgotTitle": "Şifreyi sıfırla",
+      "haveAccount": "Zaten hesabın var mı? Giriş yap",
+      "noAccount": "Yeni misin? Hesap oluştur",
+      "passwordPlaceholder": "Şifre",
+      "passwordRule": "En az {{n}} karakter.",
+      "rejected": "Adresi ve şifreyi kontrol edip tekrar dene.",
+      "signInAction": "Giriş yap",
+      "signInTitle": "Giriş yap",
+      "signInFailed": "Bu adresle henüz bir OpenTV hesabı yok. Topluluğa katılmak için bir hesap oluştur.",
+      "existsTitle": "Zaten bir hesabın var",
+      "existsProvider": "Bu adres zaten şununla giriş yapıyor: {{provider}}. Bunu kapat ve \"{{provider}} ile devam et\" seçeneğini seç.",
+      "existsNoPassword": "Henüz şifresi yok. Bir şifre belirleyip iki yoldan da giriş yapabilirsin.",
+      "existsPassword": "Bu adresin zaten bir hesabı var. Bunun yerine şifrenle giriş yap.",
+      "existsSignIn": "Giriş yap",
+      "existsSetPassword": "Şifre belirle",
+      "wrongPassword": "Şifre yanlış. Tekrar dene ya da yeni bir şifre belirlemek için kendine bir bağlantı gönder.",
+      "forgotAction": "Sıfırlama bağlantısı gönder",
+      "tooManyAccounts": "Bu bağlantıdan son zamanlarda birkaç hesap oluşturuldu. Bir saat sonra tekrar dene."
+    },
+    "verify": {
+      "doneAction": "Devam et",
+      "doneBody": "Hesabın hazır.",
+      "doneTitle": "E-posta onaylandı",
+      "expired": "Bu bağlantının süresi dolmuş. Yenisini iste.",
+      "failedTitle": "Onaylanamadı",
+      "lockedNote": "Onaylayana kadar yorum yapamaz, kimseyi takip edemez ve başka profilleri göremezsin.",
+      "notNow": "Şimdi değil",
+      "openMail": "Mail'i aç",
+      "pendingBody": "Bu adrese ait bir hesap varsa e-posta yolda. Devam etmek için içindeki bağlantıyı aç.",
+      "resend": "Tekrar gönder",
+      "sentBody": "Sana bir onay bağlantısı gönderdik.",
+      "sentTitle": "Gelen kutunu kontrol et",
+      "title": "E-postanı onayla",
+      "tooSoon": "Daha yeni istedin. Bir dakika bekleyip tekrar dene.",
+      "waitingBody": "Hesabını kurmayı bitirmek için sana e-postayla gönderdiğimiz bağlantıyı aç.",
+      "codeLabel": "YA DA 6 HANELİ KODU GİR",
+      "codeAction": "Onayla",
+      "badCode": "Kod yanlış ya da süresi dolmuş. Yeni bir e-posta iste.",
+      "resendIn": "{{seconds}} sn sonra tekrar gönder",
+      "wrongAddress": "Adres yanlış mı? Başka bir adres kullan",
+      "wrongTitle": "Başka bir adres kullanılsın mı?",
+      "wrongBody": "Bu hesap az önce oluşturuldu ve içinde hiçbir şey yok. Adres tekrar boşa çıksın diye silinecek, sonra doğru adresle kaydolabilirsin.",
+      "wrongAction": "Baştan başla"
+    },
+    "setPassword": {
+      "blurb": "Google veya Apple'ın yanı sıra e-postanla da giriş yapabilmek için bir şifre ekle. Sağlayıcıyla girişin çalışmadığı cihazlarda işe yarar.",
+      "placeholder": "Yeni şifre",
+      "rule": "En az {{count}} karakter.",
+      "action": "Şifre belirle",
+      "doneTitle": "Şifre belirlendi",
+      "doneBody": "Artık {{email}} adresi ve bu şifreyle giriş yapabilir ya da Google veya Apple kullanmaya devam edebilirsin.",
+      "failedTitle": "Şifre belirlenemedi",
+      "addressTaken": "Bu adresin başka bir hesapta zaten şifresi var.",
+      "alreadySet": "Bu hesabın zaten bir şifresi var. Değiştirmek için \"Şifreni mi unuttun?\" seçeneğini kullan."
+    },
+    "resetPassword": {
+      "title": "Yeni şifre",
+      "blurb": "OpenTV hesabın için yeni bir şifre seç. Bu bağlantı bir kez çalışır.",
+      "action": "Şifreyi kaydet",
+      "doneTitle": "Şifre değiştirildi",
+      "doneBody": "Yeni şifrenle giriş yap. Oturum açık olduğun diğer her yerden çıkış yapıldı.",
+      "failedTitle": "Değiştirilemedi",
+      "noToken": "Bu bağlantı eksik. E-postadaki butonu tekrar aç ya da giriş ekranından yeni bir bağlantı iste."
+    },
+    "followRequests": {
+      "title": "Takip istekleri",
+      "rowSub": "Seni takip etmek isteyenler",
+      "empty": "Bekleyen kimse yok.",
+      "accept": "Kabul et",
+      "deny": "Reddet",
+      "failedTitle": "Yanıtlanamadı"
+    },
+    "discord": {
+      "announce": "Takıldın mı, aklına bir fikir mi geldi? Gel Discord'da söyle"
+    }
+  },
+  "activity": {
+    "title": "Gelen Kutusu",
+    "tabArchive": "TV Time",
+    "tabCommunity": "Gelen Kutusu",
+    "empty": "Henüz bir şey yok. Takipler, beğeniler ve yanıtlar burada görünür.",
+    "someone": "biri",
+    "follow": "{{who}} seni takip etti",
+    "followRequest": "{{who}} seni takip etmek istiyor",
+    "like": "{{who}} yorumunu beğendi",
+    "reply": "{{who}} sana yanıt verdi",
+    "comment": "{{who}} yorum yaptı",
+    "friendFound": "{{who}} OpenTV'de",
+    "profile": "{{who}} profilini güncelledi",
+    "message": "OpenTV'den: {{text}}",
+    "settings": "Bildirim ayarları"
+  },
+  "airIn": {
+    "days": "{{count}}",
+    "months": {
+      "one": "{{count}} ay içinde",
+      "other": "{{count}} ay içinde"
+    },
+    "years": {
+      "one": "{{count}} yıl içinde",
+      "other": "{{count}} yıl içinde"
+    }
+  },
+  "plus": {
+    "appearance": {
+      "title": "Görünüm",
+      "accent": "Vurgu rengi",
+      "previewShow": "Sıradaki dizin",
+      "previewEp": "S2E7 · sıradaki",
+      "previewCta": "İzlendi olarak işaretle",
+      "oled": "OLED siyahı",
+      "oledSub": "Paneller ve kartlar neredeyse siyah olur. Gece OLED ekranına daha nazik.",
+      "restart": "Yeni görünümü her yerde görmek için OpenTV'yi kapatıp yeniden aç.",
+      "icon": "Uygulama simgesi",
+      "iconDefault": "Orijinal",
+      "iconUnsupported": "Uygulama simgeleri için OpenTV'nin daha yeni bir sürümü gerekiyor. Seçtiğin renk yine de çalışır.",
+      "accents": {
+        "yellow": "Sarı",
+        "orange": "Turuncu",
+        "red": "Kırmızı",
+        "pink": "Pembe",
+        "purple": "Mor",
+        "blue": "Mavi",
+        "green": "Yeşil",
+        "teal": "Camgöbeği"
+      },
+      "profileTheme": "Profil teması",
+      "profileThemeSub": "Profilini açan herkes görür: avatar halkan, PLUS rozetin ve sayıların bu renkte olur.",
+      "profileThemeNone": "Profil teması yok",
+      "profileThemeFailed": "Teman yayınlanamadı",
+      "noColourTitle": "Bu görselde renk yok",
+      "noColourBody": "Bu görsel neredeyse siyah beyaz, yani tema yapılacak bir renk yok. Kapak ayarlandı; tema için daha renkli bir görsel seç.",
+      "profileThemePick": "Bir dizi ya da filmden tema",
+      "profileThemePickSub": "Sevdiğin bir görseli seç: rengi profil temana, görselin kendisi kapağına dönüşür. Profilini açan herkes ikisini de görür.",
+      "profileThemeCurrent": "Tema: {{name}}",
+      "profileThemeClear": "Profil temasını kaldır",
+      "profileLayout": "Profil düzeni",
+      "layoutClassic": "Klasik",
+      "layoutCards": "Kartlar",
+      "profileLayoutSub": "Profilini açan herkese sayılarının nasıl gösterileceği.",
+      "layoutPoster": "Afiş",
+      "profileThemeByHandSub": "Bunun yerine renkleri kendin seç"
+    },
+    "stats": {
+      "title": "Derin İstatistikler",
+      "entry": "Derin İstatistikler",
+      "entrySub": "Zevk DNA'n, maraton raporun, sen ve kalabalık",
+      "chip": "PLUS",
+      "lockedTitle": "Derin İstatistikler, OpenTV Plus'ın bir parçası",
+      "lockedBody": "Tür ve on yıl zevkin, maraton rekorun ve puanlarının herkesinkiyle kıyası; hepsi bu telefonda hesaplanır.",
+      "unlock": "OpenTV Plus'a göz at",
+      "allTimeChip": "Tüm zamanlar",
+      "datelessNote": "Tüm zamanlar: bunların tarihi yok.",
+      "empty": "Bu dönemde hiçbir şey izlenmemiş.",
+      "tasteDna": "Zevk DNA'n",
+      "genres": "En sevdiğin türler",
+      "decades": "En sevdiğin on yıllar",
+      "networks": "En çok izlediğin kanallar",
+      "topShows": "En çok izlediğin diziler",
+      "characters": "Favori karakterler",
+      "binge": "Maraton raporu",
+      "ratings": "Puanlama kişiliği",
+      "when": "Ne zaman izliyorsun",
+      "crowd": "Sen ve kalabalık",
+      "headers": {
+        "decade": "On yıl",
+        "character": "Karakter",
+        "title": "Yapım",
+        "you": "Sen",
+        "them": "Kalabalık"
+      },
+      "biggestDay": "En yoğun gün",
+      "biggestDayOn": "{{date}} tarihinde",
+      "longestStreak": "En uzun seri",
+      "daysInARow": "gün üst üste",
+      "activeDays": "İzleme günleri",
+      "perActiveDay": "Aktif gün başına bölüm",
+      "meanStars": "Ortalama 5 üzerinden {{mean}}",
+      "spread": "Dağılım {{spread}}",
+      "personality": {
+        "unrated": "Henüz yeterince puan yok",
+        "allOrNothing": "Ya hep ya hiç",
+        "generous": "Cömert",
+        "tough": "Zor beğenen",
+        "consistent": "İstikrarlı",
+        "balanced": "Dengeli"
+      },
+      "personalityNeedMore": "Beş şey puanla, bir desen ortaya çıksın.",
+      "hourAxis": "GÜNÜN SAATİ",
+      "weekAxis": "HAFTANIN GÜNÜ",
+      "noClock": "İçe aktardığın izlemelerde tarih var ama saat yok, o yüzden burada çizilecek bir saat yok.",
+      "days": {
+        "mon": "Pzt",
+        "tue": "Sal",
+        "wed": "Çar",
+        "thu": "Per",
+        "fri": "Cum",
+        "sat": "Cmt",
+        "sun": "Paz"
+      },
+      "agree": "Hemfikir olduğunuz yerler",
+      "disagree": "Ayrıldığınız yerler",
+      "contrarian": "Aykırılık puanı",
+      "contrarianSub": "0 = herkesle hemfikirsin. 100 = hiç değilsin.",
+      "crowdNeedMore": "Topluluk puanı olan beş yapımı puanla, bu kısım açılsın.",
+      "shareTitle": "Zevkini paylaş",
+      "share": "Paylaş",
+      "cardTagline": "OpenTV Plus destekçisi",
+      "cardContrarian": "Aykırı",
+      "cardTaste": "ZEVKİM"
+    },
+    "title": "OpenTV Plus",
+    "tagline": "Takip uygulamasının zaten yaptığı her şey, artı ekstralar; üstelik uygulamanın bağımsız kalmasını sağlar.",
+    "benefit": {
+      "stats": "Derin İstatistikler ve izleme kişiliğin",
+      "crowd": "Her puanda sen ve kalabalık",
+      "themes": "Profil temaları, hareketli banner ve uygulama simgeleri",
+      "lists": "Sınırsız yayınlanan liste ve favori",
+      "badge": "Profilinde destekçi rozeti",
+      "profile": "Profilini kendi dizdiğin bloklardan kur",
+      "shared": "Ortak liste başlat; katılmak her zaman ücretsiz",
+      "filters": "Gelişmiş filtreler ve kayıtlı ön ayarlar",
+      "heatmap": "Isı haritan ve zaman çizelgen",
+      "pictures": "Yorumlarında resim ve GIF",
+      "communityHeading": "Topluluğa katılırsan",
+      "backup": "Kitaplığını otomatik olarak OpenTV'ye yedekle",
+      "sync": "Kitaplığın tüm cihazlarında senkronize",
+      "calendar": "Dizilerin kendi takviminde"
+    },
+    "monthly": "Aylık",
+    "annual": "Yıllık",
+    "perMonth": "/ay",
+    "perYear": "/yıl",
+    "save": "%{{percent}} TASARRUF",
+    "trial": "7 gün ücretsiz deneme",
+    "noPaymentToday": "Bugün ödeme yok. Deneme bitmeden istediğin zaman iptal et.",
+    "ctaTrial": "Ücretsiz denemeyi başlat",
+    "ctaBuy": "Devam",
+    "restore": "Satın alımları geri yükle",
+    "restoredTitle": "Satın alımlar geri yüklendi",
+    "restoredBody": "OpenTV Plus aboneliğin bu cihazda aktif.",
+    "nothingTitle": "Geri yüklenecek bir şey yok",
+    "nothingBody": "Bu mağaza hesabında OpenTV Plus aboneliği bulunamadı.",
+    "failedTitle": "Bir şeyler ters gitti",
+    "failedBody": "Mağaza bu işlemi tamamlayamadı. Lütfen tekrar dene.",
+    "unavailable": "Henüz mevcut değil",
+    "unavailableBody": "OpenTV Plus henüz satışta değil. Aşağıda içereceği her şey var.",
+    "footer": "Ödeme mağaza hesabından alınır ve iptal edilene kadar yenilenir.",
+    "terms": "Koşullar",
+    "privacy": "Gizlilik",
+    "thanksTitle": "Artık Plus'sın",
+    "thanksBody": "Teşekkürler; sunucuların, meta veri faturalarının ve emeğin bedelini sen ödüyorsun. Bu cihazda her şeyin kilidi açıldı.",
+    "compare": {
+      "title": "Ücretsiz ve Plus",
+      "free": "Ücretsiz",
+      "plus": "Plus",
+      "everything": "OpenTV'nin bugün yaptığı her şey",
+      "lists": "Yayınlanan listeler",
+      "favourites": "Yayınlanan favoriler",
+      "stats": "Derin İstatistikler ve kişilik",
+      "crowd": "Sen ve kalabalık",
+      "themes": "Profil temaları, hareketli banner, uygulama simgeleri",
+      "badge": "Destekçi rozeti",
+      "widgets": "Kendi profilini kur",
+      "filters": "Gelişmiş filtreler ve kayıtlı ön ayarlar",
+      "heatmap": "Isı haritası ve zaman çizelgesi",
+      "shared": "Başlattığın ortak listeler",
+      "pictures": "Yorumlarda resim ve GIF",
+      "backup": "OpenTV Yedekleme",
+      "sync": "Cihazların arasında senkronizasyon",
+      "calendar": "Takviminde bölümler"
+    },
+    "settingsRow": "OpenTV Plus",
+    "settingsSupporter": "Destekçi",
+    "settingsPitch": "Derin istatistikler, profil temaları, sınırsız yayınlanan liste",
+    "badge": "PLUS",
+    "lists": {
+      "publishCap": {
+        "one": "Profilin {{count}} liste yayınlar.",
+        "other": "Profilin listelerinden {{count}} tanesini yayınlar."
+      },
+      "favouritesCap": {
+        "one": "Profilin {{count}} favori yayınlar.",
+        "other": "Profilin {{count}} favori yayınlar."
+      },
+      "publishAll": "OpenTV Plus hepsini yayınlar.",
+      "setCover": "Kapak belirle",
+      "removeCover": "Kapağı kaldır",
+      "chooseCover": "Bir kapak seç",
+      "coverNeedsItems": "Önce bu listeye bir şey ekle; kapak, listenin kendi yapımlarından gelir.",
+      "pin": "En üste sabitle",
+      "unpin": "Sabitlemeyi kaldır"
+    },
+    "activity": {
+      "title": "Etkinlik",
+      "hide": "Profilden gizle",
+      "show": "Profilde göster",
+      "plusRow": "Yılın, gün gün",
+      "plusRowSub": "İzlediğin her şeyin ısı haritası",
+      "monthEmpty": "Bu dönemde hiçbir şey izlenmemiş",
+      "rangeSummary": "Bu dönemde {{count}} izleme"
+    },
+    "wrapped": {
+      "activeDaysSub": {
+        "one": "Toplamda bir şeyler izlediğin {{count}} gün",
+        "other": "Toplamda bir şeyler izlediğin {{count}} gün"
+      },
+      "biggestDayKicker": "Bir gün öne çıkıyor",
+      "biggestDaySub": {
+        "one": "Bir günde {{count}} şey. Olur böyle.",
+        "other": "Bir günde {{count}} şey. Olur böyle."
+      },
+      "closingKicker": "OPENTV WRAPPED",
+      "entry": "Wrapped",
+      "entrySub": "Herhangi bir ay, herhangi bir yıl; birkaç kartta",
+      "episodesBig": {
+        "one": "{{count}} bölüm",
+        "other": "{{count}} bölüm"
+      },
+      "filmsBig": {
+        "one": "{{count}} film",
+        "other": "{{count}} film"
+      },
+      "hoursBig": {
+        "one": "{{count}} saat",
+        "other": "{{count}} saat"
+      },
+      "lockedBody": "Herhangi bir ay, herhangi bir yıl: ne izlediğin, dönüp dönüp geldiğin dizi, öne çıkan gün; paylaşabileceğin bir kart olarak.",
+      "lockedTitle": "Wrapped, OpenTV Plus'ın bir parçası",
+      "minutesBig": {
+        "one": "{{count}} dakika",
+        "other": "{{count}} dakika"
+      },
+      "newShowsSub": {
+        "one": "İlk kez tanıştığın {{count}} dizi",
+        "other": "İlk kez tanıştığın {{count}} dizi"
+      },
+      "openingSub": "Bakalım akşamlar nereye gitmiş.",
+      "openingTitle": "{{period}} özetin",
+      "pickTitle": "Hangi ay ya da yıl?",
+      "quietBody": {
+        "one": "Bir şey izlenmiş; zamanı geçirmenin gayet güzel bir yolu. Ama kart yapmaya yetecek kadar değil.",
+        "other": "{{count}} şey izlenmiş; zamanı geçirmenin gayet güzel bir yolu. Ama kart yapmaya yetecek kadar değil."
+      },
+      "quietEmpty": "Burada hiçbir şey yok. Hayat başka yerde akıyormuş.",
+      "quietPick": "Başka bir dönem dene",
+      "quietTitle": "{{period}} sakin geçti",
+      "ratingSub": "Ortalama kararın: {{stars}}★",
+      "share": "PAYLAŞ",
+      "shareTitle": "Wrapped'in",
+      "streakDays": {
+        "one": "{{count}} gün üst üste",
+        "other": "{{count}} gün üst üste"
+      },
+      "streakKicker": "Gün be gün",
+      "timeSub": "başkasının hikâyesinin içinde geçti",
+      "title": "Wrapped",
+      "topDecadeSub": "gönlün hep biraz şu yıllarda: {{decade}}",
+      "topGenreKicker": "Canın şunu çekti",
+      "topShowKicker": "Dönüp dönüp geldin",
+      "topShowSub": {
+        "one": "Birlikte {{count}} bölüm",
+        "other": "Birlikte {{count}} bölüm"
+      },
+      "video": "Videoyu kaydet",
+      "rendering": "Videon hazırlanıyor… %{{percent}}",
+      "videoFailedTitle": "Video hazırlanamadı",
+      "videoFailedBody": "Oluşturulurken bir şeyler ters gitti. Paylaşım kartı yine de çalışıyor.",
+      "readyTitle": "{{period}}, Wrapped",
+      "readyBody": "Ayın nasıl geçtiğine dair birkaç kart",
+      "renderingTitle": "Videon hazırlanıyor…",
+      "trackHazy": "Puslu",
+      "trackHipHop": "Hip hop",
+      "trackAmbition": "Coşkulu",
+      "newVsContinuedKicker": "Yeni ve tanıdık",
+      "newVsContinuedBig": "{{new}} yeni tanışılan, {{continued}} hâlâ devam eden",
+      "newVsContinuedSub": "Bir şeye bağlı kalmak da başlı başına bir izleme biçimi.",
+      "moreShowsKicker": "Sonra da bunlar",
+      "moreShowsSub": "Hiç geride kalmadılar.",
+      "genrePairKicker": "Çoğunlukla, ama sadece değil",
+      "genrePairSub": "ama hep yakınında: {{second}}",
+      "ratingKicker": "Ortalama kararın",
+      "ratingBig": "{{stars}}★",
+      "ratingCardSub": {
+        "one": "puanladığın {{count}} şey üzerinden",
+        "other": "puanladığın {{count}} şey üzerinden"
+      },
+      "cards": {
+        "hookKicker": "OpenTV Wrapped",
+        "hookLine1": "Dizi ve filmlerle {{period}}.",
+        "hookLine2": "İşte izlediklerin.",
+        "scaleHours": {
+          "one": "saat",
+          "other": "saat"
+        },
+        "scaleMinutes": {
+          "one": "dakika",
+          "other": "dakika"
+        },
+        "scaleEpisodes": {
+          "one": "{{count}} bölüm",
+          "other": "{{count}} bölüm"
+        },
+        "scaleFilms": {
+          "one": "{{count}} film",
+          "other": "{{count}} film"
+        },
+        "scaleFoot": "İyi harcanmış zaman.",
+        "obsessionKicker": "Bir türlü bırakamadın",
+        "obsessionEpisodes": {
+          "one": "{{count}} bölüm",
+          "other": "{{count}} bölüm"
+        },
+        "obsessionSub": "Bu {{unit}} en çok izlediğin dizi.",
+        "obsessionFoot": "Ev gibi hissettiriyor.",
+        "tasteKicker": "Zevkin: {{period}}",
+        "tasteSecond": "Hemen ardından: {{genre}}.",
+        "tasteAlone": "Başka pek bir şey yok.",
+        "tasteFoot": "Bir çeşit huzur.",
+        "typeKicker": "İzleyici tipin",
+        "typeNew": {
+          "one": "{{count}} yeni dizi",
+          "other": "{{count}} yeni dizi"
+        },
+        "typeContinued": {
+          "one": "{{count}} devam edilen dizi",
+          "other": "{{count}} devam edilen dizi"
+        },
+        "typeFoot": "İstikrarın tadı başka.",
+        "types": {
+          "binger": {
+            "name": "Maraton\nKoşucusu",
+            "desc": "\"Bir bölüm daha\" hiçbir zaman bir bölüm olmadı."
+          },
+          "loyalist": {
+            "name": "Sadık\nİzleyici",
+            "desc": "Başladığını bitirmeyi seversin."
+          },
+          "explorer": {
+            "name": "Kâşif",
+            "desc": "Çoğu gece yeni bir şey."
+          },
+          "regular": {
+            "name": "Müdavim",
+            "desc": "Çoğu gün aynı saat. Birikiyor."
+          },
+          "comfort": {
+            "name": "Konfor\nİzleyicisi",
+            "desc": "İşin çoğunu tek bir dizi yaptı; olay da buydu zaten."
+          },
+          "filmPurist": {
+            "name": "Sinema\nSafkanı",
+            "desc": "Bölüm yok. Sadece ana film."
+          },
+          "doubleFeature": {
+            "name": "Çifte\nGösterim",
+            "desc": "Tek film asla yetmeyecekti."
+          },
+          "nightOwl": {
+            "name": "Gece\nKuşu",
+            "desc": "Çoğu saat 22'den sonra."
+          }
+        },
+        "dayKicker": "{{date}} tarihinde ne oldu?",
+        "dayUnit": {
+          "one": "bölüm",
+          "other": "bölüm"
+        },
+        "dayLine": "Sormayacağız.",
+        "dayFoot": "Bazı günlerin tadı başka.",
+        "activityTitle": "Epey\nortalıktaydın.",
+        "activityDays": "{{active}} / {{total}} gün",
+        "activityStreak": {
+          "one": "{{count}} gün",
+          "other": "{{count}} gün"
+        },
+        "activityStreakSub": "seriyi bozmadan.",
+        "activityFoot": "Daha ilginç bir sen.",
+        "heroName": "{{name}}:",
+        "heroTitles": "Ve bu {{unit}} seni sen yapan daha fazla hikâye.",
+        "heroFoot": "Aynı tutku, gelecek {{unit}}.",
+        "unitMonth": "ay",
+        "unitYear": "yıl",
+        "brand": "OPENTV",
+        "activityTitleSome": "Ortalıktaydın.",
+        "proof": {
+          "binger": {
+            "one": "Bir akşamda {{count}} bölüm",
+            "other": "Bir akşamda {{count}} bölüm"
+          },
+          "comfort": "%{{share}} tek bir diziydi",
+          "regular": "{{total}} günün {{active}} tanesi",
+          "explorer": {
+            "one": "İlk kez tanışılan {{count}} dizi",
+            "other": "İlk kez tanışılan {{count}} dizi"
+          },
+          "loyalist": {
+            "one": "Bağlı kaldığın {{count}} dizi",
+            "other": "Bağlı kaldığın {{count}} dizi"
+          },
+          "filmPurist": {
+            "one": "{{count}} film, sıfır bölüm",
+            "other": "{{count}} film, sıfır bölüm"
+          },
+          "doubleFeature": {
+            "one": "Bir günde {{count}} film",
+            "other": "Bir günde {{count}} film"
+          },
+          "nightOwl": "%{{share}} saat 22'den sonra"
+        },
+        "typeKickerYear": "İzleyici tipin: {{period}}",
+        "dayKickerYear": "Yılın günü",
+        "dayLineYear": "Görünüşe göre sıradan bir {{weekday}} günüydü.",
+        "activityYearDays": {
+          "one": "gün",
+          "other": "gün"
+        },
+        "activityYearSub": "{{total}} günün {{active}} tanesinde bir şeyler izlendi.",
+        "m": {
+          "nowShowing": "Vizyonda",
+          "sheetTitle": "İzlediğim her şey",
+          "sheetMore": {
+            "one": "+{{count}} daha",
+            "other": "+{{count}} daha"
+          },
+          "ticketKicker": "Ayın filmi",
+          "admitOne": "Tek kişilik",
+          "ticketSeen": "İzlendi",
+          "ticketRuntime": "Süre",
+          "ticketRating": "Puanım",
+          "ticketUnrated": "Puanlanmadı",
+          "ticketRewatch": "Yeniden izleme",
+          "minutes": "{{count}} dk",
+          "guideKicker": "En yoğun günüm",
+          "guideLine": {
+            "one": "Bir günde {{count}} şey",
+            "other": "Bir günde {{count}} şey"
+          },
+          "rewatchKicker": "Yeni mi, tekrar mı",
+          "rewatchFirst": "ilk kez",
+          "rewatchAgain": "daha önce izlendi",
+          "rewatchLine": "Bazı şeyler iki kez izlemeye değer.",
+          "closingKicker": "OpenTV'de ayım",
+          "genresKicker": "En çok izlediğim",
+          "genresLine": "Sonra {{genre}}.",
+          "clockKicker": "Ne zaman izliyorum",
+          "clockPeak": "En çok saat {{time}} civarı",
+          "clockNight": "Bir gece insanı.",
+          "clockDay": "Gündüz izleyicisi.",
+          "verdictKicker": "Kararım",
+          "verdictLine": {
+            "one": "{{count}} puan üzerinden",
+            "other": "{{count}} puan üzerinden"
+          },
+          "topKicker": "Zirvedekilerim",
+          "bookendsKicker": "İlk ve son",
+          "openedWith": "Açılış",
+          "closedWith": "Kapanış",
+          "weekdayKicker": "Benim gecem",
+          "weekdayLine": "Asıl gece: {{day}}.",
+          "summaryTopFilms": "EN İYİ FİLMLER",
+          "summaryTopShows": "EN İYİ DİZİLER",
+          "summaryWrapped": "WRAPPED",
+          "summaryWatched": "İZLENEN",
+          "summaryEpisodes": "BÖLÜM",
+          "summaryFilms": "FİLM",
+          "summaryShows": "DİZİ"
+        }
+      }
+    },
+    "renewsOn": "Yenilenme: {{date}}",
+    "endsOn": "Bitiş: {{date}}",
+    "trialUntil": "Ücretsiz deneme bitişi: {{date}}",
+    "manage": "Aboneliği yönet",
+    "announce": "OpenTV Plus: verilerini sonsuza dek sakla",
+    "backupOnTitle": "OpenTV Yedekleme açık",
+    "backupOnBody": "Kitaplığın artık OpenTV'ye yedekleniyor ve diğer cihazların için Senkronizasyon açık. İkisini de Ayarlar'dan kapatabilirsin.",
+    "nudge1Title": "Kitaplığın henüz yedeklenmedi",
+    "nudge1Body": "OpenTV Yedekleme, Plus'ınla birlikte geliyor. Giriş yap, kendiliğinden başlasın.",
+    "nudge2Title": "Plus'ının yarısı seni bekliyor",
+    "nudge2Body": "Yedekleme, cihazlar arası senkronizasyon, yorumlarda resim ve yayınlanan listeler için giriş yapman gerekiyor. Bir dakikanı alır.",
+    "nudge3Title": "Son hatırlatma",
+    "nudge3Body": "Tüm geçmişin yalnızca bu telefonda duruyor. Bir kez giriş yap, güvende olsun; bir daha sormayacağız.",
+    "accountTitle": "Yedeğin için bir adım daha",
+    "accountBody": "Plus'ın OpenTV Yedekleme ve Senkronizasyon içeriyor. Kitaplığın kaydedilsin ve tüm cihazlarında olsun diye Apple ya da Google ile giriş yap.",
+    "accountCta": "Giriş yap",
+    "code": {
+      "have": "Kodun var mı?",
+      "placeholder": "Kod",
+      "apply": "Uygula",
+      "invalid": "Bu kod geçersiz ya da süresi dolmuş.",
+      "applied": "{{code}} kodu uygulandı ✓",
+      "firstMonths": {
+        "one": "İlk ay için, sonra {{full}}",
+        "other": "İlk {{count}} ay için, sonra {{full}}"
+      }
+    }
+  },
+  "timeline": {
+    "title": "İzleme zaman çizelgesi",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "empty": "Henüz hiçbir şey izlenmedi.",
+    "lockedTitle": "İzleme zaman çizelgesi, OpenTV Plus'ın bir parçası",
+    "lockedBody": "İzlediğin her bölüm ve film, en yeniden eskiye, TV Time aktarımının getirdiği tarihlerle.",
+    "entry": "İzleme zaman çizelgesi",
+    "entrySub": "İzlediğin her şey, en yeniden eskiye"
+  },
+  "person": {
+    "biography": "Biyografi",
+    "knownFor": {
+      "one": "{{count}} yapım",
+      "other": "{{count}} yapım"
+    },
+    "noCredits": "TheTVDB'de bu kişi için henüz bir şey yok.",
+    "unavailable": "Bu kişi yüklenemedi. Bağlantını kontrol edip tekrar dene."
+  },
+  "editLayout": {
+    "title": "Profili düzenle",
+    "note": "Widget'ları taşı, boyutlarını değiştir ya da kaldır. Değişiklikler anında kaydedilir.",
+    "add": "Widget ekle",
+    "nothingToAdd": "Eklenecek bir şey yok; tüm widget'lar zaten profilinde.",
+    "emptyWidget": "Henüz gösterilecek bir şey yok",
+    "size": "Boyut",
+    "howMany": "Kaç tane",
+    "addWidget": "Widget Ekle",
+    "reset": "Sıfırla",
+    "resetTitle": "Düzen sıfırlansın mı?",
+    "resetBody": "Profilin varsayılan sıraya döner ve tüm widget'lar geri gelir.",
+    "foot": "Banner kalır; üzerinde hiçbir şey olmayan bir profil bile birine ait olmalı. Geri kalanını dilediğin gibi düzenle.",
+    "resetBodyTemplate": "Profilin {{name}} şablonunun düzenine ya da OpenTV'nin orijinal sırasına döner.",
+    "resetToTemplate": "Şablona dön: {{name}}",
+    "resetToOpenTV": "OpenTV orijinali"
+  },
+  "pickArtwork": {
+    "title": "Bir afiş seç",
+    "empty": "Kitaplığında henüz görseli olan bir şey yok."
+  },
+  "pickGif": {
+    "title": "Bir GIF seç",
+    "notice": "Aramalar GIPHY'ye gider. Kitaplığınla ilgili başka hiçbir şey telefondan çıkmaz.",
+    "noKey": "GIF araması için bu sürümde bir GIPHY API anahtarı gerekiyor; bkz. src/giphy-key.example.ts.",
+    "failedTitle": "GIF kaydedilemedi",
+    "gif": "GIF",
+    "coverTitle": "Bir banner GIF'i seç",
+    "pickTitle": "Kitaplığından bir dizi ya da film seç.",
+    "none": "Bunun için GIF bulunamadı.",
+    "searchPlaceholder": "GIF ara",
+    "trending": "Trend",
+    "poweredBy": "GIPHY tarafından desteklenmektedir"
+  },
+  "onThisDay": {
+    "title": "Bugün geçmişte",
+    "finale": {
+      "one": "Bir yıl önce bugün {{show}} dizisini bitirdin",
+      "other": "{{count}} yıl önce bugün {{show}} dizisini bitirdin"
+    },
+    "binge": {
+      "one": "Bir yıl önce bugün {{show}} dizisinden {{n}} bölüm izledin",
+      "other": "{{count}} yıl önce bugün {{show}} dizisinden {{n}} bölüm izledin"
+    },
+    "comment": {
+      "one": "Bir yıl önce bugün {{show}} hakkında yazdın",
+      "other": "{{count}} yıl önce bugün {{show}} hakkında yazdın"
+    },
+    "episode": {
+      "one": "Bir yıl önce bugün {{show}} {{code}} bölümünü izledin",
+      "other": "{{count}} yıl önce bugün {{show}} {{code}} bölümünü izledin"
+    }
+  },
+  "emotionCalendar": {
+    "title": "Duygu takvimi",
+    "blurb": "Bir şey izlediğin her gün, nasıl hissettirdiğine göre renklendi. Ne olduğunu görmek için bir güne dokun.",
+    "nothing": "O gün kayıtlı bir şey yok",
+    "entrySub": "Bir yılın nasıl hissettirdiği, gün gün"
+  },
+  "themeColours": {
+    "title": "Tema renkleri",
+    "blurb": "Görsel bir renk vermediğinde renkleri kendin seç. Başkaları yalnızca ilk rengi görür.",
+    "primary": "Ana renk",
+    "secondary": "İkinci renk",
+    "secondarySub": "Küçük vurgular için kullanılır. Tek renk istiyorsan ilkiyle aynı bırak.",
+    "same": "AYNI",
+    "preview": "Önizleme",
+    "reset": "OpenTV renklerine sıfırla"
+  },
+  "shared": {
+    "title": "Ortak listeler",
+    "newTitle": "Yeni ortak liste",
+    "startOne": "Ortak liste başlat",
+    "createAction": "Oluştur",
+    "namePlaceholder": "Pazar akşamları",
+    "newBlurb": "Bir arkadaşınla birlikte oluşturduğun bir liste. İkiniz de ekleyebilir, izledikçe işaretleyebilirsiniz.",
+    "newFootnote": "Davet ettiğin herkes ücretsiz katılabilir; OpenTV Plus'a ihtiyaçları yok.",
+    "plusSoon": "İlkinden sonraki ortak listeler OpenTV Plus ile geliyor.",
+    "emptyTitle": "Henüz ortak bir şey yok",
+    "emptyBody": "Bir arkadaşınla liste başlat ya da sana gönderilen bir kodu yapıştır.",
+    "needsAccount": "Ortak listeler için hesap gerekiyor; arkadaşın paylaşacak birini bulsun.",
+    "join": "Topluluğa katıl",
+    "haveACode": "Kodun var mı?",
+    "codePlaceholder": "ABCD123456",
+    "joinAction": "Katıl",
+    "joinIsFree": "Katılmak her zaman ücretsiz.",
+    "joinFailedTitle": "Katılınamadı",
+    "inviteLabel": "Davet kodu",
+    "inviteMessage": "OpenTV'deki ortak listeme katıl: \"{{name}}\". Kod: {{code}}",
+    "you": "Sen",
+    "memberProgress": "{{done}} / {{total}}",
+    "addedBy": "Ekleyen: {{who}}",
+    "addedByYou": "Bunu sen ekledin",
+    "addedBySomeone": "Eski bir üye ekledi",
+    "seenByCount": {
+      "one": "{{count}} kişi izledi",
+      "other": "{{count}} kişi izledi"
+    },
+    "noItemsTitle": "Şimdilik boş",
+    "noItemsBody": "Bir dizi ya da filmi kendi sayfasından ekle, buradaki herkes görsün.",
+    "open": "Aç",
+    "remove": "Listeden kaldır",
+    "leaveTitle": "Bu listeden ayrılsın mı?",
+    "leaveBody": "Artık görmezsin. Eklediklerin diğerleri için kalır.",
+    "leaveAction": "Ayrıl",
+    "deleteTitle": "Bu liste silinsin mi?",
+    "deleteBody": "Listedeki herkes için kaybolur. Bu geri alınamaz.",
+    "deleteAction": "Sil",
+    "rotateTitle": "Yeni davet kodu?",
+    "rotateBody": "Gönderdiğin tüm bağlantılar çalışmayı durdurur. Listede olanlar kalır.",
+    "rotateAction": "Kodu değiştir",
+    "addToShared": "Ortak listeye ekle",
+    "addedToShared": "Eklendi: {{name}}",
+    "addTitle": "Bu listeye ekle",
+    "addEmpty": "Kitaplığında henüz bir şey yok.",
+    "shareInvite": "Daveti paylaş",
+    "newCode": "Yeni kod",
+    "deleteList": "Bu listeyi sil",
+    "leaveList": "Bu listeden ayrıl",
+    "sortAdded": "Son eklenenler",
+    "memberCount": {
+      "one": "{{count}} üye",
+      "other": "{{count}} üye"
+    },
+    "titleCount": {
+      "one": "{{count}} yapım",
+      "other": "{{count}} yapım"
+    }
+  },
+  "editLinks": {
+    "note": "En fazla {{count}} bağlantı. Bir servis seç, sayfanı yapıştır.",
+    "addOne": "Bağlantı ekle",
+    "badUrlTitle": "Bu bağlantı çalışmaz",
+    "badUrlBody": "https:// ile başlamalı ve boşluk içermemeli.",
+    "save": "Bağlantıları kaydet",
+    "addButton": "Ekle",
+    "updateButton": "Güncelle",
+    "editHint": "Değiştirmek için bir bağlantıya dokun",
+    "cancelEdit": "İptal"
+  },
+  "memories": {
+    "title": "Anılar",
+    "sub": "Hatırlamaya değer her şey, en yeniden eskiye",
+    "empty": "Henüz hatırlanacak bir şey yok. İzledikçe bölümleri işaretle, burası kendiliğinden dolsun.",
+    "finale": "Bitirdin: {{show}}",
+    "binge": "{{show}}: {{n}} bölüm",
+    "comment": "{{show}} hakkında yazdın",
+    "episode": "{{show}} {{code}}",
+    "entry": "Anılar",
+    "earlier": "Daha önce"
+  },
+  "plex": {
+    "title": "Plex",
+    "entrySub": "Plex'te izlediklerini getir",
+    "intro": "OpenTV, Plex sunucunda zaten izlediklerini okuyup o bölümleri burada işaretleyebilir.",
+    "rules": "Yalnızca okur ve yalnızca zaten takip ettiğin dizilerin bölümlerini. Asıl kaynak telefonun olarak kalır; buradan Plex'e hiçbir şey gönderilmez.",
+    "connect": "Plex'i bağla",
+    "step": "Aşağıdaki sayfayı aç ve bu kodu gir:",
+    "open": "plex.tv/link adresini aç",
+    "waiting": "Onaylaman bekleniyor…",
+    "connected": "Bağlandı",
+    "disconnect": "Bağlantıyı kes",
+    "lastSync": "Son kontrol",
+    "never": "Henüz değil",
+    "syncNow": "Şimdi kontrol et",
+    "syncing": "Kontrol ediliyor…",
+    "nothingNew": "Yeni bir şey yok",
+    "noServer": "Hiçbir Plex sunucusu yanıt vermedi. Evden uzaktaysan aynı ağdayken tekrar dene.",
+    "failedTitle": "Plex'e ulaşılamadı",
+    "failedBody": "Bağlantını kontrol edip tekrar dene.",
+    "expired": "Bu kodun süresi doldu. Yenisi için Bağla'ya dokun.",
+    "disconnectTitle": "Plex bağlantısı kesilsin mi?",
+    "disconnectBody": "OpenTV kontrol etmeyi bırakır. Daha önce eklenenler silinmez.",
+    "applied": {
+      "one": "{{count}} bölüm eklendi",
+      "other": "{{count}} bölüm eklendi"
+    },
+    "copy": "Kopyalamak için dokun",
+    "copied": "Kopyalandı ✓",
+    "noServerAtAll": "Bağlısın ama bu Plex hesabının bir sunucusu yok. Plex, yalnızca kendi sunucun üzerinden izlediklerini bilir.",
+    "newWarning": "Bu sürümde yeni. İlk senkronizasyonun ne eklediğine bak; yalnızca zaten takip ettiğin dizilerin bölümlerini ekler, hiçbir şeyi silmez."
+  },
+  "jellyfin": {
+    "title": "Jellyfin",
+    "entrySub": "Jellyfin sunucunda izlediklerini getir",
+    "intro": "OpenTV, kendi Jellyfin sunucunda zaten izlediklerini okuyup o bölümleri burada işaretleyebilir.",
+    "rules": "Yalnızca okur ve yalnızca zaten takip ettiğin dizilerin bölümlerini. Asıl kaynak telefonun olarak kalır; buradan Jellyfin'e hiçbir şey gönderilmez.",
+    "server": "Sunucu",
+    "serverHint": "Sunucu adresi, ör. jellyfin.example.com",
+    "username": "Kullanıcı adı",
+    "password": "Şifre",
+    "passwordHint": "Şifren oturum açmak için yalnızca bir kez kendi sunucuna gönderilir ve saklanmaz.",
+    "connect": "Jellyfin'i bağla",
+    "connecting": "Bağlanıyor…",
+    "needAddress": "Sunucu adresini ve kullanıcı adını gir.",
+    "failedTitle": "Jellyfin'e ulaşılamadı",
+    "failedBody": "Adresi, kullanıcı adını ve şifreni kontrol et; sunucunun bu ağdan erişilebilir olduğundan emin ol.",
+    "disconnectTitle": "Jellyfin bağlantısı kesilsin mi?"
+  },
+  "selfHost": {
+    "title": "Kendin çalıştır",
+    "intro": "OpenTV bizim yerine kendi topluluk sunucunla konuşabilir. Yorumlar, puanlar ve profiller o zaman senin makinende durur — geri kalan her şey de; bu yüzden kendi meta veri anahtarların da aynı adımın parçası.",
+    "source": "Sunucunun kaynak kodunu GitHub'da oku",
+    "supportNote": "Kendin çalıştırman bu projeye hiçbir maliyet çıkarmaz — donanım senin, anahtarlar senin. OpenTV işine yarıyorsa, barındırılan tarafı herkes için ücretsiz tutan şey Plus.",
+    "serverHint": "https://opentv.example.com",
+    "serverNote": "Resmi sunucuya dönmek için boş bırak.",
+    "tmdbHint": "TMDB v4 okuma erişim token'ı",
+    "tvdbHint": "TheTVDB API anahtarı",
+    "tmdbGet": "TMDB token'ı al →",
+    "tvdbGet": "TheTVDB anahtarı al →",
+    "bothRequired": "İki anahtar da gerekli. Görseller ve başlıklar topluluk sunucusundan değil, doğrudan TMDB ve TheTVDB'den gelir — yani kendi sunucunu çalıştırmak, onu bizim değil kendi anahtarlarınla çalıştırmak demek.",
+    "save": "Kaydet ve geç",
+    "useOfficial": "Resmi sunucuyu kullan",
+    "resetTitle": "Resmi sunucuya dönülsün mü?",
+    "checkFailedTitle": "Anahtarlar kontrol edilemedi",
+    "checkFailedBody": "Hiçbir şey değişmedi. Bağlantını kontrol edip tekrar dene — ağ yüzünden bir anahtar asla reddedilmez.",
+    "keyBadTitle": "Bu anahtar reddedildi",
+    "keyBadBoth": "Hem TMDB token'ı hem TheTVDB anahtarı reddedildi. Hiçbir şey değişmedi.",
+    "keyBadTmdb": "TMDB token'ı reddedildi. Hiçbir şey değişmedi.",
+    "keyBadTvdb": "TheTVDB anahtarı reddedildi. Hiçbir şey değişmedi.",
+    "foot": "Kitaplığın ve izleme geçmişin telefonda kalır, bunların hiçbirinden etkilenmez. Resmi sunucu: {{url}}",
+    "tmdbLabel": "TMDB token'ı"
+  },
+  "cloudBackup": {
+    "title": "OpenTV Yedek",
+    "entrySub": "Kitaplığını iPhone ya da Android, her telefona geri getirir. iCloud ve Google Drive yalnızca aynı tür telefona geri yükler.",
+    "intro": "Kitaplığın bu telefonda yaşıyor. Telefon giderse o da gider — başka bir yerde bir kopyası yoksa. Bu, bir kopya tutar ve iPhone ile Android arasında geçiş yaparken işe yarayan tek kopya budur.",
+    "rules": "Sen açmadıkça kapalı. Zaten elle oluşturabildiğin dışa aktarma dosyasının aynısını gönderir; kapatınca kopyayı unutup bırakmaz, siler.",
+    "chooseTitle": "Kopya nereye gitsin?",
+    "opentv": "OpenTV sunucusu",
+    "opentvSub": "Plus gerekir. Kurulum yok.",
+    "own": "Kendi sunucun",
+    "ownSub": "Nextcloud, ownCloud, bir Synology kutusu — WebDAV konuşan her şey. Ücretsiz.",
+    "serverHint": "Klasör adresi, ör. https://cloud.example.com/remote.php/dav/files/me",
+    "username": "Kullanıcı adı",
+    "password": "Şifre",
+    "passwordHint": "Kitaplık dosyasında değil, bu telefonun anahtar zincirinde saklanır.",
+    "connect": "Bağlan",
+    "connecting": "Bağlanıyor…",
+    "connectedTo": "Yedekleme hedefi",
+    "destOpenTv": "OpenTV sunucusu",
+    "destOwn": "Kendi sunucun",
+    "lastBackup": "Son yedek",
+    "never": "Hiç",
+    "backupNow": "Şimdi yedekle",
+    "backingUp": "Yedekleniyor…",
+    "restore": "Bu yedekten geri yükle",
+    "restoreSub": "Kopyayı buradakilerle birleştirir. Hiçbir şey silinmez.",
+    "restoreTitle": "Kitaplığın geri yüklensin mi?",
+    "restoreBody": "Yedekteki her şeyi bu telefonda zaten olanlara ekler. Buradaki hiçbir şey kaldırılmaz.",
+    "restoreDone": "Geri yüklendi. {{count}} öğe eklendi.",
+    "disconnect": "Kapat ve kopyayı sil",
+    "disconnectTitle": "OpenTV Yedek kapatılsın mı?",
+    "disconnectBody": "Sunucudaki kopya silinir. Bu telefondaki kitaplığına dokunulmaz.",
+    "plusNeededTitle": "OpenTV Yedek için Plus gerekir",
+    "plusNeededBody": "Sunucumuzda kopya saklamak bize depolama maliyeti çıkarır, bu yüzden Plus ile gelir. Kendi sunucuna yedeklemek ücretsiz ve abonelik gerektirmez.",
+    "failedTitle": "Olmadı",
+    "failedBody": "Sunucuya ulaşılamadı. Adresi kontrol edip tekrar dene.",
+    "unauthorised": "Sunucu bu kullanıcı adını ya da şifreyi reddetti.",
+    "notFound": "Bu klasör sunucuda yok. Önce oluştur ya da adresi kontrol et.",
+    "needAddress": "https:// ile başlayan tam klasör adresini gir",
+    "doneTitle": "Yedeklendi",
+    "doneBody": "Kitaplığın artık bu telefonun dışında da güvende.",
+    "noBackup": "Sunucuda henüz yedek yok.",
+    "lapsedSub": "Yükleme durdu. Mevcut yedeğin hâlâ orada; indirebilir ya da silebilirsin."
+  },
+  "ratings": {
+    "entry": "Puanlar",
+    "entrySub": "En iyilerin, en kötülerin ve tüm bölümler",
+    "none": "Bu dizinin henüz hiçbir bölümünü puanlamadın.",
+    "highestEpisode": "En yüksek puanlı bölüm",
+    "lowestEpisode": "En düşük puanlı bölüm",
+    "highestSeason": "En yüksek puanlı sezon",
+    "lowestSeason": "En düşük puanlı sezon",
+    "tabs": {
+      "overview": "Genel bakış",
+      "episodes": "Bölümler"
+    },
+    "communityHighest": "Topluluğun en yüksek puanlısı",
+    "communityLowest": "Topluluğun en düşük puanlısı",
+    "gridCommunityNote": "Bu diziyi puanlamadın, bu yüzden bunlar topluluğun puanları.",
+    "allTheSame": "Burada puanladığın her bölüm aynı puanı aldı, yani bir dip noktası yok.",
+    "yourRatings": "Senin puanların",
+    "communityRatings": "Topluluk",
+    "shareTitle": "Puanlarını paylaş",
+    "shareFailedTitle": "Paylaşılamadı",
+    "figureRated": "puanlandı",
+    "figureAverage": "ortalama",
+    "episodeCount": {
+      "one": "{{count}} bölüm",
+      "other": "{{count}} bölüm"
+    }
+  },
+  "calendarSync": {
+    "title": "Takvim",
+    "sub": "Yaklaşan bölümlerin ve filmlerin, kendine ait bir takvimde",
+    "lastSynced": "Son güncelleme",
+    "never": "Hiç",
+    "syncNow": "Şimdi güncelle",
+    "deniedTitle": "Takvim erişimi reddedildi",
+    "deniedBody": "OpenTV'nin kendi takvimini oluşturmak için izne ihtiyacı var. Bunu Ayarlar'dan verebilirsin.",
+    "failedTitle": "Kurulamadı",
+    "failedBody": "Takvim oluşturulamadı. Birazdan tekrar dene.",
+    "note": "OpenTV kendine ait bir takvim oluşturur — diğer takvimlerine asla dokunulmaz ve bunu kapatınca takvim silinir.",
+    "wrote": "{{total}} kayıt — {{timed}} tanesi yayın saatinde, {{allDay}} tanesi tüm gün.",
+    "plusTitle": "Takvim için Plus gerekir",
+    "plusBody": "Yeni bölümler artık eklenmiyor. Takviminde zaten olan her şey orada kalır — hiçbir şey kaldırılmadı.",
+    "onSub": "Açık — yaklaşan bölümlerin ve filmlerin kendi takviminde",
+    "openSettings": "Ayarlar'ı aç"
+  },
+  "restore": {
+    "title": "Yedeği geri yükle",
+    "intro": "Daha önce OpenTV Yedek açıksa kitaplığın seni bekliyor. Kullandığın hesapla giriş yap, hemen geri gelsin.",
+    "withGoogle": "Google ile giriş yap",
+    "withApple": "Apple ile giriş yap",
+    "ownServer": "Kendi sunucumu kullanıyorum",
+    "signInWhy": "Giriş yapmak yalnızca yedeğini bulur. Hiçbir şey yayımlanmaz, profil oluşturulmaz.",
+    "looking": "Yedeğin aranıyor…",
+    "yourLibrary": "Kitaplığın",
+    "shows": "dizi",
+    "episodes": "bölüm",
+    "movies": "film",
+    "restore": "Bunu geri yükle",
+    "restoring": "Geri yükleniyor…",
+    "mergeNote": "Yedekteki her şeyi bu telefona ekler. Buradaki hiçbir şey kaldırılmaz.",
+    "nothingThere": "Bu hesapta henüz yedek yok.",
+    "importInstead": "Bunun yerine TV Time dışa aktarımını içe aktar",
+    "doneTitle": "Tekrar hoş geldin",
+    "doneBody": "{{shows}} dizi, {{episodes}} bölüm ve {{movies}} film geri geldi.",
+    "failedTitle": "Geri yüklenemedi",
+    "failedBody": "Yedek indirilemedi. Bağlantını kontrol edip tekrar dene.",
+    "withEmail": "E-posta ile giriş yap",
+    "fromDevices": {
+      "one": "{{count}} cihazda kopya var. Bu en eksiksiz olanı.",
+      "other": "{{count}} cihazda kopya var. Bu en eksiksiz olanı."
+    }
+  },
+  "deviceSync": {
+    "section": "Cihazların arasında senkronize et",
+    "on": "Cihazlarım eşit kalsın",
+    "onSub": "Telefonunda bir bölümü işaretle, tabletinde de işaretlensin.",
+    "state": "Son senkronizasyon",
+    "stateSub": "Şimdi senkronize etmek için dokun. OpenTV'yi açıp kapattığında da çalışır.",
+    "waiting": {
+      "one": "{{count}} değişiklik bekliyor",
+      "other": "{{count}} değişiklik bekliyor"
+    },
+    "onTitle": "Senkronizasyon açık",
+    "onBody": "Bundan sonra bu cihazda yaptıkların diğerlerine ulaşır. Burada zaten olanlar yedeğinle gitti — henüz yapmadıysan diğer cihazda geri yükle.",
+    "plusTitle": "Göndermek için Plus gerekir",
+    "plusBody": "Bu cihaz diğerlerinden değişiklik almaya devam eder ve elindeki her şeyi korur. Yeniden göndermeye başlamak için yenile.",
+    "paused": "Duraklatıldı — Plus sona erdi",
+    "failedBody": "Sunucuya ulaşılamadı. Hiçbir şey kaybolmadı — değişikliklerin sırada bekliyor ve bir sonraki denemede gider."
+  },
+  "tonight": {
+    "title": "Bu akşam",
+    "howLong": "NE KADAR VAKTİN VAR?",
+    "what": "NE İSTİYORSUN?",
+    "mood": {
+      "light": "Hafif",
+      "funny": "Komik",
+      "dark": "Karanlık",
+      "exciting": "Heyecanlı",
+      "any": "Fark etmez"
+    },
+    "time": {
+      "short": "30 dk'dan az",
+      "medium": "30–60 dk",
+      "long": "1–2 saat",
+      "any": "Fark etmez"
+    },
+    "want": {
+      "continue": "Bir şeye devam et",
+      "new": "Yeni bir şeye başla",
+      "movie": "Bir film",
+      "any": "Sen seç"
+    },
+    "kind": {
+      "continue": "DEVAM ET",
+      "finish": "BİTİR",
+      "movie": "İZLEME LİSTENDEN",
+      "start": "BAŞLA"
+    },
+    "left": {
+      "one": "{{count}} bölüm kaldı",
+      "other": "{{count}} bölüm kaldı"
+    },
+    "minutes": {
+      "one": "{{count}} dk",
+      "other": "{{count}} dk"
+    },
+    "nothingFits": "Kitaplığında buna uyan bir şey yok. Daha uzun bir akşam dene ya da seçimi bize bırak.",
+    "catchUpSection": "Geri dönmeden yetiş",
+    "returns": "{{name}} — {{season}}. sezon {{days}} gün sonra",
+    "planPace": {
+      "one": "{{count}} bölüm gerideysin. Haftada {{perWeek}} izle, {{spare}} gün erken bitir.",
+      "other": "{{count}} bölüm gerideysin. Haftada {{perWeek}} izle, {{spare}} gün erken bitir."
+    },
+    "planTight": {
+      "one": "{{days}} günde {{count}} bölüm — bu, bir planın dürüstçe söz verebileceğinden fazla.",
+      "other": "{{days}} günde {{count}} bölüm — bu, bir planın dürüstçe söz verebileceğinden fazla."
+    },
+    "entry": "Bu akşam",
+    "entrySub": "Ne kadar vaktin olduğunu söyle",
+    "moodLabel": "RUH HALİ"
+  },
+  "franchise": {
+    "title": "Seri",
+    "progress": "{{total}} yapımdan {{watched}} tanesi izlendi",
+    "soon": "Yakında",
+    "nextUp": "Sıradaki: {{name}}"
+  },
+  "rate": {
+    "title": "Her şey geri geldi mi?",
+    "body": "OpenTV az önce {{count}} bölümü telefonuna geri getirdi. Bu bir işe yaradıysa, App Store'da bir puan sandığından çok daha fazla yardımcı olur — sonraki kişinin ilk gördüğü şey o.",
+    "now": "Puanla",
+    "later": "Şimdi değil",
+    "freshTitle": "OpenTV'yi beğendin mi?",
+    "freshBody": "Burada {{count}} bölüm takip ettin. OpenTV yerini hak ediyorsa, mağazada bir puan sandığından çok daha fazla yardımcı olur — sonraki kişinin ilk gördüğü şey o."
+  },
+  "signIn": {
+    "title": "Bir hesap",
+    "lede": "Kitaplığın bu telefonda kalır. Hesap, kopyaya gidecek bir yer verir ve kopyanın senin olduğunu kanıtlar.",
+    "apple": "Apple ile devam et",
+    "google": "Google ile devam et",
+    "email": "E-posta adresi kullan",
+    "notTitle": "Bunun yapmadıkları",
+    "notProfile": "Herkese açık profil oluşturmaz, kitaplığınla ilgili hiçbir şey yayımlanmaz.",
+    "notFindable": "Kimse seni bulamaz. Kimsenin arayabileceği bir kullanıcı adın yok.",
+    "notCommunity": "Toplulukta değilsin. Yorum yok, puan yok, takipçi yok.",
+    "later": "İstersen topluluğa sonra katılabilirsin. Buradaki hiçbir şey seni buna bağlamaz.",
+    "failedTitle": "Giriş yapılamadı"
+  },
+  "shareFavorites": {
+    "title": "Favorileri paylaş",
+    "headingShows": "Favori dizilerim",
+    "headingMovies": "Favori filmlerim",
+    "recentShows": "İzlediğim diziler",
+    "recentMovies": "İzlediğim filmler",
+    "recentTitle": "İzlediklerimi paylaş",
+    "watchedRange": "İzlenme: {{range}}",
+    "share": "Paylaş",
+    "emptyShows": "Önce birkaç diziyi favorilerine ekle — herhangi bir dizide kalbe dokun, sonra geri gel.",
+    "emptyMovies": "Önce birkaç filmi favorilerine ekle — herhangi bir filmde kalbe dokun, sonra geri gel.",
+    "hintFull": "Son yuvaya koymak için başka bir postere dokun.",
+    "hintPick": {
+      "one": "{{count}} postere daha dokun",
+      "other": "{{count}} postere daha dokun"
+    },
+    "showTitles": "Başlıkları göster",
+    "showProfile": "Profilimi göster",
+    "hintRemove": "Kaldırmak için seçili bir postere dokun."
+  },
+  "commsuni": {
+    "byline": "Yorumlar CommsUni.tv'den",
+    "sortLiked": "En beğenilen",
+    "sortRecent": "En yeni",
+    "more": "Daha fazla göster",
+    "infoTitle": "Bu yorumlar nereden geliyor",
+    "infoCommsuni": "OpenTV'nin bağlandığı ortak yorum platformu. Başka uygulamalar da aynı sohbetleri okuyup yazar, böylece onları kullananların yorumlarını da görürsün.",
+    "infoArchive": "TV Time'ın sohbetlerinin topluluk tarafından oluşturulmuş bir kopyası; TV Time kapanmadan önce, Temmuz 2026'da kaydedildi. Gizliliği korumak için isimler anonimleştirildi. CommsUni bundan doğdu.",
+    "infoSolo": "İkisi de tek bir geliştirici tarafından yapılıp bakılıyor.",
+    "support": "CommsUni.tv'yi destekle",
+    "archiveLink": "TV Community Archive",
+    "nameCommsuni": "CommsUni.tv",
+    "nameArchive": "TV Community Archive",
+    "gone": "Bu yorum artık açık değil. Geri dön ve tekrar dokun.",
+    "localOnly": "Yalnızca OpenTV",
+    "consent": {
+      "title": "Yorumların CommsUni'de paylaşılsın mı?",
+      "body": "CommsUni, TV Time'ın arşivlenmiş yorumlarının ortak evi ve birkaç uygulama tarafından kullanılıyor. Paylaşırsan buradaki yeni yorumların o uygulamalarda ve herkese açık arşiv sitesinde de görünür. Paylaşmazsan yalnızca OpenTV'de kalır, OpenTV üyeleri görür. Bunu Ayarlar'dan değiştirebilirsin.",
+      "share": "CommsUni'de paylaş",
+      "keep": "Yalnızca OpenTV'de tut",
+      "identityTitle": "Hangi isim görünsün?",
+      "identityBody": "OpenTV adın ve fotoğrafın ya da CommsUni'nin senin için uydurduğu bir isim. Her iki durumda da yazdıkların CommsUni'de herkese açık.",
+      "asProfile": "OpenTV adım",
+      "asPersona": "Oluşturulmuş bir isim"
+    },
+    "settingsRow": "Yorumları CommsUni'de paylaş",
+    "settingsSub": "Yeni yorumlar diğer uygulamalarda ve herkese açık arşivde de görünür",
+    "replyNeedsSharingTitle": "Yanıt vermek yazdıklarını paylaşır",
+    "replyNeedsSharingBody": "Yanıtlar CommsUni'ye gider ve orada diğer uygulamaların kullanıcıları okur. Yanıt vermek için Ayarlar → Topluluk → Yorumları CommsUni'de paylaş seçeneğini aç.",
+    "sortTop": "En iyi",
+    "filterAll": "Tümü",
+    "allLanguages": "Tüm diller",
+    "reportIllegal": "Yasa dışı içerik",
+    "mineHide": "Bu benim — gizle",
+    "mineClaim": "Bu benim — sonra sahiplen",
+    "mineSentBody": "Teşekkürler. CommsUni ekibi bakacak; burada senin için gizlendi.",
+    "showReplies": "Yanıtları göster ({{count}})",
+    "gifRefusedTitle": "GIF'ler henüz CommsUni'ye gönderilemiyor",
+    "gifRefusedBody": "Birkaç kelime ekle, GIF olmadan gönderilsin.",
+    "gif": "GIF"
+  },
+  "stremio": {
+    "title": "Stremio",
+    "entrySub": "Stremio'da izlendi olarak işaretlediğin bölümleri getir",
+    "intro": "OpenTV, Stremio'da hangi bölümleri izlediğini okuyup burada işaretleyebilir.",
+    "rules": "Yalnızca okur, o da sadece zaten takip ettiğin dizilerin bölümlerini. Stremio her bölümün tarihini tutmaz, bu yüzden bugünün tarihiyle eklenirler. Stremio'ya asla hiçbir şey gönderilmez.",
+    "account": "Hesap",
+    "email": "Stremio e-postası",
+    "password": "Şifre",
+    "passwordHint": "Şifren giriş için bir kez Stremio'ya gider ve saklanmaz.",
+    "connect": "Stremio'yu bağla",
+    "connecting": "Bağlanıyor…",
+    "needLogin": "Stremio e-postanı ve şifreni gir.",
+    "failedTitle": "Stremio'ya giriş yapılamadı",
+    "failedBody": "E-postanı ve şifreni kontrol et. Stremio'ya Facebook ile giriyorsan önce Stremio'da bir şifre belirle.",
+    "disconnectTitle": "Stremio bağlantısı kesilsin mi?"
+  },
+  "coverAdjust": {
+    "title": "Banner'ı ayarla",
+    "hint": "Neyin görüneceğini seçmek için sürükle. Yakınlaştırmak için iki parmakla sıkıştır.",
+    "reset": "Sıfırla",
+    "resizeHint": "Daha uzun bir banner için sarı tutamacı aşağı sürükle.",
+    "fade": "Yumuşak kenar",
+    "fadeSub": "Banner sayfaya karışır, çizgi kalmaz",
+    "overlay": "Banner katmanı",
+    "overlayAuto": "Otomatik"
+  },
+  "whatsNew": {
+    "title": "Yenilikler",
+    "done": "Anladım",
+    "close": "Kapat",
+    "v166": {
+      "comments": "TV Time yorumları geri döndü — arşivin tamamı, her dizi, bölüm ve filmin altında, CommsUni.tv aracılığıyla",
+      "translate": "Herhangi bir yorumu tek dokunuşla kendi diline çevir",
+      "banner": "Kendi GIF'in ya da fotoğrafın banner olarak — sürükle, boyutlandır, uygulama renklerini ondan alsın",
+      "username": "Kullanıcı adını Profili düzenle'den değiştir",
+      "backup": "Plus: Bulut Yedek artık kendiliğinden açılıyor ve Senkronizasyon'a ayak uyduruyor"
+    },
+    "v168": {
+      "templates": "Plus: Profil şablonları — 12 hazır görünüm ya da kendi dizi ve filmlerinden yapılmış bir tane. Profili düzenle → Profil şablonları",
+      "seasonal": "Sezonluk süslemeler: fotoğrafını Cadılar Bayramı, Noel ve daha fazlası için süsle — sezon boyunca ücretsiz",
+      "icons": "Plus: Cadılar Bayramı ve Noel dahil yeni uygulama simgeleri. Ayarlar → Görünüm",
+      "blocks": "Plus: profilini düzenle; herhangi bir bloğa dokunarak stilini ya da boyutunu değiştir veya başka bir blokla değiştir",
+      "message": "Geliştiriciye yaz: bir hata, bir fikir, eksik bir şey — Ayarlar → Geliştiriciye yaz"
+    },
+    "v170": {
+      "goal": "Yıllık hedef: bu yıl kaç film ve bölüm izleyeceğini seç ve dolduğunu izle — Ayarlar → Sen → Yıllık hedef",
+      "moving": "Başka bir telefondan mı geçiyorsun? Kitaplığını eski bir iPhone ya da Android'den getir — Ayarlar → Kitaplık → Başka bir telefondan mı geçiyorsun?",
+      "ipad": "iPad: posterler ve kartlar artık ekranın tüm genişliğini kullanıyor",
+      "devices": "Plus: Cihazların — hesabındaki her telefon ve tableti gör, birini kaldır — Ayarlar → Kitaplık → Yedek",
+      "fixes": "Düzeltildi: İzlenen bölümleri gizle artık açık kalıyor ve Bu akşam satırı kapatılabiliyor"
+    }
+  },
+  "pickShows": {
+    "title": "Dizilerini ekle",
+    "sub": "İzlediğin dizilere dokun. Daha fazlasını istediğin zaman ekleyebilirsin.",
+    "search": "Dizi ara",
+    "skip": "Atla",
+    "pickOne": "En az birini seç",
+    "continue": "Devam · {{count}}",
+    "none": "Hiçbir şey bulunamadı",
+    "whereTitle": "Neredesin?",
+    "whereSub": "Böylece sana göstereceğimiz sonraki bölüm doğru olur.",
+    "notStarted": "Başlanmadı",
+    "upToDate": "Güncel",
+    "done": "Bitti",
+    "filmsTitle": "İzlediğin filmler",
+    "filmsSub": "İzlediklerine dokun. Film sevmiyorsan atla.",
+    "filmsSearch": "Film ara",
+    "nextUp": "Sıradaki",
+    "finished": "Bitirdim",
+    "partway": "Yarısındayım"
+  },
+  "support": {
+    "title": "Geliştiriciye yaz",
+    "rowSub": "Bir hata, bir fikir, eksik bir şey — doğrudan bana",
+    "intro": "Bu doğrudan bana, Noddy'ye gelir. Her mesajı okur ve buradan yanıtlarım — yanıtladığımda bildirim alırsın.",
+    "placeholder": "Bir mesaj yaz",
+    "send": "Gönder",
+    "failedTitle": "Gönderilmedi",
+    "failedBody": "Bağlantını kontrol edip tekrar dene.",
+    "needAccount": "Yanıtın sana ulaşabilmesi için giriş yap. Hiçbir şey yayımlanmaz, profil oluşturulmaz.",
+    "signIn": "Giriş yap",
+    "from": "Noddy"
+  },
+  "backupPrompt": {
+    "title": "Kitaplığını güvende tut",
+    "icloudBody": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda.",
+    "driveBody": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez.",
+    "later": "Şimdi değil",
+    "openSettings": "Ayarlar'ı aç",
+    "turnOnDrive": "Google Drive'a yedekle"
+  },
+  "seasonal": {
+    "title": "Sezonluk görünüm",
+    "switchSub": "Profilinde avatar süslemeleri ve sezona özel bir tema",
+    "halloween": "Cadılar Bayramı",
+    "christmas": "Noel",
+    "now": "şimdi",
+    "themeTitle": "Tema: {{name}}",
+    "themeSub": "Fotoğrafının etrafında bir çerçeve ve banner'ında birkaç saniyelik sezon havası",
+    "on": "Açık",
+    "off": "Kapalı",
+    "noDecoration": "Süsleme yok",
+    "freeNote": "Etkinlik sürdükçe ücretsiz: süslemesini tut ya da kaldır. OpenTV Plus ile istediğin süslemeyi seçer, her sezonun görünümünü saklarsın.",
+    "nothingNow": "Şu an sezonluk etkinlik yok.",
+    "plusKeeps": "OpenTV Plus ile her sezonun görünümü senin olur",
+    "looks": "Görünümler",
+    "decoration": "Üstte",
+    "companions": "Arkadaşlar",
+    "companionsSub": "en fazla iki",
+    "ring": "Halka",
+    "glow": "Parıltı",
+    "effect": "Banner'ında",
+    "plusLocked": "OpenTV Plus ile her parçayı değiştir",
+    "preset": {
+      "pumpkin": "Balkabağı",
+      "haunted": "Perili",
+      "witch": "Cadı",
+      "spider": "Örümcek ağı",
+      "classic": "Klasik",
+      "frost": "Ayaz",
+      "cozy": "Sıcacık",
+      "reindeer": "Ren geyiği",
+      "calavera": "Calavera",
+      "marigold": "Kadife çiçeği",
+      "altar": "Sunak",
+      "fiesta": "Fiesta",
+      "party": "Parti",
+      "midnight": "Gece yarısı",
+      "silver": "Gümüş",
+      "balloons": "Balonlar",
+      "cupid": "Aşk tanrısı",
+      "datenight": "Randevu gecesi",
+      "sweet": "Tatlı",
+      "letters": "Aşk mektupları",
+      "crescent": "Hilal",
+      "lantern": "Fener",
+      "eid": "Bayram",
+      "night": "Ramazan gecesi",
+      "statuette": "Heykelcik",
+      "redcarpet": "Kırmızı halı",
+      "premiere": "Gala",
+      "director": "Yönetmen"
+    },
+    "muertos": "Ölüler Günü",
+    "newyear": "Yılbaşı",
+    "valentine": "Sevgililer Günü",
+    "ramadan": "Ramazan ve Bayram",
+    "awards": "Ödül sezonu"
+  },
+  "templates": {
+    "title": "Profil şablonları",
+    "rowSub": "12 hazır profil: banner, renkler, düzen ve bloklar.",
+    "intro": "Birini seç, profilin onun banner'ını, renklerini, düzenini ve bloklarını alsın. Fotoğrafın, adın ve dizilerin senin kalır; sonra istediğin parçayı değiştirebilirsin.",
+    "applyTitle": "Şablon kullanılsın mı: {{name}}",
+    "applyBody": "Banner'ını, tema renklerini, düzenini ve bloklarını değiştirir. Sonra istediğini değiştirebilirsin.",
+    "apply": "Kullan",
+    "failed": "Şablon uygulanamadı",
+    "layout": {
+      "classic": "Klasik düzen",
+      "cards": "Kart düzeni",
+      "poster": "Poster düzeni"
+    },
+    "name": {
+      "midnight": "Gece yarısı",
+      "sunset": "Gün batımı",
+      "neon": "Neon",
+      "forest": "Orman",
+      "ocean": "Okyanus",
+      "cinema": "Sinema",
+      "noir": "Noir",
+      "gold": "Altın",
+      "pastel": "Pastel",
+      "retro": "Retro",
+      "halloween": "Cadılar Bayramı",
+      "holiday": "Noel"
+    },
+    "fromTitles": "Dizi ve filmlerinden",
+    "made": "Oluşturulan şablonlar",
+    "fromTitlesLoading": "Dizilerinden şablonlar oluşturuluyor…",
+    "persona": {
+      "binger": {
+        "name": "Maraton Koşucusu",
+        "why": "Şu an izlediklerin ve en uzun maratonunla açılır."
+      },
+      "filmBuff": {
+        "name": "Sinefil",
+        "why": "Favori filmlerin ve en yüksek puanladıklarınla açılır."
+      },
+      "explorer": {
+        "name": "Kaşif",
+        "why": "En sevdiğin tür ve favori dizilerinle açılır."
+      },
+      "nostalgic": {
+        "name": "Nostaljik",
+        "why": "İzleme geçmişin ve ne zamandır takip ettiğinle açılır."
+      },
+      "completionist": {
+        "name": "Tamamlayıcı",
+        "why": "İstatistiklerin ve bitirdiğin dizilerle açılır."
+      },
+      "critic": {
+        "name": "Eleştirmen",
+        "why": "En yüksek puanladıkların ve sana nasıl hissettirdikleriyle açılır."
+      },
+      "curator": {
+        "name": "Küratör",
+        "why": "Listelerin ve favorilerinle açılır. En üstte sayı yok."
+      },
+      "devotee": {
+        "name": "Sadık Hayran",
+        "why": "Favori dizilerin ve en uzun maratonunla açılır."
+      },
+      "feeler": {
+        "name": "Duygusal",
+        "why": "Dizilerinin sana nasıl hissettirdiğiyle açılır."
+      },
+      "newcomer": {
+        "name": "Yeni Gelen",
+        "why": "Şu an izlediklerinle açılır. Yılların geçmişini gerektiren hiçbir şey yok."
+      },
+      "spooky": {
+        "name": "Ürkütücü",
+        "why": "Favori dizilerinle açılır; Cadılar Bayramı renklerinde, fotoğrafında sezon görünümüyle."
+      },
+      "festive": {
+        "name": "Bayram Havasında",
+        "why": "Favori filmlerinle açılır; Noel renklerinde, fotoğrafında sezon görünümüyle."
+      }
+    },
+    "seasonal": "Sezonluk"
+  },
+  "blockOptions": {
+    "look": {
+      "classic": "Stil: satır",
+      "cards": "Stil: ızgara",
+      "poster": "Stil: kompakt"
+    },
+    "size": {
+      "1x1": "Boyut: küçük",
+      "2x1": "Boyut: geniş",
+      "2x2": "Boyut: büyük"
+    },
+    "replace": "Başka bir blokla değiştir",
+    "remove": "Kaldır"
+  },
+  "seasonIcon": {
+    "title": "Sezon simgesi: {{season}}",
+    "body": "OpenTV'nin bu sezona özel bir simgesi var: {{season}}. Ana ekranına koymak ister misin? İstediğin zaman Ayarlar → Görünüm'den değiştirebilirsin.",
+    "use": "Kullan",
+    "keep": "Benimki kalsın"
+  },
+  "publishHold": {
+    "title": "Profilinde bu telefondakinden fazlası var",
+    "body": "Herkese açık profilin bu telefonda olandan daha fazla dizi ve film gösteriyor, bu yüzden henüz buradan güncellenmiyor. Yedeğini geri yükle ya da diğer telefonundaki dışa aktarma dosyasını içe aktar. Gerçekten sıfırdan başladıysan bunun yerine bu telefonun kitaplığını kullan.",
+    "restore": "Yedeği geri yükle",
+    "import": "Dosya içe aktar",
+    "useThis": "Bu telefonun kitaplığını kullan"
+  },
+  "selfHostSync": {
+    "dest": "Topluluk sunucun",
+    "destSub": "OpenTV'yi yönlendirdiğin sunucu. Ücretsiz — sunucun senin, istediğin kadar doldur.",
+    "refused": "Sunucun yüklemeyi reddetti: bu hesabın orada Plus'a ihtiyacı olduğunu söylüyor. SELF-HOSTING.md'deki gibi başlatılan bir sunucu herkese izin verir; aksi halde sunucuda hesaba Plus ver."
+  },
+  "publishOtherDevice": {
+    "title": "Profilin diğer telefonundan güncelleniyor",
+    "body": "İki telefon da kendi kitaplığını tutar. İkisinde aynı kitaplık olsun istiyorsan OpenTV Plus ile senkronizasyonu aç ya da bu telefonu ana telefonun yap.",
+    "seePlus": "OpenTV Plus'a bak",
+    "makeMain": "Bu telefonu ana yap",
+    "notNow": "Şimdi değil"
+  },
+  "moving": {
+    "title": "Başka bir telefondan mı geliyorsun?",
+    "settingsSub": "Kitaplığını eski iPhone ya da Android telefonundan taşı",
+    "which": "Hangi telefonu kullanıyordun?",
+    "iphone": "iPhone",
+    "android": "Android",
+    "crossFromIphone": "iCloud yalnızca başka bir iPhone'a geri yükler, yani eski iPhone'unun tuttuğu kopya buraya gelemez. Taşımanın iki yolu var:",
+    "crossFromAndroid": "Google Drive yedeği yalnızca başka bir Android'e geri yüklenir, yani eski telefonunun tuttuğu kopya buraya gelemez. Taşımanın iki yolu var:",
+    "free": "Ücretsiz",
+    "plus": "Plus",
+    "icloud": {
+      "title": "iCloud kopyan",
+      "looking": "Bu iCloud'a bakılıyor…",
+      "found": "Bu iCloud'da bir OpenTV yedeği var. Tek dokunuşla geri gelir.",
+      "none": "Bu iCloud'da OpenTV yedeği yok. Eski iPhone'unda iCloud Drive açıksa, bu telefonda aynı Apple hesabıyla giriş yap ve iCloud Drive'ı aç ({{steps}}), sonra buraya geri dön.",
+      "button": "iCloud'dan geri yükle"
+    },
+    "drive": {
+      "title": "Google Drive kopyan",
+      "body": "Eski telefonunda “{{row}}” açıksa, burada aynı Google hesabıyla giriş yap, kopya geri gelir. Google ile giriş yapmak topluluğa katılmak demek değil.",
+      "button": "Google Drive'dan geri yükle"
+    },
+    "file": {
+      "title": "Dışa aktarma dosyası",
+      "step1": "Eski telefonda, OpenTV'de: {{settings}} → {{tab}} → {{backup}} → {{export}}.",
+      "step2": "Dosyayı kendine gönder (e-posta, Telegram, WhatsApp, Drive, dosya taşıyan ne olursa) ve bu telefonda aç.",
+      "step3": "Buradan içe aktar. Birleştirilir: bu telefonda zaten olan hiçbir şey silinmez.",
+      "button": "Dosyayı içe aktar"
+    },
+    "server": {
+      "title": "OpenTV Yedekleme",
+      "body": "OpenTV Plus'ın ve OpenTV Yedekleme açıksa, aynı hesapla giriş yap, kitaplığın hemen geri gelir. Hangi telefon olursa olsun.",
+      "button": "Yedeği geri yükle"
+    },
+    "fresh": {
+      "title": "Yedek yok mu?",
+      "body": "O zaman taşınacak bir şey yok. Sıfırdan başla, bu sefer bir kopya tut: {{settings}} → {{tab}} → {{backup}}.",
+      "button": "Sıfırdan başla"
+    }
+  },
+  "serverTemplates": {
+    "section": "OpenTV'den",
+    "new": "Yeni"
+  },
+  "devices": {
+    "title": "Cihazların",
+    "entrySub": "Bu hesapla eşitlenen telefonlar ve tabletler.",
+    "offSub": "Bu telefonda eşitleme kapalı. Tekrar açmak için dokun.",
+    "intro": "Bu hesapla eşitlenen tüm telefonlar ve tabletler. Artık kullanmadığın birini kaldırırsan izlediklerini göndermeyi ve almayı bırakır. Üzerindeki kitaplık olduğu gibi kalır.",
+    "thisPhone": "Bu telefon",
+    "unnamed": "Adsız cihaz",
+    "lastSeen": "Son görülme: {{date}}",
+    "removeA11y": "Kaldır: {{name}}",
+    "removeTitle": "{{name}} kaldırılsın mı?",
+    "removeBody": "Bu hesapla eşitlenmeyi bırakır. Üzerindeki hiçbir şey silinmez ve orada eşitlemeyi tekrar açarak geri katılabilir.",
+    "empty": "Bu hesapla henüz hiçbir cihaz eşitlenmedi.",
+    "limitNote": {
+      "one": "Bir hesapla {{count}} cihaz eşitlenebilir.",
+      "other": "Bir hesapla en fazla {{count}} cihaz eşitlenebilir."
+    },
+    "offTitle": "Bu telefonda eşitleme kapalı",
+    "offRemoved": "Bu telefon hesabın cihazlarından kaldırıldı. Tekrar eklemek için eşitlemeyi yeniden aç.",
+    "offLimit": "Hesap cihaz sınırına ulaştı. Artık kullanmadığın birini kaldır, burada eşitleme tekrar açılır.",
+    "turnOn": "Eşitlemeyi tekrar aç",
+    "removedTitle": "Bu telefon kaldırıldı",
+    "removedBody": "Hesabının cihazlarından kaldırıldığı için eşitleme durdu. Buradaki kitaplığına dokunulmadı. Eşitlemeyi Cihazların bölümünden tekrar açabilirsin.",
+    "limitTitle": "Çok fazla cihaz",
+    "limitBody": "Hesabın cihaz sınırına ulaştı, bu yüzden bu cihazda eşitleme durdu. Cihazların bölümünden artık kullanmadığın birini kaldır, sonra eşitlemeyi tekrar aç.",
+    "olderHint": "Eski bir OpenTV sürümünde. Güncellenince adı görünür"
+  },
+  "sideload": {
+    "plusTitle": "OpenTV Plus, Google Play sürümünde var",
+    "plusBody": "Bu kopya GitHub'dan yüklendi ve orada Google Play ödemesi yok. Abone olmak için önce kitaplığını dışa aktar (Ayarlar → Verilerin → Verilerimi dışa aktar), sonra OpenTV'yi Google Play'den yükleyip orada içe aktar. İki sürüm birbirini güncelleyemez.",
+    "updateBody": "OpenTV'nin bu sürümü artık desteklenmiyor. Takibe devam etmek için yenisini GitHub Releases'tan indir. Kitaplığına dokunulmaz.",
+    "updateCta": "GITHUB'DAN İNDİR"
+  },
+  "yearlyGoal": {
+    "title": "Yıllık hedef",
+    "settingsSub": "Bu yıl geçmek istediğin film ve bölüm sayısı",
+    "switch": "Yıllık hedef",
+    "switchSub": "Yıl için bir sayı seç, doldukça izle. İzlendi olarak işaretlediklerinden, telefonunda sayılır.",
+    "films": "Filmler",
+    "episodes": "Bölümler",
+    "none": "Yok",
+    "block": "{{year}} hedefi",
+    "blockShort": "Hedef",
+    "blockEmpty": "{{year}} için hedef koy",
+    "progress": "{{done}} / {{target}}",
+    "ahead": {
+      "one": "{{count}} önde",
+      "other": "{{count}} önde"
+    },
+    "behind": {
+      "one": "{{count}} geride",
+      "other": "{{count}} geride"
+    },
+    "onTrack": "Yolunda",
+    "reached": "Tamam ✅",
+    "startsSoon": "Ocak'ta başlıyor",
+    "nudge": "Geride kalınca bana hatırlat",
+    "nudgeSub": "Haftada en fazla bir kez, öndeyken asla.",
+    "nudgeTitle": "{{year}} hedefin",
+    "nudgeFilms": {
+      "one": "{{count}} film gerisindesin. Bu akşam?",
+      "other": "{{count}} film gerisindesin. Bu akşam?"
+    },
+    "nudgeEpisodes": {
+      "one": "{{count}} bölüm gerisindesin. Bu akşam?",
+      "other": "{{count}} bölüm gerisindesin. Bu akşam?"
+    },
+    "onProfile": "Profilimde göster",
+    "onProfileSub": "Yalnızca sayılar, ne izlediğin asla.",
+    "shareFilms": {
+      "one": "Hedef: {{count}} film",
+      "other": "Hedef: {{count}} film"
+    },
+    "shareEpisodes": {
+      "one": "Hedef: {{count}} bölüm",
+      "other": "Hedef: {{count}} bölüm"
+    },
+    "shareDone": "{{count}} tamam",
+    "note": "{{year}} içinde izlendi olarak işaretlediklerinden sayılır. Hiçbir şey telefonundan çıkmaz.",
+    "bannerTitle": "{{year}} hedefini koy",
+    "bannerBody": "Bu yıl kaç film ve bölüm? İzledikçe dolar.",
+    "saved": "✓ Kaydedildi, butona gerek yok",
+    "countedFilms": "Filmler · {{year}}",
+    "countedShows": "Diziler · {{year}}",
+    "pastTitle": "Geçmiş yıllar"
+  },
+  "serializd": {
+    "from": "serializd.com verilerin, JSON dosyası olarak. Serializd'da henüz dışa aktarma butonu yok. O gelene kadar geçmişini Trakt'a taşı ve onun dışa aktarmasını içe aktar."
+  },
+  "puzzle": {
+    "title": "Adını tahmin et",
+    "blockName": "Günlük bulmaca",
+    "number": "#{{n}}",
+    "cardSub": "Her gün kitaplığından bir yapım. Altı deneme.",
+    "cardProgress": "Deneme {{n}}/6, devam et",
+    "cardWon": "Çözüldü: {{score}}",
+    "cardLost": "Bugün olmadı. Yarın yenisi var.",
+    "fromLibrary": "Kitaplığından",
+    "classic": "Bir klasik",
+    "clueYear": "İlk yayın: {{year}}",
+    "clueGenre": "Tür: {{genre}}",
+    "clueNetwork": "Kanal: {{network}}",
+    "clueCharacter": "Ünlü bir karakter: {{name}}",
+    "clueLocked": "Yanlış tahminden sonra açılır",
+    "clueUnknown": "Burada bilgi yok, resim yetecek",
+    "answerPlaceholder": "Bu hangi dizi ya da film?",
+    "noMatch": "Bu adla bir şey yok, başka bir yazım dene",
+    "skip": "Bu denemeyi geç",
+    "wonTitle": {
+      "one": "İlk denemede bildin!",
+      "other": "{{count}} denemede bildin"
+    },
+    "lostTitle": "Bu sefer olmadı",
+    "itWas": "Cevap: {{show}}",
+    "memory": {
+      "one": "{{year}} yılında izledin: {{count}} bölüm",
+      "other": "{{year}} yılında izledin: {{count}} bölüm"
+    },
+    "openShow": "Diziyi aç",
+    "addToWatchlist": "İzleme listesine ekle",
+    "added": "İzleme listende",
+    "share": "Paylaş",
+    "tomorrow": "Yarın yeni bir yapım",
+    "pictureOffline": "Resim ilk seferde internet bağlantısı ister. Aşağıdaki ipuçları yine çalışır.",
+    "noPuzzle": "Henüz tahmin edecek bir şey yok. Önce bir bölüm ya da film izle.",
+    "blockPlayed": {
+      "one": "Bu ay {{count}} kez oynandı",
+      "other": "Bu ay {{count}} kez oynandı"
+    },
+    "settings": {
+      "title": "Günlük bulmaca",
+      "game": "Günlük bulmaca",
+      "gameSub": "Her gün bulanık bir resimden tahmin edilecek bir dizi ya da film. Kapatırsan her yerden gizlenir, geçmişin korunur.",
+      "remindAt": "Hatırlatma saati"
+    },
+    "tryOf": "Deneme {{n}}/{{total}}"
+  },
+  "a11y": {
+    "back": "Geri",
+    "close": "Kapat",
+    "more": "Daha fazla",
+    "inbox": "Gelen kutusu",
+    "watched": "İzlendi",
+    "inLibrary": "Kitaplığında",
+    "show": "Dizi",
+    "movie": "Film",
+    "showAsGrid": "Izgara olarak göster",
+    "showAsList": "Liste olarak göster",
+    "seasonEpisode": "Sezon {{season}}, bölüm {{episode}}",
+    "episodesLeft": {
+      "one": "{{count}} bölüm kaldı",
+      "other": "{{count}} bölüm kaldı"
+    },
+    "openShow": "Diziyi aç",
+    "poster": "{{title}}",
+    "posterNotStarted": "{{title}}, başlanmadı",
+    "posterFinished": "{{title}}, bitti",
+    "posterProgress": "{{title}}, %{{percent}} izlendi",
+    "posterWatching": "{{title}}, izleniyor",
+    "posterUpToDate": "{{title}}, güncel",
+    "posterStopped": "{{title}}, bırakıldı",
+    "seeAllHint": "Bölümün tamamını açar",
+    "earlier": "Önceki",
+    "later": "Sonraki",
+    "dayWatched": {
+      "one": "{{date}}, {{count}} izlendi",
+      "other": "{{date}}, {{count}} izlendi"
+    },
+    "website": "Web sitesi",
+    "removeWidget": "Bu widget'ı kaldır",
+    "editWidget": "Bu widget'ı düzenle",
+    "oneFewer": "Bir eksik",
+    "oneMore": "Bir fazla",
+    "sharedList": "Paylaşılan liste",
+    "pinned": "Sabitlendi",
+    "stars": {
+      "one": "{{count}} yıldız",
+      "other": "{{count}} yıldız"
+    },
+    "addToLibrary": "Kitaplığa ekle",
+    "removeFromLibrary": "Kitaplıktan kaldır",
+    "backToNext": "Sıradaki bölüme dön",
+    "markAll": "Tüm bölümleri işaretle ya da işareti kaldır",
+    "rewatches": {
+      "one": "{{count}} kez yeniden izlendi",
+      "other": "{{count}} kez yeniden izlendi"
+    },
+    "airsInDays": {
+      "one": "{{count}} gün sonra yayında",
+      "other": "{{count}} gün sonra yayında"
+    },
+    "previousMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "bestEpisode": "En iyi bölüm",
+    "worstEpisode": "En kötü bölüm",
+    "favourite": "Favori",
+    "showPassword": "Şifreyi göster",
+    "hidePassword": "Şifreyi gizle",
+    "colour": "Renk {{n}}",
+    "attachImage": "Resim ekle",
+    "like": "Beğen",
+    "clearSearch": "Aramayı temizle",
+    "picture": "Resim {{n}}",
+    "newTopic": "Yeni konu",
+    "season": "Sezon {{n}}",
+    "episode": "Bölüm {{n}}",
+    "looksRight": "Doğru görünüyor",
+    "previousSlide": "Önceki slayt",
+    "nextSlide": "Sonraki slayt",
+    "matchSame": "Aynı dizi: {{title}}",
+    "matchNot": "Bu değil: {{title}}",
+    "roomPersonActions": "Şikayet et ya da engelle",
+    "roomReaction": "{{handle}}, {{feeling}}, {{time}}",
+    "roomReact": "Tepki ver: {{feeling}}",
+    "roomMore": {
+      "one": "ve {{count}} kişi daha",
+      "other": "ve {{count}} kişi daha"
+    },
+    "tabOf": "{{label}}, sekme, {{n}}/{{total}}",
+    "opensMarkAs": "İşaretle… seçeneklerini açar",
+    "tvdbScore": "TheTVDB puanı, %{{percent}}",
+    "tvdbRating": "TheTVDB puanı, 5 üzerinden {{score}}",
+    "tvdbUnrated": "Henüz TheTVDB puanı yok",
+    "airDay": "Yayın günü: {{day}}",
+    "runtime": {
+      "one": "Süre: {{count}} dakika",
+      "other": "Süre: {{count}} dakika"
+    },
+    "ofWatched": "{{n}}/{{total}} izlendi",
+    "aired": "Yayın: {{date}}",
+    "released": "Çıkış: {{date}}",
+    "watchedBy": {
+      "one": "{{n}} kişi izledi",
+      "other": "{{n}} kişi izledi"
+    },
+    "iconOrange": "Turuncu",
+    "iconPurple": "Mor",
+    "iconTeal": "Turkuaz",
+    "iconHalloween": "Cadılar Bayramı",
+    "iconChristmas": "Noel",
+    "puzzleRight": "doğru",
+    "puzzleWrong": "yanlış",
+    "puzzleSkipped": "geçildi",
+    "puzzleTries": "{{n}}/{{total}} deneme"
+  },
+  "simkl": {
+    "title": "Simkl",
+    "entrySub": "Simkl'da izlediklerini getir; Nuvio da geçmişini oraya gönderir",
+    "intro": "OpenTV, Simkl'da izlendi olarak işaretlediğin bölümleri (Nuvio'nun oraya gönderdikleri dahil) okuyup burada işaretleyebilir.",
+    "rules": "Yalnızca okur ve yalnızca zaten takip ettiğin dizilerin bölümlerini. Asıl kaynak telefonun olarak kalır, buradan Simkl'a hiçbir şey gönderilmez.",
+    "connect": "Simkl'ı bağla",
+    "open": "simkl.com/pin'i aç",
+    "unavailable": "Simkl, OpenTV'nin bu sürümünde henüz yok.",
+    "failedTitle": "Simkl'a ulaşılamadı",
+    "failedBody": "Bağlantını kontrol edip tekrar dene.",
+    "disconnectTitle": "Simkl bağlantısı kesilsin mi?",
+    "matchesTitle": "Bu eşleşmeleri kontrol et",
+    "matchesHint": "Simkl bunları yalnızca adıyla biliyor. Her biri takip ettiğin dizi mi? Sen onaylamadan hiçbir şey eklenmez.",
+    "matchSame": "Aynı dizi",
+    "matchNot": "Bu değil",
+    "matchLine": {
+      "one": "Senin dizin: {{name}} · {{count}} bölüm",
+      "other": "Senin dizin: {{name}} · {{count}} bölüm"
+    },
+    "pendingNote": {
+      "one": "{{count}} dizinin Simkl sayfasında hızlıca kontrol edilmesi gerekiyor.",
+      "other": "{{count}} dizinin Simkl sayfasında hızlıca kontrol edilmesi gerekiyor."
+    },
+    "credit": "Veriler Simkl'dan · simkl.com"
+  },
+  "nuvio": {
+    "title": "Nuvio",
+    "entrySub": "Nuvio'da izlediğin bölümleri getir",
+    "intro": "Nuvio hesabınla giriş yap, OpenTV de Nuvio'da izlediğin bölümleri işaretlesin.",
+    "rules": "Yalnızca okur ve yalnızca zaten takip ettiğin dizilerin bölümlerini. Nuvio'ya hiçbir şey gönderilmez.",
+    "account": "Hesap",
+    "email": "Nuvio e-postası",
+    "password": "Şifre",
+    "passwordHint": "Şifren giriş için bir kez Nuvio'ya gider ve saklanmaz.",
+    "connect": "Nuvio'ya giriş yap",
+    "connecting": "Giriş yapılıyor…",
+    "needLogin": "Nuvio e-postanı ve şifreni gir.",
+    "failedTitle": "Nuvio'ya giriş yapılamadı",
+    "failedBody": "E-postanı ve şifreni kontrol edip tekrar dene.",
+    "syncFailed": "Nuvio geçmişin bu sefer okunamadı. Hiçbir şey değişmedi. Sonra tekrar dene ya da Nuvio'nun geçmişini gönderdiği Simkl'ı bağla.",
+    "profileTitle": "Hangi profil senin?",
+    "disconnectTitle": "Nuvio bağlantısı kesilsin mi?"
+  },
+  "halfStars": {
+    "label": "Puanın",
+    "value": "5 üzerinden {{value}} yıldız",
+    "unrated": "Puanlanmadı",
+    "hint": "Yarım yıldız için yıldızların üzerinde kaydır"
+  },
+  "feed": {
+    "rated": "puanladı: {{title}}",
+    "felt": "tepki verdi: {{title}}",
+    "commented": "yorum yaptı: {{title}}",
+    "replied": "yanıt verdi: {{title}}",
+    "picked": "favori karakterini seçti: {{title}}",
+    "locked": "Görmek için izle",
+    "lockedA11y": "İzleyene kadar gizli",
+    "photo": "Fotoğraf",
+    "joinTitle": "Arkadaşlarının tepkileri",
+    "joinCaption": "Takip ettiğin kişilerin neyi nasıl puanladığını, ne hissettiğini ve ne dediğini görmek için topluluğa katıl. Henüz izlemediğin hiçbir şeyi görmezsin.",
+    "noFollowsTitle": "Ne düşündüklerini görmek için insanları takip et",
+    "noFollowsCaption": "Puanları, hisleri ve yorumları burada görünür, en yenisi üstte.",
+    "unfollow": "Takibi bırak",
+    "optOut": "Tepkilerimi takipçilerime göster",
+    "optOutSub": "Puanların, hislerin, yorumların ve favori karakterlerin seni takip edenlerin akışında görünür."
+  },
+  "room": {
+    "pill": {
+      "one": "Canlı oda · {{count}} kişi izliyor",
+      "other": "Canlı oda · {{count}} kişi izliyor"
+    },
+    "pillFirst": "Canlı oda · İlk sen ol",
+    "watching": {
+      "one": "{{count}} kişi izliyor",
+      "other": "{{count}} kişi izliyor"
+    },
+    "connecting": "Odaya katılınıyor…",
+    "empty": "Henüz tepki yok. İlk sen olmak için bir yüze dokun.",
+    "closedTitle": "Oda kapandı",
+    "closedBody": "Canlı oda, bölümün yayınlandığı günden itibaren iki gün açık kalır. Bölümün yorumları her zaman açık.",
+    "toComments": "Yorumlara git",
+    "unavailable": "Bu topluluk sunucusunda canlı odalar yok.",
+    "unwatched": "Canlı odasına girmek için bu bölümü izlendi olarak işaretle. Böylece kimse spoiler'a yakalanmaz.",
+    "failed": "Canlı oda açılamadı. Sonra tekrar dene.",
+    "needsPlus": "Canlı odalar OpenTV Plus ile gelir.",
+    "seePlus": "OpenTV Plus'a göz at",
+    "report": "Şikayet et: @{{handle}}",
+    "block": "Engelle: @{{handle}}",
+    "joinPrivacy": "Canlı odadayken kullanıcı adın ve resmin odadaki diğerlerine görünür. Gece bitince hiçbir şey saklanmaz."
+  },
+  "together": {
+    "title": "Birlikte izleme",
+    "start": "Birlikte izle",
+    "startPlus": "Birlikte izle · Plus",
+    "inviteMessage": "OpenTV'de birlikte izleyelim: {{show}}. Birbirimizin hangi bölümde olduğunu görürüz. Kod: {{code}}",
+    "inviteBody": "Kodu birlikte izlediğin kişiye gönder. Ücretsiz katılır ve hangi bölümde olduğunu görür.",
+    "notStarted": "Başlanmadı",
+    "ahead": {
+      "one": "{{name}} {{count}} bölüm önde",
+      "other": "{{name}} {{count}} bölüm önde"
+    },
+    "behind": {
+      "one": "{{count}} bölüm öndesin · {{name}} geride",
+      "other": "{{count}} bölüm öndesin · {{name}} geride"
+    },
+    "level": "{{name}} ile aynı bölümdesiniz",
+    "labels": "{{name}}: {{theirs}} · Sen: {{mine}}",
+    "alone": "Henüz kimse yok. Birlikte izlediğin kişiyi davet et.",
+    "rowWith": "Birlikte izleniyor: {{names}}",
+    "addToMyShows": "Dizilerime ekle",
+    "cantRead": "Bu dizideki ilerlemen bu telefonda okunamıyor.",
+    "privacy": "Bir diziyi biriyle birlikte izlersen, o dizide izlediğin en ileri bölüm davet ettiğin kişilerle paylaşılır. Başka hiçbir şey paylaşılmaz."
+  },
+  "sharedLists": {
+    "inviteTitle": "Önce birini davet et",
+    "inviteBody": "Listede başka biri olunca paylaşılmış olur. Kodu gönder, katılmak ücretsiz.",
+    "inviteAction": "Bir arkadaşını davet et",
+    "invite": "Davet et",
+    "sectionTitle": "Arkadaşlarla paylaşılan",
+    "badge": {
+      "one": "Paylaşılan · {{count}} kişi",
+      "other": "Paylaşılan · {{count}} kişi"
+    }
+  },
+  "ratingBreakdown": {
+    "title": "Topluluk puanları",
+    "averageLabel": "Topluluk puanı 5 üzerinden {{value}}",
+    "averageHint": "Herkesin nasıl puanladığını gösterir",
+    "row": {
+      "one": "{{value}} yıldız, %{{percent}}",
+      "other": "{{value}} yıldız, %{{percent}}"
+    },
+    "mine": "senin puanın",
+    "short": "Topluluk"
+  },
+  "puzzleTitles": {
+    "kindShow": "Dizi",
+    "kindFilm": "Film",
+    "released": "Çıkış yılı: {{year}}",
+    "director": "Yönetmen: {{name}}",
+    "runtime": {
+      "one": "{{count}} dk",
+      "other": "{{count}} dk"
+    },
+    "actor": "Başrolde: {{name}}",
+    "openFilm": "Filmi aç",
+    "memoryFilm": "{{year}} yılında izledin"
+  },
+  "puzzlePolish": {
+    "played": "Oynanan",
+    "win": "Kazanma %",
+    "avg": "Ort. deneme",
+    "statsA11y": "{{played}} oynandı, %{{win}} kazanıldı, ortalama {{avg}} deneme",
+    "archive": "Arşiv",
+    "archiveTitle": "Bulmaca arşivi",
+    "archiveSub": "İlkinden bu yana tüm geçmiş bulmacalar. Bugünkü hep ücretsiz; geçmiş bir günü yeniden oynamak Plus'a dahil.",
+    "archiveEmpty": "Geçmiş bulmacalar ilkinden sonraki günden itibaren burada toplanır.",
+    "notPlayed": "Oynanmadı",
+    "solvedIn": "Çözüldü: {{score}}",
+    "missed": "Bilinemedi",
+    "archiveNote": "Arşivden. İstatistiklerine sayılmaz.",
+    "needsPlus": "Plus gerekir",
+    "shareTitle": "Sonucunu paylaş",
+    "shareImage": "Resim olarak paylaş",
+    "shareText": "Metin olarak paylaş",
+    "notifyTitle": "Bugünün bulmacası seni bekliyor",
+    "notifyBody": "Bugünün bulmacasını henüz oynamadın.",
+    "rowSub": "Adını tahmin et, hatırlatma, arşiv",
+    "remind": "Günlük hatırlatma",
+    "remindSub": "Günde bir kez bu saatte, yalnızca henüz oynamadıysan.",
+    "public": "Herkese açık profilinde bulmaca",
+    "publicSub": "Yalnızca günler, renkler ve istatistikler; hangi yapım olduğu asla."
+  },
+  "puzzleFair": {
+    "close": "Seri doğru, film yanlış!",
+    "closeA11y": "seri doğru",
+    "inLibrary": "Kitaplığında",
+    "beatMe": "Beni geçebilir misin?",
+    "playFree": "OpenTV'de ücretsiz oyna"
+  },
+  "plotLanguage": {
+    "title": "Özet dili",
+    "app": "Uygulama dili",
+    "english": "İngilizce",
+    "hint": "Dizi ve film özetleri. Adlar olduğu gibi kalır, çeviri yoksa İngilizce kullanılır."
+  }
+}
