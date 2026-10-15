@@ -23,6 +23,10 @@ export const NAMES: Record<Locale, string> = {
 };
 
 export default function LanguageScreen() {
+  // NOT MEMOISED (15 Oct): the React Compiler caches every `t()` here against
+  // arguments that never change, so the screen you had just switched the
+  // language on went on reading the old one until you left it.
+  'use no memo';
   const [active, setActive] = useState<Locale>(currentLocale());
   const [isSystem, setIsSystem] = useState<boolean>(() => !hasLocaleOverride());
   const [plot, setPlot] = useState<PlotLanguage>(plotLanguage);
@@ -50,11 +54,8 @@ export default function LanguageScreen() {
     ]);
   };
 
-  // KEYED ON THE LANGUAGE (15 Oct): the React Compiler caches every `t()` here
-  // against arguments that never change, so the screen you just switched the
-  // language on went on reading the old one until you left it.
   return (
-    <Screen key={active}>
+    <Screen>
       <NavHeader title={t('language.title')} />
       <ScrollView contentContainerStyle={{ paddingVertical: 12 }}>
         <ContentColumn>
