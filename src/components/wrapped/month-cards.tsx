@@ -488,7 +488,7 @@ export function MonthClosing({ d, label, width, handle, name }: CardProps) {
           <Text style={{ color: INK, fontSize: 14, fontWeight: '900', letterSpacing: ls(1.4), textTransform: 'uppercase', transform: [{ skewX: '10deg' }] }}>{flat}</Text>
         </View>
         <Display size={28} lines={1} colour={C.INK} style={{ marginTop: 14 }}>
-          {[hours >= 1 ? `${n(hours)}h` : null, counts(d)].filter(Boolean).join('  ·  ')}
+          {[hours >= 1 ? t('duration.hoursOnly', { h: n(hours) }) : null, counts(d)].filter(Boolean).join('  ·  ')}
         </Display>
         <View style={{ flex: 1 }} />
         <Sub size={13} colour={C.INK} style={{ fontWeight: '600' }} numberOfLines={3}>{titles}</Sub>
@@ -611,8 +611,13 @@ export function MonthVerdict({ d, label, width, handle }: CardProps) {
   );
 }
 
-/** 320 → "5h 20m", 49 → "49m". */
-const span = (min: number) => (min >= 60 ? `${n(Math.floor(min / 60))}h${min % 60 ? ` ${n(min % 60)}m` : ''}` : `${n(min)}m`);
+/** 320 → "5h 20m", 49 → "49m" — in the locale's own units ("5 sa 20 dk"). */
+const span = (min: number) =>
+  min < 60
+    ? t('duration.minutesOnly', { m: n(min) })
+    : min % 60
+      ? t('duration.hoursMinutes', { h: n(Math.floor(min / 60)), m: n(min % 60) })
+      : t('duration.hoursOnly', { h: n(Math.floor(min / 60)) });
 
 /* ── top titles ──────────────────────────────────────────────────────────── */
 /** The month ranked by the time each title took: the chart, numbered. */
@@ -770,7 +775,7 @@ export function MonthSummary({ d, label, width, handle }: CardProps) {
   const shows = d.newShows + d.continuedShows;
   // Nothing that reads zero: a films-only month does not say "0 episodes".
   const stats = [
-    { v: hours >= 1 ? `${n(hours)}h` : `${n(d.minutes)}m`, k: m('summaryWatched'), on: true },
+    { v: hours >= 1 ? t('duration.hoursOnly', { h: n(hours) }) : t('duration.minutesOnly', { m: n(d.minutes) }), k: m('summaryWatched'), on: true },
     { v: n(d.episodes), k: m('summaryEpisodes'), on: d.episodes > 0 },
     { v: n(d.films), k: m('summaryFilms'), on: d.films > 0 },
     { v: n(shows), k: m('summaryShows'), on: shows > 0 },

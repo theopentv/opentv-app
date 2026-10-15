@@ -591,7 +591,7 @@ function TypeChip({ children }: { children: string }) {
 
 function HeroStats({ d, hours, size, stacked }: { d: Wrapped; hours: number; size: number; stacked?: boolean }) {
   const items = [
-    hours >= 1 ? `${n(hours)}h` : null,
+    hours >= 1 ? t('duration.hoursOnly', { h: n(hours) }) : null,
     d.episodes > 0 ? plural('plus.wrapped.cards.scaleEpisodes', d.episodes) : null,
     d.films > 0 ? plural('plus.wrapped.cards.scaleFilms', d.films) : null,
   ].filter((s): s is string => !!s);

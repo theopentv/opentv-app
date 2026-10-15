@@ -82,13 +82,17 @@ export function Display({
   align?: 'left' | 'center' | 'right';
   style?: TextStyle;
 }) {
+  // CAPITALS WITH MARKS NEED MORE (15 Oct): Ö Ü İ Ś sit above the cap height,
+  // and at 1.02em the Turkish simulator read "BÖLÜM" with its dots shaved off.
+  // Any letter past ASCII buys the taller line; plain English keeps the tight one.
+  const marks = typeof children === 'string' && /[\u00C0-\u024F\u0130]/.test(children.toUpperCase());
   return (
     <Text
       numberOfLines={lines}
       adjustsFontSizeToFit
       minimumFontScale={minScale}
       allowFontScaling={false}
-      style={[{ color: colour, fontSize: size, fontWeight: '900', lineHeight: size * 1.02, letterSpacing: ls(-size * 0.035), textAlign: align }, style]}>
+      style={[{ color: colour, fontSize: size, fontWeight: '900', lineHeight: size * (marks ? 1.15 : 1.02), letterSpacing: ls(-size * 0.035), textAlign: align }, style]}>
       {children}
     </Text>
   );
