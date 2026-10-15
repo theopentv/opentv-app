@@ -10,7 +10,7 @@ import { offerBackupIfDue } from '@/backup-prompt';
 import { offerCommunityIfDue } from '@/community-prompt';
 import { tapSelection } from '@/haptics';
 import { isNotifyScreenOwed } from '@/session-store';
-import { t } from '@/i18n';
+import { t, useLocale } from '@/i18n';
 import { colors } from '@/theme';
 import { WhatsNew } from '@/whats-new';
 
@@ -18,6 +18,11 @@ import { WhatsNew } from '@/whats-new';
 const TAB_ICON = 30;
 
 export default function TabsLayout() {
+  // THE TAB LABELS STAYED IN THE OLD LANGUAGE (15 Oct): this layout never
+  // unmounts, nothing re-rendered it after a switch, and the compiler had
+  // cached its t() calls besides. It listens for the change and is not memoised.
+  'use no memo';
+  useLocale();
   /*
    * THE NAVIGATION BAR WAS SITTING ON THE TAB LABELS.
    *

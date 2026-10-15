@@ -8,6 +8,7 @@
 import * as Localization from 'expo-localization';
 import { I18n, useMakePlural } from 'i18n-js';
 import { ar as arPluralRule, fr as frPluralRule, pl as plPluralRule } from 'make-plural';
+import { useSyncExternalStore } from 'react';
 import { I18nManager } from 'react-native';
 
 import { getMeta, setMeta } from '@/db';
@@ -226,4 +227,10 @@ export const genreText = (raw: string): string => enumText('genre', raw);
  *  Polish, French… `toFixed` always wrote the English point (15 Oct). */
 export function fmtDecimal(n: number, digits = 1): string {
   return n.toLocaleString(active, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
+
+/** The app language, re-rendering the caller when it changes. For what stays
+ *  mounted across a switch — the tab bar — which nothing else tells. */
+export function useLocale(): Locale {
+  return useSyncExternalStore((onChange) => i18n.onChange(onChange), currentLocale);
 }
