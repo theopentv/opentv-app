@@ -1,5 +1,6 @@
 import { unzlibSync, zlibSync } from 'fflate';
 import {
+  providerLines,
   basicAuth,
   communityScore,
   communityScoreFromCounts,
@@ -3932,5 +3933,22 @@ describe('sortWatchList', () => {
     expect(validWatchListSort('mostBehind')).toBe('mostBehind');
     expect(validWatchListSort('nonsense')).toBe('recent');
     expect(validWatchListSort(null)).toBe('recent');
+  });
+});
+
+describe('providerLines', () => {
+  it('puts consecutive providers of one kind on one line', () => {
+    expect(
+      providerLines([
+        { name: 'Netflix', kind: 'flatrate' },
+        { name: 'Hulu', kind: 'flatrate' },
+        { name: 'Apple TV', kind: 'rent' },
+        { name: 'Old', kind: undefined },
+      ]),
+    ).toEqual([
+      ['flatrate', ['Netflix', 'Hulu']],
+      ['rent', ['Apple TV']],
+      [undefined, ['Old']],
+    ]);
   });
 });

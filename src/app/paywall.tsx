@@ -275,7 +275,7 @@ export default function PaywallScreen() {
           {/* A Pressable only for the dev long-press; not an element, so the
               title underneath reads as the heading it is. */}
           <Pressable
-            accessible={false}
+            accessible={false} importantForAccessibility="no"
             onLongPress={__DEV__ ? () => { tapLight(); setPlusEntitled(!plus); } : undefined}
             delayLongPress={800}>
             <Image source={require('@/assets/images/icon.png')} style={styles.mark} contentFit="contain" />

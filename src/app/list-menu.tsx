@@ -75,7 +75,7 @@ export default function ListMenuSheet() {
   };
 
   return (
-    <Pressable accessible={false} style={styles.backdrop} onPress={() => router.back()}>
+    <Pressable accessible={false} importantForAccessibility="no" style={styles.backdrop} onPress={() => router.back()}>
       <View style={styles.sheet} accessibilityViewIsModal onAccessibilityEscape={() => router.back()}>
         <Pressable accessibilityRole="button"
           style={styles.row}

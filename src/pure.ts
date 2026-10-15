@@ -6509,6 +6509,19 @@ export type WatchOption = { name: string; logo: string | null; kind: WatchKind }
  */
 const KIND_ORDER: readonly WatchKind[] = ['flatrate', 'free', 'ads', 'rent', 'buy'];
 
+/** Consecutive providers of one kind on one line — `watchOptions` already sorts
+ *  by kind, so this only splits it. A provider with no kind (cached before 1.7.2)
+ *  gets a line of its own kind, `undefined`, and no label. */
+export function providerLines(list: readonly { name: string | null; kind?: WatchKind }[]): [WatchKind | undefined, string[]][] {
+  const out: [WatchKind | undefined, string[]][] = [];
+  for (const p of list) {
+    const last = out[out.length - 1];
+    if (last && last[0] === p.kind) last[1].push(p.name ?? '');
+    else out.push([p.kind, [p.name ?? '']]);
+  }
+  return out;
+}
+
 export function watchOptions(
   block: Partial<Record<WatchKind, { provider_name?: string; logo_path?: string | null }[]>> | null | undefined,
 ): WatchOption[] {

@@ -33,7 +33,7 @@ const ITEMS = [
 
 export default function ProfileMenuSheet() {
   return (
-    <Pressable accessible={false} style={styles.backdrop} onPress={() => router.back()}>
+    <Pressable accessible={false} importantForAccessibility="no" style={styles.backdrop} onPress={() => router.back()}>
       <View style={styles.sheet} accessibilityViewIsModal onAccessibilityEscape={() => router.back()}>
         {ITEMS.map((item) => (
           <Pressable accessibilityRole="button"

@@ -499,6 +499,10 @@ export default function ShowsScreen() {
                         key={`h${i}`}
                         style={[styles.card, styles.histCard]}
                         accessible={false}
+                        // Android ignores accessible={false} on a clickable view:
+                        // TalkBack stopped on the bare frame and said only
+                        // "double tap". "no" hides the frame and keeps its children.
+                        importantForAccessibility="no"
                         onPress={() => router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`)}>
                         <View style={styles.thumb} {...a11yHidden()}>
                           {em?.still ? (
@@ -579,6 +583,7 @@ export default function ShowsScreen() {
                 <Pressable
                   style={styles.card}
                   accessible={false}
+                  importantForAccessibility="no"
                   onPress={() =>
                     // metadata still loading — the coords are an unverified
                     // guess, so open the show (which fetches the real

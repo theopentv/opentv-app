@@ -39,7 +39,7 @@ import { movieMeta, type MovieMeta, type MovieProvider } from '@/movie-metadata'
 import { franchiseRows, nextUp, progress, type Row } from '@/franchise';
 import { cachedFranchise, fetchFranchise, type Franchise } from '@/franchise-fetch';
 import { useMovieTvdbRevision } from '@/movie-tvdb-match';
-import { characterFace, characterPercents, emotionNames, emotionPercents, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey, watchOptions, type WatchKind } from '@/pure';
+import { characterFace, characterPercents, emotionNames, emotionPercents, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey, providerLines, watchOptions, type WatchKind } from '@/pure';
 import { useJoined } from '@/community-session';
 import {
   clearCharacterVote,
@@ -255,12 +255,7 @@ export default function MovieScreen() {
   const [liveProviders, setLiveProviders] = useState<MovieProvider[] | null>(null);
   const mm: MovieMeta | RemoteMeta | undefined = bundled ?? remote ?? undefined;
   const providers = liveProviders ?? mm?.providers ?? [];
-  const providerLines: [WatchKind | undefined, string[]][] = [];
-  for (const p of providers) {
-    const last = providerLines[providerLines.length - 1];
-    if (last && last[0] === p.kind) last[1].push(p.name ?? '');
-    else providerLines.push([p.kind, [p.name ?? '']]);
-  }
+  const providerRows = providerLines(providers);
 
   // Source precedence, everywhere this screen renders a poster/year/runtime:
   // TMDB metadata (`mm` — bundled, or fetched below when a tmdbId is known)
@@ -1082,7 +1077,7 @@ export default function MovieScreen() {
                 {providers.length ? (
                   // one line per kind, in the order watchOptions already sorts
                   // them (subscription first); the kind leads its line quietly
-                  providerLines.map(([kind, names]) => (
+                  providerRows.map(([kind, names]) => (
                     <Text key={kind ?? 'any'} style={[styles.body, { paddingHorizontal: space.lg, marginTop: 2 }]}>
                       {kind ? <Text style={styles.providerKind}>{t(`watchKind.${kind}`)}  </Text> : null}
                       {names.join(' · ')}

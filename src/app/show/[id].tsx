@@ -1675,7 +1675,7 @@ export default function ShowScreen() {
                 // the text block is the button — see `a11y.ts`.
                 <Pressable
                   style={[styles.carCard, { width: CARD_W }]}
-                  accessible={false}
+                  accessible={false} importantForAccessibility="no"
                   onPress={() => router.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
                   <View style={styles.carThumb} {...a11yHidden()}>
                     {em?.still ? (
@@ -1812,7 +1812,7 @@ export default function ShowScreen() {
                     lands on this Pressable) and carries the count. */}
                 <Pressable
                   style={styles.seasonCard}
-                  accessible={false}
+                  accessible={false} importantForAccessibility="no"
                   onPress={() => {
                     setExpanded((prev) => {
                       const next = new Set(prev);
@@ -1995,7 +1995,7 @@ export default function ShowScreen() {
                       <Pressable
                         key={epNum}
                         style={styles.epRow}
-                        accessible={false}
+                        accessible={false} importantForAccessibility="no"
                         onPress={() => router.push(`/episode/${show.tvdbId}-s${sr.season}e${epNum}`)}>
                         <View style={styles.epThumb} {...a11yHidden()}>
                           {em?.still ? (

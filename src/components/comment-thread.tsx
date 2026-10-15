@@ -201,7 +201,7 @@ export function CommentRow({
     <Pressable
       style={[styles.card, row.depth === 1 && styles.cardReply]}
       onPress={onPress}
-      accessible={false}
+      accessible={false} importantForAccessibility="no"
       disabled={onPress == null}>
       {/* RTL: `flexDirection: 'row'` already mirrors under I18nManager.isRTL,
           so avatar → handle → time reads right-to-left in Arabic with no
