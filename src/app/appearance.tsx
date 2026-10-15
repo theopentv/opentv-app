@@ -12,7 +12,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { track } from '@/analytics';
 import { APP_ICONS, currentIcon, setIcon, supported, type AppIconName } from '@/app-icon';

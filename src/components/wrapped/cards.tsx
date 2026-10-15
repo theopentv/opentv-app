@@ -21,7 +21,7 @@
  * out for the count it received. There are no empty frames.
  */
 import { View, type ViewStyle } from 'react-native';
-import { Text } from 'react-native';
+import { Text } from '@/components/text';
 
 import { goalShareLine } from '@/components/yearly-goal';
 import { currentLocale, t } from '@/i18n';
@@ -206,7 +206,7 @@ export function WrappedObsession({ d, label, unit, width, handle }: CardProps) {
       <Masthead label={label} />
       <View style={abs({ left: 18, right: 18, bottom: 56 })}>
         <Label style={{ marginBottom: 8 }}>{t('plus.wrapped.cards.obsessionKicker')}</Label>
-        <Display size={size} lines={lines} minScale={0.3} colour={C.INK} style={{ textTransform: 'uppercase', letterSpacing: ls(-size * 0.035), lineHeight: size * 1.02 }}>{title}</Display>
+        <Display size={size} lines={lines} minScale={0.3} colour={C.INK} style={{ textTransform: 'uppercase', letterSpacing: ls(-size * 0.035), lineHeight: size * 1.02 }}>{title.toUpperCase()}</Display>
         <Display size={30} lines={1} colour={C.YELLOW} style={{ marginTop: 10, textTransform: 'uppercase' }}>{plural('plus.wrapped.cards.obsessionEpisodes', top?.episodes ?? 0)}</Display>
         <Sub style={{ marginTop: 4 }}>{t('plus.wrapped.cards.obsessionSub', { unit: unitWord(unit) })}</Sub>
       </View>

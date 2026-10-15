@@ -3,7 +3,8 @@ import { Image } from 'expo-image';
 import { File, Paths } from 'expo-file-system';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { appearanceChanged } from '@/community-appearance';
 import { communityErrorText } from '@/community-error-text';

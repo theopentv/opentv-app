@@ -22,7 +22,8 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { NavHeader, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';

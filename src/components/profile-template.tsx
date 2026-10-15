@@ -27,10 +27,10 @@ import {
   type ImageSourcePropType,
   Pressable,
   StyleSheet,
-  Text,
   View,
   useWindowDimensions,
 } from 'react-native';
+import { Text } from '@/components/text';
 import Animated, {
   runOnJS,
   Extrapolation,

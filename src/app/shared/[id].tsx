@@ -26,7 +26,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Share, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { TitlePicker } from '@/components/title-picker';

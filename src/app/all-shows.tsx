@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Keyboard, FlatList, Pressable, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { a11yAction } from '@/a11y';

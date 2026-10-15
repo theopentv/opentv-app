@@ -34,7 +34,8 @@
 
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SectionList, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';

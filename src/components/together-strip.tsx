@@ -8,7 +8,8 @@
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import type { SharedListDetail } from '@/community-shared-lists';
 import { useTogethersFor } from '@/community-together';

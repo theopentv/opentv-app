@@ -22,7 +22,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { RatingsGrid } from '@/components/ratings-grid';
 import { RatingsShareCard } from '@/components/ratings-share-card';

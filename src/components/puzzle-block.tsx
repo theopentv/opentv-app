@@ -24,7 +24,8 @@
  * direction, so in Arabic Sunday is on the right, as a calendar there is.
  */
 import { useState } from 'react';
-import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { Text } from '@/components/text';
 
 import { todayISO } from '@/components/heatmap';
 import { CLOSE_SQUARE } from '@/components/puzzle-share-card';

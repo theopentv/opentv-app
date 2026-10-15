@@ -15,7 +15,8 @@
  */
 import { Image } from 'expo-image';
 import { createContext, useContext, type ReactNode } from 'react';
-import { StyleSheet, Text, View, type TextStyle, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type TextStyle, type ViewStyle } from 'react-native';
+import { Text } from '@/components/text';
 import { ls } from '@/theme';
 
 export const WRAPPED_YELLOW = '#FFD400';

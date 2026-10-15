@@ -30,7 +30,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { findCloudBackup, icloudSupported, type CloudBackup } from '@/backup';
 import { ContentColumn, NavHeader, PillButton, Screen } from '@/components/ui';

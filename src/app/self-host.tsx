@@ -23,7 +23,8 @@
  */
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Linking, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { switchServer } from '@/community-account';
 import { NavHeader, PillButton, Screen } from '@/components/ui';

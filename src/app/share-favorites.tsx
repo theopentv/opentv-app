@@ -34,7 +34,8 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, Dimensions, PixelRatio, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { posterSpeech } from '@/components/poster';
 import { NavHeader, Screen } from '@/components/ui';

@@ -35,7 +35,8 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useRef, useState, type RefObject } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Alert, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/text';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   FadeInDown,

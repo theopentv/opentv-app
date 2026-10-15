@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
-import { Dimensions, I18nManager, Pressable, StyleSheet, Switch, Text, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
+import { Dimensions, I18nManager, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
+import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';

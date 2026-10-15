@@ -1,7 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, I18nManager, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { Image } from 'expo-image';
 

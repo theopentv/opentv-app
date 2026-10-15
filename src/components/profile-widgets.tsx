@@ -17,7 +17,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/text';
 
 import { gridMetrics } from '@/components/ui';
 // Imports `WidgetBox` back from here, at render time only — safe both ways.

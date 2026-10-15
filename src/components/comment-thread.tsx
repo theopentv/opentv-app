@@ -39,10 +39,10 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
+import { Text } from '@/components/text';
 
 import { ApiError } from '@/api';
 import type { Comment, ThreadTarget } from '@/community-comments';

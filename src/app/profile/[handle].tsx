@@ -30,7 +30,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, Share, StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { Image } from 'expo-image';
 

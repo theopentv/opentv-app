@@ -12,7 +12,8 @@
  */
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { PixelRatio, StyleSheet, Text, View, type LayoutChangeEvent, type ViewStyle } from 'react-native';
+import { PixelRatio, StyleSheet, View, type LayoutChangeEvent, type ViewStyle } from 'react-native';
+import { Text } from '@/components/text';
 
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -238,7 +239,7 @@ export function MonthTicket({ d, label, width, handle }: CardProps) {
             {f.poster ? <Image source={{ uri: f.poster }} style={{ width: posterW, height: posterW * 1.5, borderRadius: 6 }} contentFit="cover" cachePolicy="disk" /> : null}
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
               <View>
-                <Display size={titleSize} lines={wordLines(f.title, 3)} minScale={0.4} colour={INK} style={{ textTransform: 'uppercase', letterSpacing: ls(-titleSize * 0.03) }}>{f.title}</Display>
+                <Display size={titleSize} lines={wordLines(f.title, 3)} minScale={0.4} colour={INK} style={{ textTransform: 'uppercase', letterSpacing: ls(-titleSize * 0.03) }}>{f.title.toUpperCase()}</Display>
                 {f.year ? <Text style={{ color: '#55524A', fontSize: 13, fontWeight: '700', marginTop: 4 }}>{f.year}</Text> : null}
               </View>
               {f.rewatch ? <Text style={{ color: '#55524A', fontSize: 10, fontWeight: '900', letterSpacing: ls(1.5), textTransform: 'uppercase' }}>{m('ticketRewatch')}</Text> : null}
@@ -660,7 +661,7 @@ export function MonthBookends({ d, label, width, handle }: CardProps) {
         {x.poster ? <Image source={{ uri: x.poster }} style={{ width: pw, height: pw * 1.5, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' }} contentFit="cover" cachePolicy="disk" /> : null}
         <View style={{ flex: 1 }}>
           <Label size={11} colour={yellow ? C.YELLOW : C.GREY}>{word}</Label>
-          <Display size={fitSize(x.title, width - pw - 50, 30, 16, wordLines(x.title, 3))} lines={wordLines(x.title, 3)} minScale={0.4} colour={C.INK} style={{ textTransform: 'uppercase', marginTop: 6 }}>{x.title}</Display>
+          <Display size={fitSize(x.title, width - pw - 50, 30, 16, wordLines(x.title, 3))} lines={wordLines(x.title, 3)} minScale={0.4} colour={C.INK} style={{ textTransform: 'uppercase', marginTop: 6 }}>{x.title.toUpperCase()}</Display>
           <Text style={{ color: C.GREY, fontSize: 13, fontWeight: '700', marginTop: 6 }}>
             {[shortDate(x.at), /^S\d/.test(x.sub) ? x.sub : null].filter(Boolean).join('  ·  ')}
           </Text>

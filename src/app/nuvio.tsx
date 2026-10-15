@@ -19,7 +19,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { MenuRow, NavHeader, PillButton, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';

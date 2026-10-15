@@ -15,7 +15,8 @@
  * offers Follow.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { FlatList, I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { FlatList, I18nManager, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/text';
 import { ArrangingContext } from '@/components/profile-arrange';
 import { useContext } from 'react';
 

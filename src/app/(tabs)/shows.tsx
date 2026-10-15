@@ -2,7 +2,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, I18nManager, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { FlatList, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Text } from '@/components/text';
 
 import { a11yAction, a11yHidden } from '@/a11y';
 import { Poster, posterSpeech } from '@/components/poster';

@@ -29,7 +29,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { track } from '@/analytics';
 import { ActionSheet } from '@/components/action-sheet';

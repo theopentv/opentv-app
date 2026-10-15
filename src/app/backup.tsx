@@ -20,7 +20,8 @@
  */
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Switch, Text } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Switch} from 'react-native';
+import { Text } from '@/components/text';
 
 import { backupNow, icloudAvailable, icloudSupported, lastBackupAt, lastBackupError } from '@/backup';
 import { backupDestination } from '@/cloud-backup';
