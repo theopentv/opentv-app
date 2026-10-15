@@ -34,7 +34,7 @@ import { airCountdown, communityScore, communityScoreFromCounts, ratingSeries, c
 import { readSeasonAggregates, useSeasonAggregates } from '@/community-ratings';
 import { useJoined } from '@/community-session';
 import { airedTotalOf } from '@/show-status';
-import { fetchShowMeta } from '@/show-meta-fetch';
+import { fetchShowMeta, providersLackKind } from '@/show-meta-fetch';
 import { appliedLight, colors, radius, space } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
@@ -101,7 +101,7 @@ export default function ShowScreen() {
   useEffect(() => {
     // runs even when metadata exists: a stale entry refreshes in the
     // background (new seasons appear), a fresh one resolves instantly
-    fetchShowMeta(tvdbId, tmdbId ? Number(tmdbId) : null).then((m) => setMetaState(m ? 'ready' : 'failed'));
+    fetchShowMeta(tvdbId, tmdbId ? Number(tmdbId) : null, providersLackKind(showMeta(tvdbId))).then((m) => setMetaState(m ? 'ready' : 'failed'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

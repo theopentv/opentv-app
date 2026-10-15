@@ -604,12 +604,18 @@ export function showMetaIsStale(m: ShowMeta): boolean {
   // no amount of waiting fixes it. Absent forces one refetch; after that the
   // stamp matches and this costs nothing.
   if (m.watchRegion !== watchRegion()) return true;
-  // Same shape once more, for `kind`: providers cached before it was kept
-  // cannot say which is a subscription and which is a rental, and the page
-  // would rather say nothing than guess. Absent forces one refetch.
-  if ((m.providers ?? []).some((p) => !('kind' in p))) return true;
   const ended = m.status === 'Ended' || m.status === 'Canceled';
   return Date.now() - (m.fetchedAt ?? 0) > (ended ? STALE_ENDED_MS : STALE_RUNNING_MS);
+}
+
+/**
+ * Providers cached before 1.7.2 kept no `kind`, so the page cannot say which is
+ * a subscription and which is a rental. NOT part of `showMetaIsStale`: that
+ * would refetch every show in the library at once after the update (a TV Time
+ * library is hundreds of shows). The show page asks for its one show instead.
+ */
+export function providersLackKind(m: ShowMeta | null | undefined): boolean {
+  return (m?.providers ?? []).some((p) => !('kind' in p));
 }
 
 /** Longest one show's metadata may take, all requests together. Generous:
