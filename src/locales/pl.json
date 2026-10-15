@@ -3877,5 +3877,8 @@
       "many": "{{count}} obejrzanych",
       "other": "{{count}} obejrzanego"
     }
+  },
+  "marathonTier": {
+    "label": "{{count}} w {{hours}} h"
   }
 }

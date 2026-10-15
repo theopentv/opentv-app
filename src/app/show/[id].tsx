@@ -40,7 +40,7 @@ import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
 import { isPlus } from '@/plus';
-import { currentLocale, genreText, statusText, t } from '@/i18n';
+import { currentLocale, fmtDecimal, genreText, statusText, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
 import { communityErrorText } from '@/community-error-text';
 import { startTogether } from '@/community-together';
@@ -58,10 +58,13 @@ const INTERESTS = [
   'media.interests.other',
 ] as const;
 
+/**
+ * The count in the locale's own digits (15 Oct): "11.1K" was English in every
+ * language. Hermes on iOS ignores `notation: 'compact'` and prints it whole —
+ * "11,080", "11.080" — which reads right everywhere, so no suffix table of our own.
+ */
 function countLabel(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
+  return n.toLocaleString(currentLocale());
 }
 
 // carousel geometry, derived per render from the live window width so an iPad
@@ -1042,7 +1045,7 @@ export default function ShowScreen() {
           <View
             style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: space.lg, marginTop: 8 }}
             accessible
-            accessibilityLabel={meta?.rating ? t('a11y.tvdbRating', { score: (meta.rating / 2).toFixed(1) }) : t('a11y.tvdbUnrated')}>
+            accessibilityLabel={meta?.rating ? t('a11y.tvdbRating', { score: fmtDecimal(meta.rating / 2) }) : t('a11y.tvdbUnrated')}>
             <View style={styles.tBadge}>
               <Text style={{ fontWeight: '800', color: colors.onYellow, fontSize: 13 }}>T</Text>
             </View>
@@ -1062,7 +1065,7 @@ export default function ShowScreen() {
                 </Text>
               ))}
             </Text>
-            <Text style={styles.caption2}>{meta?.rating ? `${(meta.rating / 2).toFixed(1)}/5` : '—/5'}</Text>
+            <Text style={styles.caption2}>{meta?.rating ? `${fmtDecimal(meta.rating / 2)}/5` : '—/5'}</Text>
           </View>
           {/* the only prose paragraph on this screen — capped so a 1366pt iPad
               doesn't render the overview as one enormous line; everything
@@ -1237,7 +1240,7 @@ export default function ShowScreen() {
                     </View>
                     {shown.community && (
                       <Text style={[styles.caption2, { paddingHorizontal: space.lg, marginTop: 2 }]}>
-                        {t('show.communityVotes', { avg: shown.avg.toFixed(1), count: shown.votes })}
+                        {t('show.communityVotes', { avg: fmtDecimal(shown.avg), count: shown.votes })}
                       </Text>
                     )}
                   </>
@@ -1534,7 +1537,7 @@ export default function ShowScreen() {
                         {/* stars, halves included since 2.0.0 (`getShowRatings`) */}
                         {mine != null && <Text style={styles.chartPickMine}>{filledStarText(mine * 2)}</Text>}
                         {theirs != null && (
-                          <Text style={styles.chartPickTheirs}>{theirs.toFixed(1)}</Text>
+                          <Text style={styles.chartPickTheirs}>{fmtDecimal(theirs)}</Text>
                         )}
                       </>
                     )}
@@ -2340,7 +2343,7 @@ function ExtremeSeason({
           {t('show.season', { n: season })}
         </Text>
         <View style={styles.extremeFoot}>
-          <Text style={styles.extremeStars}>{average.toFixed(1)}</Text>
+          <Text style={styles.extremeStars}>{fmtDecimal(average)}</Text>
           <Text style={styles.extremeDate}>{t('show.extremes.episodes', { count: rated })}</Text>
         </View>
       </View>

@@ -3607,5 +3607,8 @@
       "one": "{{count}} visto",
       "other": "{{count}} vistos"
     }
+  },
+  "marathonTier": {
+    "label": "{{count}} en {{hours}} h"
   }
 }

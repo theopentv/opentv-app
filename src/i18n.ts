@@ -221,3 +221,9 @@ function enumText(group: 'status' | 'genre', raw: string): string {
 
 export const statusText = (raw: string): string => enumText('status', raw);
 export const genreText = (raw: string): string => enumText('genre', raw);
+
+/** A decimal in the app's language: "4.1" in English, "4,1" in Turkish, German,
+ *  Polish, French… `toFixed` always wrote the English point (15 Oct). */
+export function fmtDecimal(n: number, digits = 1): string {
+  return n.toLocaleString(active, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}

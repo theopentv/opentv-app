@@ -50,8 +50,11 @@ export default function LanguageScreen() {
     ]);
   };
 
+  // KEYED ON THE LANGUAGE (15 Oct): the React Compiler caches every `t()` here
+  // against arguments that never change, so the screen you just switched the
+  // language on went on reading the old one until you left it.
   return (
-    <Screen>
+    <Screen key={active}>
       <NavHeader title={t('language.title')} />
       <ScrollView contentContainerStyle={{ paddingVertical: 12 }}>
         <ContentColumn>

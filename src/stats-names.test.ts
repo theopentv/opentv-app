@@ -8,6 +8,10 @@
 import { registerShowMeta, type ShowMeta } from '@/metadata';
 import { computeCrowdCompare, computeDeepStats, computeShowStats } from '@/stats-calc';
 
+// stats-calc reads the app language for its month initials; the real module
+// pulls in expo-localization, which this preset-free runner cannot load.
+jest.mock('@/i18n', () => ({ currentLocale: () => 'en' }));
+
 jest.mock('@/db', () => {
   // Four shows, one per case: a title only the library row knows; a title only
   // the cached metadata knows (registered below); a row named by its own id,

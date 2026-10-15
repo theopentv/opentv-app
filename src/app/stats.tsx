@@ -323,7 +323,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.catchingUpTitle')}>
-              <Text style={styles.bigNum}>{t('stats.shows.pace', { pace: s.pace.toFixed(2) })}</Text>
+              <Text style={styles.bigNum}>{t('stats.shows.pace', { pace: s.pace.toLocaleString(currentLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</Text>
               <Text style={styles.sub}>{t('stats.shows.basedOnRecent')}</Text>
             </StatCard>
 
@@ -389,7 +389,7 @@ export default function StatsScreen() {
                       <Text style={styles.badgeLabel} numberOfLines={1}>
                         {b.show}
                       </Text>
-                      <Text style={styles.badgeTier}>{b.label}</Text>
+                      <Text style={styles.badgeTier}>{t('marathonTier.label', { count: b.count, hours: b.hours })}</Text>
                     </View>
                   ))}
               </View>
@@ -494,7 +494,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.catchingUpTitle')}>
-              <Text style={styles.bigNum}>{t('stats.movies.pace', { pace: m.pace.toFixed(2) })}</Text>
+              <Text style={styles.bigNum}>{t('stats.movies.pace', { pace: m.pace.toLocaleString(currentLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</Text>
               <Text style={styles.sub}>{t('stats.movies.basedOnRecent')}</Text>
             </StatCard>
 

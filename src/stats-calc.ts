@@ -8,6 +8,7 @@ import { movieMeta } from '@/movie-metadata';
 import { starsValue, wholeStars } from '@/star-rating';
 import seed from '@/seed';
 import { isSeedLibrary } from '@/library';
+import { currentLocale } from '@/i18n';
 import {
   bingeReport,
   collagePosters,
@@ -184,13 +185,12 @@ export function computeShowStats() {
   const likes = ownComments.reduce((n, c) => n + (c.likes ?? 0), 0);
 
   // episode comments per month, last 12 months
-  const MONTH_L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
   const nowD = new Date();
   const commentsByMonth = Array.from({ length: 12 }, (_, i) => {
     const d = new Date(nowD.getFullYear(), nowD.getMonth() - 11 + i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     return {
-      label: MONTH_L[d.getMonth()],
+      label: monthLetter(d),
       value: ownComments.filter((c) => isEpisodeComment(c.entity) && c.date.startsWith(key)).length,
     };
   });
@@ -211,7 +211,7 @@ export function computeShowStats() {
         }
       }
     }
-    return { label: MONTH_L[d.getMonth()], episodes: eps, hours: Math.round(minutes / 60) };
+    return { label: monthLetter(d), episodes: eps, hours: Math.round(minutes / 60) };
   });
 
   // remaining + pace + projection
@@ -235,16 +235,17 @@ export function computeShowStats() {
     pace > 0.05 && remaining > 0 ? new Date(now + (remaining / pace) * 7 * 864e5) : null;
 
   // marathoner badges, TV Time's tiers: 3+/5+ in 24h, 10+/20+ in 48h
-  const badges: { show: string; label: string }[] = [];
+  // the tier as numbers; the screen words it ("3 in 24h" was English everywhere)
+  const badges: { show: string; count: number; hours: number }[] = [];
   for (const [id, times] of byShow) {
     const show = nameOf(id);
     if (!show) continue;
     const in24 = windowMax(times, 24);
     const in48 = windowMax(times, 48);
-    if (in24 >= 3) badges.push({ show, label: '3 in 24h' });
-    if (in24 >= 5) badges.push({ show, label: '5 in 24h' });
-    if (in48 >= 10) badges.push({ show, label: '10 in 48h' });
-    if (in48 >= 20) badges.push({ show, label: '20 in 48h' });
+    if (in24 >= 3) badges.push({ show, count: 3, hours: 24 });
+    if (in24 >= 5) badges.push({ show, count: 5, hours: 24 });
+    if (in48 >= 10) badges.push({ show, count: 10, hours: 48 });
+    if (in48 >= 20) badges.push({ show, count: 20, hours: 48 });
   }
 
   return {
@@ -319,12 +320,11 @@ export function computeMovieStats() {
   );
   const commentMovies = new Set(movieComments.map((c) => c.entity)).size;
   const commentLikes = movieComments.reduce((n, c) => n + (c.likes ?? 0), 0);
-  const MONTH_L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
   const nowD = new Date();
   const commentsByMonth = Array.from({ length: 12 }, (_, i) => {
     const d = new Date(nowD.getFullYear(), nowD.getMonth() - 11 + i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    return { label: MONTH_L[d.getMonth()], value: movieComments.filter((c) => c.date.startsWith(key)).length };
+    return { label: monthLetter(d), value: movieComments.filter((c) => c.date.startsWith(key)).length };
   });
 
   // remaining = watchlist movies not yet released; upcoming by release month
@@ -338,7 +338,7 @@ export function computeMovieStats() {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const inMonth = unreleased.filter((m) => movieMeta(m.tmdbId)?.release?.startsWith(key));
     const minutes = inMonth.reduce((n, m) => n + (movieMeta(m.tmdbId)?.runtime ?? 0), 0);
-    return { label: MONTH_L[d.getMonth()], count: inMonth.length, hours: Math.round(minutes / 60) };
+    return { label: monthLetter(d), count: inMonth.length, hours: Math.round(minutes / 60) };
   });
   const recent = watched.filter((m) => now - ts(m.watchedAt!.replace(' ', 'T')) < 60 * 864e5).length;
   const pace = Math.round((recent / (60 / 7)) * 100) / 100;
@@ -881,4 +881,10 @@ export function watchTimeline(limit: number, offset: number): TimelineRow[] {
     ...(r.tvdbId != null ? { tvdbId: r.tvdbId } : {}),
     rewatch: r.rewatch === 1,
   }));
+}
+
+/** A chart's month initial in the app's language — J F M… was English in all
+ *  nine, where Turkish counts O Ş M N and Polish S L M K (15 Oct). */
+function monthLetter(d: Date): string {
+  return d.toLocaleDateString(currentLocale(), { month: 'narrow' }).toLocaleUpperCase(currentLocale());
 }

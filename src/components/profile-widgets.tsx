@@ -42,7 +42,7 @@ import {
   watchStreak,
   watchlistCount,
 } from '@/db';
-import { genreText, t } from '@/i18n';
+import { fmtDecimal, genreText, t } from '@/i18n';
 import { documentFileUri } from '@/library';
 import { currentLocale } from '@/i18n';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
@@ -398,7 +398,7 @@ export function renderWidget(
       <WidgetBox label={t('profile.widgetRated')} span={span}>
         <Figure
           value={r.n.toLocaleString(currentLocale())}
-          sub={t('profile.widgetRatedAvg', { avg: Number(r.avg ?? 0).toFixed(1) })}
+          sub={t('profile.widgetRatedAvg', { avg: fmtDecimal(Number(r.avg ?? 0)) })}
         />
       </WidgetBox>
     );

@@ -1024,6 +1024,7 @@ export type LocaleKey =
   | "localNotifications.stillWatchingTitle"
   | "localNotifications.wrappedBody"
   | "localNotifications.wrappedTitle"
+  | "marathonTier.label"
   | "markAs.changeDate"
   | "markAs.pickDate"
   | "markAs.rewatched"

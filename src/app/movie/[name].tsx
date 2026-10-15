@@ -57,7 +57,7 @@ import { colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
 import { isPlus } from '@/plus';
-import { currentLocale, genreText, plotTmdbCode, t } from '@/i18n';
+import { currentLocale, fmtDecimal, genreText, plotTmdbCode, t } from '@/i18n';
 import { a11yHidden } from '@/a11y';
 import { HalfStarControl, HalfStarHint } from '@/components/half-stars';
 import { CommunityRating } from '@/components/rating-breakdown';
@@ -109,10 +109,9 @@ function shortDate(iso: string): string {
   return d.toLocaleDateString(currentLocale(), { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+/** In the locale's own digits, whole — see the show page's countLabel. */
 function countLabel(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
+  return n.toLocaleString(currentLocale());
 }
 
 type RemoteMeta = MovieMeta & { poster: string | null };
@@ -1131,7 +1130,7 @@ export default function MovieScreen() {
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: space.lg, marginTop: 8 }}
                   accessible
                   accessibilityLabel={[
-                    rating5 ? t('a11y.tvdbRating', { score: rating5.toFixed(1) }) : t('a11y.tvdbUnrated'),
+                    rating5 ? t('a11y.tvdbRating', { score: fmtDecimal(rating5) }) : t('a11y.tvdbUnrated'),
                     mm?.votes ? t('movie.ratingsCount', { count: countLabel(mm.votes) }) : null,
                   ]
                     .filter(Boolean)
@@ -1143,7 +1142,7 @@ export default function MovieScreen() {
                     {'★'.repeat(filled)}
                     {'☆'.repeat(5 - filled)}
                   </Text>
-                  <Text style={styles.caption2}>{rating5 ? `${rating5.toFixed(1)}/5` : '—/5'}</Text>
+                  <Text style={styles.caption2}>{rating5 ? `${fmtDecimal(rating5)}/5` : '—/5'}</Text>
                   {mm?.votes ? <Text style={styles.caption2}> {t('movie.ratingsCount', { count: countLabel(mm.votes) })}</Text> : null}
                 </View>
                 {/* the only prose paragraph on this screen — capped so a

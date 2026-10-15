@@ -3607,5 +3607,8 @@
       "one": "{{count}} gesehen",
       "other": "{{count}} gesehen"
     }
+  },
+  "marathonTier": {
+    "label": "{{count}} in {{hours}} Std."
   }
 }

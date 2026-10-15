@@ -29,7 +29,7 @@ import { Text } from '@/components/text';
 
 import { todayISO } from '@/components/heatmap';
 import { CLOSE_SQUARE } from '@/components/puzzle-share-card';
-import { t } from '@/i18n';
+import { fmtDecimal, t } from '@/i18n';
 import type { WidgetSpan } from '@/profile-layout';
 import { MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
 import { calendarMonth, mixHex } from '@/pure';
@@ -50,7 +50,7 @@ export function levelColor(level: number): string {
 }
 
 /** "3.4", or a dash before the first win — never "0" tries. */
-export const avgText = (st: Stats): string => (st.avg == null ? '–' : st.avg.toFixed(1));
+export const avgText = (st: Stats): string => (st.avg == null ? '–' : fmtDecimal(st.avg));
 
 /** The three numbers in one row. `big` on the game screen, small in the block. */
 export function StatsRow({ stats, big = false }: { stats: Stats; big?: boolean }) {

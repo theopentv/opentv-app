@@ -3607,5 +3607,8 @@
       "one": "{{count}} watched",
       "other": "{{count}} watched"
     }
+  },
+  "marathonTier": {
+    "label": "{{count}} in {{hours}}h"
   }
 }

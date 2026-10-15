@@ -35,7 +35,7 @@ import { useState } from 'react';
 
 import { getHandle } from '@/community-session';
 import { getMeta } from '@/db';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, fmtDecimal, t } from '@/i18n';
 import { profileImageUri } from '@/library';
 import { isPlus } from '@/plus';
 import { MAX_TRIES, SKIP, isClose, type Game, type Stats } from '@/puzzle';
@@ -178,7 +178,7 @@ export function PuzzleShareCard({
             [
               [String(stats.played), t('puzzlePolish.played')],
               [`${stats.win}%`, t('puzzlePolish.win')],
-              [stats.avg == null ? '–' : stats.avg.toFixed(1), t('puzzlePolish.avg')],
+              [stats.avg == null ? '–' : fmtDecimal(stats.avg), t('puzzlePolish.avg')],
             ] as const
           ).map(([v, label], i) => (
             <View key={label} style={[s.stat, i > 0 && s.statLine]}>

@@ -30,7 +30,7 @@ import { RatingsShareCard } from '@/components/ratings-share-card';
 import { NavHeader, Screen, TopTabs } from '@/components/ui';
 import { getMeta, getShowRatings } from '@/db';
 import { tapSelection } from '@/haptics';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, fmtDecimal, t } from '@/i18n';
 import { getHandle } from '@/community-session';
 import { episodeMeta, orderedEpisodes, showMeta } from '@/metadata';
 import { fetchSeasonAggregates, readSeasonAggregates } from '@/community-ratings';
@@ -553,7 +553,7 @@ function SeasonCard({
         <Text style={s.code}>{t('show.season', { n: season })}</Text>
         <View style={s.foot}>
           <Text style={[s.stars, { color: kind === 'best' ? colors.green : colors.danger }]}>
-            {avg.toFixed(1)}
+            {fmtDecimal(avg)}
           </Text>
           <Text style={s.dim}>{t('show.extremes.episodes', { count: rated })}</Text>
         </View>

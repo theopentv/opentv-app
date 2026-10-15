@@ -19,7 +19,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { ratingBand, ratingGrid } from '@/pure';
 import { colors, ls } from '@/theme';
-import { t } from '@/i18n';
+import { fmtDecimal, t } from '@/i18n';
 
 /**
  * The palette every episode-ratings heatmap already uses, sampled from one
@@ -246,7 +246,7 @@ export function RatingsGrid({ episodes, ratings, decimal, note, onPicture, maxRo
                       ]}>
                       {v != null && (
                         <Text style={[s.cellText, { color: INK[ratingBand(v)] }]}>
-                          {decimal ? v.toFixed(1) : v}
+                          {decimal ? fmtDecimal(v) : v}
                         </Text>
                       )}
                     </View>

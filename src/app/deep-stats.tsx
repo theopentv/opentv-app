@@ -19,7 +19,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { PeriodSheet } from '@/components/period-picker';
 import { Bars, MenuRow, NavHeader, Screen, StatCard, StatTable } from '@/components/ui';
 import { tapLight, tapSelection } from '@/haptics';
-import { currentLocale, genreText, t } from '@/i18n';
+import { currentLocale, fmtDecimal, genreText, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
 import { requirePlus, usePlus } from '@/plus';
 import { computeCrowdCompare, computeDeepStats, watchYears } from '@/stats-calc';
@@ -29,7 +29,7 @@ import { oneAtATime } from '@/one-at-a-time';
 /** How many of the crowd rows each half of the comparison shows. */
 const CROWD_ROWS = 5;
 
-const one = (n: number) => n.toFixed(1);
+const one = (n: number) => fmtDecimal(n);
 
 function YearChips({ years, year, onChange }: { years: number[]; year: number | null; onChange: (y: number | null) => void }) {
   return (

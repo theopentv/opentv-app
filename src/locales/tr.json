@@ -3607,5 +3607,8 @@
       "one": "{{count}} izlendi",
       "other": "{{count}} izlendi"
     }
+  },
+  "marathonTier": {
+    "label": "{{hours}} saatte {{count}}"
   }
 }

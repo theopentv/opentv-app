@@ -3607,5 +3607,8 @@
       "one": "{{count}} assistido",
       "other": "{{count}} assistidos"
     }
+  },
+  "marathonTier": {
+    "label": "{{count}} em {{hours}} h"
   }
 }

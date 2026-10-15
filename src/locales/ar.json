@@ -4147,5 +4147,8 @@
       "many": "{{count}} مشاهدة",
       "other": "{{count}} مشاهدة"
     }
+  },
+  "marathonTier": {
+    "label": "{{count}} في {{hours}} ساعة"
   }
 }
