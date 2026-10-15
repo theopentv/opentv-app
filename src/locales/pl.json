@@ -1231,7 +1231,7 @@
     "lostHistoryBody": "Oceny i komentarze zostały zaimportowane, ale obejrzane odcinki już nie. Zaimportuj ponownie, aby je przenieść.",
     "lostHistoryRejected": "Wierszy z odcinkami w pliku: {{rows}} — żadnego nie udało się odczytać.",
     "lostHistoryNoFile": "W eksporcie nie było pliku z odcinkami.",
-    "allAired": "Wszystkie wyemitowane",
+    "allAired": "Wyemitowane",
     "toCome": {
       "one": "Jeszcze {{count}}",
       "few": "Jeszcze {{count}}",

@@ -988,7 +988,7 @@ export default function ShowScreen() {
               <View key={p.name ?? i} style={[styles.provider, i === 0 ? { backgroundColor: '#F47521' } : styles.providerDark]}>
                 <Ionicons name="play-circle-outline" size={20} color="#FFF" />
                 <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 13, letterSpacing: ls(0.5) }}>
-                  {(p.name ?? '').toLocaleUpperCase(currentLocale())}
+                  {(p.name ?? '').toUpperCase()}
                 </Text>
               </View>
             ))}
@@ -1155,7 +1155,7 @@ export default function ShowScreen() {
                       {c.name}
                     </Text>
                     <Text style={styles.castChar} numberOfLines={1}>
-                      {(c.character ?? '').replace(/\s*\(voice\)$/i, '').toLocaleUpperCase(currentLocale())}
+                      {(c.character ?? '').replace(/\s*\(voice\)$/i, '').toUpperCase()}
                     </Text>
                   </Pressable>
                 ))}

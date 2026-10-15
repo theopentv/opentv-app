@@ -1199,7 +1199,7 @@ export default function MovieScreen() {
                             {c.name ?? ''}
                           </Text>
                           <Text style={styles.charName} numberOfLines={1}>
-                            {(c.character ?? '').toLocaleUpperCase(currentLocale())}
+                            {(c.character ?? '').toUpperCase()}
                           </Text>
                         </View>
                       ))}
@@ -1365,7 +1365,7 @@ export default function MovieScreen() {
                               )}
                             </View>
                             <Text style={[styles.charName, picked && { color: colors.yellow }]} numberOfLines={1}>
-                              {label.toLocaleUpperCase(currentLocale())}
+                              {label.toUpperCase()}
                             </Text>
                             {charPct[label] != null && <Text style={styles.charPct}>{`${charPct[label]}%`}</Text>}
                           </Pressable>

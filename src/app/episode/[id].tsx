@@ -652,7 +652,7 @@ function EpisodePage({
                 exactly the shows somebody most wants to look up. */}
             <Pressable style={styles.showPill} onPress={() => tvdbId && router.push(`/show/${tvdbId}`)} accessibilityRole="button" accessibilityLabel={showName}>
               <Text style={styles.showPillText} numberOfLines={1}>
-                {showName.toLocaleUpperCase(currentLocale())} ›
+                {showName.toUpperCase()} ›
               </Text>
             </Pressable>
             <Pressable
@@ -781,7 +781,7 @@ function EpisodePage({
                           .map((w) => w[0])
                           .join('')
                           .slice(0, 3)
-                          .toLocaleUpperCase(currentLocale())}
+                          .toUpperCase()}
                       </Text>
                     ) : (
                       <Ionicons
@@ -946,7 +946,7 @@ function EpisodePage({
                               )}
                             </View>
                             <Text style={[styles.charName, picked && { color: colors.yellow }]} numberOfLines={1}>
-                              {c.name.toLocaleUpperCase(currentLocale())}
+                              {c.name.toUpperCase()}
                             </Text>
                             {charPct[c.name] != null && <Text style={styles.charPct}>{`${charPct[c.name]}%`}</Text>}
                           </Pressable>
@@ -984,7 +984,7 @@ function EpisodePage({
                               )}
                             </View>
                             <Text style={[styles.charName, picked && { color: colors.yellow }]} numberOfLines={1}>
-                              {label.toLocaleUpperCase(currentLocale())}
+                              {label.toUpperCase()}
                             </Text>
                             {charPct[label] != null && <Text style={styles.charPct}>{`${charPct[label]}%`}</Text>}
                           </Pressable>

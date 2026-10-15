@@ -109,11 +109,12 @@ export function initI18n(): boolean {
 }
 
 /**
- * Also the argument for every display upper-casing: `toUpperCase()` turns
- * Turkish "dizi" into "DIZI" — dotless I, a different letter — where Turkish
- * writes "DİZİ". Labels, titles and dates shown in capitals use
- * `toLocaleUpperCase(currentLocale())`; codes, hex and handles' initials keep
- * plain `toUpperCase()`.
+ * Also the argument for upper-casing OUR words: `toUpperCase()` turns Turkish
+ * "dizi" into "DIZI" — dotless I, a different letter — where Turkish writes
+ * "DİZİ". Translated labels and dates shown in capitals use
+ * `toLocaleUpperCase(currentLocale())`. Names that come from data (show titles,
+ * characters, providers, handles) keep plain `toUpperCase()`: they are mostly
+ * English, and the Turkish rule made the simulator read "TWİN PEAKS" (15 Oct).
  */
 export function currentLocale(): Locale {
   return active;

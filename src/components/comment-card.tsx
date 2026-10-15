@@ -156,7 +156,7 @@ export function CommentCard({
 
       {entity != null && entity !== '' && (
         <Pressable style={styles.entityPill} onPress={onPressEntity} disabled={onPressEntity == null} accessibilityRole="button" accessibilityLabel={entity}>
-          <Text style={styles.entityText}>{entity.toLocaleUpperCase(currentLocale())} ›</Text>
+          <Text style={styles.entityText}>{entity.toUpperCase()} ›</Text>
         </Pressable>
       )}
 

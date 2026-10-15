@@ -174,7 +174,7 @@ export default function WelcomeScreen() {
                 }}>
                 <Ionicons name="person-circle-outline" size={20} color={colors.onYellow} />
                 <Text style={styles.optionPrimaryText}>
-                  {t('welcome.continueAs', { name: (getMeta('username') ?? t('welcome.defaultName')).toLocaleUpperCase(currentLocale()) })}
+                  {t('welcome.continueAs', { name: (getMeta('username') ?? t('welcome.defaultName')).toUpperCase() })}
                 </Text>
               </Pressable>
             )}
@@ -190,7 +190,7 @@ export default function WelcomeScreen() {
                 <Text style={hasLibrary() ? styles.optionSecondaryText : styles.optionPrimaryText}>
                   {hasLibrary() || !cloud.username
                     ? t('welcome.restoreFromIcloud')
-                    : t('welcome.continueAs', { name: cloud.username.toLocaleUpperCase(currentLocale()) })}
+                    : t('welcome.continueAs', { name: cloud.username.toUpperCase() })}
                 </Text>
               </Pressable>
             )}
