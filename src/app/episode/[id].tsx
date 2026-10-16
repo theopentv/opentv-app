@@ -34,7 +34,7 @@ import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
 import { absoluteEpisode, episodeMeta, seasonTotal, showMeta } from '@/metadata';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
-import { characterFace, characterPercents, emotionNames, emotionPercents, nextPage, orderPollCast, pollLabel, starPercents, swipeDirection } from '@/pure';
+import { characterFace, characterPercents, emotionNames, emotionPercents, nextPage, orderPollCast, pollLabel, starPercents, swipeDirection, providerLines } from '@/pure';
 import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
@@ -1002,9 +1002,17 @@ function EpisodePage({
             <Text style={styles.h2} accessibilityRole="header">{t('media.whereToWatch')}</Text>
             <Ionicons name="settings-outline" size={18} color={colors.dim} />
           </View>
-          <Text style={{ color: colors.text, fontSize: 15, marginTop: 10 }}>
-            {sm?.providers?.length ? sm.providers.map((p) => p.name).join(' · ') : t('media.providersUnavailable')}
-          </Text>
+          {sm?.providers?.length ? (
+            // same lines as the film page: the kind leads its line quietly
+            providerLines(sm.providers).map(([kind, names], i) => (
+              <Text key={kind ?? `any${i}`} style={{ color: colors.text, fontSize: 15, marginTop: i === 0 ? 10 : 2 }}>
+                {kind ? <Text style={{ color: colors.dim, fontSize: 12.5, fontWeight: '600' }}>{t(`watchKind.${kind}`)}  </Text> : null}
+                {names.join(' · ')}
+              </Text>
+            ))
+          ) : (
+            <Text style={{ color: colors.text, fontSize: 15, marginTop: 10 }}>{t('media.providersUnavailable')}</Text>
+          )}
 
           <View style={styles.hair} />
           <Text style={styles.h2} accessibilityRole="header">{t('episode.episodeInfoTitle')}</Text>

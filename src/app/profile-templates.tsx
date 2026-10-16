@@ -170,7 +170,7 @@ export default function ProfileTemplatesScreen() {
             when there are any — no empty heading for a phone without an account. */}
         {fromServer.length > 0 && (
           <>
-            <Text style={s.section}>{t('serverTemplates.section')}</Text>
+            <Text accessibilityRole="header" style={s.section}>{t('serverTemplates.section')}</Text>
             <View style={s.grid2}>{fromServer.map(card)}</View>
           </>
         )}

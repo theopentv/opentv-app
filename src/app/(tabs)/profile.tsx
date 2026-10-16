@@ -44,6 +44,10 @@ import { pushWidgets } from '@/community-profiles';
 const SHELF_KEYS = ['shows', 'fav-shows', 'movies', 'fav-movies'] as const;
 const BACKUP_SNOOZE_KEY = 'backupBannerSnoozedAt';
 const WEEK_MS = 7 * 86_400_000;
+/* Out here, not inline in `snoozeBackup`: that handler is now also handed to
+   `a11yAction` during render, and the compiler's purity lint cannot tell a
+   callback being passed from one being called. */
+const snoozeStamp = () => String(Date.now());
 
 /** rev 2: the first version read only `Paths.document` and stamped itself done
  *  on phones whose export lives in iCloud — which is most of them. */
@@ -500,7 +504,7 @@ export default function ProfileScreen() {
     plusBackup,
   });
   const snoozeBackup = () => {
-    setMeta(BACKUP_SNOOZE_KEY, String(Date.now()));
+    setMeta(BACKUP_SNOOZE_KEY, snoozeStamp());
     setBackupSnoozed(true);
   };
   // Deliberately NOT part of topBanner's one-at-a-time rule: that rule ranks

@@ -35,7 +35,7 @@ import { filledStarText } from '@/star-rating';
 import { readSeasonAggregates, useSeasonAggregates } from '@/community-ratings';
 import { useJoined } from '@/community-session';
 import { airedTotalOf } from '@/show-status';
-import { fetchShowMeta } from '@/show-meta-fetch';
+import { fetchShowMeta, providersLackKind } from '@/show-meta-fetch';
 import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
@@ -109,7 +109,7 @@ export default function ShowScreen() {
   useEffect(() => {
     // runs even when metadata exists: a stale entry refreshes in the
     // background (new seasons appear), a fresh one resolves instantly
-    fetchShowMeta(tvdbId, tmdbId ? Number(tmdbId) : null).then((m) => setMetaState(m ? 'ready' : 'failed'));
+    fetchShowMeta(tvdbId, tmdbId ? Number(tmdbId) : null, providersLackKind(showMeta(tvdbId))).then((m) => setMetaState(m ? 'ready' : 'failed'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -988,11 +988,19 @@ export default function ShowScreen() {
           </View>
           <View style={styles.providers}>
             {(meta?.providers ?? []).map((p, i) => (
-              <View key={p.name ?? i} style={[styles.provider, i === 0 ? { backgroundColor: '#F47521' } : styles.providerDark]}>
+              <View
+                key={p.name ?? i}
+                style={[styles.provider, i === 0 ? { backgroundColor: '#F47521' } : styles.providerDark]}
+                accessible
+                accessibilityLabel={p.kind ? `${p.name ?? ''}, ${t(`watchKind.${p.kind}`)}` : (p.name ?? '')}>
                 <Ionicons name="play-circle-outline" size={20} color="#FFF" />
                 <Text style={{ color: '#FFF', fontWeight: '700', fontSize: 13, letterSpacing: ls(0.5) }}>
                   {(p.name ?? '').toUpperCase()}
                 </Text>
+                {/* Which KIND of way to watch — subscription, rental… — only
+                    when TMDB said so. A provider cached before the kind was
+                    kept shows its name alone rather than a guessed label. */}
+                {p.kind ? <Text style={styles.providerKind}>{t(`watchKind.${p.kind}`)}</Text> : null}
               </View>
             ))}
             {!meta?.providers?.length && <Text style={styles.caption2}>{t('show.providersUnavailable')}</Text>}
@@ -1706,7 +1714,7 @@ export default function ShowScreen() {
                 // the text block is the button — see `a11y.ts`.
                 <Pressable
                   style={[styles.carCard, { width: CARD_W }]}
-                  accessible={false}
+                  accessible={false} importantForAccessibility="no"
                   onPress={() => router.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
                   <View style={styles.carThumb} {...a11yHidden()}>
                     {em?.still ? (
@@ -1843,7 +1851,7 @@ export default function ShowScreen() {
                     lands on this Pressable) and carries the count. */}
                 <Pressable
                   style={styles.seasonCard}
-                  accessible={false}
+                  accessible={false} importantForAccessibility="no"
                   onPress={() => {
                     setExpanded((prev) => {
                       const next = new Set(prev);
@@ -2026,7 +2034,7 @@ export default function ShowScreen() {
                       <Pressable
                         key={epNum}
                         style={styles.epRow}
-                        accessible={false}
+                        accessible={false} importantForAccessibility="no"
                         onPress={() => router.push(`/episode/${show.tvdbId}-s${sr.season}e${epNum}`)}>
                         <View style={styles.epThumb} {...a11yHidden()}>
                           {em?.still ? (
@@ -2466,6 +2474,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   providerDark: { backgroundColor: 'transparent', paddingHorizontal: 8 },
+  providerKind: { color: '#FFF', opacity: 0.7, fontSize: 11.5, fontWeight: '600' },
   divider: { height: 1, backgroundColor: colors.line, marginBottom: 14 },
   pollLabel: {
     color: colors.text,

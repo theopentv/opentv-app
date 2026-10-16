@@ -3610,5 +3610,18 @@
   },
   "marathonTier": {
     "label": "{{hours}} saatte {{count}}"
+  },
+  "watchListSort": {
+    "recent": "En son",
+    "releaseDate": "Yayın tarihi",
+    "mostBehind": "En çok geride kalan",
+    "a11y": "İzleme listesini sırala. Şu an: {{sort}}"
+  },
+  "watchKind": {
+    "flatrate": "Abonelik",
+    "free": "Ücretsiz",
+    "ads": "Reklamlı",
+    "rent": "Kirala",
+    "buy": "Satın al"
   }
 }

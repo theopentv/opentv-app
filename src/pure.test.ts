@@ -1,6 +1,7 @@
 import { unzlibSync, zlibSync } from 'fflate';
 import {
   characterWhere,
+  providerLines,
   basicAuth,
   communityScore,
   communityScoreFromCounts,
@@ -26,6 +27,9 @@ import {
   memoryDeservesNotification,
   validWatchRegion,
   watchOptions,
+  sortWatchList,
+  validWatchListSort,
+  type WatchListEntry,
   secondaryAccent,
   dominantAccent,
   pickBiography,
@@ -3884,5 +3888,77 @@ describe('characterWhere', () => {
   });
   it('keeps an episode vote on that episode', () => {
     expect(characterWhere(2, 5)).toEqual({ season: 2, episode: 5 });
+  });
+});
+
+describe('sortWatchList', () => {
+  const e = (name: string, o: Partial<WatchListEntry> = {}): WatchListEntry => ({
+    name,
+    lastWatchedAt: null,
+    started: true,
+    nextAir: null,
+    left: null,
+    ...o,
+  });
+
+  it('release date: oldest next episode first, unknown after, not started last', () => {
+    const out = sortWatchList(
+      [
+        e('Never', { started: false, nextAir: '2001-01-01' }),
+        e('NoDate'),
+        e('New', { nextAir: '2024-05-01' }),
+        e('Old', { nextAir: '2010-03-01' }),
+      ],
+      'releaseDate',
+    );
+    expect(out.map((x) => x.name)).toEqual(['Old', 'New', 'NoDate', 'Never']);
+  });
+
+  it('release date: a tie goes to the name', () => {
+    const out = sortWatchList([e('B', { nextAir: '2020-01-01' }), e('A', { nextAir: '2020-01-01' })], 'releaseDate');
+    expect(out.map((x) => x.name)).toEqual(['A', 'B']);
+  });
+
+  it('most behind: biggest remainder first, a tie goes to the most recent, unknown and not started last', () => {
+    const out = sortWatchList(
+      [
+        e('Never', { started: false, left: 900 }),
+        e('Unknown', { lastWatchedAt: '2026-10-01' }),
+        e('Few', { left: 3 }),
+        e('ManyOld', { left: 140, lastWatchedAt: '2020-01-01' }),
+        e('ManyNew', { left: 140, lastWatchedAt: '2026-01-01' }),
+      ],
+      'mostBehind',
+    );
+    expect(out.map((x) => x.name)).toEqual(['ManyNew', 'ManyOld', 'Few', 'Unknown', 'Never']);
+  });
+
+  it('does not reorder the array it was given', () => {
+    const input = [e('B', { left: 1 }), e('A', { left: 2 })];
+    sortWatchList(input, 'mostBehind');
+    expect(input.map((x) => x.name)).toEqual(['B', 'A']);
+  });
+
+  it('an unknown stored value reads as the default', () => {
+    expect(validWatchListSort('mostBehind')).toBe('mostBehind');
+    expect(validWatchListSort('nonsense')).toBe('recent');
+    expect(validWatchListSort(null)).toBe('recent');
+  });
+});
+
+describe('providerLines', () => {
+  it('puts consecutive providers of one kind on one line', () => {
+    expect(
+      providerLines([
+        { name: 'Netflix', kind: 'flatrate' },
+        { name: 'Hulu', kind: 'flatrate' },
+        { name: 'Apple TV', kind: 'rent' },
+        { name: 'Old', kind: undefined },
+      ]),
+    ).toEqual([
+      ['flatrate', ['Netflix', 'Hulu']],
+      ['rent', ['Apple TV']],
+      [undefined, ['Old']],
+    ]);
   });
 });

@@ -3610,5 +3610,18 @@
   },
   "marathonTier": {
     "label": "{{count}} en {{hours}} h"
+  },
+  "watchListSort": {
+    "recent": "Recientes",
+    "releaseDate": "Fecha de estreno",
+    "mostBehind": "Más atrasadas",
+    "a11y": "Ordenar la lista. Ahora: {{sort}}"
+  },
+  "watchKind": {
+    "flatrate": "Suscripción",
+    "free": "Gratis",
+    "ads": "Con anuncios",
+    "rent": "Alquiler",
+    "buy": "Compra"
   }
 }

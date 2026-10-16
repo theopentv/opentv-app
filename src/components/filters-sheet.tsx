@@ -242,7 +242,7 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
       : t('filters.resultMovies', { n: shown, count: facts.length });
 
   return (
-    <Pressable accessible={false} style={styles.backdrop} onPress={() => router.back()}>
+    <Pressable accessible={false} importantForAccessibility="no" style={styles.backdrop} onPress={() => router.back()}>
       <Animated.View style={[styles.wrap, { transform: [{ translateY: slide }] }]}>
         {/*
           THE NAVIGATION BAR IS PART OF THE SCREEN, NOT PART OF THE PADDING.

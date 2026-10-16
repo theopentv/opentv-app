@@ -233,7 +233,7 @@ export function BoardBanner({ board, part = 'both' }: { board: Board; part?: 'bo
         {/* The scrim wraps the card, so it cannot be an element: a Pressable is
             a leaf to VoiceOver and the links inside would be unreachable. The
             escape gesture is the screen reader's way out. */}
-        <Pressable accessible={false} style={styles.scrim} onPress={() => setInfo(false)}>
+        <Pressable accessible={false} importantForAccessibility="no" style={styles.scrim} onPress={() => setInfo(false)}>
           <Pressable accessible={false} accessibilityViewIsModal onAccessibilityEscape={() => setInfo(false)} style={styles.card} onPress={() => {}}>
             <Text accessibilityRole="header" style={styles.cardTitle}>{t('commsuni.infoTitle')}</Text>
             <View style={styles.cardRow}>
@@ -492,8 +492,8 @@ export function ConsentSheet({ visible, onDone }: { visible: boolean; onDone: ()
   };
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDone}>
-      <Pressable accessible={false} style={styles.scrim} onPress={onDone}>
-        <Pressable accessible={false} accessibilityViewIsModal onAccessibilityEscape={onDone} style={styles.card} onPress={() => {}}>
+      <Pressable accessible={false} importantForAccessibility="no" style={styles.scrim} onPress={onDone}>
+        <Pressable accessible={false} importantForAccessibility="no" accessibilityViewIsModal onAccessibilityEscape={onDone} style={styles.card} onPress={() => {}}>
           {step === 'share' ? (
             <>
               <Text accessibilityRole="header" style={styles.cardTitle}>{t('commsuni.consent.title')}</Text>

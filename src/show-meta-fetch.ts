@@ -32,7 +32,7 @@ import {
  * until now, and why Discord reported the streaming list as "not up to date".
  * It was current. It was simply about America.
  */
-function watchRegion(): string {
+export function watchRegion(): string {
   return validWatchRegion(getMeta(WATCH_REGION_KEY)) ?? deviceWatchRegion(Localization.getLocales());
 }
 import { pool, tmdb } from '@/tmdb';
@@ -616,6 +616,16 @@ export function showMetaIsStale(m: ShowMeta): boolean {
   return Date.now() - (m.fetchedAt ?? 0) > (ended ? STALE_ENDED_MS : STALE_RUNNING_MS);
 }
 
+/**
+ * Providers cached before 1.7.2 kept no `kind`, so the page cannot say which is
+ * a subscription and which is a rental. NOT part of `showMetaIsStale`: that
+ * would refetch every show in the library at once after the update (a TV Time
+ * library is hundreds of shows). The show page asks for its one show instead.
+ */
+export function providersLackKind(m: ShowMeta | null | undefined): boolean {
+  return (m?.providers ?? []).some((p) => !('kind' in p));
+}
+
 /** Longest one show's metadata may take, all requests together. Generous:
  *  a long-running show is up to 40 TheTVDB pages plus the TMDB extras. */
 const SHOW_FETCH_CEILING_MS = 90_000;
@@ -760,10 +770,7 @@ export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Prom
         charPhoto: null,
       })),
       similar: [],
-      providers: watchOptions(d['watch/providers']?.results?.[watchRegion()]).map((p) => ({
-        name: p.name,
-        logo: p.logo,
-      })),
+      providers: watchOptions(d['watch/providers']?.results?.[watchRegion()]),
       seasons: { '1': { count: 1, name: 'Season 1' } },
       episodes: {
         '1-1': {
@@ -961,11 +968,7 @@ async function fetchTmdbGapFields(tvdbId: number, tmdbIdHint?: number | null): P
           const brand = (s: string) =>
             s.toLowerCase().replace(/\s*(amazon channel|apple tv channel|roku premium channel|plus|\+)\s*/g, ' ').trim();
           return arr.findIndex((q) => brand(q.name) === brand(p.name)) === i;
-        })
-        .map((p) => ({
-          name: p.name,
-          logo: p.logo,
-        })),
+        }),
     };
   } catch {
     return null;

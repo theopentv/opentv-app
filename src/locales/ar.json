@@ -4150,5 +4150,18 @@
   },
   "marathonTier": {
     "label": "{{count}} في {{hours}} ساعة"
+  },
+  "watchListSort": {
+    "recent": "الأحدث",
+    "releaseDate": "تاريخ العرض",
+    "mostBehind": "الأكثر تأخّرًا",
+    "a11y": "ترتيب قائمة المشاهدة، الحالي: {{sort}}"
+  },
+  "watchKind": {
+    "flatrate": "اشتراك",
+    "free": "مجاني",
+    "ads": "بإعلانات",
+    "rent": "إيجار",
+    "buy": "شراء"
   }
 }

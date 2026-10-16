@@ -219,7 +219,7 @@ function FeedCard({ item }: { item: FeedItem }) {
   return (
     // Not one element — the "+" inside has to be reachable (see `a11y.ts`), so
     // the title block is the button that opens the title.
-    <Pressable style={styles.bigCard} onPress={open} accessible={false}>
+    <Pressable style={styles.bigCard} onPress={open} accessible={false} importantForAccessibility="no">
       <View style={styles.bigArt}>
         {/* the feed only keeps rows that have landscape art, so this is set in
             practice — fall back to the poster rather than render a hole */}

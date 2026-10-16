@@ -3,6 +3,8 @@
  * Canonical posters/backdrops, season totals, and episode titles for every
  * season present in your watch history. Phase 2 will refresh this on-device.
  */
+import type { WatchKind } from '@/pure';
+
 export type EpisodeMeta = {
   title: string | null;
   air: string | null;
@@ -44,7 +46,10 @@ export type CastMeta = {
 };
 export type CharacterMeta = { name: string; image: string };
 export type SimilarMeta = { tmdbId: number; name: string | null; poster: string | null };
-export type ProviderMeta = { name: string | null; logo: string | null };
+/** `kind` is TMDB's own (subscription, free, rent…). Absent on the bundle and
+ *  on anything cached before it was kept — and then the app says nothing
+ *  about the kind rather than guessing one. */
+export type ProviderMeta = { name: string | null; logo: string | null; kind?: WatchKind };
 export type ShowMeta = {
   tmdbId: number;
   /** ms epoch of the fetch that produced this — drives staleness */

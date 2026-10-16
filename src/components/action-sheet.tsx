@@ -18,6 +18,9 @@ export type SheetAction = {
   icon: keyof typeof Ionicons.glyphMap;
   /** renders red — reserved for anything that destroys data */
   destructive?: boolean;
+  /** for a sheet that is a choice: marks the current one with a green check
+   *  and announces it as selected. Left out, the row is a plain action. */
+  selected?: boolean;
   onPress: () => void;
 };
 
@@ -83,8 +86,9 @@ export function ActionSheet({
         {actions.map((a, i) => (
           <Pressable
             key={a.text}
-            accessibilityRole="button"
             style={({ pressed }) => [styles.row, i > 0 && styles.rowLine, pressed && styles.rowPressed]}
+            accessibilityRole="button"
+            accessibilityState={a.selected != null ? { selected: a.selected } : undefined}
             onPress={() => {
               onClose();
               // let the sheet finish closing before the action pushes a screen
@@ -95,6 +99,7 @@ export function ActionSheet({
             <Text style={[styles.label, a.destructive && { color: colors.danger }]} numberOfLines={1}>
               {a.text}
             </Text>
+            {a.selected && <Ionicons name="checkmark" size={20} color={colors.green} />}
           </Pressable>
         ))}
         {children}
