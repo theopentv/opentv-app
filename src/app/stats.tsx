@@ -328,8 +328,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.timeToWatch')}>
-              <Text style={styles.bigNum}>{formatCount(s.timeToWatchHours, currentLocale())}</Text>
-              <Text style={styles.sub}>{t('stats.hoursLabel')}</Text>
+              <ClockRow {...s.timeToWatch} />
             </StatCard>
 
             <StatCard title={t('stats.futureWatchTime')}>
@@ -499,8 +498,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.timeToWatch')}>
-              <Text style={styles.bigNum}>{formatCount(m.timeToWatchHours, currentLocale())}</Text>
-              <Text style={styles.sub}>{t('stats.hoursLabel')}</Text>
+              <ClockRow {...m.timeToWatch} />
             </StatCard>
 
             <StatCard title={t('stats.futureWatchTime')}>

@@ -273,7 +273,8 @@ export function computeShowStats() {
     remaining,
     started,
     pace,
-    timeToWatchHours: Math.round(remainingMinutes / 60),
+    // months · days · hours, like the time-spent clock (a request on r/BingersWeb, 16 Oct)
+    timeToWatch: clockOf(remainingMinutes),
     catchUpDate,
     badges,
   };
@@ -342,7 +343,7 @@ export function computeMovieStats() {
   });
   const recent = watched.filter((m) => now - ts(m.watchedAt!.replace(' ', 'T')) < 60 * 864e5).length;
   const pace = Math.round((recent / (60 / 7)) * 100) / 100;
-  const timeToWatchHours = Math.round(unreleased.reduce((n, m) => n + (movieMeta(m.tmdbId)?.runtime ?? 0), 0) / 60);
+  const timeToWatch = clockOf(unreleased.reduce((n, m) => n + (movieMeta(m.tmdbId)?.runtime ?? 0), 0));
   const catchUpDate =
     pace > 0.01 && unreleased.length > 0 ? new Date(now + (unreleased.length / pace) * 7 * 864e5) : null;
 
@@ -365,7 +366,7 @@ export function computeMovieStats() {
     remaining: unreleased.length,
     upcoming,
     pace,
-    timeToWatchHours,
+    timeToWatch,
     catchUpDate,
   };
 }
