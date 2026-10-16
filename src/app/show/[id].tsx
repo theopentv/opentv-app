@@ -2463,7 +2463,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     paddingBottom: 8,
   },
-  h2: { color: colors.text, fontSize: 20, fontWeight: '800' },
+  // TV Time's section title: ~18pt, medium weight (17 Oct 2026).
+  h2: { color: colors.text, fontSize: 18, fontWeight: '600' },
   providers: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: space.lg, marginBottom: 14, alignItems: 'center' },
   provider: {
     flexDirection: 'row',

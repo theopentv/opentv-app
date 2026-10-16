@@ -1419,17 +1419,18 @@ const styles = StyleSheet.create({
     maxWidth: '72%',
   },
   showPillText: { color: colors.onArt, fontSize: 11, fontWeight: '700', letterSpacing: ls(0.8) },
-  code: { color: colors.onArt, fontSize: 20, fontWeight: '800' },
+  code: { color: colors.onArt, fontSize: 20, fontWeight: '700' },
   notInCatalogue: { color: colors.dim, fontSize: 12, marginTop: 4, fontStyle: 'italic' },
   // On the episode still — see `colors.onArt`.
   epTitle: { color: colors.onArtDim, fontSize: 14.5, marginTop: 3 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 14, paddingVertical: 11 },
   metaText: { color: colors.dim, fontSize: 14 },
+  // TV Time: WHERE DID YOU WATCH? etc. in white, smaller and tighter.
   label: {
-    color: colors.dim,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: ls(1.4),
+    color: colors.text,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: ls(0.6),
     textAlign: 'center',
     marginBottom: 14,
   },
@@ -1518,7 +1519,8 @@ const styles = StyleSheet.create({
   // Dimmed, not hidden: the others stay legible and stay tappable, because
   // changing your mind is one tap and must not feel like undoing something.
   charDim: { opacity: 0.4 },
-  h2: { color: colors.text, fontSize: 21, fontWeight: '800' },
+  // TV Time's section title: ~18pt, medium weight (17 Oct 2026).
+  h2: { color: colors.text, fontSize: 18, fontWeight: '600' },
   communityLine: { alignItems: 'center', marginTop: 4, marginBottom: 10 },
   synopsis: { color: colors.text, fontSize: 15.5, lineHeight: 22, marginTop: 10 },
   commentsRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 18 },
