@@ -23,7 +23,7 @@ import { track } from '@/analytics';
 import { api } from '@/api';
 import { getToken, isJoined, useJoined } from '@/community-session';
 import { getMeta, setMeta } from '@/db';
-import { EMOTION_NAMES, aggregateFresh, safeCharacterName, type EmotionName } from '@/pure';
+import { EMOTION_NAMES, aggregateFresh, characterWhere, safeCharacterName, type EmotionName } from '@/pure';
 
 /** The server's allow-list, mirrored from `backend/src/pure.ts` (`EMOTIONS`).
  *
@@ -910,10 +910,12 @@ export function postCharacterVote(vote: CharacterVotePost): void {
       // otherwise return the very cache being replaced.
       // Stamped BEFORE the refetch, so the buster is already in the URL.
       votedAt.set(voteScope(vote.source, vote.key), Date.now());
-      await fetchCharacterVotes(vote.source, vote.key, true, {
-        season: vote.season ?? -1,
-        episode: vote.episode ?? -1,
-      });
+      // A FILM HAS NO EPISODE, and its screen reads the rollup with no `where`
+      // (`useCharacterVotes('title', key)`). Refetching it as season -1,
+      // episode -1 filed the fresh counts under a different cache key, so the
+      // film screen never saw them: the percentages sat still and the faces
+      // were never re-ordered after a vote (The Station Agent, 16 Oct 2026).
+      await fetchCharacterVotes(vote.source, vote.key, true, characterWhere(vote.season, vote.episode));
       notifyAggregates();
     } catch {
       // Silent by contract. See `postRating`.

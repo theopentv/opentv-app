@@ -1,5 +1,6 @@
 import { unzlibSync, zlibSync } from 'fflate';
 import {
+  characterWhere,
   basicAuth,
   communityScore,
   communityScoreFromCounts,
@@ -3874,5 +3875,14 @@ describe('libraryOwnerFrom', () => {
     expect(libraryOwnerFrom(null, true)).toBe('seed');
     expect(libraryOwnerFrom(null, false)).toBe('fresh');
     expect(libraryOwnerFrom('seed', false)).toBe('fresh');
+  });
+});
+
+describe('characterWhere', () => {
+  it('reads a film vote back from the rollup its screen uses (no where)', () => {
+    expect(characterWhere(null, null)).toBeUndefined();
+  });
+  it('keeps an episode vote on that episode', () => {
+    expect(characterWhere(2, 5)).toEqual({ season: 2, episode: 5 });
   });
 });

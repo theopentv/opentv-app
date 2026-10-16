@@ -8277,3 +8277,15 @@ export function showEnumKey(group: 'status' | 'genre', raw: string): string {
   return group === 'status' ? (STATUS_ALIAS[slug] ?? slug) : slug;
 }
 const STATUS_ALIAS: Record<string, string> = { continuing: 'returning', returningseries: 'returning', cancelled: 'canceled' };
+
+/**
+ * Which character-vote rollup a vote belongs to: an episode's, or (a film, no
+ * season or episode) the target's own. Must match how the screens read it, or
+ * a vote refreshes a cache entry nobody looks at.
+ */
+export function characterWhere(
+  season: number | null | undefined,
+  episode: number | null | undefined,
+): { season: number; episode: number } | undefined {
+  return season != null && episode != null ? { season, episode } : undefined;
+}
