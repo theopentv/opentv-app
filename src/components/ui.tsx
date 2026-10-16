@@ -301,7 +301,7 @@ export function PillButton({
         s.pill,
         { backgroundColor: bg },
         variant === 'outline' && { borderWidth: 1.5, borderColor: colors.text },
-        small && { paddingVertical: 9, paddingHorizontal: 18 },
+        small && { minHeight: 0, paddingVertical: 9, paddingHorizontal: 18 },
         /*
          * NO `onPress` MEANS DISABLED, AND IT HAS TO LOOK IT. A full-strength
          * yellow pill that does nothing when tapped reads as a broken button,
@@ -656,14 +656,17 @@ const s = StyleSheet.create({
     overflow: 'hidden',
   },
 
+  // TV Time's yellow pill is ~39pt tall; ours stops at 44pt, Apple's minimum
+  // tap target (17 Oct 2026 sizing pass).
   pill: {
     borderRadius: radius.pill,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
+    minHeight: 44,
+    paddingVertical: 12,
+    paddingHorizontal: 26,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillText: { fontSize: 14, fontWeight: '700', letterSpacing: ls(0.8), textTransform: 'uppercase' },
+  pillText: { fontSize: 13, fontWeight: '700', letterSpacing: ls(0.6), textTransform: 'uppercase' },
 
   menuRow: {
     flexDirection: 'row',
