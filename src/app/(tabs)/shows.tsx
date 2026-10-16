@@ -332,6 +332,8 @@ export default function ShowsScreen() {
   const history = useMemo(() => historyAll.slice(0, histCount).reverse(), [historyAll, histCount]);
   const listRef = useRef<FlatList<Row>>(null);
   const anchored = useRef(false);
+  // Where WATCH NEXT starts (the history header's height), for the re-tap below.
+  const watchNextY = useRef(0);
   const scrollY = useRef(0);
   const contentH = useRef(0);
   const pendingGrow = useRef<number | null>(null);
@@ -384,6 +386,13 @@ export default function ShowsScreen() {
         labels={{ 'Watch List': t('shows.tabs.watchList'), Upcoming: t('shows.tabs.upcoming') }}
         active={tab}
         onChange={(nextTab) => {
+          // TAPPING THE TAB YOU ARE ON goes back to WATCH NEXT, the way TV Time
+          // did: after climbing into the history there was no way back down
+          // but scrolling the whole climb again.
+          if (nextTab === 'Watch List' && tab === 'Watch List') {
+            listRef.current?.scrollToOffset({ offset: watchNextY.current, animated: true });
+            return;
+          }
           if (nextTab === 'Watch List') anchored.current = false;
           setTab(nextTab);
         }}
@@ -473,9 +482,10 @@ export default function ShowsScreen() {
           ListHeaderComponent={
             <View
               onLayout={(e) => {
+                const h = e.nativeEvent.layout.height;
+                watchNextY.current = h > 12 ? h : 0;
                 if (anchored.current) return;
                 anchored.current = true;
-                const h = e.nativeEvent.layout.height;
                 if (h > 12) listRef.current?.scrollToOffset({ offset: h, animated: false });
               }}>
               {view === 'list' && history.length > 0 && (
