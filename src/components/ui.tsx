@@ -605,6 +605,10 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: space.md,
     paddingVertical: 10,
+    // TV Time draws a hairline under every pushed screen's header (Lists, Stats,
+    // Settings); without it the title floats into the content.
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
   },
   navTitle: { color: colors.text, fontSize: 16, fontWeight: '600', flex: 1, textAlign: 'center' },
   iconBtn: { width: 40, height: 34, alignItems: 'center', justifyContent: 'center' },
@@ -641,13 +645,14 @@ const s = StyleSheet.create({
   sectionPill: {
     backgroundColor: colors.pillGrey,
     color: colors.text,
-    fontSize: 11.5,
-    fontWeight: '700',
-    letterSpacing: ls(0.8),
+    // TV Time's size, measured at 430pt: an 18pt pill, not 23 (17 Oct 2026).
+    fontSize: 10.5,
+    fontWeight: '600',
+    letterSpacing: ls(0.5),
     textTransform: 'uppercase',
     borderRadius: radius.pill,
-    paddingVertical: 5,
-    paddingHorizontal: 14,
+    paddingVertical: 3,
+    paddingHorizontal: 12,
     overflow: 'hidden',
   },
 
@@ -704,12 +709,15 @@ const s = StyleSheet.create({
   errorActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 26, marginTop: 8 },
   errorAction: { fontWeight: '700', fontSize: 13.5, letterSpacing: ls(0.5), color: '#201014' },
 
+  // TV Time's stats panel: black with a hairline border, not a grey fill.
   statCard: {
-    backgroundColor: colors.card,
-    borderRadius: radius.card,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 6,
     padding: space.lg,
     marginHorizontal: space.lg,
     marginBottom: space.md,
   },
-  statCardTitle: { color: colors.text, fontSize: 17, fontWeight: '700', marginBottom: 8 },
+  statCardTitle: { color: colors.text, fontSize: 17, fontWeight: '600', marginBottom: 8 },
 });
