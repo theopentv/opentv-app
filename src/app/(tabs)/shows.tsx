@@ -463,6 +463,8 @@ export default function ShowsScreen() {
         <View style={{ flex: 1 }}>
         <FlatList
           ref={listRef}
+          // TV Time: black cards on a grey page, not grey cards on black.
+          style={{ backgroundColor: colors.panel }}
           data={rows}
           keyExtractor={(r) => r.key}
           onScroll={(e) => onListScroll(e.nativeEvent.contentOffset.y)}
@@ -741,6 +743,7 @@ export default function ShowsScreen() {
         />
       ) : (
         <FlatList
+          style={{ backgroundColor: colors.panel }}
           data={upcoming}
           keyExtractor={(u) => `${u.showId}-${u.season}-${u.episode}`}
           contentContainerStyle={{ paddingBottom: 90 }}
@@ -819,15 +822,16 @@ const styles = StyleSheet.create({
   upgradeTitle: { color: colors.text, fontSize: 14, fontWeight: '700', marginBottom: 2 },
   upgradeText: { color: colors.dim, fontSize: 12, lineHeight: 16 },
   pillRow: { alignItems: 'center', justifyContent: 'center', marginVertical: 10 },
+  // TV Time's pill (same as SectionPill in ui.tsx): ~18pt tall, not 23.
   sectionPill: {
     backgroundColor: colors.pillGrey,
     color: colors.text,
-    fontSize: 11.5,
-    fontWeight: '700',
-    letterSpacing: ls(0.8),
+    fontSize: 10.5,
+    fontWeight: '600',
+    letterSpacing: ls(0.5),
     borderRadius: radius.pill,
-    paddingVertical: 5,
-    paddingHorizontal: 14,
+    paddingVertical: 3,
+    paddingHorizontal: 12,
     overflow: 'hidden',
   },
   gridToggle: { position: 'absolute', end: 14, top: 16, flexDirection: 'row', gap: 18 },
@@ -836,15 +840,18 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.panel,
+    backgroundColor: colors.bg,
     borderRadius: radius.card,
     marginHorizontal: space.md,
     marginBottom: 10,
     overflow: 'hidden',
   },
+  // TV Time's artwork: a square the full height of the card (~89pt at 430pt),
+  // growing with the card when a PREMIERE tag makes it taller.
   thumb: {
-    width: 124,
-    aspectRatio: 16 / 10,
+    width: 89,
+    minHeight: 89,
+    alignSelf: 'stretch',
     backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
@@ -855,13 +862,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     maxWidth: '100%',
     borderWidth: 1,
-    borderColor: '#55555C',
+    borderColor: '#C9C9CE',
     borderRadius: radius.pill,
-    paddingVertical: 3,
-    paddingHorizontal: 11,
+    paddingVertical: 2,
+    paddingHorizontal: 9,
   },
-  showPillText: { color: colors.text, fontSize: 10.5, fontWeight: '700', letterSpacing: ls(0.7) },
-  epCode: { color: colors.text, fontSize: 17, fontWeight: '800', marginTop: 7 },
+  showPillText: { color: colors.text, fontSize: 11, fontWeight: '500', letterSpacing: ls(0.6) },
+  epCode: { color: colors.text, fontSize: 17, fontWeight: '600', marginTop: 7 },
   // Pinned to the foot of the artwork, full width of it, so a long word wraps
   // inside the poster instead of pushing anything around. Solid rather than
   // translucent: it sits over photographs, and 16% green over a bright still is
