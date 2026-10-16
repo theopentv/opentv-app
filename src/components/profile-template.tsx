@@ -809,8 +809,8 @@ export function ProfileTemplate({
                   <Poster name={it.name} uri={it.poster} aspect={0.78} />
                 </View>
               ))}
-              {/* dim the artwork so the list name pops — the name stays bright */}
-              <View style={styles.collageDim} pointerEvents="none" />
+              {/* TV Time darkens towards the bottom so the name reads on any poster */}
+              <LinearGradient colors={['rgba(0,0,0,0.05)', 'rgba(0,0,0,0.75)']} locations={[0.35, 1]} style={styles.collageDim} pointerEvents="none" />
               <Text style={styles.collageName}>{first.name}</Text>
               {first.shared === true && <SharedMark count={first.memberCount} />}
             </Pressable>
@@ -1755,16 +1755,17 @@ const styles = StyleSheet.create({
   plusChipText: { color: colors.yellow, fontSize: 10, fontWeight: '800', letterSpacing: ls(0.5) },
   /** No bottom rule either — same reason: the band is already a different
    *  surface from the page under it, and a line saying so is a line. */
-  statBand: { flexDirection: 'row' },
+  // TV Time rules the counts off with a hairline above and below.
+  statBand: { flexDirection: 'row', borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   // No dividing lines and real vertical room: in the cards body the counts are
   // a header for the grid under them, not a band ruled off from it.
-  statBandCards: { borderBottomWidth: 0, paddingTop: 6, paddingBottom: 14 },
+  statBandCards: { borderTopWidth: 0, borderBottomWidth: 0, paddingTop: 6, paddingBottom: 14 },
   handle: { color: colors.dim, fontSize: 13.5, fontWeight: '600', marginTop: 1 },
   joined: { color: colors.onArtDim, fontSize: 12.5, marginTop: 3 },
   statCell: { flex: 1, alignItems: 'center', paddingVertical: 13 },
   statCellMid: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.line },
-  statNum: { color: colors.text, fontSize: 20, fontWeight: '700' },
-  statLbl: { color: colors.dim, fontSize: 13, marginTop: 1 },
+  statNum: { color: colors.text, fontSize: 19, fontWeight: '600' },
+  statLbl: { color: colors.text, fontSize: 15, marginTop: 2 },
   collage: {
     flexDirection: 'row',
     gap: 2,
@@ -1813,8 +1814,8 @@ const styles = StyleSheet.create({
     start: 14,
     bottom: 12,
     color: colors.text,
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     textShadowColor: 'rgba(0,0,0,0.9)',
     textShadowRadius: 10,
   },

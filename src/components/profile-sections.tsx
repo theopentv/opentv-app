@@ -211,7 +211,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  clockNum: { color: colors.text, fontSize: 28, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  clockNum: { color: colors.text, fontSize: 24, fontWeight: '700', fontVariant: ['tabular-nums'] },
   clockUnit: {
     color: colors.faint,
     fontSize: 10.5,
@@ -236,6 +236,16 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },
+  statsCardHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+  },
+  statsCardTitleText: { color: colors.text, fontSize: 14, fontWeight: '500' },
   clockRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -244,7 +254,7 @@ const s = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  bigNum: { color: colors.text, fontSize: 28, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  bigNum: { color: colors.text, fontSize: 24, fontWeight: '700', fontVariant: ['tabular-nums'] },
 
   // The grid. Generous padding is the whole point — the rail's cards are
   // sized to fit four across a scroll, these are sized to be read.
@@ -551,7 +561,9 @@ export function StatsRail({
    * should not go behind the caller's back to ask the window.
    */
   const col = (Math.min(contentWidth, CONTENT_MAX_WIDTH) - GRID_GUTTER) / 2;
-  const row = Math.round(col / 1.25);
+  // TV Time's rail: a short, wide card (~106pt at 430pt), not a 1x1 square.
+  // Widths are unchanged, so the cards still line up with the grid below.
+  const row = Math.round(col * 0.55);
   if (cards.length === 0) return null;
   return (
     <ScrollView
@@ -571,7 +583,11 @@ export function StatsRail({
               borderColor: mixHex(colors.bg, accent, 0.34),
             },
           ]}>
-          <Text style={s.statsCardTitle}>{c.title}</Text>
+          <View style={s.statsCardHead}>
+            {/* TV Time's outline TV, not the 📺 emoji the title string carries */}
+            <Ionicons name="tv-outline" size={15} color={colors.text} />
+            <Text style={s.statsCardTitleText}>{withoutEmoji(c.title)}</Text>
+          </View>
           {c.kind === 'clock' ? (
             <View style={s.clockRow}>
               {/* Zeroes dropped, so a library under a month reads "25 DAYS

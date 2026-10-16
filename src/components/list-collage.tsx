@@ -16,6 +16,7 @@
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Poster } from '@/components/poster';
@@ -107,7 +108,10 @@ export function ListCollage({
       ))}
       {/* dim the artwork so the name pops — skipped with no artwork, where it
           would only make the name harder to read */}
-      {!empty && <View style={styles.collageDim} pointerEvents="none" />}
+      {/* TV Time darkens towards the bottom so the name reads on any poster */}
+      {!empty && (
+        <LinearGradient colors={['rgba(0,0,0,0.05)', 'rgba(0,0,0,0.75)']} locations={[0.35, 1]} style={styles.collageDim} pointerEvents="none" />
+      )}
       <Text style={styles.collageName} numberOfLines={2}>
         {list.name}
       </Text>
@@ -174,8 +178,8 @@ const styles = StyleSheet.create({
     end: 14,
     bottom: 12,
     color: colors.text,
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '700',
     textShadowColor: 'rgba(0,0,0,0.9)',
     textShadowRadius: 10,
   },
