@@ -8405,3 +8405,16 @@ export function sortWatchList<T extends WatchListEntry>(
           byName(a, b);
   return [...items].sort((a, b) => (a.started ? 0 : 1) - (b.started ? 0 : 1) || cmp(a, b));
 }
+
+/**
+ * WHICH SHOW ROWS NEED A NAME, as SQL — `getShowsMissingName` runs it, and it
+ * lives here so a test can run it against real SQLite (db.ts needs expo-sqlite).
+ *
+ * Blank, OR the show's own TheTVDB id and nothing else. The second is what a
+ * row looks like when an id was written where a name should have been (seen as
+ * "78857"); it drew as a number everywhere and the blank-only check never
+ * offered it for repair. Equality with THIS row's id, never "looks numeric",
+ * so "1899" or "1923" — real titles — are left alone.
+ */
+export const SHOW_NAME_MISSING_WHERE =
+  "(name IS NULL OR TRIM(name) = '' OR TRIM(name) = CAST(tvdbId AS TEXT)) AND COALESCE(nameTried, 0) = 0";

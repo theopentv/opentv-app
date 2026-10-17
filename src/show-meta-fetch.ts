@@ -346,7 +346,9 @@ export async function fillMissingShowNames(): Promise<void> {
     try {
       const hit = await tvdbSeries(s.tvdbId);
       const name = hit?.name?.trim();
-      if (name) setShowName(s.tvdbId, name);
+      // a name that is just the id again would match SHOW_NAME_MISSING_WHERE
+      // and be asked about on every launch — treat it as no answer at all
+      if (name && name !== String(s.tvdbId)) setShowName(s.tvdbId, name);
       else markShowNameTried(s.tvdbId); // answered, and the answer is "no such series"
     } catch {
       // offline or unreachable: ask again next launch, and do NOT mark it tried

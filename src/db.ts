@@ -9,7 +9,7 @@ import * as SQLite from 'expo-sqlite';
 import records from '@/data/records.json';
 import type { Action as SyncAction } from '@/sync-ops';
 import { designSnapshot, isDesignKey } from '@/sync-ops';
-import { interestKey, libraryOwnerFrom, parseInterest, disambiguatedMovieName, displayTitle, episodeKey, type MemoryEvent, mayFoldDuplicateShow, mergeCustomLists, movedListIndex, movieIdentityMatches, nextCharacterVote, renumberLists, resolveMovieRow, slug, watchRuntimeSeconds, type ArchiveCounts } from '@/pure';
+import { interestKey, libraryOwnerFrom, parseInterest, disambiguatedMovieName, displayTitle, episodeKey, type MemoryEvent, mayFoldDuplicateShow, mergeCustomLists, movedListIndex, movieIdentityMatches, nextCharacterVote, renumberLists, resolveMovieRow, SHOW_NAME_MISSING_WHERE, slug, watchRuntimeSeconds, type ArchiveCounts } from '@/pure';
 import seed from '@/seed';
 import { COMMSUNI_ELIGIBLE_WHERE } from '@/commsuni-scope';
 import { convertToTenOnce, wholeStars } from '@/star-rating';
@@ -3132,7 +3132,7 @@ export function getMoviesMissingPoster(): { name: string; year: string | null; t
  */
 export function getShowsMissingName(): { tvdbId: number }[] {
   return db.getAllSync<{ tvdbId: number }>(
-    "SELECT tvdbId FROM shows WHERE (name IS NULL OR TRIM(name) = '') AND COALESCE(nameTried, 0) = 0",
+    `SELECT tvdbId FROM shows WHERE ${SHOW_NAME_MISSING_WHERE}`,
   );
 }
 
