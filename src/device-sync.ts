@@ -34,35 +34,14 @@
 import { backupShouldTurnOn, syncShouldTurnOn } from '@/pure';
 import { cloudStorageAllowed } from '@/plus';
 import {
-  addMovieRewatch,
-  addMovieToWatchlist,
-  clearEpisodeRating,
-  deleteMovie,
-  deleteShow,
-  DESIGN_AT_KEY,
   dropOps,
   getMeta,
-  markRewatched,
-  markWatched,
-  episodeEmotions,
   onOpQueued,
+  onRemoteChange,
   pendingOpCount,
   pendingOps,
-  notifyRemoteChange,
-  onRemoteChange,
   setApplyingRemote,
-  setCharacterVoteExact,
-  toggleEpisodeEmotion,
-  setEpisodeRating,
-  setFollowing,
   setMeta,
-  clearMovieStars,
-  setMovieStars,
-  setMovieWatched,
-  setShowArchived,
-  setShowFavorited,
-  setShowFinished,
-  unmarkWatched,
 } from '@/db';
 import * as Device from 'expo-device';
 import { router } from 'expo-router';
@@ -76,7 +55,8 @@ import { pickDeviceName, syncRefusal, type Device as RegisteredDevice } from '@/
 import { t } from '@/i18n';
 import { serverUrl } from '@/server-url';
 import { restoreFromServerBackup, serverBackupNow } from '@/cloud-backup';
-import { orderOps, parseOp, type Action, type RemoteOp } from '@/sync-ops';
+import { applyRemoteOps } from '@/sync-apply';
+import { type RemoteOp } from '@/sync-ops';
 
 const ON = 'sync.on';
 const CURSOR = 'sync.cursor';
@@ -219,115 +199,6 @@ export async function removeDevice(device: string): Promise<void> {
   const token = await getToken();
   if (!token) return;
   await api(`/v1/me/devices/${encodeURIComponent(device)}`, { method: 'DELETE', token });
-}
-
-/** Everything one op means, done through the same functions the screens use. */
-function apply(a: Action, ts = 0): void {
-  switch (a.t) {
-    case 'watch':
-      markWatched(a.show, a.s, a.e, a.at || undefined);
-      break;
-    case 'unwatch':
-      unmarkWatched(a.show, a.s, a.e);
-      break;
-    case 'rewatch':
-      markRewatched(a.show, a.s, a.e);
-      break;
-    case 'rate':
-      setEpisodeRating(a.show, a.s, a.e, a.ten);
-      break;
-    case 'unrate':
-      clearEpisodeRating(a.show, a.s, a.e);
-      break;
-    case 'showFlag':
-      if (a.flag === 'followed') setFollowing(a.show, a.on);
-      else if (a.flag === 'favorited') setShowFavorited(a.show, a.on);
-      else if (a.flag === 'archived') setShowArchived(a.show, a.on);
-      else setShowFinished(a.show, a.on);
-      break;
-    case 'showDelete':
-      deleteShow(a.show);
-      break;
-    case 'movieWatch':
-      setMovieWatched(a.name, a.on);
-      break;
-    case 'movieStars':
-      if (a.ten == null) clearMovieStars(a.name);
-      else setMovieStars(a.name, a.ten);
-      break;
-    case 'emotion': {
-      // The op says what should be TRUE; the local call is a toggle. Only act
-      // when they disagree, or replaying would undo what it just said.
-      const on = episodeEmotions(a.show, a.s, a.e).includes(a.emotion);
-      if (on !== a.on) toggleEpisodeEmotion(a.show, a.s, a.e, a.emotion);
-      break;
-    }
-    case 'charVote':
-      setCharacterVoteExact(a.show, a.s, a.e, a.name);
-      break;
-    case 'movieRewatch':
-      addMovieRewatch(a.name);
-      break;
-    case 'movieDelete':
-      deleteMovie(a.name);
-      break;
-    case 'movieAdd':
-      addMovieToWatchlist(a.name, a.poster, a.year, a.tmdbId);
-      break;
-    case 'design':
-      applyDesign(a.keys, ts);
-      break;
-  }
-}
-
-/**
- * A DESIGN FROM ANOTHER DEVICE, unless this one changed its own since.
- *
- * Applied in ts order, so of several snapshots the newest ends up standing.
- * The banner is the one part that is not a value: it is a file, so a new
- * address means downloading the picture, which happens after the batch and
- * under the same echo guard, then tells the screens.
- */
-function applyDesign(keys: Record<string, string>, ts: number): void {
-  if (ts < (Number(getMeta(DESIGN_AT_KEY)) || 0)) return;
-  for (const [k, v] of Object.entries(keys)) {
-    if (k === 'coverUrl') continue;
-    setMeta(k, v);
-  }
-  setMeta(DESIGN_AT_KEY, String(ts));
-  const url = keys.coverUrl;
-  if (url && url !== getMeta('coverUrl')) void takeBanner(url);
-}
-
-async function takeBanner(url: string): Promise<void> {
-  try {
-    // Required lazily: the templates module draws, and this one must not load React screens.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { bannerToDocuments } = require('@/profile-templates') as typeof import('@/profile-templates');
-    const name = await bannerToDocuments(url);
-    const old = getMeta('coverFile');
-    setApplyingRemote(true);
-    try {
-      setMeta('coverFile', name);
-      setMeta('coverUrl', url);
-      setMeta('coverStillFile', '');
-    } finally {
-      setApplyingRemote(false);
-    }
-    if (old && old !== name) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { File, Paths } = require('expo-file-system') as typeof import('expo-file-system');
-        const f = new File(Paths.document, old);
-        if (f.exists) f.delete();
-      } catch {
-        // An orphaned picture costs a little space, never the new banner.
-      }
-    }
-    notifyRemoteChange();
-  } catch {
-    // Offline or a dead address: keep the banner this device had.
-  }
 }
 
 /**
@@ -548,7 +419,22 @@ export async function syncDevices(): Promise<SyncOutcome> {
     setMeta('cloudBackupTo', 'opentv');
     setMeta('cloudBackupSig', '');
   }
-  if (running || !syncEnabled()) return running ? 'done' : 'off';
+  /*
+   * NOT OURS? THEN THE PERSON'S OWN CLOUD (2.0.0), if they turned it on — the
+   * free road, through their iCloud or Google Drive (`cloud-sync.ts`). Every
+   * trigger that already calls this — launch, leaving the app, the debounce
+   * after a tick, the poll while open — serves it too, and nothing else has
+   * to know there are two. ONE ROAD AT A TIME: with this relay on, the cloud
+   * stays quiet, because both draining one outbox would deliver an op twice.
+   * Lazily, so a phone without it never loads the module.
+   */
+  if (!syncEnabled()) {
+    if (!getMeta('cloudSync.via')) return 'off';
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { cloudSyncNow } = require('@/cloud-sync') as typeof import('@/cloud-sync');
+    return cloudSyncNow();
+  }
+  if (running) return 'done';
   running = true;
   try {
     const token = await getToken();
@@ -623,40 +509,9 @@ export async function syncDevices(): Promise<SyncOutcome> {
       }
     }
 
-    setApplyingRemote(true);
-    try {
-      for (const op of orderOps(res.ops)) {
-        const a = parseOp(op.kind, op.payload);
-        // `null` is a newer build's vocabulary. Skip it and keep the cursor
-        // moving — refusing the batch would wedge this device for good.
-        if (a) {
-          try {
-            apply(a, op.ts);
-          } catch {
-            // One op that cannot be applied — a show this device never had —
-            // must not stop the rest of the batch.
-          }
-        }
-        setMeta(CURSOR, String(op.seq));
-      }
-    } finally {
-      setApplyingRemote(false);
-    }
-
-    /**
-     * AFTER the batch and AFTER `setApplyingRemote(false)`.
-     *
-     * After the batch because a hundred ops arriving together are one thing
-     * happening; after the flag because a listener re-reads the database and
-     * anything it writes as a result must not be mistaken for a remote apply
-     * and swallowed.
-     *
-     * Guarded on there having been ops at all: an empty poll is the common
-     * case -- every device does this on a timer -- and waking every open
-     * screen to re-read for nothing is the version of this fix that costs more
-     * than the bug did.
-     */
-    if (res.ops.length > 0) notifyRemoteChange();
+    // The cursor moves per op, inside `applyRemoteOps`, which also holds the
+    // echo guard and tells the screens once the batch has landed.
+    applyRemoteOps(res.ops, (op) => setMeta(CURSOR, String(op.seq)));
 
     // Past whatever this device wrote itself, which came back in no op.
     if (res.cursor > (Number(getMeta(CURSOR) ?? '0') || 0)) setMeta(CURSOR, String(res.cursor));
