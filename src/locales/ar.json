@@ -2626,15 +2626,7 @@
       "placeholder": "الرمز",
       "apply": "تطبيق",
       "invalid": "هذا الرمز غير صالح أو انتهت مدته.",
-      "applied": "تم تطبيق الرمز {{code}} ✓",
-      "firstMonths": {
-        "zero": "ثم {{full}}",
-        "one": "لأول شهر، ثم {{full}}",
-        "two": "لأول شهرين، ثم {{full}}",
-        "few": "لأول {{count}} أشهر، ثم {{full}}",
-        "many": "لأول {{count}} شهرًا، ثم {{full}}",
-        "other": "لأول {{count}} شهر، ثم {{full}}"
-      }
+      "applied": "تم تطبيق الرمز {{code}} ✓"
     }
   },
   "timeline": {
@@ -4165,5 +4157,43 @@
     "ads": "بإعلانات",
     "rent": "إيجار",
     "buy": "شراء"
+  },
+  "offers": {
+    "firstDays": {
+      "zero": "ثم {{full}}",
+      "one": "لأول يوم، ثم {{full}}",
+      "two": "لأول يومين، ثم {{full}}",
+      "few": "لأول {{count}} أيام، ثم {{full}}",
+      "many": "لأول {{count}} يومًا، ثم {{full}}",
+      "other": "لأول {{count}} يوم، ثم {{full}}"
+    },
+    "firstWeeks": {
+      "zero": "ثم {{full}}",
+      "one": "لأول أسبوع، ثم {{full}}",
+      "two": "لأول أسبوعين، ثم {{full}}",
+      "few": "لأول {{count}} أسابيع، ثم {{full}}",
+      "many": "لأول {{count}} أسبوعًا، ثم {{full}}",
+      "other": "لأول {{count}} أسبوع، ثم {{full}}"
+    },
+    "firstMonths": {
+      "zero": "ثم {{full}}",
+      "one": "لأول شهر، ثم {{full}}",
+      "two": "لأول شهرين، ثم {{full}}",
+      "few": "لأول {{count}} أشهر، ثم {{full}}",
+      "many": "لأول {{count}} شهرًا، ثم {{full}}",
+      "other": "لأول {{count}} شهر، ثم {{full}}"
+    },
+    "firstYears": {
+      "zero": "ثم {{full}}",
+      "one": "لأول سنة، ثم {{full}}",
+      "two": "لأول سنتين، ثم {{full}}",
+      "few": "لأول {{count}} سنوات، ثم {{full}}",
+      "many": "لأول {{count}} سنةً، ثم {{full}}",
+      "other": "لأول {{count}} سنة، ثم {{full}}"
+    },
+    "special": {
+      "title": "عرض خاص لك",
+      "endsIn": "ينتهي خلال {{time}}"
+    }
   }
 }

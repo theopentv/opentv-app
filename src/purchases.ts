@@ -27,9 +27,19 @@
  *    account, so a restore recovers it either way.
  */
 import { Platform } from 'react-native';
-import type { CustomerInfo, PurchasesPackage, SubscriptionOption } from 'react-native-purchases';
+import type {
+  CustomerInfo,
+  IntroEligibility,
+  PurchasesPackage,
+  PurchasesPromotionalOffer,
+  PurchasesStoreProduct,
+  PurchasesStoreProductDiscount,
+  PurchasesWinBackOffer,
+  SubscriptionOption,
+} from 'react-native-purchases';
 
 import { getProfileId } from '@/community-session';
+import { matchPlayOption, offerSecondsLeft } from '@/offers';
 import { serverGrantedPlus, setPlusEntitled } from '@/plus';
 import { annualSavingPercent, liveCreatorCode } from '@/pure';
 import { RC_API_KEY_ANDROID, RC_API_KEY_IOS } from '@/rc-keys';
@@ -52,6 +62,12 @@ type PurchasesSdk = {
   setAttributes(attributes: Record<string, string | null>): void;
   restorePurchases(): Promise<CustomerInfo>;
   getCustomerInfo(): Promise<CustomerInfo>;
+  // iOS only, all four (react-native-purchases 10.7 types).
+  checkTrialOrIntroductoryPriceEligibility(productIds: string[]): Promise<Record<string, IntroEligibility>>;
+  getEligibleWinBackOffersForPackage(pkg: PurchasesPackage): Promise<PurchasesWinBackOffer[] | undefined>;
+  getPromotionalOffer(product: PurchasesStoreProduct, discount: PurchasesStoreProductDiscount): Promise<PurchasesPromotionalOffer | undefined>;
+  purchaseDiscountedPackage(pkg: PurchasesPackage, discount: PurchasesPromotionalOffer): Promise<{ customerInfo: CustomerInfo }>;
+  purchasePackageWithWinBackOffer(pkg: PurchasesPackage, offer: PurchasesWinBackOffer): Promise<{ customerInfo: CustomerInfo }>;
 };
 
 let sdk: PurchasesSdk | null = null;
@@ -283,18 +299,143 @@ export function appleRedeemUrl(typed: string): string | null {
 }
 
 /**
+ * WHAT APPLE WILL DISCOUNT FOR THIS PERSON, per plan — see `planOffer` in
+ * offers.ts for how the card turns it into words.
+ *
+ * `introEligible` is RevenueCat's answer, and only ELIGIBLE counts: UNKNOWN
+ * (no subscription group info yet) shows the plain price, as the SDK itself
+ * advises — a card promising $9.99 to somebody StoreKit then charges $19.99
+ * is the one outcome this exists to stop. `winBack` is StoreKit 2's own list
+ * of win-back offers this person qualifies for (iOS 18+; older answers
+ * nothing, and so does a throw).
+ *
+ * Android needs none of this: Play only lists offers the person qualifies
+ * for, and the default option already says which one `purchasePackage` buys.
+ */
+export type AppleExtras = { introEligible: boolean; winBack: PurchasesWinBackOffer | null };
+const NO_EXTRAS: AppleExtras = { introEligible: false, winBack: null };
+
+export async function appleExtras(plans: Plans): Promise<{ annual: AppleExtras; monthly: AppleExtras }> {
+  const none = { annual: NO_EXTRAS, monthly: NO_EXTRAS };
+  if (Platform.OS !== 'ios' || !sdk || !configured) return none;
+  const s = sdk;
+  const ids = [plans.annual, plans.monthly].flatMap((p) => (p ? [p.product.identifier] : []));
+  // 2 = INTRO_ELIGIBILITY_STATUS_ELIGIBLE. The enum is a runtime value of the
+  // native module, which this file only `require`s behind a try.
+  const eligible = await s.checkTrialOrIntroductoryPriceEligibility(ids).catch(() => ({}) as Record<string, IntroEligibility>);
+  const one = async (pkg: PurchasesPackage | null): Promise<AppleExtras> => {
+    if (!pkg) return NO_EXTRAS;
+    const winBack = await s.getEligibleWinBackOffersForPackage(pkg).then((w) => w?.[0] ?? null, () => null);
+    return { introEligible: eligible[pkg.product.identifier]?.status === 2, winBack };
+  };
+  const [annual, monthly] = await Promise.all([one(plans.annual), one(plans.monthly)]);
+  return { annual, monthly };
+}
+
+/**
+ * A PERSONAL OFFER, given from the dashboard (`GET /v1/me/offer`), matched to
+ * the store offer that will honour it — or null, and the normal paywall.
+ *
+ * ONLY A PHONE WITH AN ACCOUNT ASKS. No profile id, no request: somebody who
+ * never joined must never contact the server, and nothing here changes that.
+ *
+ * NULL WHENEVER THE STORE WOULD NOT HONOUR IT, so the card is never a promise
+ * the sheet breaks:
+ *  - iPhone: the offer id must be one of the product's promotional offers, and
+ *    RevenueCat must SIGN it (`getPromotionalOffer`), which needs the In-App
+ *    Purchase key uploaded to RevenueCat. No key, no signature, no card.
+ *    ponytail: the signature is fetched once per paywall open; Apple accepts
+ *    it for 24 hours, far longer than anybody keeps the sheet open.
+ *  - Android: an option on the product whose offer id or tag is that id.
+ *    Play lists it only if the person qualifies.
+ * The annual plan is tried first.
+ */
+export type PersonalOffer = {
+  pkg: PurchasesPackage;
+  endsAt: string;
+  /** iPhone: the discount (for the price) and its signature (to buy it). */
+  apple: { discount: PurchasesStoreProductDiscount; signed: PurchasesPromotionalOffer } | null;
+  /** Android: the option to buy. */
+  option: SubscriptionOption | null;
+};
+
+export async function getPersonalOffer(plans: Plans): Promise<PersonalOffer | null> {
+  if (!sdk || !configured || !getProfileId()) return null;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { api } = require('@/api') as typeof import('@/api');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getToken } = require('@/community-session') as typeof import('@/community-session');
+    const token = await getToken();
+    if (!token) return null;
+    const res = await api<{ offer: { offer_id: string; ends_at: string } | null }>('/v1/me/offer', { token });
+    const offer = res?.offer;
+    if (!offer || offerSecondsLeft(offer.ends_at, Date.now()) === 0) return null;
+    for (const pkg of [plans.annual, plans.monthly]) {
+      if (!pkg) continue;
+      if (Platform.OS === 'ios') {
+        const discount = pkg.product.discounts?.find((d) => d.identifier === offer.offer_id);
+        if (!discount) continue;
+        const signed = await sdk.getPromotionalOffer(pkg.product, discount).catch(() => undefined);
+        if (signed) return { pkg, endsAt: offer.ends_at, apple: { discount, signed }, option: null };
+      } else {
+        const option = matchPlayOption(pkg.product.subscriptionOptions, offer.offer_id);
+        if (option) return { pkg, endsAt: offer.ends_at, apple: null, option };
+      }
+    }
+    return null;
+  } catch {
+    // Offline, signed out, or the server is older than this build: no card.
+    return null;
+  }
+}
+
+/** Bought through it, so it is spent — the server stops offering it. */
+function spendPersonalOffer(): void {
+  void (async () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { api } = require('@/api') as typeof import('@/api');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getToken } = require('@/community-session') as typeof import('@/community-session');
+    const token = await getToken();
+    if (token) await api('/v1/me/offer/used', { method: 'POST', token, body: {} });
+  })().catch(() => {
+    // It ends on its own at ends_at anyway.
+  });
+}
+
+/**
+ * HOW to buy a package. Nothing: the default, which on iPhone applies any
+ * intro price StoreKit decides on and on Android buys the default option.
+ * `code`: the creator offer (Android). `winBack`: Apple's win-back offer.
+ * `personal`: the dashboard's offer, through the store offer it names.
+ */
+export type BuyVia = { code?: string | null; winBack?: PurchasesWinBackOffer | null; personal?: PersonalOffer | null };
+
+/**
  * `value` is whether the entitlement is active afterwards. With a `code`, the
  * creator offer is bought instead of the default, and the code is put on the
  * RevenueCat customer — that is how a creator's listeners are counted.
  */
-export async function buy(pkg: PurchasesPackage, code?: string | null): Promise<PurchaseResult<boolean>> {
+export async function buy(pkg: PurchasesPackage, via: BuyVia = {}): Promise<PurchaseResult<boolean>> {
   if (!sdk || !configured) return unavailable;
   try {
+    const { code, winBack, personal } = via;
     const offer = code ? creatorOffer(pkg) : null;
     if (offer) sdk.setAttributes({ creator_code: code! });
-    const { customerInfo } = offer ? await sdk.purchaseSubscriptionOption(offer) : await sdk.purchasePackage(pkg);
+    const { customerInfo } = personal?.apple
+      ? await sdk.purchaseDiscountedPackage(pkg, personal.apple.signed)
+      : personal?.option
+        ? await sdk.purchaseSubscriptionOption(personal.option)
+        : offer
+          ? await sdk.purchaseSubscriptionOption(offer)
+          : winBack
+            ? await sdk.purchasePackageWithWinBackOffer(pkg, winBack)
+            : await sdk.purchasePackage(pkg);
     applyEntitlement(customerInfo);
-    return { ok: true, value: customerInfo.entitlements.active[ENTITLEMENT] != null };
+    const active = customerInfo.entitlements.active[ENTITLEMENT] != null;
+    if (active && personal) spendPersonalOffer();
+    return { ok: true, value: active };
   } catch (e) {
     // RC signals a cancelled sheet with a flag on the error, not a distinct
     // type. Cancelling is not a failure and must not raise an alert.
@@ -390,9 +531,4 @@ export async function restore(): Promise<PurchaseResult<boolean>> {
 /** The annual saving as a whole percent, or null. Maths in `pure.ts`, tested. */
 export function annualSaving(plans: Plans): number | null {
   return annualSavingPercent(plans.monthly?.product.price, plans.annual?.product.price);
-}
-
-/** True when the package's introductory phase costs nothing — i.e. a free trial. */
-export function hasFreeTrial(pkg: PurchasesPackage | null): boolean {
-  return pkg?.product.introPrice?.price === 0;
 }

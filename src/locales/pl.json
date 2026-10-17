@@ -2448,13 +2448,7 @@
       "placeholder": "Kod",
       "apply": "Zastosuj",
       "invalid": "Ten kod jest nieprawidłowy albo wygasł.",
-      "applied": "Kod {{code}} zastosowany ✓",
-      "firstMonths": {
-        "one": "Przez pierwszy miesiąc, potem {{full}}",
-        "few": "Przez pierwsze {{count}} miesiące, potem {{full}}",
-        "many": "Przez pierwszych {{count}} miesięcy, potem {{full}}",
-        "other": "Przez pierwsze {{count}} miesiąca, potem {{full}}"
-      }
+      "applied": "Kod {{code}} zastosowany ✓"
     }
   },
   "timeline": {
@@ -3895,5 +3889,35 @@
     "ads": "Z reklamami",
     "rent": "Wypożyczenie",
     "buy": "Zakup"
+  },
+  "offers": {
+    "firstDays": {
+      "one": "Przez pierwszy dzień, potem {{full}}",
+      "few": "Przez pierwsze {{count}} dni, potem {{full}}",
+      "many": "Przez pierwszych {{count}} dni, potem {{full}}",
+      "other": "Przez pierwsze {{count}} dnia, potem {{full}}"
+    },
+    "firstWeeks": {
+      "one": "Przez pierwszy tydzień, potem {{full}}",
+      "few": "Przez pierwsze {{count}} tygodnie, potem {{full}}",
+      "many": "Przez pierwszych {{count}} tygodni, potem {{full}}",
+      "other": "Przez pierwsze {{count}} tygodnia, potem {{full}}"
+    },
+    "firstMonths": {
+      "one": "Przez pierwszy miesiąc, potem {{full}}",
+      "few": "Przez pierwsze {{count}} miesiące, potem {{full}}",
+      "many": "Przez pierwszych {{count}} miesięcy, potem {{full}}",
+      "other": "Przez pierwsze {{count}} miesiąca, potem {{full}}"
+    },
+    "firstYears": {
+      "one": "Przez pierwszy rok, potem {{full}}",
+      "few": "Przez pierwsze {{count}} lata, potem {{full}}",
+      "many": "Przez pierwszych {{count}} lat, potem {{full}}",
+      "other": "Przez pierwsze {{count}} roku, potem {{full}}"
+    },
+    "special": {
+      "title": "Specjalna oferta dla Ciebie",
+      "endsIn": "Kończy się za {{time}}"
+    }
   }
 }

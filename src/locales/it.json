@@ -2270,11 +2270,7 @@
       "placeholder": "Codice",
       "apply": "Applica",
       "invalid": "Questo codice non è valido o è scaduto.",
-      "applied": "Codice {{code}} applicato ✓",
-      "firstMonths": {
-        "one": "Il primo mese, poi {{full}}",
-        "other": "I primi {{count}} mesi, poi {{full}}"
-      }
+      "applied": "Codice {{code}} applicato ✓"
     }
   },
   "timeline": {
@@ -3625,5 +3621,27 @@
     "ads": "Con pubblicità",
     "rent": "Noleggio",
     "buy": "Acquisto"
+  },
+  "offers": {
+    "firstDays": {
+      "one": "Il primo giorno, poi {{full}}",
+      "other": "I primi {{count}} giorni, poi {{full}}"
+    },
+    "firstWeeks": {
+      "one": "La prima settimana, poi {{full}}",
+      "other": "Le prime {{count}} settimane, poi {{full}}"
+    },
+    "firstMonths": {
+      "one": "Il primo mese, poi {{full}}",
+      "other": "I primi {{count}} mesi, poi {{full}}"
+    },
+    "firstYears": {
+      "one": "Il primo anno, poi {{full}}",
+      "other": "I primi {{count}} anni, poi {{full}}"
+    },
+    "special": {
+      "title": "Un'offerta speciale per te",
+      "endsIn": "Termina tra {{time}}"
+    }
   }
 }

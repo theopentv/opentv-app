@@ -19,7 +19,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { appUrl } from '@/links';
 import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import type { PurchasesPackage, SubscriptionOption } from 'react-native-purchases';
+import type { PurchasesPackage } from 'react-native-purchases';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -31,18 +31,22 @@ import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
+import { formatCountdown, offerSecondsLeft, planOffer, type ShownOffer } from '@/offers';
 import { FREE_PUBLISHED_FAVOURITES, FREE_PUBLISHED_LISTS, setPlusEntitled, usePlus } from '@/plus';
 import {
   annualSaving,
+  appleExtras,
   buy,
   checkCreatorCode,
   creatorOffer,
   getOffering,
-  hasFreeTrial,
+  getPersonalOffer,
   plusStatus,
   appleRedeemUrl,
   restore,
+  type AppleExtras,
   type Plans,
+  type PersonalOffer,
   type PlusStatus,
 } from '@/purchases';
 import { SIDELOADED } from '@/sideload';
@@ -144,7 +148,12 @@ export default function PaywallScreen() {
   useFocusEffect(useCallback(() => setSignedIn(getProfileId() != null), []));
   const { from } = useLocalSearchParams<{ from?: string }>();
   const [plans, setPlans] = useState<Plans | null>(null);
-  const [selected, setSelected] = useState<'annual' | 'monthly'>('annual');
+  const [selected, setSelected] = useState<'annual' | 'monthly' | 'special'>('annual');
+  // What Apple will discount for this person (intro eligibility, win-back),
+  // and the dashboard's personal offer — see `appleExtras` / `getPersonalOffer`.
+  const [extras, setExtras] = useState<{ annual: AppleExtras; monthly: AppleExtras } | null>(null);
+  const [personal, setPersonal] = useState<PersonalOffer | null>(null);
+  const [now, setNow] = useState(() => Date.now());
   /*
    * WHAT A SUBSCRIBER IS ACTUALLY PAYING FOR, and when it happens again.
    *
@@ -181,15 +190,62 @@ export default function PaywallScreen() {
       // Whichever exists wins when only one does, so the selection can never
       // point at a package the CTA cannot buy.
       if (!r.value.annual && r.value.monthly) setSelected('monthly');
+      void appleExtras(r.value).then((x) => {
+        if (live) setExtras(x);
+      });
+      void getPersonalOffer(r.value).then((o) => {
+        if (!live || !o) return;
+        setPersonal(o);
+        // Somebody given an offer opens the paywall to see it: preselect it.
+        setSelected('special');
+      });
     });
     return () => {
       live = false;
     };
   }, []);
 
-  const chosen: PurchasesPackage | null = plans ? (selected === 'annual' ? plans.annual : plans.monthly) : null;
-  const discounted = code != null && creatorOffer(chosen) != null;
-  const trial = !discounted && hasFreeTrial(chosen);
+  /*
+   * THE COUNTDOWN IS THE SERVER'S END, never this screen's. `ends_at` was set
+   * once in the dashboard and cannot move, so closing and reopening the
+   * paywall shows less time, not a fresh 48 hours. A tick a second only while
+   * an offer is on screen; at zero the card goes, without a reload, and the
+   * selection falls back to a plan that is still for sale.
+   */
+  const secondsLeft = personal ? offerSecondsLeft(personal.endsAt, now) : 0;
+  const ticking = secondsLeft > 0;
+  useEffect(() => {
+    if (!ticking) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [ticking]);
+
+  const ios = Platform.OS === 'ios';
+  const shownFor = (pkg: PurchasesPackage | null, x: AppleExtras | undefined): ShownOffer | null =>
+    pkg
+      ? planOffer({
+          ios,
+          product: pkg.product,
+          introEligible: x?.introEligible ?? false,
+          apple: x?.winBack ?? null,
+          option: code ? creatorOffer(pkg) : null,
+        })
+      : null;
+  const annualShown = shownFor(plans?.annual ?? null, extras?.annual);
+  const monthlyShown = shownFor(plans?.monthly ?? null, extras?.monthly);
+  const specialShown =
+    personal && secondsLeft > 0
+      ? planOffer({ ios, product: personal.pkg.product, introEligible: false, apple: personal.apple?.discount, option: personal.option })
+      : null;
+  // An offer it cannot put into words is not shown as "special" at the full price.
+  const specialLive = specialShown != null;
+  const plan = selected === 'special' && !specialLive ? (plans?.annual ? 'annual' : 'monthly') : selected;
+
+  const chosen: PurchasesPackage | null =
+    plan === 'special' ? personal!.pkg : plans ? (plan === 'annual' ? plans.annual : plans.monthly) : null;
+  const chosenShown = plan === 'special' ? specialShown : plan === 'annual' ? annualShown : monthlyShown;
+  const discounted = plan !== 'special' && code != null && creatorOffer(chosen) != null;
+  const trial = chosenShown?.kind === 'trial';
 
   const applyCode = () => {
     // iPhone: Apple checks the code, on its own sheet, opened by the link.
@@ -223,11 +279,15 @@ export default function PaywallScreen() {
     if (!chosen || busy) return;
     setBusy(true);
     tapLight();
-    const r = await buy(chosen, code);
+    const r = await buy(chosen, {
+      code: plan === 'special' ? null : code,
+      winBack: plan === 'special' ? null : extras?.[plan]?.winBack ?? null,
+      personal: plan === 'special' ? personal : null,
+    });
     setBusy(false);
     if (r.ok && r.value) {
       // The package TYPE, never a price or a product id — shape, not content.
-      track('plus_purchased', { plan: selected, from: from ?? 'unknown', code: discounted ? 1 : 0 });
+      track('plus_purchased', { plan, from: from ?? 'unknown', code: discounted ? 1 : 0 });
       return;
     }
     if (!r.ok && r.reason === 'cancelled') return;
@@ -355,16 +415,30 @@ export default function PaywallScreen() {
 
           {plus ? null : plans && (plans.annual || plans.monthly) ? (
             <View style={styles.plans}>
+              {specialLive && personal && (
+                <PlanCard
+                  label={t('offers.special.title')}
+                  countdown={t('offers.special.endsIn', { time: formatCountdown(secondsLeft, currentLocale()) })}
+                  shown={specialShown}
+                  price={personal.pkg.product.priceString}
+                  period={personal.pkg === plans.annual ? t('plus.perYear') : t('plus.perMonth')}
+                  badge={null}
+                  active={plan === 'special'}
+                  onPress={() => {
+                    tapLight();
+                    setSelected('special');
+                  }}
+                />
+              )}
               {plans.annual && (
                 <PlanCard
                   label={t('plus.annual')}
-                  offer={code ? creatorOffer(plans.annual) : null}
-                  full={plans.annual.product.priceString + t('plus.perYear')}
+                  shown={annualShown}
                   price={plans.annual.product.priceString}
                   period={t('plus.perYear')}
-                  badge={code && creatorOffer(plans.annual) ? null : saving != null ? t('plus.save', { percent: formatCount(saving, currentLocale()) }) : null}
-                  trial={hasFreeTrial(plans.annual) ? t('plus.trial') : null}
-                  active={selected === 'annual'}
+                  // The saving compares full prices; next to an offer price it would read as a second discount.
+                  badge={annualShown?.kind === 'discount' ? null : saving != null ? t('plus.save', { percent: formatCount(saving, currentLocale()) }) : null}
+                  active={plan === 'annual'}
                   onPress={() => {
                     tapLight();
                     setSelected('annual');
@@ -374,13 +448,11 @@ export default function PaywallScreen() {
               {plans.monthly && (
                 <PlanCard
                   label={t('plus.monthly')}
-                  offer={code ? creatorOffer(plans.monthly) : null}
-                  full={plans.monthly.product.priceString + t('plus.perMonth')}
+                  shown={monthlyShown}
                   price={plans.monthly.product.priceString}
                   period={t('plus.perMonth')}
                   badge={null}
-                  trial={hasFreeTrial(plans.monthly) ? t('plus.trial') : null}
-                  active={selected === 'monthly'}
+                  active={plan === 'monthly'}
                   onPress={() => {
                     tapLight();
                     setSelected('monthly');
@@ -495,48 +567,51 @@ function Cell({ value, plus }: { value: string | null | true; plus?: boolean }) 
   return <Text style={[styles.cell, value == null && styles.cellDash]}>{value ?? '—'}</Text>;
 }
 
-/** How many months the creator offer's first phase lasts — 3 for "three
- *  months at half price", 12 for "the first year". Null when it is neither. */
-function offerMonths(offer: SubscriptionOption): number | null {
-  const phase = offer.pricingPhases[0];
-  if (!phase) return null;
-  const per = phase.billingPeriod.unit === 'YEAR' ? 12 : phase.billingPeriod.unit === 'MONTH' ? 1 : 0;
-  const months = per * phase.billingPeriod.value * (phase.billingCycleCount ?? 1);
-  return months > 0 ? months : null;
-}
+/** "For the first year, then €19.99/year" — one key per unit, plural on the count. */
+const FIRST = {
+  DAY: 'offers.firstDays',
+  WEEK: 'offers.firstWeeks',
+  MONTH: 'offers.firstMonths',
+  YEAR: 'offers.firstYears',
+} as const;
 
+/**
+ * One plan. `shown` is what the store will actually charge (offers.ts): an
+ * offer price with how long it lasts and the full price after it, the
+ * existing trial line, or — null — the plain price.
+ */
 function PlanCard({
   label,
   price,
-  full,
-  offer,
+  shown,
   period,
   badge,
-  trial,
+  countdown,
   active,
   onPress,
 }: {
   label: string;
   price: string;
-  full: string;
-  offer: SubscriptionOption | null;
+  shown: ShownOffer | null;
   period: string;
   badge: string | null;
-  trial: string | null;
+  countdown?: string;
   active: boolean;
   onPress: () => void;
 }) {
-  // With a creator code the card shows the offer's price, and for how long.
-  const months = offer ? offerMonths(offer) : null;
-  if (offer?.pricingPhases[0]) price = offer.pricingPhases[0].price.formatted;
+  const discount = shown?.kind === 'discount' ? shown : null;
+  const per = discount ? (discount.per === 'YEAR' ? t('plus.perYear') : discount.per === 'MONTH' ? t('plus.perMonth') : '') : period;
   return (
     <Pressable style={[styles.plan, active && styles.planActive]} onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected: active }}>
       <View style={{ flex: 1 }}>
         <Text style={styles.planLabel}>{label}</Text>
-        {offer != null && months != null ? (
-          <Text style={styles.planTrial}>{t('plus.code.firstMonths', { count: months, full })}</Text>
+        {countdown != null && <Text style={styles.planCountdown}>{countdown}</Text>}
+        {discount ? (
+          <Text style={styles.planTrial}>
+            {t(FIRST[discount.lasts.unit], { count: discount.lasts.count, full: (discount.full ?? price) + period })}
+          </Text>
         ) : (
-          trial != null && <Text style={styles.planTrial}>{trial}</Text>
+          shown?.kind === 'trial' && <Text style={styles.planTrial}>{t('plus.trial')}</Text>
         )}
       </View>
       {badge != null && (
@@ -545,8 +620,8 @@ function PlanCard({
         </View>
       )}
       <Text style={styles.planPrice}>
-        {price}
-        <Text style={styles.planPeriod}>{period}</Text>
+        {discount ? discount.price : price}
+        <Text style={styles.planPeriod}>{per}</Text>
       </Text>
     </Pressable>
   );
@@ -598,6 +673,7 @@ const styles = StyleSheet.create({
   planActive: { borderColor: colors.yellow },
   planLabel: { color: colors.text, fontSize: 16, fontWeight: '800' },
   planTrial: { color: colors.green, fontSize: 12.5, marginTop: 2 },
+  planCountdown: { color: colors.yellow, fontSize: 12.5, fontWeight: '800', marginTop: 2, fontVariant: ['tabular-nums'] },
   planPrice: { color: colors.text, fontSize: 16, fontWeight: '800' },
   planPeriod: { color: colors.dim, fontSize: 13, fontWeight: '600' },
   saveBadge: { backgroundColor: colors.yellow, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },

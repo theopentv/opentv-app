@@ -2270,11 +2270,7 @@
       "placeholder": "Kod",
       "apply": "Uygula",
       "invalid": "Bu kod geçersiz ya da süresi dolmuş.",
-      "applied": "{{code}} kodu uygulandı ✓",
-      "firstMonths": {
-        "one": "İlk ay için, sonra {{full}}",
-        "other": "İlk {{count}} ay için, sonra {{full}}"
-      }
+      "applied": "{{code}} kodu uygulandı ✓"
     }
   },
   "timeline": {
@@ -3625,5 +3621,27 @@
     "ads": "Reklamlı",
     "rent": "Kirala",
     "buy": "Satın al"
+  },
+  "offers": {
+    "firstDays": {
+      "one": "İlk gün için, sonra {{full}}",
+      "other": "İlk {{count}} gün için, sonra {{full}}"
+    },
+    "firstWeeks": {
+      "one": "İlk hafta için, sonra {{full}}",
+      "other": "İlk {{count}} hafta için, sonra {{full}}"
+    },
+    "firstMonths": {
+      "one": "İlk ay için, sonra {{full}}",
+      "other": "İlk {{count}} ay için, sonra {{full}}"
+    },
+    "firstYears": {
+      "one": "İlk yıl için, sonra {{full}}",
+      "other": "İlk {{count}} yıl için, sonra {{full}}"
+    },
+    "special": {
+      "title": "Sana özel bir teklif",
+      "endsIn": "Kalan süre: {{time}}"
+    }
   }
 }
