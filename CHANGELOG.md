@@ -517,6 +517,13 @@ possible"):
   - `src/app/shared/[id].tsx` still carries the dead styles of the old row
     layout (`item`, `tick`, `inviteBox`, `member…`).
 
+### Still to do for 2.0.0 (added 17 Oct)
+- **Watch List sort: two more options** Elodie (Le Sérigraphe) asked for — release date **newest first** (the reverse of today's oldest-first) and **random**. `WATCH_LIST_SORTS` in `pure.ts` + the sort sheet + `watchListSort.*` in 9 locales.
+- **Subscription screen shows any offer's price** (intro, win-back, promotional, creator code) — needed before Black Friday 27 Nov; today it shows `priceString` only.
+- **Personal offers with a real countdown** set from the dashboard ("Give offer"), Apple promotional offers / Play developer-determined offers.
+- **Website privacy page**: same crash-reports sentence as the app's privacy copy (adf80c1).
+- **BetaSeries import** (CSV export: episodes/series/films, no TheTVDB/TMDB ids) — needs a free BetaSeries API key to map its ids; real sample in gdpr-data/betaseries/.
+
 ### Built 14 Oct — what each branch did (merged into 2.0.0; nothing on a device yet)
 
 - **Friends feed** (`2.0.0-feed`, backend migration 0055). Explore → Activity shows what the people you follow rated, felt, said and picked as a favourite character over the last seven days, newest first, with no archive rows. Anything you haven't watched is locked ON THE PHONE (`hasWatchedTarget`): the card keeps the verb, hides the content and opens the show. The request says nothing about your progress. Refreshes ask only for what's newer than a 100-card cache, at most once a minute, and someone who never joined sends nothing. A free switch, "Show my reactions to followers", keeps you out of other people's feeds. The three indexes are forced with `INDEXED BY` because SQLite picked the older activity indexes and read a week of everyone's activity. D1: about 470 rows cold, 110 per refresh, 900 per reader per day. Stars in the feed are still whole.
