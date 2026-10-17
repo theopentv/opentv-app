@@ -528,6 +528,14 @@ possible"):
 - ✅ DONE 1a84e73 — **Episode plots and Explore blurbs in your language.** The structure fetch also reads TheTVDB's episode list in each non-English language of the plot chain (one request per 500 episodes per language, never per episode), falling back to English; untranslated episodes come back "" (checked live). Episodes share the show's `plotLang` stamp. English mode asks for nothing new. Explore feed cards use `meta=translations` on their existing request. TMDB-only shows and the Explore grid stay English.
 - ✅ DONE 2bbf2d3 — **FIXED: shows named after their own id get their name back** (`SHOW_NAME_MISSING_WHERE`, tested on real SQLite; "1899"/"1923" untouched).
 
+### Decided 17 Oct: sync goes free, Plus gets new value
+- **2.0.0: device sync through the user's own iCloud / Google Drive is FREE** (Drive on iPhone too; iPhone ↔ Android). Our server sync and OpenTV Backup stay Plus. Final, no going back (Mahmood). Branch `2.0.0-cloud-sync`.
+- **2.0.0, FREE: private notes on any show, film or episode** (on the phone only).
+- **2.0.0, FREE: compare with the people you follow** (the "coming soon" link on Stats).
+- **2.0.0: smart episode reminders** (e.g. an hour after airing, weekends only, when the whole season is out). The plain episode notification stays free.
+- **2.0.1, PLUS: "tell me when it's on my services"** — pick your streaming services; a notification when a watchlist title arrives on one in your country, plus a "my services only" filter. On-device TMDB checks, no server.
+- Custom posters/backdrops: already Plus through the profile blocks; nothing to add.
+
 ### Built 14 Oct — what each branch did (merged into 2.0.0; nothing on a device yet)
 
 - **Friends feed** (`2.0.0-feed`, backend migration 0055). Explore → Activity shows what the people you follow rated, felt, said and picked as a favourite character over the last seven days, newest first, with no archive rows. Anything you haven't watched is locked ON THE PHONE (`hasWatchedTarget`): the card keeps the verb, hides the content and opens the show. The request says nothing about your progress. Refreshes ask only for what's newer than a 100-card cache, at most once a minute, and someone who never joined sends nothing. A free switch, "Show my reactions to followers", keeps you out of other people's feeds. The three indexes are forced with `INDEXED BY` because SQLite picked the older activity indexes and read a week of everyone's activity. D1: about 470 rows cold, 110 per refresh, 900 per reader per day. Stars in the feed are still whole.
