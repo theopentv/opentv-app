@@ -17,12 +17,12 @@ import { calendarSupported, calendarSyncOn } from '@/calendar-sync';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { isCustomServer } from '@/server-url';
 import { hapticsOn, setHapticsOn, tapLight } from '@/haptics';
-import { MenuRow, NavHeader, PillButton, Screen, TopTabs } from '@/components/ui';
+import { MenuRow, NavHeader, PillButton, PlusChip, Screen, TopTabs } from '@/components/ui';
 import seed from '@/seed';
 import { getMeta, setMeta, wipeAllData } from '@/db';
 import { currentLocale, monthYear, plotLanguage, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
-import { usePlus, usePlusUi } from '@/plus';
+import { requirePlus, usePlus, usePlusUi } from '@/plus';
 import { manageSubscriptionUrl, plusStatus } from '@/purchases';
 import { formatCount } from '@/locale-resolve';
 import { NAMES } from '@/app/language';
@@ -565,6 +565,20 @@ export default function SettingsScreen() {
               sub={t('settings.app.notificationsRowSub')}
               onPress={() => router.push('/notifications')}
             />
+            {/* MY STREAMING SERVICES (2.0.0, PLUS): "tell me when it's on my
+                services", and the library filter that goes with it. Next to
+                Notifications because hearing about an arrival is the point. */}
+            {plusUi && (
+              <MenuRow
+                trackId="myServices.title"
+                title={t('myServices.title')}
+                sub={t('myServices.rowSub')}
+                right={plus ? undefined : <PlusChip />}
+                onPress={() => {
+                  if (requirePlus('my_services')) router.push('/my-services');
+                }}
+              />
+            )}
             {/* NOT "Theme": this section held the language picker and the
                 start tab, neither of which is one. It is how the app behaves,
                 and the look of it now lives in Appearance under Account. */}

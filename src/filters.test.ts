@@ -395,3 +395,19 @@ describe('lastWatchedKey — a rewatch counts as a watch', () => {
     expect(lastWatchedKey({ watchedAt: null, addedAt: '2026-01-01' })).toBe('2026-01-01');
   });
 });
+
+describe('on my services (2.0.0, Plus)', () => {
+  const lib = [facts({ key: 'a', services: ['mine'] }), facts({ key: 'b' }), facts({ key: 'c', services: [] })];
+  it('keeps only titles on one of my services', () => {
+    expect(lib.filter((f) => matchesFilters(f, set({ services: ['mine'] }))).map((f) => f.key)).toEqual(['a']);
+  });
+  it('offers the chip only when something qualifies, with its count', () => {
+    expect(filterOptions(lib, set(), 'movie').services).toEqual([{ value: 'mine', count: 1 }]);
+    expect(filterOptions([facts({ key: 'x' })], set(), 'movie').services).toEqual([]);
+  });
+  it('is a Plus axis, and an old stored set without it still parses', () => {
+    expect(PLUS_FILTER_AXES).toContain('services');
+    expect(withoutPlusAxes(set({ services: ['mine'] })).services).toEqual([]);
+    expect(normaliseFilterSet({ genres: ['Drama'] }).services).toEqual([]);
+  });
+});
