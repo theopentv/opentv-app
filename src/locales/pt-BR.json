@@ -3643,5 +3643,53 @@
       "title": "Uma oferta especial para você",
       "endsIn": "Termina em {{time}}"
     }
+  },
+  "smartReminders": {
+    "title": "Lembretes inteligentes",
+    "rowSub": "Uma hora depois de ir ao ar, só nos fins de semana ou quando a temporada inteira sair",
+    "intro": "Escolha quando chegam os lembretes de episódios. O que você não mudar mantém seu horário de lembrete de sempre.",
+    "delay": "Quando",
+    "delaySub": "Séries sem horário de exibição usam seu horário de lembrete",
+    "delayUsual": "Meu horário de lembrete",
+    "delayOnAir": "Quando for ao ar",
+    "delayHour": "Uma hora depois",
+    "delayThreeHours": "Três horas depois",
+    "delayNextMorning": "Na manhã seguinte",
+    "weekends": "Só nos fins de semana",
+    "weekendsSub": "Os episódios da semana chegam juntos no sábado",
+    "wholeSeason": "Quando a temporada inteira sair",
+    "wholeSeasonSub": "Um só lembrete quando o último episódio de uma temporada for ao ar, para maratonar",
+    "quietNote": "Nada chega entre 23:00 e 08:00. O que cair nesse horário espera a manhã.",
+    "followGlobal": "Usar minhas configurações de sempre",
+    "followGlobalSub": "Desative para escolher só para esta série",
+    "forShow": "Lembretes desta série",
+    "forShowPlus": "Lembretes desta série (Plus)",
+    "lapsedTitle": "Lembretes inteligentes fazem parte do Plus",
+    "lapsedBody": "Suas escolhas ficam salvas. Até o Plus voltar, os lembretes chegam no horário de sempre.",
+    "seasonOutTitle": "{{show}}: a temporada inteira saiu",
+    "seasonOutBody": "Todos os episódios da temporada {{season}} já foram ao ar. Hora de maratonar.",
+    "episodesBody": {
+      "one": "{{count}} episódio novo esperando por você",
+      "other": "{{count}} episódios novos esperando por você"
+    }
+  },
+  "myServices": {
+    "title": "Meus serviços de streaming",
+    "rowSub": "Saiba quando algo da sua lista chegar a um deles",
+    "intro": "Escolha os serviços que você assina. Cerca de uma vez por dia, seu celular confere sua lista e as séries que você ainda não começou, e avisa quando uma chega aos seus serviços. Nada disso sai do seu celular.",
+    "alerts": "Me avise quando estiver nos meus serviços",
+    "alertsSub": "Uma notificação por título e serviço, nunca duas vezes",
+    "pickTitle": {
+      "one": "{{count}} serviço escolhido",
+      "other": "{{count}} serviços escolhidos"
+    },
+    "none": "Não foi possível carregar a lista. Verifique sua conexão e tente de novo.",
+    "arrivedTitle": "Agora no {{service}}",
+    "arrivedBody": "{{title}} agora está no {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "Nos meus serviços",
+    "channel": "Novidades no streaming",
+    "lapsedTitle": "Meus serviços fazem parte do Plus",
+    "lapsedBody": "Seus serviços ficam salvos. Até o Plus voltar, não há avisos nem filtro."
   }
 }

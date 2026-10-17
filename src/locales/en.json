@@ -3643,5 +3643,53 @@
       "title": "A special offer for you",
       "endsIn": "Ends in {{time}}"
     }
+  },
+  "smartReminders": {
+    "title": "Smart reminders",
+    "rowSub": "An hour after it airs, weekends only, or when the whole season is out",
+    "intro": "Choose when episode reminders arrive. Anything you leave alone keeps your usual reminder time.",
+    "delay": "When",
+    "delaySub": "Shows with no air time use your reminder time",
+    "delayUsual": "My reminder time",
+    "delayOnAir": "When it airs",
+    "delayHour": "An hour after",
+    "delayThreeHours": "Three hours after",
+    "delayNextMorning": "Next morning",
+    "weekends": "Weekends only",
+    "weekendsSub": "The week's episodes arrive together on Saturday",
+    "wholeSeason": "When the whole season is out",
+    "wholeSeasonSub": "One reminder when the last episode of a season airs, for bingeing",
+    "quietNote": "Nothing arrives between 23:00 and 08:00. Anything due then waits for the morning.",
+    "followGlobal": "Use my usual settings",
+    "followGlobalSub": "Turn off to choose for this show alone",
+    "forShow": "Reminders for this show",
+    "forShowPlus": "Reminders for this show (Plus)",
+    "lapsedTitle": "Smart reminders are part of Plus",
+    "lapsedBody": "Your choices are kept. Until Plus is back, reminders arrive at your usual time.",
+    "seasonOutTitle": "{{show}}: the whole season is out",
+    "seasonOutBody": "Every episode of season {{season}} has aired. Time to binge.",
+    "episodesBody": {
+      "one": "{{count}} new episode is waiting",
+      "other": "{{count}} new episodes are waiting"
+    }
+  },
+  "myServices": {
+    "title": "My streaming services",
+    "rowSub": "Hear when something on your watchlist arrives on one",
+    "intro": "Pick the services you pay for. About once a day your phone checks your watchlist and the shows you haven't started, and tells you when one arrives on your services. None of this leaves your phone.",
+    "alerts": "Tell me when it's on my services",
+    "alertsSub": "One notification per title and service, never twice",
+    "pickTitle": {
+      "one": "{{count}} service picked",
+      "other": "{{count}} services picked"
+    },
+    "none": "Couldn't load the list. Check your connection and try again.",
+    "arrivedTitle": "Now on {{service}}",
+    "arrivedBody": "{{title}} is now on {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "On my services",
+    "channel": "Streaming arrivals",
+    "lapsedTitle": "My services are part of Plus",
+    "lapsedBody": "Your services are kept. Until Plus is back, there are no arrival alerts and no filter."
   }
 }

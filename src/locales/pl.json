@@ -3919,5 +3919,57 @@
       "title": "Specjalna oferta dla Ciebie",
       "endsIn": "Kończy się za {{time}}"
     }
+  },
+  "smartReminders": {
+    "title": "Inteligentne przypomnienia",
+    "rowSub": "Godzinę po emisji, tylko w weekendy albo gdy wyjdzie cały sezon",
+    "intro": "Wybierz, kiedy przychodzą przypomnienia o odcinkach. To, czego nie zmienisz, zostaje o Twojej zwykłej porze.",
+    "delay": "Kiedy",
+    "delaySub": "Seriale bez godziny emisji używają Twojej pory przypomnienia",
+    "delayUsual": "Moja pora przypomnienia",
+    "delayOnAir": "W chwili emisji",
+    "delayHour": "Godzinę później",
+    "delayThreeHours": "Trzy godziny później",
+    "delayNextMorning": "Następnego ranka",
+    "weekends": "Tylko w weekendy",
+    "weekendsSub": "Odcinki z całego tygodnia przychodzą razem w sobotę",
+    "wholeSeason": "Gdy wyjdzie cały sezon",
+    "wholeSeasonSub": "Jedno przypomnienie, gdy wyemitowano ostatni odcinek sezonu – do oglądania ciągiem",
+    "quietNote": "Między 23:00 a 08:00 nic nie przychodzi. To, co wypada w tych godzinach, czeka do rana.",
+    "followGlobal": "Użyj moich zwykłych ustawień",
+    "followGlobalSub": "Wyłącz, aby wybrać tylko dla tego serialu",
+    "forShow": "Przypomnienia dla tego serialu",
+    "forShowPlus": "Przypomnienia dla tego serialu (Plus)",
+    "lapsedTitle": "Inteligentne przypomnienia są częścią Plus",
+    "lapsedBody": "Twoje wybory są zachowane. Dopóki Plus nie wróci, przypomnienia przychodzą o zwykłej porze.",
+    "seasonOutTitle": "{{show}}: wyszedł cały sezon",
+    "seasonOutBody": "Wszystkie odcinki sezonu {{season}} zostały wyemitowane. Czas na maraton.",
+    "episodesBody": {
+      "one": "Czeka {{count}} nowy odcinek",
+      "few": "Czekają {{count}} nowe odcinki",
+      "many": "Czeka {{count}} nowych odcinków",
+      "other": "Czeka {{count}} nowego odcinka"
+    }
+  },
+  "myServices": {
+    "title": "Moje serwisy streamingowe",
+    "rowSub": "Dowiedz się, gdy coś z Twojej listy trafi na jeden z nich",
+    "intro": "Wybierz serwisy, za które płacisz. Mniej więcej raz dziennie telefon sprawdza Twoją listę i nierozpoczęte seriale, i daje znać, gdy któryś trafi na Twoje serwisy. Nic z tego nie opuszcza telefonu.",
+    "alerts": "Daj znać, gdy będzie w moich serwisach",
+    "alertsSub": "Jedno powiadomienie na tytuł i serwis, nigdy dwa razy",
+    "pickTitle": {
+      "one": "Wybrano {{count}} serwis",
+      "few": "Wybrano {{count}} serwisy",
+      "many": "Wybrano {{count}} serwisów",
+      "other": "Wybrano {{count}} serwisu"
+    },
+    "none": "Nie udało się wczytać listy. Sprawdź połączenie i spróbuj ponownie.",
+    "arrivedTitle": "Teraz w {{service}}",
+    "arrivedBody": "{{title}} jest teraz w {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "W moich serwisach",
+    "channel": "Nowości w streamingu",
+    "lapsedTitle": "Moje serwisy są częścią Plus",
+    "lapsedBody": "Twoje serwisy są zachowane. Dopóki Plus nie wróci, nie ma powiadomień ani filtra."
   }
 }

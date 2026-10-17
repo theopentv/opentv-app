@@ -17,7 +17,18 @@ import { currentLocale, t } from '@/i18n';
 import { formatPeriod } from '@/locale-resolve';
 import { isPlus } from '@/plus';
 import { showMeta } from '@/metadata';
-import { planNotifications, reminderHourOf, type CatchUpCandidate, type NotifyKind, type NotifyToggles, type UpcomingEpisode } from '@/notification-plan';
+import {
+  airZoneOf,
+  isDefaultSmart,
+  parseSmartPrefs,
+  planNotifications,
+  reminderHourOf,
+  type CatchUpCandidate,
+  type NotifyKind,
+  type NotifyToggles,
+  type SmartPrefs,
+  type UpcomingEpisode,
+} from '@/notification-plan';
 import { memoryFor, memoryNotificationAt, memorySentence } from '@/on-this-day';
 import { puzzleReminderAt } from '@/puzzle-data';
 import { shouldResync } from '@/pure';
@@ -114,6 +125,34 @@ export async function setReminderHour(hour: number): Promise<void> {
   await syncEpisodeNotifications(true);
 }
 
+/**
+ * SMART REMINDERS (2.0.0, PLUS): one set for everything, and optionally one per
+ * show that replaces it whole — a per-show "weekends only" that silently
+ * inherited the global "next morning" would be two settings to debug instead
+ * of one. Stored in `meta`; read only for Plus, so a lapse puts every show
+ * back on the plain reminder without anybody's choices being lost.
+ */
+const SMART_KEY = 'smartReminders';
+const smartShowKey = (tvdbId: number) => `smartReminders:${tvdbId}`;
+
+export function smartPrefs(): SmartPrefs | null {
+  return parseSmartPrefs(getMeta(SMART_KEY));
+}
+export function smartShowPrefs(tvdbId: number): SmartPrefs | null {
+  return parseSmartPrefs(getMeta(smartShowKey(tvdbId)));
+}
+/** `tvdbId` null = the global set. `prefs` null on a show = use the global set. */
+export async function setSmartPrefs(tvdbId: number | null, prefs: SmartPrefs | null): Promise<void> {
+  setMeta(tvdbId == null ? SMART_KEY : smartShowKey(tvdbId), prefs ? JSON.stringify(prefs) : '');
+  await syncEpisodeNotifications(true); // forced, like every other switch on this screen
+}
+/** What the planner gets for one show: null unless Plus and not the default. */
+function smartFor(tvdbId: number, plus: boolean, global: SmartPrefs | null): SmartPrefs | null {
+  if (!plus) return null;
+  const p = smartShowPrefs(tvdbId) ?? global;
+  return p && !isDefaultSmart(p) ? p : null;
+}
+
 /** Ask for permission and turn the feature on. Returns whether it's active. */
 export async function enableEpisodeNotifications(): Promise<boolean> {
   const { status } = await Notifications.requestPermissionsAsync();
@@ -145,6 +184,17 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
   );
   const todayKey = new Date(now).toISOString().slice(0, 10);
   const horizonKey = new Date(now + DAYS_AHEAD * 86400000).toISOString().slice(0, 10);
+  /*
+   * A WEEK BACK, NOT TODAY. Every sync cancels everything and plans again, and
+   * a smart reminder can fire days after its episode aired (weekends only, next
+   * morning). Starting at today dropped Tuesday's episode from Wednesday's
+   * re-plan, and with it the Saturday reminder it had already been given. The
+   * plain reminder is unaffected: its time is the air date itself, so anything
+   * older is already in the past and the planner drops it.
+   */
+  const fromKey = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
+  const plus = isPlus();
+  const globalSmart = smartPrefs();
 
   const upcoming: UpcomingEpisode[] = [];
   const catchUp: CatchUpCandidate[] = [];
@@ -156,10 +206,11 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
     const seasonNums = Object.keys(m.seasons ?? {}).map(Number).filter((n) => n >= 1);
     const lastSeason = seasonNums.length ? Math.max(...seasonNums) : null;
     const ended = m.status === 'Ended' || m.status === 'Canceled';
+    const smart = smartFor(s.tvdbId, plus, globalSmart);
 
     for (const [key, em] of Object.entries(m.episodes ?? {})) {
       const air = em?.air;
-      if (!air || air < todayKey || air > horizonKey) continue;
+      if (!air || air < fromKey || air > horizonKey) continue;
       const [season, episode] = key.split('-').map(Number);
       if (!season || season < 1) continue;
       upcoming.push({
@@ -172,6 +223,9 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
         seasonTotal: m.seasons?.[String(season)]?.count ?? null,
         lastSeason,
         ended,
+        airsTime: m.airsTime ?? null,
+        airZone: airZoneOf(m.country),
+        smart,
       });
     }
 

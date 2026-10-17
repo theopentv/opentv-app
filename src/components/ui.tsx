@@ -724,3 +724,25 @@ const s = StyleSheet.create({
   },
   statCardTitle: { color: colors.text, fontSize: 17, fontWeight: '600', marginBottom: 8 },
 });
+
+/**
+ * The yellow PLUS tag on a row a free user can see but not use (2.0.0). The
+ * row still opens — onto the paywall, through `requirePlus` — so the tag is the
+ * whole explanation of why tapping it asks for money.
+ */
+export function PlusChip() {
+  return <Text style={plusChipStyle.chip}>{t('plus.stats.chip')}</Text>;
+}
+const plusChipStyle = StyleSheet.create({
+  chip: {
+    color: colors.onYellow,
+    backgroundColor: colors.yellow,
+    fontSize: 9.5,
+    fontWeight: '900',
+    letterSpacing: ls(0.8),
+    borderRadius: radius.pill,
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    overflow: 'hidden',
+  },
+});

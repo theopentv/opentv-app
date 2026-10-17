@@ -3643,5 +3643,53 @@
       "title": "Une offre spéciale pour vous",
       "endsIn": "Se termine dans {{time}}"
     }
+  },
+  "smartReminders": {
+    "title": "Rappels intelligents",
+    "rowSub": "Une heure après la diffusion, le week-end seulement, ou quand toute la saison est sortie",
+    "intro": "Choisissez quand arrivent les rappels d'épisodes. Ce que vous ne changez pas garde votre heure de rappel habituelle.",
+    "delay": "Quand",
+    "delaySub": "Les séries sans heure de diffusion utilisent votre heure de rappel",
+    "delayUsual": "Mon heure de rappel",
+    "delayOnAir": "À la diffusion",
+    "delayHour": "Une heure après",
+    "delayThreeHours": "Trois heures après",
+    "delayNextMorning": "Le lendemain matin",
+    "weekends": "Le week-end seulement",
+    "weekendsSub": "Les épisodes de la semaine arrivent ensemble le samedi",
+    "wholeSeason": "Quand toute la saison est sortie",
+    "wholeSeasonSub": "Un seul rappel quand le dernier épisode d'une saison est diffusé, pour tout enchaîner",
+    "quietNote": "Rien n'arrive entre 23:00 et 08:00. Ce qui tombe à ces heures attend le matin.",
+    "followGlobal": "Utiliser mes réglages habituels",
+    "followGlobalSub": "Désactivez pour choisir pour cette série seulement",
+    "forShow": "Rappels pour cette série",
+    "forShowPlus": "Rappels pour cette série (Plus)",
+    "lapsedTitle": "Les rappels intelligents font partie de Plus",
+    "lapsedBody": "Vos choix sont conservés. En attendant le retour de Plus, les rappels arrivent à votre heure habituelle.",
+    "seasonOutTitle": "{{show}} : toute la saison est sortie",
+    "seasonOutBody": "Tous les épisodes de la saison {{season}} ont été diffusés. À vous de jouer.",
+    "episodesBody": {
+      "one": "{{count}} nouvel épisode vous attend",
+      "other": "{{count}} nouveaux épisodes vous attendent"
+    }
+  },
+  "myServices": {
+    "title": "Mes services de streaming",
+    "rowSub": "Soyez prévenu quand un titre de votre liste y arrive",
+    "intro": "Choisissez les services auxquels vous êtes abonné. Environ une fois par jour, votre téléphone vérifie votre liste et les séries pas encore commencées, et vous prévient quand l'un d'eux arrive sur vos services. Rien de tout cela ne quitte votre téléphone.",
+    "alerts": "Me prévenir quand c'est sur mes services",
+    "alertsSub": "Une notification par titre et par service, jamais deux fois",
+    "pickTitle": {
+      "one": "{{count}} service choisi",
+      "other": "{{count}} services choisis"
+    },
+    "none": "Impossible de charger la liste. Vérifiez votre connexion et réessayez.",
+    "arrivedTitle": "Maintenant sur {{service}}",
+    "arrivedBody": "{{title}} est maintenant sur {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "Sur mes services",
+    "channel": "Arrivées en streaming",
+    "lapsedTitle": "Mes services font partie de Plus",
+    "lapsedBody": "Vos services sont conservés. En attendant le retour de Plus, ni alertes ni filtre."
   }
 }

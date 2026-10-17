@@ -3643,5 +3643,53 @@
       "title": "Una oferta especial para ti",
       "endsIn": "Termina en {{time}}"
     }
+  },
+  "smartReminders": {
+    "title": "Recordatorios inteligentes",
+    "rowSub": "Una hora después de emitirse, solo los fines de semana o cuando sale la temporada completa",
+    "intro": "Elige cuándo llegan los recordatorios de episodios. Lo que no cambies mantiene tu hora de recordatorio habitual.",
+    "delay": "Cuándo",
+    "delaySub": "Las series sin hora de emisión usan tu hora de recordatorio",
+    "delayUsual": "Mi hora de recordatorio",
+    "delayOnAir": "Al emitirse",
+    "delayHour": "Una hora después",
+    "delayThreeHours": "Tres horas después",
+    "delayNextMorning": "A la mañana siguiente",
+    "weekends": "Solo fines de semana",
+    "weekendsSub": "Los episodios de la semana llegan juntos el sábado",
+    "wholeSeason": "Cuando sale la temporada completa",
+    "wholeSeasonSub": "Un solo recordatorio cuando se emite el último episodio de una temporada, para maratones",
+    "quietNote": "No llega nada entre las 23:00 y las 08:00. Lo que caiga en esas horas espera a la mañana.",
+    "followGlobal": "Usar mis ajustes habituales",
+    "followGlobalSub": "Desactívalo para elegir solo para esta serie",
+    "forShow": "Recordatorios de esta serie",
+    "forShowPlus": "Recordatorios de esta serie (Plus)",
+    "lapsedTitle": "Los recordatorios inteligentes son parte de Plus",
+    "lapsedBody": "Tus elecciones se guardan. Hasta que vuelva Plus, los recordatorios llegan a tu hora habitual.",
+    "seasonOutTitle": "{{show}}: ya salió la temporada completa",
+    "seasonOutBody": "Todos los episodios de la temporada {{season}} ya se emitieron. Hora de maratón.",
+    "episodesBody": {
+      "one": "Te espera {{count}} episodio nuevo",
+      "other": "Te esperan {{count}} episodios nuevos"
+    }
+  },
+  "myServices": {
+    "title": "Mis servicios de streaming",
+    "rowSub": "Entérate cuando algo de tu lista llegue a uno de ellos",
+    "intro": "Elige los servicios que pagas. Más o menos una vez al día, tu teléfono revisa tu lista y las series que no has empezado, y te avisa cuando una llega a tus servicios. Nada de esto sale de tu teléfono.",
+    "alerts": "Avísame cuando esté en mis servicios",
+    "alertsSub": "Una notificación por título y servicio, nunca dos veces",
+    "pickTitle": {
+      "one": "{{count}} servicio elegido",
+      "other": "{{count}} servicios elegidos"
+    },
+    "none": "No se pudo cargar la lista. Revisa tu conexión e inténtalo de nuevo.",
+    "arrivedTitle": "Ya en {{service}}",
+    "arrivedBody": "{{title}} ya está en {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "En mis servicios",
+    "channel": "Novedades en streaming",
+    "lapsedTitle": "Mis servicios son parte de Plus",
+    "lapsedBody": "Tus servicios se guardan. Hasta que vuelva Plus, no hay avisos ni filtro."
   }
 }

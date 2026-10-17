@@ -39,7 +39,7 @@ import { fetchShowMeta, providersLackKind } from '@/show-meta-fetch';
 import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
 import { currentLook } from '@/season';
-import { isPlus } from '@/plus';
+import { isPlus, plusUiVisible, requirePlus } from '@/plus';
 import { currentLocale, fmtDecimal, genreText, statusText, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
 import { communityErrorText } from '@/community-error-text';
@@ -804,6 +804,20 @@ export default function ShowScreen() {
                               router.push(`/shared/${encodeURIComponent(r.id)}`);
                             })
                             .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e))),
+                      },
+                    ]
+                  : []),
+                // SMART REMINDERS for this one show (2.0.0, PLUS) — only for a
+                // followed show, the only kind that gets reminders at all.
+                ...(following && plusUiVisible()
+                  ? [
+                      {
+                        icon: 'notifications-outline' as const,
+                        text: isPlus() ? t('smartReminders.forShow') : t('smartReminders.forShowPlus'),
+                        onPress: () => {
+                          if (requirePlus('smart_reminders_show'))
+                            router.push(`/smart-reminders?show=${show.tvdbId}&name=${encodeURIComponent(show.name)}`);
+                        },
                       },
                     ]
                   : []),

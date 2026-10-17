@@ -59,6 +59,13 @@ export type UpcomingEpisode = {
   lastSeason: number | null;
   /** the show has finished airing for good */
   ended: boolean;
+  /** 'HH:MM' from the series record, in the network's own zone (see `airZoneOf`) */
+  airsTime?: string | null;
+  /** IANA zone `airsTime` is quoted in; null = read it as the phone's own */
+  airZone?: string | null;
+  /** PLUS ONLY: the smart-reminder options for this show. Absent or null means
+   *  the plain reminder, exactly as it always was. */
+  smart?: SmartPrefs | null;
 };
 
 /** A season the user is close to finishing. */
@@ -132,6 +139,197 @@ export function reminderHourOf(raw: string | null | undefined): number {
   return Number.isInteger(n) && n >= 0 && n <= 23 ? n : DEFAULT_REMINDER_HOUR;
 }
 
+/* ── smart reminders (2.0.0, PLUS) ─────────────────────────────────────────
+ *
+ * The plain reminder — the user's hour on the air date — stays free and
+ * untouched: none of this runs unless a show carries `smart`, and the caller
+ * only attaches it for Plus and only when it differs from the default.
+ */
+
+/** When a smart reminder fires, relative to the airing. `usual` is the
+ *  plain reminder hour, so weekends-only or whole-season can be had alone. */
+export type ReminderDelay = 'usual' | 'onAir' | 'hour' | 'threeHours' | 'nextMorning';
+export const REMINDER_DELAYS: readonly ReminderDelay[] = ['usual', 'onAir', 'hour', 'threeHours', 'nextMorning'];
+export type SmartPrefs = { delay: ReminderDelay; weekendsOnly: boolean; wholeSeason: boolean };
+export const DEFAULT_SMART_PREFS: SmartPrefs = { delay: 'usual', weekendsOnly: false, wholeSeason: false };
+
+/** Stored JSON → prefs; null when nothing (valid) is stored. */
+export function parseSmartPrefs(raw: string | null | undefined): SmartPrefs | null {
+  if (!raw) return null;
+  try {
+    const v = JSON.parse(raw) as Record<string, unknown>;
+    if (v == null || typeof v !== 'object') return null;
+    return {
+      delay: REMINDER_DELAYS.find((d) => d === v.delay) ?? 'usual',
+      weekendsOnly: v.weekendsOnly === true,
+      wholeSeason: v.wholeSeason === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function isDefaultSmart(p: SmartPrefs): boolean {
+  return p.delay === 'usual' && !p.weekendsOnly && !p.wholeSeason;
+}
+
+/**
+ * The zone a network quotes its air time in, from the show's country.
+ *
+ * TheTVDB's `airsTime` is the network's wall clock, and "United States" is not
+ * a timezone: American networks quote Eastern (the West Coast's 9pm is a tape
+ * delay of the same slot), so Eastern is the honest single answer. Anything not
+ * listed is read as the phone's own zone — the calendar has always done that,
+ * and it is right for the commonest case, somebody watching their own
+ * country's television. Alpha-3 is TheTVDB's code, alpha-2 TMDB's.
+ */
+const NETWORK_ZONES: Record<string, string> = {
+  usa: 'America/New_York', us: 'America/New_York',
+  can: 'America/Toronto', ca: 'America/Toronto',
+  gbr: 'Europe/London', gb: 'Europe/London', uk: 'Europe/London',
+  irl: 'Europe/Dublin', ie: 'Europe/Dublin',
+  fra: 'Europe/Paris', fr: 'Europe/Paris',
+  deu: 'Europe/Berlin', de: 'Europe/Berlin',
+  esp: 'Europe/Madrid', es: 'Europe/Madrid',
+  ita: 'Europe/Rome', it: 'Europe/Rome',
+  pol: 'Europe/Warsaw', pl: 'Europe/Warsaw',
+  tur: 'Europe/Istanbul', tr: 'Europe/Istanbul',
+  bra: 'America/Sao_Paulo', br: 'America/Sao_Paulo',
+  mex: 'America/Mexico_City', mx: 'America/Mexico_City',
+  aus: 'Australia/Sydney', au: 'Australia/Sydney',
+  jpn: 'Asia/Tokyo', jp: 'Asia/Tokyo',
+  kor: 'Asia/Seoul', kr: 'Asia/Seoul',
+};
+export function airZoneOf(country: string | null | undefined): string | null {
+  return NETWORK_ZONES[(country ?? '').trim().toLowerCase()] ?? null;
+}
+
+/** ms the zone's wall clock is ahead of UTC at `at`. Throws on a bad zone. */
+function zoneOffset(at: number, zone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: zone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).formatToParts(new Date(at));
+  const n = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  return Date.UTC(n('year'), n('month') - 1, n('day'), n('hour'), n('minute')) - Math.floor(at / 60000) * 60000;
+}
+
+/**
+ * The instant an episode goes out: `isoDate` at `hhmm` on `zone`'s clock, or
+ * on the phone's own clock when the zone is unknown. Null when there is no
+ * usable time at all — streaming mostly — and the caller falls back to the
+ * user's own hour rather than inventing one.
+ */
+export function airInstant(isoDate: string, hhmm: string | null | undefined, zone: string | null | undefined): number | null {
+  const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm ?? '').trim());
+  const [y, mo, d] = isoDate.split('-').map(Number);
+  if (!m || !y || !mo || !d) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  if (h > 23 || min > 59) return null;
+  if (zone) {
+    try {
+      // Two passes, because the offset at the guess and at the answer differ
+      // on the night the clocks change.
+      const guess = Date.UTC(y, mo - 1, d, h, min);
+      let at = guess - zoneOffset(guess, zone);
+      at = guess - zoneOffset(at, zone);
+      return at;
+    } catch {
+      // an engine without that zone: the phone's own clock, as before
+    }
+  }
+  return new Date(y, mo - 1, d, h, min, 0, 0).getTime();
+}
+
+/** Nothing smart arrives between 23:00 and 08:00 on the phone's clock: an
+ *  American 9pm is 3am in Europe, and "+3 hours" after a 10pm show is 1am. A
+ *  reminder that wakes somebody is the fastest way to have them all turned off. */
+export const QUIET_FROM = 23;
+export const QUIET_UNTIL = 8;
+export const MORNING_HOUR = 9;
+
+export function outOfQuietHours(at: number): number {
+  const d = new Date(at);
+  const h = d.getHours();
+  if (h >= QUIET_FROM) {
+    d.setDate(d.getDate() + 1);
+    d.setHours(QUIET_UNTIL, 0, 0, 0);
+  } else if (h < QUIET_UNTIL) {
+    d.setHours(QUIET_UNTIL, 0, 0, 0);
+  }
+  return d.getTime();
+}
+
+/** Saturday or Sunday stays; a weekday moves to the coming Saturday at the
+ *  same time of day — the time the person chose still means something. */
+export function toWeekend(at: number): number {
+  const d = new Date(at);
+  const day = d.getDay(); // 0 Sunday, 6 Saturday
+  if (day === 0 || day === 6) return at;
+  d.setDate(d.getDate() + (6 - day));
+  return d.getTime();
+}
+
+/**
+ * When one smart reminder fires.
+ *
+ * The base is the real airing when the series has an air time, and the
+ * user's own hour on the air date when it does not — a "+1 hour" after a time
+ * nobody knows would be an invented time, which is the thing the reminder hour
+ * exists to avoid. Next morning is 09:00 after the airing, whichever day that
+ * lands on in this zone.
+ */
+export function smartFireTime(e: Pick<UpcomingEpisode, 'air' | 'airsTime' | 'airZone'>, p: SmartPrefs, reminderHour: number): number {
+  const aired = airInstant(e.air, e.airsTime, e.airZone);
+  const fallback = atEvening(e.air, reminderHour);
+  let at: number;
+  if (p.delay === 'usual') at = fallback;
+  else if (p.delay === 'nextMorning') {
+    const d = new Date(aired ?? atEvening(e.air, 0));
+    d.setDate(d.getDate() + 1);
+    d.setHours(MORNING_HOUR, 0, 0, 0);
+    at = d.getTime();
+  } else if (aired == null) at = fallback;
+  else at = outOfQuietHours(aired + (p.delay === 'hour' ? 3600000 : p.delay === 'threeHours' ? 3 * 3600000 : 0));
+  return p.weekendsOnly ? toWeekend(at) : at;
+}
+
+/**
+ * One notification per show per moment, for smart shows only.
+ *
+ * Weekends-only parks a week of episodes on one Saturday, and a streaming drop
+ * puts eight on one date; eight buzzes at once for one show is a bug report.
+ * They fold into the latest episode with a count. Plain reminders are left
+ * exactly as they always were.
+ */
+export function smartGroups<T extends { e: UpcomingEpisode; at: number; count: number }>(items: T[]): T[] {
+  const out: T[] = [];
+  const byKey = new Map<string, T>();
+  for (const x of items) {
+    if (!x.e.smart) {
+      out.push(x);
+      continue;
+    }
+    const key = `${x.e.showId}|${x.at}`;
+    const g = byKey.get(key);
+    if (!g) {
+      const copy = { ...x };
+      byKey.set(key, copy);
+      out.push(copy);
+      continue;
+    }
+    g.count += 1;
+    if (x.e.season > g.e.season || (x.e.season === g.e.season && x.e.episode > g.e.episode)) g.e = x.e;
+  }
+  return out;
+}
+
 /**
  * Is this the last episode of its season? Requires knowing the season's size:
  * without it we cannot tell a finale from any other episode, and guessing
@@ -185,14 +383,46 @@ export function planNotifications(
 
   // ---- episodes, and the finales among them ------------------------------
   if (enabled.episode) {
-    const dated = input.upcoming
-      .filter((e) => e.season >= 1) // specials don't ping
-      .map((e) => ({ e, at: atEvening(e.air, reminderHour) }))
-      .filter((x) => Number.isFinite(x.at) && x.at > now)
+    const dated = smartGroups(
+      input.upcoming
+        .filter((e) => e.season >= 1) // specials don't ping
+        // WHOLE SEASON: only the season's last episode speaks. A season whose
+        // size is unknown cannot be told complete, so it keeps the ordinary
+        // reminder rather than going silent.
+        .filter((e) => !(e.smart?.wholeSeason && e.seasonTotal != null && e.seasonTotal > 0 && e.episode !== e.seasonTotal))
+        .map((e) => ({ e, at: e.smart ? smartFireTime(e, e.smart, reminderHour) : atEvening(e.air, reminderHour), count: 1 }))
+        .filter((x) => Number.isFinite(x.at) && x.at > now),
+    )
       .sort((a, b) => a.at - b.at)
       .slice(0, MAX_EPISODE_NOTIFICATIONS);
 
-    for (const { e, at } of dated) {
+    for (const { e, at, count } of dated) {
+      // Smart wording first: "the whole season is out" is the reason the
+      // option exists, and "3 new episodes" is what a weekend batch IS.
+      if (e.smart?.wholeSeason && isSeasonFinale(e)) {
+        out.push({
+          id: `ep-${e.showId}-${e.season}-${e.episode}`,
+          kind: 'episode',
+          title: 'smartReminders.seasonOutTitle',
+          titleParams: { show: e.showName },
+          bodyKey: 'smartReminders.seasonOutBody',
+          bodyParams: { season: e.season },
+          at,
+        });
+        continue;
+      }
+      if (count > 1) {
+        out.push({
+          id: `ep-${e.showId}-${e.season}-${e.episode}`,
+          kind: 'episode',
+          title: 'localNotifications.episodeTitle',
+          titleParams: { show: e.showName },
+          bodyKey: 'smartReminders.episodesBody',
+          bodyParams: { count },
+          at,
+        });
+        continue;
+      }
       const code = episodeCode(e.season, e.episode);
       // a finale replaces the wording of a reminder already being scheduled —
       // it never costs an extra slot
