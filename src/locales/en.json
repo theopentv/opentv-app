@@ -3643,5 +3643,17 @@
       "title": "A special offer for you",
       "endsIn": "Ends in {{time}}"
     }
+  },
+  "cloudSync": {
+    "section": "Sync between your devices",
+    "intro": "Free. Your changes travel through your own cloud, never through OpenTV's server. Choose the same one on each device.",
+    "icloud": "Sync through iCloud",
+    "icloudSub": "Your iPhone and iPad, through your own iCloud. Changes usually arrive within a minute or two; iCloud decides exactly when.",
+    "drive": "Sync through Google Drive",
+    "driveSub": "Any device, iPhone and Android alike, through a hidden folder in your own Google Drive. Changes arrive within about a minute while OpenTV is open on both. Turns on the Google Drive backup too.",
+    "serverWins": "OpenTV sync is on, so your devices sync through it instead. Turn it off under OpenTV Cloud to use your own cloud.",
+    "lastSynced": "Last synced",
+    "otherDevices": "Other devices",
+    "failing": "Sync is not getting through"
   }
 }

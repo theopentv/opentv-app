@@ -197,8 +197,10 @@ export default function WelcomeScreen() {
             {/* ANDROID'S iCLOUD. The Drive backup could be written but never read
                 back: restoreFromDrive had no caller, and "Restore a backup" below
                 only asks OpenTV's server — so a Drive user was told there was
-                nothing (5 Oct). Signing in to Google here is not joining. */}
-            {Platform.OS === 'android' && !hasLibrary() && (
+                nothing (5 Oct). Signing in to Google here is not joining.
+                ON THE iPHONE TOO since 2.0.0: Drive is the copy somebody coming
+                from an Android has, and iCloud cannot reach it. */}
+            {(Platform.OS === 'android' || Platform.OS === 'ios') && !hasLibrary() && (
               <Pressable accessibilityRole="button"
                 style={[styles.optionSecondary, driveBusy && { opacity: 0.5 }]}
                 disabled={driveBusy}

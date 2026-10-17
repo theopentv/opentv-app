@@ -3643,5 +3643,17 @@
       "title": "Una oferta especial para ti",
       "endsIn": "Termina en {{time}}"
     }
+  },
+  "cloudSync": {
+    "section": "Sincroniza tus dispositivos",
+    "intro": "Gratis. Tus cambios viajan por tu propia nube, nunca por el servidor de OpenTV. Elige la misma en cada dispositivo.",
+    "icloud": "Sincronizar con iCloud",
+    "icloudSub": "Tu iPhone y tu iPad, a través de tu propio iCloud. Los cambios suelen llegar en uno o dos minutos; iCloud decide el momento exacto.",
+    "drive": "Sincronizar con Google Drive",
+    "driveSub": "Cualquier dispositivo, iPhone o Android, a través de una carpeta oculta en tu propio Google Drive. Los cambios llegan en un minuto aproximadamente mientras OpenTV está abierto en ambos. También activa la copia de seguridad en Google Drive.",
+    "serverWins": "La sincronización de OpenTV está activada, así que tus dispositivos se sincronizan con ella. Desactívala en OpenTV Cloud para usar tu propia nube.",
+    "lastSynced": "Última sincronización",
+    "otherDevices": "Otros dispositivos",
+    "failing": "La sincronización no llega"
   }
 }
