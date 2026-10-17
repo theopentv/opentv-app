@@ -519,11 +519,14 @@ possible"):
 
 ### Still to do for 2.0.0 (added 17 Oct)
 - ✅ DONE 505d9e6 — **Watch List sort: two more options** Elodie (Le Sérigraphe) asked for — release date **newest first** (the reverse of today's oldest-first) and **random**. `WATCH_LIST_SORTS` in `pure.ts` + the sort sheet + `watchListSort.*` in 9 locales.
-- **Subscription screen shows any offer's price** (intro, win-back, promotional, creator code) — needed before Black Friday 27 Nov; today it shows `priceString` only.
-- **Personal offers with a real countdown** set from the dashboard ("Give offer"), Apple promotional offers / Play developer-determined offers.
+- ✅ DONE d0dfe75 — **Subscription screen shows any offer's price** (intro, win-back, promotional, creator code) — needed before Black Friday 27 Nov; today it shows `priceString` only.
+- ✅ DONE d0dfe75 + backend 2.0.0-offers 4c76f78 (migration 0061, not deployed) — **Personal offers with a real countdown** set from the dashboard ("Give offer"), Apple promotional offers / Play developer-determined offers.
 - ✅ Not needed — **Website privacy page** already has a Crashlytics section ("on unless you turn it off").
 - ✅ DONE 505d9e6 — **Lists show name cards for shows with no poster** (habiba's public "Anime": Angelique 287494 has a TheTVDB poster, 355806 is no longer on TheTVDB). `fillMissingListPosters` only fills FILMS, so a show item with `poster: null` is published that way and never fixed; and `list/[id].tsx` has no fallback for a viewer. Fill show posters too (TheTVDB series image by tvdbId), and let the viewer resolve a missing poster by tvdbId.
 - **BetaSeries import** (CSV export: episodes/series/films, no TheTVDB/TMDB ids) — needs a free BetaSeries API key to map its ids; real sample in gdpr-data/betaseries/.
+
+- ✅ DONE 1a84e73 — **Episode plots and Explore blurbs in your language.** The structure fetch also reads TheTVDB's episode list in each non-English language of the plot chain (one request per 500 episodes per language, never per episode), falling back to English; untranslated episodes come back "" (checked live). Episodes share the show's `plotLang` stamp. English mode asks for nothing new. Explore feed cards use `meta=translations` on their existing request. TMDB-only shows and the Explore grid stay English.
+- ✅ DONE 2bbf2d3 — **FIXED: shows named after their own id get their name back** (`SHOW_NAME_MISSING_WHERE`, tested on real SQLite; "1899"/"1923" untouched).
 
 ### Built 14 Oct — what each branch did (merged into 2.0.0; nothing on a device yet)
 
