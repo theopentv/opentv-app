@@ -1,4 +1,4 @@
-import { firstPlot, pickBiography, plotTmdbLang, plotTvdbLangs, TVDB_LANG, tvdbHitName, tvdbLangChain } from '@/pure';
+import { episodePlotsById, firstPlot, pickBiography, plotTmdbLang, plotTvdbLangs, TVDB_LANG, translatedOverview, tvdbHitName, tvdbLangChain } from '@/pure';
 
 describe('plot language', () => {
   test('English setting asks for English only, whatever the app language', () => {
@@ -70,3 +70,33 @@ describe('TheTVDB language codes outside plots', () => {
     expect(pickBiography([{ language: 'fra', biography: 'FR' }], 'tr')).toBe('FR');
   });
 });
+
+describe('episode plots and Explore blurbs in the reader\'s language', () => {
+  // Live shape (17 Oct 2026): an untranslated episode comes back as "", so it
+  // must fall through to the next language and finally to English.
+  test('first list with text wins per episode; blanks and failed lists fall through', () => {
+    const pt = [{ id: 1, overview: 'Brasil' }, { id: 2, overview: '' }, { id: 3, overview: null }];
+    const por = [{ id: 2, overview: 'Portugal' }, { id: 1, overview: 'nunca' }];
+    const m = episodePlotsById([pt, null, por]);
+    expect(m.get(1)).toBe('Brasil');
+    expect(m.get(2)).toBe('Portugal');
+    expect(m.has(3)).toBe(false); // the caller keeps its English plot
+    expect(firstPlot(m.get(3), 'English')).toBe('English');
+  });
+
+  test('English mode asks for no lists and changes nothing', () => {
+    expect(episodePlotsById([]).size).toBe(0);
+  });
+
+  test('an Explore blurb takes the first language in the chain that has one', () => {
+    const list = [
+      { language: 'eng', overview: 'Seven noble families' },
+      { language: 'por', overview: 'Portugal' },
+      { language: 'pt', overview: '  ' },
+    ];
+    expect(translatedOverview(list, ['pt', 'por', 'eng'])).toBe('Portugal');
+    expect(translatedOverview(list, ['ita', 'eng'])).toBe('Seven noble families');
+    expect(translatedOverview(undefined, ['ita', 'eng'])).toBeNull();
+  });
+});
+

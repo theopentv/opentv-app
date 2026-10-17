@@ -6306,6 +6306,34 @@ export function firstPlot(...plots: (string | null | undefined)[]): string | nul
   return plots.find((p) => !!p && p.trim().length > 0) ?? null;
 }
 
+/**
+ * EPISODE PLOTS from translated episode lists, best language first: episode id
+ * → the first list's non-empty overview. An id missing from every list is
+ * simply absent, so the caller keeps the English plot it already has.
+ * A null list (that language's fetch failed) contributes nothing.
+ */
+export function episodePlotsById(
+  lists: readonly (readonly { id: number; overview?: string | null }[] | null)[],
+): Map<number, string> {
+  const out = new Map<number, string>();
+  for (const list of lists) {
+    for (const e of list ?? []) {
+      const plot = firstPlot(e.overview);
+      if (plot && !out.has(e.id)) out.set(e.id, plot);
+    }
+  }
+  return out;
+}
+
+/** The overview in the first of `langs` that has one, from an extended
+ *  record's `translations.overviewTranslations` — Explore's cards. */
+export function translatedOverview(
+  list: readonly { language?: string | null; overview?: string | null }[] | undefined,
+  langs: readonly string[],
+): string | null {
+  return firstPlot(...langs.map((l) => list?.find((x) => x.language === l)?.overview));
+}
+
 export function pickBiography(
   list: readonly { biography?: string | null; language?: string | null }[],
   locale = 'en',

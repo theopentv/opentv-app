@@ -13,6 +13,7 @@ import {
   WATCH_REGION_KEY,
   artworkUrl,
   deviceWatchRegion,
+  episodePlotsById,
   firstPlot,
   matchStillsByTitle,
   mergeEnrichment,
@@ -857,12 +858,19 @@ async function fetchTvdbStructure(tvdbId: number): Promise<ShowMeta | null> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const t = require('@/tvdb') as typeof import('@/tvdb');
     const plotLangs = plotTvdbCodes();
-    const [s, plots, eps] = await Promise.all([
+    const [s, plots, eps, epPlotLists] = await Promise.all([
       t.tvdbSeriesExtended(tvdbId),
       // ['eng'] in English mode — one request, exactly as before
       Promise.all(plotLangs.map((l) => t.tvdbTranslation(tvdbId, l))),
       t.tvdbEpisodes(tvdbId),
+      // EPISODE plots in the reader's language: one list per language for the
+      // whole show (TheTVDB pages at 500 episodes), never one per episode.
+      // English is already on `eps`, so English mode asks for nothing more.
+      // Stamped by the same `plotLang` below, so a change of language
+      // refreshes episodes through the same background pass as the show.
+      Promise.all(plotLangs.filter((l) => l !== 'eng').map((l) => t.tvdbEpisodePlots(tvdbId, l))),
     ]);
+    const localEpPlots = episodePlotsById(epPlotLists);
     // always last in the list, see plotTvdbLangs
     const eng = plots[plots.length - 1];
     if (!s) return null;
@@ -883,7 +891,7 @@ async function fetchTvdbStructure(tvdbId: number): Promise<ShowMeta | null> {
         title: e.name ?? null,
         air: e.aired ?? null,
         still: artworkUrl(e.image),
-        overview: e.overview || null,
+        overview: firstPlot(localEpPlots.get(e.id), e.overview),
         // On the same response, never a second request — exactly like the
         // overview above it, and missed for the same reason.
         runtime: e.runtime ?? null,

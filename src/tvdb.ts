@@ -287,11 +287,21 @@ export type TvdbMovieExtended = {
   first_release?: { date?: string | null } | null;
   status?: { name?: string | null } | null;
   characters?: TvdbCharacter[];
+  translations?: TvdbTranslations;
 };
 
-export async function tvdbMovieExtended(id: number): Promise<TvdbMovieExtended | null> {
+/**
+ * Every translated overview, as `meta=translations` adds it to an extended
+ * record — checked live on 17 Oct 2026 for both series and films: about 10%
+ * more bytes on the same request, against one more request per language.
+ * Only Explore asks for it (see catalog.ts); the structure fetch keeps its
+ * targeted `/translations/{lang}` calls.
+ */
+export type TvdbTranslations = { overviewTranslations?: { language?: string | null; overview?: string | null }[] };
+
+export async function tvdbMovieExtended(id: number, withTranslations = false): Promise<TvdbMovieExtended | null> {
   try {
-    return await get<TvdbMovieExtended>(`/movies/${id}/extended`);
+    return await get<TvdbMovieExtended>(`/movies/${id}/extended${withTranslations ? '?meta=translations' : ''}`);
   } catch {
     return null;
   }
@@ -594,6 +604,7 @@ export type TvdbSeriesExtended = TvdbSeries & {
   artworks?: { image?: string; type?: number; score?: number }[];
   firstAired?: string | null;
   lastAired?: string | null;
+  translations?: TvdbTranslations;
 };
 
 /**
@@ -601,9 +612,9 @@ export type TvdbSeriesExtended = TvdbSeries & {
  * characters (name + actor + both images), unlike TMDB which returns voice
  * actors for anime, so this replaces the TVmaze/AniList workarounds.
  */
-export async function tvdbSeriesExtended(id: number): Promise<TvdbSeriesExtended | null> {
+export async function tvdbSeriesExtended(id: number, withTranslations = false): Promise<TvdbSeriesExtended | null> {
   try {
-    return await get<TvdbSeriesExtended>(`/series/${id}/extended?short=false`);
+    return await get<TvdbSeriesExtended>(`/series/${id}/extended?short=false${withTranslations ? '&meta=translations' : ''}`);
   } catch {
     return null;
   }
@@ -623,6 +634,34 @@ export async function tvdbTranslation(
   }
 }
 
+/**
+ * Three outcomes, not two — the distinction is what makes this safe:
+ *  - `unavailable`: page 0 failed, so this endpoint has nothing for us (a
+ *    show with no English translation 404s here). The caller may fall back.
+ *  - `partial`: a LATER page failed, so we hold some of a list and cannot
+ *    know what is missing. Never usable, and never a reason to fall back —
+ *    the other endpoint would be just as likely to fail.
+ *  - `ok`: every page came back.
+ */
+type Fetched = { status: 'ok'; episodes: TvdbEpisode[] } | { status: 'unavailable' } | { status: 'partial' };
+async function fetchAllEpisodes(path: string): Promise<Fetched> {
+  const all: TvdbEpisode[] = [];
+  for (let page = 0; page < 40; page++) {
+    let batch: TvdbEpisode[];
+    try {
+      const data = await get<{ episodes?: TvdbEpisode[] }>(`${path}?page=${page}`);
+      batch = data.episodes ?? [];
+    } catch {
+      return page === 0 ? { status: 'unavailable' } : { status: 'partial' };
+    }
+    all.push(...batch);
+    if (batch.length < 500) return { status: 'ok', episodes: all }; // last page (TheTVDB pages at 500)
+  }
+  // ran out of pages without a short one — 20,000 episodes, so almost
+  // certainly a paging bug rather than a real show. Don't pretend it's whole.
+  return { status: 'partial' };
+}
+
 /** All episodes for a series (default order), following pagination.
  *  Uses the English translation — the untranslated endpoint returns titles in
  *  the original language (Japanese for anime), which would regress every anime
@@ -630,35 +669,7 @@ export async function tvdbTranslation(
  *  identical on both endpoints; only the strings differ. Shows with no English
  *  translation fall back to the untranslated list. */
 export async function tvdbEpisodes(id: number): Promise<TvdbEpisode[] | null> {
-  /**
-   * Three outcomes, not two — the distinction is what makes this safe:
-   *  - `unavailable`: page 0 failed, so this endpoint has nothing for us (a
-   *    show with no English translation 404s here). The caller may fall back.
-   *  - `partial`: a LATER page failed, so we hold some of a list and cannot
-   *    know what is missing. Never usable, and never a reason to fall back —
-   *    the other endpoint would be just as likely to fail.
-   *  - `ok`: every page came back.
-   */
-  type Fetched = { status: 'ok'; episodes: TvdbEpisode[] } | { status: 'unavailable' } | { status: 'partial' };
-  const fetchAll = async (path: string): Promise<Fetched> => {
-    const all: TvdbEpisode[] = [];
-    for (let page = 0; page < 40; page++) {
-      let batch: TvdbEpisode[];
-      try {
-        const data = await get<{ episodes?: TvdbEpisode[] }>(`${path}?page=${page}`);
-        batch = data.episodes ?? [];
-      } catch {
-        return page === 0 ? { status: 'unavailable' } : { status: 'partial' };
-      }
-      all.push(...batch);
-      if (batch.length < 500) return { status: 'ok', episodes: all }; // last page (TheTVDB pages at 500)
-    }
-    // ran out of pages without a short one — 20,000 episodes, so almost
-    // certainly a paging bug rather than a real show. Don't pretend it's whole.
-    return { status: 'partial' };
-  };
-
-  const eng = await fetchAll(`/series/${id}/episodes/default/eng`);
+  const eng = await fetchAllEpisodes(`/series/${id}/episodes/default/eng`);
   // a half-fetched list is worse than none: it caches as the show's true shape,
   // renders as missing seasons, and reads fresh for the next 7-30 days because
   // it is genuinely TheTVDB-sourced. Discard and let a later pass retry.
@@ -667,13 +678,31 @@ export async function tvdbEpisodes(id: number): Promise<TvdbEpisode[] | null> {
   if (eng.status === 'ok' && eng.episodes.length > 0) {
     list = eng.episodes;
   } else {
-    const raw = await fetchAll(`/series/${id}/episodes/default`);
+    const raw = await fetchAllEpisodes(`/series/${id}/episodes/default`);
     if (raw.status !== 'ok') return null;
     list = raw.episodes;
   }
   // the translated endpoint returns bare paths where the untranslated one
   // returns absolute URLs — normalise so callers never see the difference
   return list.map((e) => ({ ...e, image: artworkUrl(e.image) }));
+}
+
+/**
+ * One series' episode PLOTS in one language, by episode id — the whole show in
+ * a request (or one per 500 episodes), never a request per episode.
+ *
+ * Same endpoint the structure already reads in `eng`; only the language
+ * differs. Checked live on 17 Oct 2026 (Game of Thrones, Naruto in ita, pol,
+ * tur): an episode with no translation comes back as "" — never the original
+ * language — so the caller simply falls through to the English it has.
+ *
+ * Null on any failure, partial included: plots are a nicety laid over a
+ * structure that is already whole, so a failure here costs the plots and
+ * nothing else.
+ */
+export async function tvdbEpisodePlots(id: number, lang: string): Promise<TvdbEpisode[] | null> {
+  const r = await fetchAllEpisodes(`/series/${id}/episodes/default/${lang}`);
+  return r.status === 'ok' ? r.episodes : null;
 }
 
 export type TvdbMovieMeta = {

@@ -12,9 +12,9 @@
  * its key has been revoked, Discover keeps working rather than going blank.
  */
 import { runtimeLabel } from '@/duration';
-import { genreText } from '@/i18n';
+import { genreText, plotTvdbCodes } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
-import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, tvdbHitName } from '@/pure';
+import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, translatedOverview, tvdbHitName } from '@/pure';
 import { pool, tmdb } from '@/tmdb';
 
 const TMDB_IMG = 'https://image.tmdb.org/t/p';
@@ -47,6 +47,9 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
   const trending = await t.tvdbTrending();
   if (!trending) return null;
 
+  const plotLangs = plotTvdbCodes();
+  const localPlots = plotLangs[0] !== 'eng';
+
   // interleave shows and films so the feed isn't all one kind up top
   const picks: { kind: 'tv' | 'movie'; raw: import('@/tvdb').TvdbTrendingItem }[] = [];
   const half = Math.ceil(limit / 2);
@@ -58,8 +61,12 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
   const items = await pool(
     picks.slice(0, limit),
     async ({ kind, raw }): Promise<CatalogItem | null> => {
-      // the card wants landscape art, which the trending list doesn't carry
-      const ext = kind === 'tv' ? await t.tvdbSeriesExtended(raw.id) : await t.tvdbMovieExtended(raw.id);
+      // the card wants landscape art, which the trending list doesn't carry.
+      // In a non-English plot language the same request also brings every
+      // translated overview (`meta=translations`), so the blurb follows
+      // Settings → Plot language for no extra request; English mode asks
+      // exactly what it always did.
+      const ext = kind === 'tv' ? await t.tvdbSeriesExtended(raw.id, localPlots) : await t.tvdbMovieExtended(raw.id, localPlots);
       const backdrop = t.bestArtwork(ext?.artworks, t.TVDB_ART_BACKGROUND);
       // no landscape art = no card worth showing, same rule as the TMDB feed
       if (!backdrop) return null;
@@ -84,7 +91,7 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
         title: raw.name ?? '',
         backdrop,
         poster: artworkUrl(raw.image ?? ext?.image),
-        overview: raw.overview ?? '',
+        overview: (localPlots && translatedOverview(ext?.translations?.overviewTranslations, plotLangs)) || raw.overview || '',
         sub: sub || (raw.year ?? ''),
         votes: raw.score ?? 0,
       };
