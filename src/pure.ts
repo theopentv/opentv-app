@@ -8308,9 +8308,10 @@ export function characterWhere(
  * WATCH NEXT, then HAVEN'T WATCHED FOR A WHILE, then not started — and stays
  * the default; the other two flatten it into one list.
  */
-export type WatchListSort = 'recent' | 'releaseDate' | 'mostBehind';
+export type WatchListSort = 'recent' | 'releaseDate' | 'releaseDateNewest' | 'mostBehind' | 'random';
 
-export const WATCH_LIST_SORTS: readonly WatchListSort[] = ['recent', 'releaseDate', 'mostBehind'];
+/** Asked for by Elodie (Le Sérigraphe, 15 Oct 2026): newest first, and random. */
+export const WATCH_LIST_SORTS: readonly WatchListSort[] = ['recent', 'releaseDate', 'releaseDateNewest', 'mostBehind', 'random'];
 
 export function validWatchListSort(v: string | null | undefined): WatchListSort {
   return (WATCH_LIST_SORTS as readonly string[]).includes(v ?? '') ? (v as WatchListSort) : 'recent';
@@ -8340,15 +8341,35 @@ export type WatchListEntry = {
  * something the metadata never said. Ties fall back to recency (most behind) or
  * the show's name (release date), so the order never shuffles between visits.
  */
-export function sortWatchList<T extends WatchListEntry>(items: readonly T[], sort: Exclude<WatchListSort, 'recent'>): T[] {
+export function sortWatchList<T extends WatchListEntry>(
+  items: readonly T[],
+  sort: Exclude<WatchListSort, 'recent'>,
+  /**
+   * RANDOM IS A SHUFFLE YOU ASKED FOR, NOT ONE PER RENDER. The order comes from
+   * hashing each name with this seed, so it holds still while you scroll and
+   * mark episodes, and changes only when the caller picks a new seed (choosing
+   * Random again).
+   */
+  seed = 0,
+): T[] {
   const recent = (a: T, b: T) => (b.lastWatchedAt ?? '').localeCompare(a.lastWatchedAt ?? '');
   const byName = (a: T, b: T) => a.name.localeCompare(b.name);
+  const hash = (name: string) => {
+    let h = (seed ^ 0x811c9dc5) >>> 0;
+    for (let i = 0; i < name.length; i++) h = Math.imul(h ^ name.charCodeAt(i), 16777619) >>> 0;
+    return h;
+  };
+  const byDate = (dir: 1 | -1) => (a: T, b: T) =>
+    (a.nextAir == null ? 1 : 0) - (b.nextAir == null ? 1 : 0) ||
+    dir * (a.nextAir ?? '').localeCompare(b.nextAir ?? '') ||
+    byName(a, b);
   const cmp =
     sort === 'releaseDate'
-      ? (a: T, b: T) =>
-          (a.nextAir == null ? 1 : 0) - (b.nextAir == null ? 1 : 0) ||
-          (a.nextAir ?? '').localeCompare(b.nextAir ?? '') ||
-          byName(a, b)
+      ? byDate(1)
+      : sort === 'releaseDateNewest'
+      ? byDate(-1)
+      : sort === 'random'
+      ? (a: T, b: T) => hash(a.name) - hash(b.name) || byName(a, b)
       : (a: T, b: T) =>
           (a.left == null ? 1 : 0) - (b.left == null ? 1 : 0) ||
           (b.left ?? 0) - (a.left ?? 0) ||

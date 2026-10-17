@@ -4154,7 +4154,9 @@
   "watchListSort": {
     "recent": "الأحدث",
     "releaseDate": "تاريخ العرض",
+    "releaseDateNewest": "تاريخ العرض، الأحدث أولًا",
     "mostBehind": "الأكثر تأخّرًا",
+    "random": "عشوائي",
     "a11y": "ترتيب قائمة المشاهدة، الحالي: {{sort}}"
   },
   "watchKind": {

@@ -22,10 +22,12 @@ import { currentLocale, t } from '@/i18n';
 
 const TABS = ['Watch List', 'Upcoming'] as const;
 
-const SORT_ICON: Record<WatchListSort, 'time-outline' | 'calendar-outline' | 'layers-outline'> = {
+const SORT_ICON: Record<WatchListSort, 'time-outline' | 'calendar-outline' | 'calendar-clear-outline' | 'layers-outline' | 'shuffle-outline'> = {
   recent: 'time-outline',
   releaseDate: 'calendar-outline',
+  releaseDateNewest: 'calendar-clear-outline',
   mostBehind: 'layers-outline',
+  random: 'shuffle-outline',
 };
 
 function shortDate(iso: string): string {
@@ -130,6 +132,8 @@ export default function ShowsScreen() {
   // a render-time getMeta would be memoised past the change).
   const [sort, setSort] = useState<WatchListSort>(() => validWatchListSort(getMeta('watchListSort')));
   const [sortOpen, setSortOpen] = useState(false);
+  // A new shuffle each time Random is chosen; see sortWatchList.
+  const [shuffleSeed, setShuffleSeed] = useState(() => Date.now() & 0xffff);
 
   // re-read the library whenever this tab regains focus — a show deleted or
   // unfollowed on its page must disappear from here immediately
@@ -198,6 +202,7 @@ export default function ShowsScreen() {
                   };
                 }),
                 sort,
+                shuffleSeed,
               ).map((x) => x.sp),
             ],
           ];
@@ -216,7 +221,7 @@ export default function ShowsScreen() {
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, tick, gridCols, sort]);
+  }, [view, tick, gridCols, sort, shuffleSeed]);
 
   const markNext = (sp: ShowProgress) => {
     const next = realNext(sp);
@@ -738,6 +743,7 @@ export default function ShowsScreen() {
             icon: SORT_ICON[s],
             selected: s === sort,
             onPress: () => {
+              if (s === 'random') setShuffleSeed(Date.now() & 0xffff);
               setSort(s);
               setMeta('watchListSort', s);
             },

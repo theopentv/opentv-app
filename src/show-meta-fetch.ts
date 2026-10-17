@@ -434,6 +434,25 @@ export async function fillMissingListNames(): Promise<void> {
  * which is already the app's answer for it: a list entry was never watched, so
  * there is no watch date to disambiguate a generic title with.
  */
+/**
+ * A SHOW'S POSTER BY ITS TheTVDB ID, for list entries that were saved without
+ * one. Lists only ever asked about FILMS, so a show with no poster was
+ * published as a name card and stayed one on every phone that opened it
+ * (habiba's "Anime", 17 Oct 2026). Null when TheTVDB has no art or the id is
+ * gone; the caller keeps the name card then.
+ */
+export async function showPosterById(tvdbId: number): Promise<string | null> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { tvdbSeries } = require('@/tvdb') as typeof import('@/tvdb');
+    const s = await tvdbSeries(tvdbId);
+    const art = s ? artworkUrl(s.image) : null;
+    return art && !art.includes('/images/missing/') ? art : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function fillMissingListPosters(): Promise<void> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { getCustomLists, saveCustomLists } = require('@/db') as typeof import('@/db');
@@ -492,7 +511,19 @@ export async function fillMissingListPosters(): Promise<void> {
   } catch {
     // The metadata modules are unavailable. The names are still right.
   }
-  if (!found.size) return;
+  // SHOWS TOO, by their TheTVDB id (no title search: a show in a list always
+  // carries its id). One lookup per id, however many lists hold it.
+  const showArt = new Map<number, string>();
+  for (const l of lists) {
+    for (const it of l.items) {
+      if (it.kind !== 'show' || it.poster || !it.tvdbId || showArt.has(it.tvdbId)) continue;
+      if (getMeta(`tvdbShowArtMiss:${it.tvdbId}`)) continue;
+      const img = await showPosterById(it.tvdbId);
+      if (img) showArt.set(it.tvdbId, img);
+      else setMeta(`tvdbShowArtMiss:${it.tvdbId}`, '1');
+    }
+  }
+  if (!found.size && !showArt.size) return;
 
   // ONE SAVE, like `fillMissingListNames` — `saveCustomLists` rewrites the
   // whole array, so a save per film would rewrite the same JSON dozens of times
@@ -500,7 +531,15 @@ export async function fillMissingListPosters(): Promise<void> {
   let changed = false;
   for (const l of lists) {
     for (const it of l.items) {
-      if (it.kind !== 'movie' || it.poster) continue;
+      if (it.poster) continue;
+      if (it.kind === 'show') {
+        const art = it.tvdbId ? showArt.get(it.tvdbId) : undefined;
+        if (art) {
+          it.poster = art;
+          changed = true;
+        }
+        continue;
+      }
       const img = found.get(it.name.trim());
       if (!img) continue;
       it.poster = img;

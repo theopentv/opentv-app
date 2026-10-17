@@ -3614,7 +3614,9 @@
   "watchListSort": {
     "recent": "En son",
     "releaseDate": "Yayın tarihi",
+    "releaseDateNewest": "Yayın tarihi, en yeni önce",
     "mostBehind": "En çok geride kalan",
+    "random": "Rastgele",
     "a11y": "İzleme listesini sırala. Şu an: {{sort}}"
   },
   "watchKind": {

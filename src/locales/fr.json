@@ -3614,7 +3614,9 @@
   "watchListSort": {
     "recent": "Récents",
     "releaseDate": "Date de sortie",
+    "releaseDateNewest": "Date de sortie, plus récent d’abord",
     "mostBehind": "Le plus de retard",
+    "random": "Aléatoire",
     "a11y": "Trier la liste. Actuellement : {{sort}}"
   },
   "watchKind": {

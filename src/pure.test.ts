@@ -3962,3 +3962,28 @@ describe('providerLines', () => {
     ]);
   });
 });
+
+describe('sortWatchList: newest first and random', () => {
+  const e = (name: string, o: Partial<WatchListEntry> = {}): WatchListEntry => ({
+    name, lastWatchedAt: null, started: true, nextAir: null, left: null, ...o,
+  });
+  it('newest first: newest next episode first, unknown still after, not started last', () => {
+    const out = sortWatchList(
+      [e('Never', { started: false, nextAir: '2030-01-01' }), e('NoDate'), e('Old', { nextAir: '2010-03-01' }), e('New', { nextAir: '2024-05-01' })],
+      'releaseDateNewest',
+    );
+    expect(out.map((x) => x.name)).toEqual(['New', 'Old', 'NoDate', 'Never']);
+  });
+  it('random: the same seed gives the same order, not started still last', () => {
+    const items = ['A', 'B', 'C', 'D', 'E', 'F'].map((n) => e(n)).concat(e('Never', { started: false }));
+    const a = sortWatchList(items, 'random', 42).map((x) => x.name);
+    expect(sortWatchList(items, 'random', 42).map((x) => x.name)).toEqual(a);
+    expect(a[a.length - 1]).toBe('Never');
+    expect([...a].sort()).toEqual([...items.map((x) => x.name)].sort());
+  });
+  it('random: another seed reshuffles', () => {
+    const items = 'ABCDEFGHIJ'.split('').map((n) => e(n));
+    const orders = new Set([1, 2, 3, 4, 5].map((s) => sortWatchList(items, 'random', s).map((x) => x.name).join('')));
+    expect(orders.size).toBeGreaterThan(1);
+  });
+});

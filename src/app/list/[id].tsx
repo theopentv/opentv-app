@@ -27,6 +27,7 @@ import { SortablePosterGrid } from '@/components/sortable-poster-grid';
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { t } from '@/i18n';
 import { movieRoute, commentErrorKey } from '@/pure';
+import { showPosterById } from '@/show-meta-fetch';
 import { colors, space } from '@/theme';
 
 type State =
@@ -43,8 +44,26 @@ export default function CommunityListScreen() {
   useEffect(() => {
     let cancelled = false;
     void fetchList(id)
-      .then((list) => {
-        if (!cancelled) setState({ phase: 'ready', list });
+      .then(async (list) => {
+        if (cancelled) return;
+        setState({ phase: 'ready', list });
+        /*
+         * A SHOW THE OWNER'S PHONE NEVER FOUND A POSTER FOR is published with
+         * none, and older phones keep publishing it that way. Look it up here
+         * by its TheTVDB id rather than drawing a name card for ever.
+         */
+        const missing = list.items.filter((it) => !it.poster && it.target_source === 'tvdb' && Number(it.target_key) > 0);
+        if (!missing.length) return;
+        const art = new Map<string, string>();
+        for (const it of missing) {
+          const img = await showPosterById(Number(it.target_key));
+          if (img) art.set(it.target_key, img);
+        }
+        if (cancelled || !art.size) return;
+        setState({
+          phase: 'ready',
+          list: { ...list, items: list.items.map((it) => (it.poster ? it : { ...it, poster: art.get(it.target_key) ?? it.poster })) },
+        });
       })
       .catch((e: unknown) => {
         if (cancelled) return;
