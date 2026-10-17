@@ -51,7 +51,12 @@ function documentBytes(name: string | null | undefined): Uint8Array | null {
   }
 }
 
-export function buildTvTimeZip(): Uint8Array {
+/**
+ * `notes: false` leaves the private notes out — the OpenTV-server backup asks
+ * for that, because notes are promised never to reach our server. Every other
+ * destination (iCloud, Drive, WebDAV, the share sheet) is the user's own.
+ */
+export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint8Array {
   const uid = getMeta('tvtimeUserId') ?? '0';
   const username = getMeta('username') ?? 'opentv-user';
 
@@ -499,6 +504,17 @@ export function buildTvTimeZip(): Uint8Array {
       // The same for `epStars`, its own key: a backup made between the film
       // and the episode change has `movieScale` and whole episode stars.
       epScale: 10,
+      // Private notes (2.0.0). Here and only here: TV Time's format has no
+      // column for them, and a sidecar key an older importer does not know is
+      // simply ignored, so the CSVs stay byte-for-byte TV Time's.
+      ...(notes
+        ? {
+            notes: {
+              shows: db.getAllSync('SELECT showId, season, episode, text, updatedAt FROM show_notes'),
+              movies: db.getAllSync('SELECT movie, text, updatedAt FROM movie_notes'),
+            },
+          }
+        : {}),
     }),
   );
   return zipSync(files, { level: 6 });

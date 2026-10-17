@@ -3643,5 +3643,30 @@
       "title": "Un'offerta speciale per te",
       "endsIn": "Termina tra {{time}}"
     }
+  },
+  "privateNotes": {
+    "title": "La mia nota",
+    "add": "Aggiungi una nota privata",
+    "private": "Solo su questo telefono. Mai condivisa né pubblicata."
+  },
+  "compareFollowing": {
+    "title": "Confronta",
+    "explain": "Tu accanto a ogni persona che segui, in base a ciò che il suo profilo condivide. L’affinità conta le serie e i film che avete in comune su tutti quelli che ha almeno uno di voi.",
+    "you": "Tu",
+    "time": "Tempo di visione",
+    "episodes": "Episodi",
+    "films": "Film",
+    "showsInCommon": "Serie in comune",
+    "filmsInCommon": "Film in comune",
+    "percent": "{{pct}}%",
+    "match": "Affinità {{pct}}",
+    "nothingPublished": "Ancora niente da confrontare sul suo profilo",
+    "noneFollowed": "Non segui ancora nessuno.",
+    "findPeople": "Trova persone",
+    "failed": "Impossibile caricare le persone che segui. Controlla la connessione e riprova.",
+    "joinTitle": "Per confrontare serve la community",
+    "joinBody": "Usa ciò che le persone che segui condividono sul loro profilo, quindi devi prima entrare. Non viene inviato nulla finché non lo fai.",
+    "joinCta": "Entra",
+    "a11yLine": "{{label}}: tu {{mine}}, {{name}} {{theirs}}"
   }
 }

@@ -13,6 +13,7 @@ import { interestKey, libraryOwnerFrom, parseInterest, disambiguatedMovieName, d
 import seed from '@/seed';
 import { COMMSUNI_ELIGIBLE_WHERE } from '@/commsuni-scope';
 import { convertToTenOnce, wholeStars } from '@/star-rating';
+import { cleanNote } from '@/notes-pure';
 
 const db = SQLite.openDatabaseSync('ourtvtime.db');
 
@@ -165,6 +166,39 @@ db.execSync(`
   );
 `);
 
+/*
+ * PRIVATE NOTES (2.0.0) — a line of your own on a show, a film or an episode.
+ *
+ * TWO TABLES, keyed exactly as the rest of this schema keys the same things:
+ * episodes by (showId, season, episode), films by name. One table with
+ * nullable columns could not have a primary key — SQLite treats every NULL as
+ * distinct, so "the note on this show" would have no unique row.
+ *
+ * A SHOW'S OWN NOTE is the row at season -1, episode -1. Not 0: season 0 is
+ * TheTVDB's specials and episode 0 is TV Time's pre-season broadcast, both of
+ * which are real episodes somebody may want to write about.
+ *
+ * THESE NEVER LEAVE THE PHONE except inside the user's own backup ZIP (see the
+ * exporter's sidecar) — never to our server, never into a published shelf,
+ * never into analytics. Nothing in `community-*.ts` reads them, and the
+ * OpenTV-server backup builds its ZIP without them (`cloud-backup.ts`).
+ */
+db.execSync(`
+  CREATE TABLE IF NOT EXISTS show_notes (
+    showId INTEGER NOT NULL,
+    season INTEGER NOT NULL,
+    episode INTEGER NOT NULL,
+    text TEXT NOT NULL,
+    updatedAt TEXT NOT NULL,
+    PRIMARY KEY (showId, season, episode)
+  );
+  CREATE TABLE IF NOT EXISTS movie_notes (
+    movie TEXT PRIMARY KEY,
+    text TEXT NOT NULL,
+    updatedAt TEXT NOT NULL
+  );
+`);
+
 // Exact backup change-detection: a counter bumped on ANY row change to a
 // user-data table (insert/update/delete), so backupNow can skip precisely —
 // even a symmetric edit that leaves row counts and sums unchanged still bumps
@@ -186,6 +220,9 @@ for (const t of [
   'episode_watched_on',
   'character_votes',
   'movie_character_votes',
+  // notes ride in the backup ZIP, so editing one must count as a change
+  'show_notes',
+  'movie_notes',
 ]) {
   for (const op of ['INSERT', 'UPDATE', 'DELETE'] as const) {
     db.execSync(
@@ -1336,6 +1373,9 @@ export function dedupeDuplicateMovies(): number {
             keep.name,
           ],
         );
+        // the note follows the film onto the surviving row; the keeper's own wins
+        db.runSync('UPDATE OR IGNORE movie_notes SET movie = ? WHERE movie = ?', [keep.name, drop.name]);
+        db.runSync('DELETE FROM movie_notes WHERE movie = ?', [drop.name]);
         db.runSync('DELETE FROM movies WHERE name = ?', [drop.name]);
         removed++;
       }
@@ -1423,7 +1463,7 @@ export function dedupeDuplicateShows(): number {
         db.runSync('DELETE FROM watches WHERE showId = ?', [s.tvdbId]);
         // votes/reactions/watched-on: unique per (show,season,episode) — OR
         // IGNORE keeps the primary's on collision, then drop the rest
-        for (const t of ['episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes']) {
+        for (const t of ['episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes', 'show_notes']) {
           db.runSync(`UPDATE OR IGNORE ${t} SET showId = ? WHERE showId = ?`, [primary.tvdbId, s.tvdbId]);
           db.runSync(`DELETE FROM ${t} WHERE showId = ?`, [s.tvdbId]);
         }
@@ -1466,7 +1506,7 @@ export function remapShowId(fromId: number, toId: number): number {
     if (src && !dstExists) {
       // clear path: re-key the row and every child table straight across
       db.runSync('UPDATE shows SET tvdbId = ? WHERE tvdbId = ?', [toId, fromId]);
-      for (const t of ['watches', 'episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes']) {
+      for (const t of ['watches', 'episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes', 'show_notes']) {
         db.runSync(`UPDATE ${t} SET showId = ? WHERE showId = ?`, [toId, fromId]);
       }
     } else {
@@ -1481,7 +1521,7 @@ export function remapShowId(fromId: number, toId: number): number {
         [toId, fromId, toId],
       );
       db.runSync('DELETE FROM watches WHERE showId = ?', [fromId]);
-      for (const t of ['episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes']) {
+      for (const t of ['episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes', 'show_notes']) {
         db.runSync(`UPDATE OR IGNORE ${t} SET showId = ? WHERE showId = ?`, [toId, fromId]);
         db.runSync(`DELETE FROM ${t} WHERE showId = ?`, [fromId]);
       }
@@ -1583,7 +1623,7 @@ export function undeleteShowIds(...ids: number[]): boolean {
  * repairs never bring it back. */
 export function deleteShow(showId: number): void {
   db.withTransactionSync(() => {
-    for (const t of ['watches', 'episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes']) {
+    for (const t of ['watches', 'episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes', 'show_notes']) {
       db.runSync(`DELETE FROM ${t} WHERE showId = ?`, [showId]);
     }
     db.runSync('DELETE FROM shows WHERE tvdbId = ?', [showId]);
@@ -2594,7 +2634,7 @@ export function notifyRemoteChange(): void {
 
 export function wipeAllData(): void {
   db.withTransactionSync(() => {
-    for (const t of ['shows', 'watches', 'movies', 'episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes', 'ratings', 'emotions', 'comments', 'meta']) {
+    for (const t of ['shows', 'watches', 'movies', 'episode_ratings', 'episode_emotions', 'episode_watched_on', 'character_votes', 'show_notes', 'movie_notes', 'ratings', 'emotions', 'comments', 'meta']) {
       db.runSync(`DELETE FROM ${t}`);
     }
     // The pre-TheTVDB snapshot is a full copy of the old library — watches,
@@ -2805,6 +2845,7 @@ export function deleteMovie(name: string): void {
     );
     db.runSync('DELETE FROM ratings WHERE movie = ?', [name]);
     db.runSync('DELETE FROM emotions WHERE movie = ?', [name]);
+    db.runSync('DELETE FROM movie_notes WHERE movie = ? OR movie = ?', [name, row?.name ?? name]);
     db.runSync('DELETE FROM movies WHERE name = ? OR originalName = ?', [name, name]);
     const dead = deletedMovieNames();
     if (row?.name) dead.add(row.name);
@@ -2953,6 +2994,45 @@ export function setMovieCharacterVote(movie: string, name: string): string | nul
     db.runSync('INSERT OR REPLACE INTO movie_character_votes (movie, name, charId) VALUES (?, ?, NULL)', [movie, next]);
   }
   return next;
+}
+
+/** Which private note — see `show_notes` / `movie_notes` above. */
+export type NoteTarget =
+  | { kind: 'show'; showId: number }
+  | { kind: 'episode'; showId: number; season: number; episode: number }
+  | { kind: 'movie'; movie: string };
+
+/** The (showId, season, episode) row a show or episode note lives at. */
+function noteRow(t: Exclude<NoteTarget, { kind: 'movie' }>): [number, number, number] {
+  return t.kind === 'show' ? [t.showId, -1, -1] : [t.showId, t.season, t.episode];
+}
+
+export function getNote(t: NoteTarget): string | null {
+  const row =
+    t.kind === 'movie'
+      ? db.getFirstSync<{ text: string }>('SELECT text FROM movie_notes WHERE movie = ?', [t.movie])
+      : db.getFirstSync<{ text: string }>('SELECT text FROM show_notes WHERE showId = ? AND season = ? AND episode = ?', noteRow(t));
+  return row?.text ?? null;
+}
+
+/** Save what the editor holds; an empty note deletes the row rather than
+ *  keeping a blank one. Returns what is stored now, read back, never assumed.
+ *  NOT queued for device sync and never published — see the tables above. */
+export function setNote(t: NoteTarget, text: string): string | null {
+  const clean = cleanNote(text);
+  if (t.kind === 'movie') {
+    if (clean == null) db.runSync('DELETE FROM movie_notes WHERE movie = ?', [t.movie]);
+    else db.runSync('INSERT OR REPLACE INTO movie_notes (movie, text, updatedAt) VALUES (?, ?, ?)', [t.movie, clean, new Date().toISOString()]);
+  } else if (clean == null) {
+    db.runSync('DELETE FROM show_notes WHERE showId = ? AND season = ? AND episode = ?', noteRow(t));
+  } else {
+    db.runSync('INSERT OR REPLACE INTO show_notes (showId, season, episode, text, updatedAt) VALUES (?, ?, ?, ?, ?)', [
+      ...noteRow(t),
+      clean,
+      new Date().toISOString(),
+    ]);
+  }
+  return getNote(t);
 }
 
 /** Character-vote totals for the stats screen, live from the db. */

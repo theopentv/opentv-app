@@ -3643,5 +3643,30 @@
       "title": "A special offer for you",
       "endsIn": "Ends in {{time}}"
     }
+  },
+  "privateNotes": {
+    "title": "My note",
+    "add": "Add a private note",
+    "private": "Only on this phone. Never shared or published."
+  },
+  "compareFollowing": {
+    "title": "Compare",
+    "explain": "You next to each person you follow, from what their profile shares. Taste match counts the shows and films you both have against all the ones either of you has.",
+    "you": "You",
+    "time": "Time watched",
+    "episodes": "Episodes",
+    "films": "Films",
+    "showsInCommon": "Shows in common",
+    "filmsInCommon": "Films in common",
+    "percent": "{{pct}}%",
+    "match": "Taste match {{pct}}",
+    "nothingPublished": "Nothing on their profile to compare yet",
+    "noneFollowed": "You don't follow anyone yet.",
+    "findPeople": "Find people",
+    "failed": "Couldn't load the people you follow. Check your connection and try again.",
+    "joinTitle": "Comparing needs the community",
+    "joinBody": "It uses what the people you follow share on their profiles, so you need to join first. Nothing is sent until you do.",
+    "joinCta": "Join",
+    "a11yLine": "{{label}}: you {{mine}}, {{name}} {{theirs}}"
   }
 }

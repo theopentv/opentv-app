@@ -3643,5 +3643,30 @@
       "title": "Une offre spéciale pour vous",
       "endsIn": "Se termine dans {{time}}"
     }
+  },
+  "privateNotes": {
+    "title": "Ma note",
+    "add": "Ajouter une note privée",
+    "private": "Uniquement sur ce téléphone. Jamais partagée ni publiée."
+  },
+  "compareFollowing": {
+    "title": "Comparer",
+    "explain": "Toi à côté de chaque personne que tu suis, d’après ce que son profil partage. L’affinité compte les séries et films que vous avez en commun parmi tous ceux de l’un ou de l’autre.",
+    "you": "Toi",
+    "time": "Temps de visionnage",
+    "episodes": "Épisodes",
+    "films": "Films",
+    "showsInCommon": "Séries en commun",
+    "filmsInCommon": "Films en commun",
+    "percent": "{{pct}} %",
+    "match": "Affinité {{pct}}",
+    "nothingPublished": "Rien à comparer sur son profil pour l’instant",
+    "noneFollowed": "Tu ne suis encore personne.",
+    "findPeople": "Trouver des personnes",
+    "failed": "Impossible de charger les personnes que tu suis. Vérifie ta connexion et réessaie.",
+    "joinTitle": "Comparer nécessite la communauté",
+    "joinBody": "La comparaison utilise ce que les personnes que tu suis partagent sur leur profil : il faut d’abord rejoindre la communauté. Rien n’est envoyé avant.",
+    "joinCta": "Rejoindre",
+    "a11yLine": "{{label}} : toi {{mine}}, {{name}} {{theirs}}"
   }
 }

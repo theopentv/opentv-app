@@ -3643,5 +3643,30 @@
       "title": "Ein besonderes Angebot für dich",
       "endsIn": "Endet in {{time}}"
     }
+  },
+  "privateNotes": {
+    "title": "Meine Notiz",
+    "add": "Private Notiz hinzufügen",
+    "private": "Nur auf diesem Handy. Wird nie geteilt oder veröffentlicht."
+  },
+  "compareFollowing": {
+    "title": "Vergleichen",
+    "explain": "Du neben jeder Person, der du folgst – nach dem, was ihr Profil teilt. Die Geschmacksübereinstimmung zählt die Serien und Filme, die ihr beide habt, gegen alle, die einer von euch hat.",
+    "you": "Du",
+    "time": "Geschaute Zeit",
+    "episodes": "Folgen",
+    "films": "Filme",
+    "showsInCommon": "Gemeinsame Serien",
+    "filmsInCommon": "Gemeinsame Filme",
+    "percent": "{{pct}} %",
+    "match": "Geschmack {{pct}}",
+    "nothingPublished": "Auf dem Profil gibt es noch nichts zu vergleichen",
+    "noneFollowed": "Du folgst noch niemandem.",
+    "findPeople": "Leute finden",
+    "failed": "Die Leute, denen du folgst, konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+    "joinTitle": "Vergleichen braucht die Community",
+    "joinBody": "Es nutzt, was die Leute, denen du folgst, auf ihren Profilen teilen – deshalb musst du zuerst beitreten. Bis dahin wird nichts gesendet.",
+    "joinCta": "Beitreten",
+    "a11yLine": "{{label}}: du {{mine}}, {{name}} {{theirs}}"
   }
 }

@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
 import { GestureDetector, ScrollView } from 'react-native-gesture-handler';
@@ -1125,6 +1126,12 @@ export default function MovieScreen() {
                 ) : (
                   <Text style={[styles.body, { paddingHorizontal: space.lg, marginTop: 2 }]}>{t('media.providersUnavailable')}</Text>
                 )}
+
+                {/* Private, on this phone only — see components/note-row.tsx.
+                    Keyed by the library name when there is a row, else the
+                    route's, which is the name a row would be created under. */}
+                <View style={[styles.divider, { marginTop: 18, marginBottom: 0 }]} />
+                <NoteRow movie={dbMovie?.name ?? name} />
 
                 {/* the interests poll only shows for movies in your library */}
                 {inDb && (

@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 
 import { a11yAction, a11yHidden } from '@/a11y';
+import { NoteRow } from '@/components/note-row';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { posterSpeech } from '@/components/poster';
 import { useSwipeDown } from '@/components/swipe-down';
@@ -1023,6 +1024,10 @@ export default function ShowScreen() {
             </Pressable>
           ))}
           </View>
+
+          {/* Private, on this phone only — see components/note-row.tsx. */}
+          <View style={[styles.divider, { marginTop: 18, marginBottom: 0 }]} />
+          <NoteRow showId={tvdbId} />
 
           {meta?.similar?.[0] && (
             <>

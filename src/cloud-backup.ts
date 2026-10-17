@@ -285,7 +285,18 @@ export async function disconnectServerBackup(): Promise<void> {
 
 // ── the three operations, shared by both destinations ────────────────────────
 
-function buildZip(): Uint8Array {
+/**
+ * PRIVATE NOTES NEVER GO TO OUR SERVER (2.0.0), so the 'opentv' destination
+ * builds its own ZIP without them rather than reusing the shared one. That is
+ * one extra build for the people who back up to us, and only on a change; the
+ * user's own WebDAV gets the shared ZIP, notes and all, like iCloud and Drive.
+ */
+function buildZip(dest: BackupDestination | null = null): Uint8Array {
+  if (dest === 'opentv') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { buildTvTimeZip } = require('@/exporter') as typeof import('@/exporter');
+    return buildTvTimeZip({ notes: false });
+  }
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { libraryZip, librarySignature } = require('@/backup') as typeof import('@/backup');
   return libraryZip(librarySignature());
@@ -347,7 +358,7 @@ export async function serverBackupNow(force = false): Promise<BackupOutcome> {
    * and the catch-up on open send it again either way.
    */
   const startedActive = AppState.currentState === 'active';
-  const zip = buildZip();
+  const zip = buildZip(dest);
   const hash = hashBytes(zip);
   if (!force && getMeta(HASH_KEY) === hash) {
     // The signature moved but the bytes did not — record it so the ZIP is not

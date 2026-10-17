@@ -38,6 +38,7 @@ import { importVerdict, type ImportDiagnosis } from '@/pure';
 import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, deletedShowIds, getMeta, hasLibrary, libraryOwner, mergeImportedCustomLists, recountShow, setMeta, unmarkedEpisodeKeys, wipeAllData } from '@/db';
 import { withImportLock } from '@/import-lock';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
+import { notesFromSidecar } from '@/notes-pure';
 import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, listPlaceholderName, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
 import { tmdb, pool } from '@/tmdb';
 import { isNetworkError, netIsOpen, netReachable, netUnreachable } from '@/net-circuit';
@@ -811,6 +812,8 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
      *  Its own key: a backup from between the two has `movieScale` and whole
      *  episode stars. */
     epScale?: number;
+    /** Private notes, 2.0.0 on. Checked row by row by `notesFromSidecar`. */
+    notes?: unknown;
   };
   let extras: Extras = {};
   try {
@@ -2206,6 +2209,24 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       ex.episode,
       ten,
     ]);
+  }
+  // Private notes come back only from our own sidecar. A merge never
+  // overwrites a note already on this phone — it may be newer than the backup.
+  {
+    const notes = notesFromSidecar(extras.notes, new Date().toISOString());
+    const verb = merge ? 'IGNORE' : 'REPLACE';
+    for (const n of notes.shows) {
+      db.runSync(`INSERT OR ${verb} INTO show_notes (showId, season, episode, text, updatedAt) VALUES (?, ?, ?, ?, ?)`, [
+        n.showId,
+        n.season,
+        n.episode,
+        n.text,
+        n.updatedAt,
+      ]);
+    }
+    for (const n of notes.movies) {
+      db.runSync(`INSERT OR ${verb} INTO movie_notes (movie, text, updatedAt) VALUES (?, ?, ?)`, [n.movie, n.text, n.updatedAt]);
+    }
   }
   for (const ex of extras.epCharVotes ?? []) {
     // exact OpenTV votes (with character names) beat the id-only CSV rows

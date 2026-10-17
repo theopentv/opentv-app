@@ -3643,5 +3643,30 @@
       "title": "Sana özel bir teklif",
       "endsIn": "Kalan süre: {{time}}"
     }
+  },
+  "privateNotes": {
+    "title": "Notum",
+    "add": "Özel not ekle",
+    "private": "Yalnızca bu telefonda. Asla paylaşılmaz veya yayınlanmaz."
+  },
+  "compareFollowing": {
+    "title": "Karşılaştır",
+    "explain": "Takip ettiğin her kişinin yanında sen, onun profilinde paylaştıklarına göre. Zevk uyumu, ikinizde de olan dizi ve filmleri, ikinizden birinde olan tümüne oranlar.",
+    "you": "Sen",
+    "time": "İzleme süresi",
+    "episodes": "Bölümler",
+    "films": "Filmler",
+    "showsInCommon": "Ortak diziler",
+    "filmsInCommon": "Ortak filmler",
+    "percent": "%{{pct}}",
+    "match": "Zevk uyumu {{pct}}",
+    "nothingPublished": "Profilinde henüz karşılaştıracak bir şey yok",
+    "noneFollowed": "Henüz kimseyi takip etmiyorsun.",
+    "findPeople": "Kişi bul",
+    "failed": "Takip ettiklerin yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+    "joinTitle": "Karşılaştırmak için topluluk gerekir",
+    "joinBody": "Takip ettiklerinin profillerinde paylaştıklarını kullanır, bu yüzden önce katılman gerekir. Katılana kadar hiçbir şey gönderilmez.",
+    "joinCta": "Katıl",
+    "a11yLine": "{{label}}: sen {{mine}}, {{name}} {{theirs}}"
   }
 }

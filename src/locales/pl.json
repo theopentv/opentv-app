@@ -3919,5 +3919,30 @@
       "title": "Specjalna oferta dla Ciebie",
       "endsIn": "Kończy się za {{time}}"
     }
+  },
+  "privateNotes": {
+    "title": "Moja notatka",
+    "add": "Dodaj prywatną notatkę",
+    "private": "Tylko na tym telefonie. Nigdy nie jest udostępniana ani publikowana."
+  },
+  "compareFollowing": {
+    "title": "Porównaj",
+    "explain": "Ty obok każdej obserwowanej osoby, na podstawie tego, co udostępnia jej profil. Zgodność gustu liczy wspólne seriale i filmy wobec wszystkich, które ma którekolwiek z was.",
+    "you": "Ty",
+    "time": "Czas oglądania",
+    "episodes": "Odcinki",
+    "films": "Filmy",
+    "showsInCommon": "Wspólne seriale",
+    "filmsInCommon": "Wspólne filmy",
+    "percent": "{{pct}}%",
+    "match": "Zgodność gustu {{pct}}",
+    "nothingPublished": "Na profilu nie ma jeszcze nic do porównania",
+    "noneFollowed": "Jeszcze nikogo nie obserwujesz.",
+    "findPeople": "Znajdź osoby",
+    "failed": "Nie udało się wczytać obserwowanych. Sprawdź połączenie i spróbuj ponownie.",
+    "joinTitle": "Porównywanie wymaga społeczności",
+    "joinBody": "Korzysta z tego, co obserwowane osoby udostępniają na profilach, więc najpierw musisz dołączyć. Do tego czasu nic nie jest wysyłane.",
+    "joinCta": "Dołącz",
+    "a11yLine": "{{label}}: ty {{mine}}, {{name}} {{theirs}}"
   }
 }
