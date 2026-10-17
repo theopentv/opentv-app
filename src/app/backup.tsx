@@ -25,6 +25,17 @@ import { Text } from '@/components/text';
 
 import { backupNow, icloudAvailable, icloudSupported, lastBackupAt, lastBackupError } from '@/backup';
 import { backupDestination } from '@/cloud-backup';
+import {
+  cloudSyncDevices,
+  cloudSyncSupported,
+  cloudSyncVia,
+  lastCloudSyncAt,
+  lastCloudSyncError,
+  turnOffCloudSync,
+  turnOnCloudSync,
+  type Via,
+} from '@/cloud-sync';
+import { syncEnabled } from '@/device-sync';
 import { exportAll } from '@/db';
 import {
   connectDrive,
@@ -81,6 +92,11 @@ export default function BackupScreen() {
   const [driveAt, setDriveAt] = useState<number | null>(() => lastDriveBackupAt());
   const [driveBusy, setDriveBusy] = useState(false);
   const [cloud, setCloud] = useState(() => backupDestination());
+  const [via, setVia] = useState<Via | null>(() => cloudSyncVia());
+  const [viaBusy, setViaBusy] = useState(false);
+  const [syncedAt, setSyncedAt] = useState(() => lastCloudSyncAt());
+  const [syncErr, setSyncErr] = useState(() => lastCloudSyncError());
+  const [serverSync, setServerSync] = useState(() => syncEnabled());
 
   /* Re-read on focus: the cloud screen is a push away and can change the
      destination, and a stale "Not set" here would be the screen disagreeing
@@ -92,6 +108,10 @@ export default function BackupScreen() {
       setDriveOn(driveConnected());
       setDriveAt(lastDriveBackupAt());
       setCloud(backupDestination());
+      setVia(cloudSyncVia());
+      setSyncedAt(lastCloudSyncAt());
+      setSyncErr(lastCloudSyncError());
+      setServerSync(syncEnabled());
     }, []),
   );
 
@@ -137,6 +157,41 @@ export default function BackupScreen() {
       setDriveBusy(false);
     }
   };
+
+  /* ONE CLOUD AT A TIME. Two folders would be two conversations, and a device
+     on one never hears a device on the other, so choosing one turns the other
+     off rather than offering a combination that cannot work. */
+  const toggleVia = async (which: Via, on: boolean) => {
+    if (viaBusy) return;
+    if (!on) {
+      turnOffCloudSync();
+      setVia(null);
+      return;
+    }
+    setViaBusy(true);
+    try {
+      const r = await turnOnCloudSync(which);
+      setVia(cloudSyncVia());
+      if (r === 'ok') {
+        if (which === 'gdrive') setDriveOn(driveConnected());
+      } else if (r === 'icloud-off') {
+        Alert.alert(t('settings.data.icloudOffTitle'), t('settings.data.icloudOffBody'));
+      } else if (r !== 'cancelled') {
+        Alert.alert(
+          t('settings.data.driveFailedTitle'),
+          r === 'unauthorised'
+            ? t('settings.data.driveUnauthorised')
+            : r === 'no-play-services'
+              ? t('settings.data.driveNoPlay')
+              : `${t('settings.data.driveFailedBody')}${lastDriveError() ? `\n\n${lastDriveError()}` : ''}`,
+        );
+      }
+    } finally {
+      setViaBusy(false);
+    }
+  };
+
+  const others = via ? cloudSyncDevices() : [];
 
   const backUp = async () => {
     try {
@@ -221,6 +276,59 @@ export default function BackupScreen() {
           </>
         )}
 
+        {/* ── sync through their own cloud, free (2.0.0) ─────────────────── */}
+        {(cloudSyncSupported('icloud') || cloudSyncSupported('gdrive')) && (
+          <>
+            <Text accessibilityRole="header" style={s.section}>{t('cloudSync.section')}</Text>
+            <Text style={s.note}>{serverSync ? t('cloudSync.serverWins') : t('cloudSync.intro')}</Text>
+            {cloudSyncSupported('icloud') && (
+              <MenuRow
+                trackId="cloudSync.icloud"
+                title={t('cloudSync.icloud')}
+                sub={t('cloudSync.icloudSub')}
+                right={
+                  <Switch
+                    value={via === 'icloud'}
+                    disabled={viaBusy}
+                    onValueChange={(v) => void toggleVia('icloud', v)}
+                    trackColor={{ true: colors.green }}
+                  />
+                }
+              />
+            )}
+            {cloudSyncSupported('gdrive') && (
+              <MenuRow
+                trackId="cloudSync.drive"
+                title={t('cloudSync.drive')}
+                sub={t('cloudSync.driveSub')}
+                right={
+                  <Switch
+                    value={via === 'gdrive'}
+                    disabled={viaBusy}
+                    onValueChange={(v) => void toggleVia('gdrive', v)}
+                    trackColor={{ true: colors.green }}
+                  />
+                }
+              />
+            )}
+            {via && !serverSync && (
+              <>
+                <MenuRow trackId="cloudSync.lastSynced" title={t('cloudSync.lastSynced')} value={when(syncedAt)} />
+                {others.length > 0 && (
+                  <MenuRow
+                    trackId="cloudSync.otherDevices"
+                    title={t('cloudSync.otherDevices')}
+                    sub={others.map((d) => d.name ?? d.platform ?? d.dev).join(', ')}
+                  />
+                )}
+                {syncErr && (
+                  <MenuRow trackId="cloudSync.failing" title={t('cloudSync.failing')} sub={syncErr} danger />
+                )}
+              </>
+            )}
+          </>
+        )}
+
         {/* ── the one that crosses ─────────────────────────────────────── */}
         <Text accessibilityRole="header" style={s.section}>{t('settings.backup.cloudSection')}</Text>
         <MenuRow
@@ -258,6 +366,13 @@ const s = StyleSheet.create({
     paddingHorizontal: space.lg,
     paddingTop: space.sm,
     paddingBottom: space.md,
+  },
+  note: {
+    color: colors.dim,
+    fontSize: 13,
+    lineHeight: 18,
+    paddingHorizontal: space.lg,
+    paddingBottom: space.xs,
   },
   section: {
     color: colors.faint,

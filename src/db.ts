@@ -234,9 +234,14 @@ export function setApplyingRemote(on: boolean): void {
 }
 
 /** True once the user has turned sync on; read on every mutation, so it is a
- *  single indexed lookup and nothing more. */
+ *  single indexed lookup and nothing more.
+ *
+ *  EITHER TRANSPORT (2.0.0): OpenTV's server, or the person's own iCloud or
+ *  Google Drive (`cloud-sync.ts`, key `cloudSync.via`). One outbox serves
+ *  both, and only one of them empties it — the server when it is on — so an
+ *  op is never delivered twice by two roads. */
 function syncIsOn(): boolean {
-  return getMeta('sync.on') === '1';
+  return getMeta('sync.on') === '1' || !!getMeta('cloudSync.via');
 }
 
 /*

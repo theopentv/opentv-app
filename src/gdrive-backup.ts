@@ -1,5 +1,10 @@
 /**
- * Google Drive backups — the Android half of what iCloud already does on iOS.
+ * Google Drive backups — the Android half of what iCloud already does on iOS,
+ * and since 2.0.0 on the iPhone too, because Drive is the one cloud both
+ * phones can reach: somebody moving between an iPhone and an Android, or
+ * syncing the two, needs a copy that neither platform owns. The same Google
+ * sign-in the community uses is configured on iOS already; `addScopes` works
+ * there too (it answers "already granted" as success, see the library).
  *
  * WHY THIS EXISTS AT ALL. An iPhone writes the whole library, photos included,
  * to the user's own iCloud Drive, and a reinstall offers it straight back.
@@ -40,6 +45,16 @@ import type { ImportResult, Progress } from '@/importer';
 export const DRIVE_ZIP = 'OpenTV Backup.zip';
 const DRIVE_INFO = 'OpenTV Backup Info.json';
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+/**
+ * THE HIDDEN APP FOLDER, for sync only (2.0.0) and asked for only when sync is
+ * turned on. Unlike the backup, nobody should see these files: they are a
+ * stream of small messages between the person's own devices, meaningless one
+ * at a time, and deleting them by hand would leave a device waiting for a
+ * chunk that never comes. `drive.appdata` is the folder Google keeps for
+ * exactly that — invisible in Drive, readable by this app alone, and a
+ * non-sensitive scope, so it needs no security review.
+ */
+export const DRIVE_APPDATA_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 
 const CONNECTED_KEY = 'driveBackupOn';
 const HASH_KEY = 'driveBackupHash';
@@ -54,9 +69,10 @@ export type DriveBackup = {
   movies: number | null;
 };
 
-/** Android only. iOS has iCloud, and offering both would be two answers to one
- *  question — see the note in `settings.tsx`. */
-export const driveSupported = (): boolean => Platform.OS === 'android';
+/** Both phones (2.0.0). It used to be Android only — iOS had iCloud, and two
+ *  answers to one question seemed one too many — but iCloud cannot reach an
+ *  Android, and Drive can reach both. */
+export const driveSupported = (): boolean => Platform.OS === 'android' || Platform.OS === 'ios';
 
 /** Has the user turned this on and granted the scope? A local flag, because the
  *  alternative is a network round trip on every settings render. */
@@ -84,7 +100,7 @@ function google(): GoogleModule {
  * somebody switched apps would be indefensible. Connecting is `connectDrive()`,
  * which is only ever reached by a deliberate tap.
  */
-async function accessToken(): Promise<string | null> {
+export async function driveAccessToken(): Promise<string | null> {
   try {
     const { GoogleSignin } = google();
     configureGoogle(GoogleSignin);
@@ -136,7 +152,7 @@ function connectReason(err: unknown): DriveConnect {
   return 'failed';
 }
 
-export async function connectDrive(): Promise<DriveConnect> {
+export async function connectDrive(withSync = false): Promise<DriveConnect> {
   try {
     const { GoogleSignin } = google();
     // BEFORE ANYTHING ELSE. See `configureGoogle` — an unconfigured SDK fails
@@ -161,8 +177,22 @@ export async function connectDrive(): Promise<DriveConnect> {
      */
     const current = await GoogleSignin.signInSilently().catch(() => null);
     if (current?.type !== 'success') await GoogleSignin.signIn();
-    await GoogleSignin.addScopes({ scopes: [DRIVE_SCOPE] });
-    const token = await accessToken();
+    const scopes = withSync ? [DRIVE_SCOPE, DRIVE_APPDATA_SCOPE] : [DRIVE_SCOPE];
+    const granted = await GoogleSignin.addScopes({ scopes });
+    /*
+     * GOOGLE LETS PEOPLE UNTICK A PERMISSION on the consent screen and still
+     * press Continue. The sign-in then succeeds without the scope, and every
+     * Drive call afterwards fails with a 403 that reads like a broken app. So
+     * what was asked for is checked against what was granted, here, where the
+     * person can be told while they are still looking. Only the sync scope is
+     * checked: the backup path predates this and is left exactly as it was.
+     */
+    const have = granted?.type === 'success' ? granted.data.scopes : (GoogleSignin.getCurrentUser()?.scopes ?? []);
+    if (withSync && !have.includes(DRIVE_APPDATA_SCOPE)) {
+      lastError = 'Google Drive permission was not granted';
+      return 'failed';
+    }
+    const token = await driveAccessToken();
     if (!token) return 'failed';
     setMeta(CONNECTED_KEY, '1');
     return 'ok';
@@ -251,7 +281,7 @@ async function getBytes(token: string, id: string): Promise<Uint8Array> {
 
 /** What is up there, for the welcome screen to offer by name and size. */
 export async function findDriveBackup(): Promise<DriveBackup | null> {
-  const token = await accessToken();
+  const token = await driveAccessToken();
   if (!token) return null;
   const zip = await findFile(token, DRIVE_ZIP);
   if (!zip) return null;
@@ -290,7 +320,7 @@ export async function driveBackupNow(force = false): Promise<'done' | 'skipped' 
   const sig = librarySignature();
   if (!force && getMeta(SIG_KEY) === sig) return 'skipped';
 
-  const token = await accessToken();
+  const token = await driveAccessToken();
   if (!token) return 'unavailable';
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -325,7 +355,7 @@ export async function driveBackupNow(force = false): Promise<'done' | 'skipped' 
 /** Pull it back down and run it through the importer — the same path the
  *  iCloud restore and a hand-made import both take. */
 export async function restoreFromDrive(onProgress: (p: Progress) => void): Promise<ImportResult> {
-  const token = await accessToken();
+  const token = await driveAccessToken();
   if (!token) throw new Error('Not connected to Google Drive');
 
   onProgress({ phase: 'Downloading your backup…', done: 0, total: 1 });
@@ -349,4 +379,111 @@ export async function restoreFromDrive(onProgress: (p: Progress) => void): Promi
   setMeta(SIG_KEY, librarySignature());
   setMeta(AT_KEY, String(Date.now()));
   return result;
+}
+
+// ── the hidden app folder, for sync (2.0.0) ──────────────────────────────────
+
+/**
+ * The four things `cloud-sync.ts` needs from a folder, over Drive's REST API
+ * in the hidden `appDataFolder`. One instance per sync run: it holds the
+ * token it was opened with and the name → id map from its last listing,
+ * because Drive addresses files by id and the sync addresses them by name.
+ *
+ * A 401 drops the cached token so the next run asks Google for a fresh one;
+ * the run itself fails and is retried, which is cheaper than a retry loop
+ * here and no slower for anybody.
+ */
+export type DriveFolder = {
+  list(): Promise<{ name: string; modifiedAt: number; ready: boolean }[]>;
+  read(name: string): Promise<string>;
+  write(name: string, text: string): Promise<void>;
+  remove(name: string): Promise<void>;
+};
+
+export async function driveSyncFolder(): Promise<DriveFolder | null> {
+  const token = await driveAccessToken();
+  if (!token) return null;
+  const ids = new Map<string, string>();
+
+  const call = async (url: string, init: RequestInit = {}): Promise<Response> => {
+    const res = await fetch(url, {
+      ...init,
+      headers: { Authorization: `Bearer ${token}`, ...(init.headers as Record<string, string> | undefined) },
+    });
+    if (res.status === 401) {
+      try {
+        await google().GoogleSignin.clearCachedAccessToken(token);
+      } catch {
+        // Nothing cached to clear; the next run signs in silently anyway.
+      }
+    }
+    return res;
+  };
+
+  return {
+    async list() {
+      const out: { name: string; modifiedAt: number; ready: boolean }[] = [];
+      let page = '';
+      do {
+        const res = await call(
+          `${API}/files?spaces=appDataFolder&pageSize=1000&fields=nextPageToken,files(id,name,modifiedTime)` +
+            (page ? `&pageToken=${encodeURIComponent(page)}` : ''),
+        );
+        if (!res.ok) throw new Error(`Drive list failed (${res.status})`);
+        const body = (await res.json()) as { nextPageToken?: string; files?: DriveFile[] };
+        for (const f of body.files ?? []) {
+          ids.set(f.name, f.id);
+          // Drive has no "not delivered yet": a listed file is a readable one.
+          out.push({ name: f.name, modifiedAt: f.modifiedTime ? Date.parse(f.modifiedTime) : Date.now(), ready: true });
+        }
+        page = body.nextPageToken ?? '';
+      } while (page);
+      return out;
+    },
+
+    async read(name) {
+      const id = ids.get(name);
+      if (!id) throw new Error('Drive file not listed');
+      const res = await call(`${API}/files/${id}?alt=media`);
+      if (!res.ok) throw new Error(`Drive download failed (${res.status})`);
+      return res.text();
+    },
+
+    async write(name, text) {
+      const id = ids.get(name);
+      if (id) {
+        const res = await call(`${UPLOAD}/files/${id}?uploadType=media`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: text,
+        });
+        if (!res.ok) throw new Error(`Drive update failed (${res.status})`);
+        return;
+      }
+      // ONE request for a new file: these are a few kilobytes of text, so the
+      // multipart body the backup avoids (a whole ZIP in a string) is cheap here.
+      const boundary = `opentv${Date.now().toString(36)}`;
+      const body =
+        `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n` +
+        JSON.stringify({ name, parents: ['appDataFolder'] }) +
+        `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${text}\r\n--${boundary}--`;
+      const res = await call(`${UPLOAD}/files?uploadType=multipart&fields=id`, {
+        method: 'POST',
+        headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+        body,
+      });
+      if (!res.ok) throw new Error(`Drive create failed (${res.status})`);
+      const made = (await res.json()) as { id?: string };
+      if (made.id) ids.set(name, made.id);
+    },
+
+    async remove(name) {
+      const id = ids.get(name);
+      if (!id) return;
+      const res = await call(`${API}/files/${id}`, { method: 'DELETE' });
+      // Gone already is done.
+      if (!res.ok && res.status !== 404) throw new Error(`Drive delete failed (${res.status})`);
+      ids.delete(name);
+    },
+  };
 }

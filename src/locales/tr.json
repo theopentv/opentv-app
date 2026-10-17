@@ -3643,5 +3643,17 @@
       "title": "Sana özel bir teklif",
       "endsIn": "Kalan süre: {{time}}"
     }
+  },
+  "cloudSync": {
+    "section": "Cihazların arasında eşitle",
+    "intro": "Ücretsiz. Değişikliklerin kendi bulutun üzerinden gider, asla OpenTV'nin sunucusundan geçmez. Her cihazda aynısını seç.",
+    "icloud": "iCloud ile eşitle",
+    "icloudSub": "iPhone ve iPad'in, kendi iCloud'un üzerinden. Değişiklikler genellikle bir iki dakika içinde ulaşır; tam zamanına iCloud karar verir.",
+    "drive": "Google Drive ile eşitle",
+    "driveSub": "iPhone ya da Android, her cihaz; kendi Google Drive'ındaki gizli bir klasör üzerinden. OpenTV ikisinde de açıkken değişiklikler yaklaşık bir dakikada ulaşır. Google Drive yedeklemesini de açar.",
+    "serverWins": "OpenTV eşitlemesi açık, bu yüzden cihazların onun üzerinden eşitleniyor. Kendi bulutunu kullanmak için OpenTV Cloud'dan kapat.",
+    "lastSynced": "Son eşitleme",
+    "otherDevices": "Diğer cihazlar",
+    "failing": "Eşitleme ulaşmıyor"
   }
 }
