@@ -3680,5 +3680,53 @@
     "joinBody": "Takip ettiklerinin profillerinde paylaştıklarını kullanır, bu yüzden önce katılman gerekir. Katılana kadar hiçbir şey gönderilmez.",
     "joinCta": "Katıl",
     "a11yLine": "{{label}}: sen {{mine}}, {{name}} {{theirs}}"
+  },
+  "smartReminders": {
+    "title": "Akıllı hatırlatıcılar",
+    "rowSub": "Yayından bir saat sonra, yalnızca hafta sonu ya da tüm sezon çıkınca",
+    "intro": "Bölüm hatırlatıcılarının ne zaman geleceğini seç. Değiştirmediğin her şey her zamanki hatırlatma saatinde kalır.",
+    "delay": "Ne zaman",
+    "delaySub": "Yayın saati olmayan diziler hatırlatma saatini kullanır",
+    "delayUsual": "Hatırlatma saatim",
+    "delayOnAir": "Yayınlanınca",
+    "delayHour": "Bir saat sonra",
+    "delayThreeHours": "Üç saat sonra",
+    "delayNextMorning": "Ertesi sabah",
+    "weekends": "Yalnızca hafta sonu",
+    "weekendsSub": "Haftanın bölümleri cumartesi birlikte gelir",
+    "wholeSeason": "Tüm sezon çıkınca",
+    "wholeSeasonSub": "Bir sezonun son bölümü yayınlanınca tek hatırlatma, art arda izlemek için",
+    "quietNote": "23:00 ile 08:00 arasında hiçbir şey gelmez. O saatlere düşen sabahı bekler.",
+    "followGlobal": "Her zamanki ayarlarımı kullan",
+    "followGlobalSub": "Yalnızca bu dizi için seçmek üzere kapat",
+    "forShow": "Bu dizinin hatırlatıcıları",
+    "forShowPlus": "Bu dizinin hatırlatıcıları (Plus)",
+    "lapsedTitle": "Akıllı hatırlatıcılar Plus'ın parçası",
+    "lapsedBody": "Seçimlerin saklanıyor. Plus geri gelene kadar hatırlatıcılar her zamanki saatte gelir.",
+    "seasonOutTitle": "{{show}}: tüm sezon çıktı",
+    "seasonOutBody": "{{season}}. sezonun tüm bölümleri yayınlandı. Art arda izleme zamanı.",
+    "episodesBody": {
+      "one": "{{count}} yeni bölüm seni bekliyor",
+      "other": "{{count}} yeni bölüm seni bekliyor"
+    }
+  },
+  "myServices": {
+    "title": "Yayın hizmetlerim",
+    "rowSub": "İzleme listendeki bir şey birine geldiğinde haberin olsun",
+    "intro": "Ücret ödediğin hizmetleri seç. Telefonun günde yaklaşık bir kez izleme listeni ve başlamadığın dizileri kontrol eder, biri hizmetlerine geldiğinde sana haber verir. Bunların hiçbiri telefonundan çıkmaz.",
+    "alerts": "Hizmetlerime gelince bana haber ver",
+    "alertsSub": "Her yapım ve hizmet için tek bildirim, asla iki kez değil",
+    "pickTitle": {
+      "one": "{{count}} hizmet seçildi",
+      "other": "{{count}} hizmet seçildi"
+    },
+    "none": "Liste yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+    "arrivedTitle": "Artık {{service}} üzerinde",
+    "arrivedBody": "{{title}} artık {{service}} üzerinde",
+    "filterTitle": "Yayın",
+    "filterChip": "Hizmetlerimde",
+    "channel": "Yayına gelenler",
+    "lapsedTitle": "Hizmetlerim Plus'ın parçası",
+    "lapsedBody": "Hizmetlerin saklanıyor. Plus geri gelene kadar uyarı ve filtre yok."
   }
 }

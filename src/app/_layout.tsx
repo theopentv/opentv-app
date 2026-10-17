@@ -32,6 +32,7 @@ import { cacheAllShowMetadata, fillMissingEpisodeStills, fillMissingMoviePosters
   fillMissingShowNames,
   fillMissingShowPosters, fillMovieReleaseDates } from '@/show-meta-fetch';
 import { notificationsEnabled, syncEpisodeNotifications } from '@/notifications';
+import { checkAvailability } from '@/availability';
 import { syncWidgets } from '@/widget-sync';
 import { initCrashReports } from '@/crash';
 import { installNavGuard, navTransitionEnded } from '@/nav-guard';
@@ -182,6 +183,13 @@ export default function RootLayout() {
       return;
     }
     // The goal nudge opens the goal, where the ring says how far behind.
+    // "X is now on Netflix" opens X. Only a film or show page — the path is
+    // built on this phone, but a notification is no place to trust a route.
+    if (data.kind === 'available' && typeof (data as { path?: unknown }).path === 'string') {
+      const path = (data as { path: string }).path;
+      if (/^\/(movie|show)\//.test(path)) router.push(path as never);
+      return;
+    }
     if (data.kind === 'goal') {
       router.push('/yearly-goal');
       return;
@@ -466,6 +474,13 @@ export default function RootLayout() {
     void syncWidgets();
     void syncEpisodeNotifications(true); // launch: do the full pass once
     /*
+     * ON MY SERVICES (2.0.0, Plus): a minute after launch, well clear of the
+     * first screen and the metadata pass, and nothing at all unless this is a
+     * Plus phone with services picked. Gated to one run per eight hours and
+     * forty titles a run inside — see `availability.ts`.
+     */
+    setTimeout(() => void checkAvailability(), 60000);
+    /*
      * PLEX, ONCE PER LAUNCH. A "check now" button nobody remembers to press is
      * a feature that works in a demo and never again — the point is that
      * episodes watched on the telly turn up here without anybody doing
@@ -567,6 +582,8 @@ export default function RootLayout() {
             await syncArchiveIfNeeded();
             void maybePrefetchAggregates();
             void syncTogetherIfNeeded();
+            // a phone picked up in the evening is the next chance after launch
+            void checkAvailability();
           })();
         });
       }
@@ -791,6 +808,8 @@ export default function RootLayout() {
         <Stack.Screen name="simkl" />
         <Stack.Screen name="nuvio" />
         <Stack.Screen name="calendar-sync" />
+        <Stack.Screen name="smart-reminders" />
+        <Stack.Screen name="my-services" />
         <Stack.Screen name="seasonal" />
         <Stack.Screen name="yearly-goal" />
         <Stack.Screen name="tonight" />

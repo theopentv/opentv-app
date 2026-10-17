@@ -12,11 +12,14 @@
  * "derived from the user's own library" true by construction: a genre nobody
  * has watched has no fact to appear in.
  */
+import { includedServices, onMyServices } from '@/availability-plan';
+import { myServices, servicesSeen } from '@/availability';
 import { getShowFilterFacts, type MovieRow, type ShowProgress } from '@/db';
 import { showMeta } from '@/metadata';
 import { movieMeta } from '@/movie-metadata';
 import { runtimeBand, seasonAirState, type TitleFacts } from '@/pure';
 import { starsValue } from '@/star-rating';
+import { watchRegion } from '@/show-meta-fetch';
 import { airedTotalOf } from '@/show-status';
 
 /** '1994' -> '1990s'. Anything that isn't a plausible year is no decade. */
@@ -45,8 +48,23 @@ export function showProgressClass(sp: ShowProgress): string {
   return 'watching';
 }
 
+/*
+ * ON MY SERVICES (2.0.0, Plus): the availability check's own record first —
+ * it is per country and at most a day old — then, for a show, the providers
+ * cached with its metadata when that cache is for this country. A film has no
+ * second source: its bundled metadata is one American snapshot, so a film the
+ * check has not reached yet simply does not qualify rather than qualifying on
+ * somebody else's catalogue.
+ */
+function servicesFact(mine: readonly string[], titleServices: readonly string[] | undefined): string[] {
+  return mine.length && titleServices && onMyServices(titleServices, mine).length ? ['mine'] : [];
+}
+
 export function showFacts(rows: readonly ShowProgress[]): TitleFacts[] {
   const extra = getShowFilterFacts();
+  const mine = myServices();
+  const seen = mine.length ? servicesSeen() : new Map<string, string[]>();
+  const region = mine.length ? watchRegion() : '';
   const todayIso = new Date().toISOString().slice(0, 10);
   return rows.map((sp) => {
     const m = showMeta(sp.tvdbId);
@@ -61,11 +79,18 @@ export function showFacts(rows: readonly ShowProgress[]): TitleFacts[] {
       runtime: runtimeBand(m?.runtime, 'show'),
       watchedYears: x?.years ?? [],
       stars: x?.stars ?? null,
+      services: servicesFact(
+        mine,
+        (m?.tmdbId != null ? seen.get(`show:${m.tmdbId}`) : undefined) ??
+          (m?.watchRegion === region ? includedServices(m?.providers ?? []) : undefined),
+      ),
     };
   });
 }
 
 export function movieFacts(rows: readonly MovieRow[]): TitleFacts[] {
+  const mine = myServices();
+  const seen = mine.length ? servicesSeen() : new Map<string, string[]>();
   return rows.map((mv) => {
     const m = movieMeta(mv.tmdbId);
     // the metadata runtime is MINUTES; the movies column is SECONDS (see
@@ -82,6 +107,7 @@ export function movieFacts(rows: readonly MovieRow[]): TitleFacts[] {
       watchedYears: watched && /^\d{4}$/.test(watched) ? [watched] : [],
       // out of ten in the column, stars here: 7 is 3.5
       stars: mv.stars == null ? null : starsValue(mv.stars),
+      services: servicesFact(mine, mv.tmdbId != null ? seen.get(`movie:${mv.tmdbId}`) : undefined),
     };
   });
 }

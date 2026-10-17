@@ -3680,5 +3680,53 @@
     "joinBody": "Es nutzt, was die Leute, denen du folgst, auf ihren Profilen teilen – deshalb musst du zuerst beitreten. Bis dahin wird nichts gesendet.",
     "joinCta": "Beitreten",
     "a11yLine": "{{label}}: du {{mine}}, {{name}} {{theirs}}"
+  },
+  "smartReminders": {
+    "title": "Smarte Erinnerungen",
+    "rowSub": "Eine Stunde nach Ausstrahlung, nur am Wochenende oder wenn die ganze Staffel draußen ist",
+    "intro": "Wähle, wann Episoden-Erinnerungen kommen. Was du nicht änderst, behält deine übliche Erinnerungszeit.",
+    "delay": "Wann",
+    "delaySub": "Serien ohne Sendezeit nutzen deine Erinnerungszeit",
+    "delayUsual": "Meine Erinnerungszeit",
+    "delayOnAir": "Zur Ausstrahlung",
+    "delayHour": "Eine Stunde danach",
+    "delayThreeHours": "Drei Stunden danach",
+    "delayNextMorning": "Am nächsten Morgen",
+    "weekends": "Nur am Wochenende",
+    "weekendsSub": "Die Episoden der Woche kommen gesammelt am Samstag",
+    "wholeSeason": "Wenn die ganze Staffel draußen ist",
+    "wholeSeasonSub": "Eine Erinnerung, wenn die letzte Episode einer Staffel läuft – zum Durchschauen",
+    "quietNote": "Zwischen 23:00 und 08:00 kommt nichts. Was in diese Zeit fällt, wartet bis zum Morgen.",
+    "followGlobal": "Meine üblichen Einstellungen verwenden",
+    "followGlobalSub": "Ausschalten, um nur für diese Serie zu wählen",
+    "forShow": "Erinnerungen für diese Serie",
+    "forShowPlus": "Erinnerungen für diese Serie (Plus)",
+    "lapsedTitle": "Smarte Erinnerungen gehören zu Plus",
+    "lapsedBody": "Deine Auswahl bleibt gespeichert. Bis Plus zurück ist, kommen Erinnerungen zur üblichen Zeit.",
+    "seasonOutTitle": "{{show}}: Die ganze Staffel ist draußen",
+    "seasonOutBody": "Alle Episoden von Staffel {{season}} sind gelaufen. Zeit fürs Durchschauen.",
+    "episodesBody": {
+      "one": "{{count}} neue Episode wartet",
+      "other": "{{count}} neue Episoden warten"
+    }
+  },
+  "myServices": {
+    "title": "Meine Streamingdienste",
+    "rowSub": "Erfahre, wenn etwas von deiner Merkliste dort ankommt",
+    "intro": "Wähle die Dienste, die du bezahlst. Etwa einmal am Tag prüft dein Handy deine Merkliste und die Serien, die du noch nicht angefangen hast, und sagt dir Bescheid, wenn eine auf deinen Diensten ankommt. Nichts davon verlässt dein Handy.",
+    "alerts": "Sag mir, wenn es auf meinen Diensten ist",
+    "alertsSub": "Eine Mitteilung pro Titel und Dienst, nie zweimal",
+    "pickTitle": {
+      "one": "{{count}} Dienst gewählt",
+      "other": "{{count}} Dienste gewählt"
+    },
+    "none": "Die Liste konnte nicht geladen werden. Prüfe deine Verbindung und versuch es erneut.",
+    "arrivedTitle": "Jetzt auf {{service}}",
+    "arrivedBody": "{{title}} ist jetzt auf {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "Auf meinen Diensten",
+    "channel": "Neu im Streaming",
+    "lapsedTitle": "Meine Dienste gehören zu Plus",
+    "lapsedBody": "Deine Dienste bleiben gespeichert. Bis Plus zurück ist, gibt es keine Hinweise und keinen Filter."
   }
 }

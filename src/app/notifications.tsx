@@ -17,6 +17,7 @@
  * sat under General because that is where there was room. A reminder about
  * three years ago is not a general preference.
  */
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Switch, Text } from 'react-native';
 
@@ -29,8 +30,9 @@ import {
   setNotifyKind,
   setReminderHour,
 } from '@/notifications';
-import { MenuRow, NavHeader, Screen } from '@/components/ui';
+import { MenuRow, NavHeader, PlusChip, Screen } from '@/components/ui';
 import { t } from '@/i18n';
+import { requirePlus, usePlus, usePlusUi } from '@/plus';
 import { colors, space } from '@/theme';
 
 export default function NotificationsScreen() {
@@ -59,6 +61,8 @@ export default function NotificationsScreen() {
   // ITS OWN SWITCH, and that is the point of it. Wanting to know an episode
   // aired and wanting to be reminded of three years ago are different people.
   const [memory, setMemory] = useState(() => notifyKindEnabled('memory'));
+  const plus = usePlus();
+  const plusUi = usePlusUi();
 
   return (
     <Screen>
@@ -97,6 +101,20 @@ export default function NotificationsScreen() {
               }}
               right={<Text style={styles.reminderAt}>{`${String(remindAt).padStart(2, '0')}:00`}</Text>}
             />
+            {/* SMART REMINDERS (2.0.0, PLUS): the hour above stays the free
+                answer; this is "an hour after it airs", weekends only, or one
+                buzz when the whole season is out. */}
+            {plusUi && (
+              <MenuRow
+                trackId="smartReminders.title"
+                title={t('smartReminders.title')}
+                sub={t('smartReminders.rowSub')}
+                right={plus ? undefined : <PlusChip />}
+                onPress={() => {
+                  if (requirePlus('smart_reminders')) router.push('/smart-reminders');
+                }}
+              />
+            )}
             <MenuRow trackId="settings.app.finaleReminders"
               title={t('settings.app.finaleReminders')}
               sub={t('settings.app.finaleRemindersSub')}

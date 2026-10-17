@@ -3680,5 +3680,53 @@
     "joinBody": "Usa ciò che le persone che segui condividono sul loro profilo, quindi devi prima entrare. Non viene inviato nulla finché non lo fai.",
     "joinCta": "Entra",
     "a11yLine": "{{label}}: tu {{mine}}, {{name}} {{theirs}}"
+  },
+  "smartReminders": {
+    "title": "Promemoria intelligenti",
+    "rowSub": "Un'ora dopo la messa in onda, solo nel weekend, o quando è uscita tutta la stagione",
+    "intro": "Scegli quando arrivano i promemoria degli episodi. Ciò che non cambi mantiene il tuo orario abituale.",
+    "delay": "Quando",
+    "delaySub": "Le serie senza orario di messa in onda usano il tuo orario del promemoria",
+    "delayUsual": "Il mio orario",
+    "delayOnAir": "Alla messa in onda",
+    "delayHour": "Un'ora dopo",
+    "delayThreeHours": "Tre ore dopo",
+    "delayNextMorning": "La mattina dopo",
+    "weekends": "Solo nel weekend",
+    "weekendsSub": "Gli episodi della settimana arrivano insieme il sabato",
+    "wholeSeason": "Quando è uscita tutta la stagione",
+    "wholeSeasonSub": "Un solo promemoria quando va in onda l'ultimo episodio di una stagione, per il binge-watching",
+    "quietNote": "Non arriva nulla tra le 23:00 e le 08:00. Quello che cade in quelle ore aspetta il mattino.",
+    "followGlobal": "Usa le mie impostazioni abituali",
+    "followGlobalSub": "Disattiva per scegliere solo per questa serie",
+    "forShow": "Promemoria per questa serie",
+    "forShowPlus": "Promemoria per questa serie (Plus)",
+    "lapsedTitle": "I promemoria intelligenti fanno parte di Plus",
+    "lapsedBody": "Le tue scelte restano salvate. Finché Plus non torna, i promemoria arrivano al solito orario.",
+    "seasonOutTitle": "{{show}}: è uscita tutta la stagione",
+    "seasonOutBody": "Tutti gli episodi della stagione {{season}} sono andati in onda. Buona maratona.",
+    "episodesBody": {
+      "one": "{{count}} nuovo episodio ti aspetta",
+      "other": "{{count}} nuovi episodi ti aspettano"
+    }
+  },
+  "myServices": {
+    "title": "I miei servizi di streaming",
+    "rowSub": "Sappi quando un titolo della tua lista arriva su uno di essi",
+    "intro": "Scegli i servizi a cui sei abbonato. Circa una volta al giorno il telefono controlla la tua lista e le serie non ancora iniziate, e ti avvisa quando una arriva sui tuoi servizi. Niente di tutto questo lascia il telefono.",
+    "alerts": "Avvisami quando è sui miei servizi",
+    "alertsSub": "Una notifica per titolo e servizio, mai due volte",
+    "pickTitle": {
+      "one": "{{count}} servizio scelto",
+      "other": "{{count}} servizi scelti"
+    },
+    "none": "Impossibile caricare l'elenco. Controlla la connessione e riprova.",
+    "arrivedTitle": "Ora su {{service}}",
+    "arrivedBody": "{{title}} è ora su {{service}}",
+    "filterTitle": "Streaming",
+    "filterChip": "Sui miei servizi",
+    "channel": "Novità in streaming",
+    "lapsedTitle": "I miei servizi fanno parte di Plus",
+    "lapsedBody": "I tuoi servizi restano salvati. Finché Plus non torna, niente avvisi e niente filtro."
   }
 }

@@ -83,6 +83,7 @@ function labelOf(axis: FilterAxis, value: string, kind: FilterKind): string {
     if (value === 'long') return t('filters.runtimeLong');
   }
   if (axis === 'genres') return genreText(value);
+  if (axis === 'services') return t('myServices.filterChip');
   return value;
 }
 
@@ -375,6 +376,16 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
               selected={draft.years}
               kind={kind}
               onToggle={toggle('years')}
+            />
+            {/* ON MY SERVICES (2.0.0): absent until the user has picked their
+                services in Settings and something in the library is on one. */}
+            <AxisSection
+              axis="services"
+              title={t('myServices.filterTitle')}
+              options={options.services}
+              selected={draft.services}
+              kind={kind}
+              onToggle={toggle('services')}
             />
 
             {options.ratings.length > 0 ? (

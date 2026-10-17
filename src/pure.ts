@@ -5958,6 +5958,9 @@ export type TitleFacts = {
   /** The USER'S own rating, 1-5 -- null means they never rated it. A film
    *  may be a half (3.5), so "4 and up" leaves a three-and-a-half out. */
   stars: number | null;
+  /** ['mine'] when the title is on one of the user's streaming services
+   *  (2.0.0, `availability.ts`); absent or empty otherwise. */
+  services?: readonly string[];
 };
 
 export type FilterSort = 'lastWatched' | 'lastAdded' | 'alpha';
@@ -5975,6 +5978,8 @@ export type FilterSet = {
   years: string[];
   /** null = any, 0 = unrated only, 1-5 = rated at least that. */
   rating: number | null;
+  /** 'mine' = on one of my streaming services (Plus). */
+  services: string[];
 };
 
 export const DEFAULT_FILTERS: FilterSet = {
@@ -5987,18 +5992,19 @@ export const DEFAULT_FILTERS: FilterSet = {
   runtimes: [],
   years: [],
   rating: null,
+  services: [],
 };
 
 const FILTER_SORTS: readonly FilterSort[] = ['lastWatched', 'lastAdded', 'alpha'];
 
 /** Every multi-select axis, so nothing has to list them twice. */
-export const FILTER_AXES = ['progress', 'aired', 'genres', 'networks', 'decades', 'runtimes', 'years'] as const;
+export const FILTER_AXES = ['progress', 'aired', 'genres', 'networks', 'decades', 'runtimes', 'years', 'services'] as const;
 export type FilterAxis = (typeof FILTER_AXES)[number];
 
 /** The axes that are Plus: everything beyond sort, progress and aired, which
  *  shipped free in 1.2. One list, read by the sheet that gates choosing them
  *  and by the store that stops applying them. */
-export const PLUS_FILTER_AXES: readonly FilterAxis[] = ['genres', 'networks', 'decades', 'runtimes', 'years'];
+export const PLUS_FILTER_AXES: readonly FilterAxis[] = ['genres', 'networks', 'decades', 'runtimes', 'years', 'services'];
 
 /**
  * A filter set as somebody WITHOUT Plus may have it: every Plus axis emptied.
@@ -6028,6 +6034,7 @@ export function matchesFilters(f: TitleFacts, s: FilterSet): boolean {
   if (s.decades.length > 0 && (f.decade == null || !s.decades.includes(f.decade))) return false;
   if (s.runtimes.length > 0 && (f.runtime == null || !s.runtimes.includes(f.runtime))) return false;
   if (s.years.length > 0 && !f.watchedYears.some((y) => s.years.includes(y))) return false;
+  if (s.services.length > 0 && !(f.services ?? []).some((v) => s.services.includes(v))) return false;
   if (s.rating != null) {
     if (s.rating === 0) return f.stars == null;
     if (f.stars == null || f.stars < s.rating) return false;
@@ -6105,6 +6112,7 @@ export function filterOptions(facts: readonly TitleFacts[], s: FilterSet, kind: 
       RUNTIME_BANDS,
     ),
     years: newestFirst(tally('years', (f) => f.watchedYears)),
+    services: byCount(tally('services', (f) => f.services ?? [])),
     ratings,
   };
 }
@@ -6172,6 +6180,7 @@ export function normaliseFilterSet(value: unknown): FilterSet {
     decades: stringsOf(v.decades),
     runtimes: stringsOf(v.runtimes).filter((r): r is RuntimeBand => (RUNTIME_BANDS as readonly string[]).includes(r)),
     years: stringsOf(v.years),
+    services: stringsOf(v.services),
   };
 }
 
