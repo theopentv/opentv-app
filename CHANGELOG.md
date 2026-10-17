@@ -529,11 +529,11 @@ possible"):
 - ✅ DONE 2bbf2d3 — **FIXED: shows named after their own id get their name back** (`SHOW_NAME_MISSING_WHERE`, tested on real SQLite; "1899"/"1923" untouched).
 
 ### Decided 17 Oct: sync goes free, Plus gets new value
-- **2.0.0: device sync through the user's own iCloud / Google Drive is FREE** (Drive on iPhone too; iPhone ↔ Android). Our server sync and OpenTV Backup stay Plus. Final, no going back (Mahmood). Branch `2.0.0-cloud-sync`.
-- **2.0.0, FREE: private notes on any show, film or episode** (on the phone only).
-- **2.0.0, FREE: compare with the people you follow** (the "coming soon" link on Stats).
-- **2.0.0, PLUS: smart episode reminders** (e.g. an hour after airing, weekends only, when the whole season is out). The plain episode notification stays free.
-- **2.0.0 (moved up from 2.0.1), PLUS: "tell me when it's on my services"** — pick your streaming services; a notification when a watchlist title arrives on one in your country, plus a "my services only" filter. On-device TMDB checks, no server.
+- ✅ BUILT (merged) — **2.0.0: device sync through the user's own iCloud / Google Drive is FREE** (Drive on iPhone too; iPhone ↔ Android). Our server sync and OpenTV Backup stay Plus. Final, no going back (Mahmood). Branch `2.0.0-cloud-sync`.
+- ✅ BUILT (merged; not in the OpenTV-server backup ZIP) — **2.0.0, FREE: private notes on any show, film or episode** (on the phone only).
+- ✅ BUILT (merged) — **2.0.0, FREE: compare with the people you follow** (the "coming soon" link on Stats).
+- ✅ BUILT (merged) — **2.0.0, PLUS: smart episode reminders** (e.g. an hour after airing, weekends only, when the whole season is out). The plain episode notification stays free.
+- ✅ BUILT (merged; ~120 TMDB calls/phone/day max) — **2.0.0 (moved up from 2.0.1), PLUS: "tell me when it's on my services"** — pick your streaming services; a notification when a watchlist title arrives on one in your country, plus a "my services only" filter. On-device TMDB checks, no server.
 - Custom posters/backdrops: already Plus through the profile blocks; nothing to add.
 
 ### Built 14 Oct — what each branch did (merged into 2.0.0; nothing on a device yet)
