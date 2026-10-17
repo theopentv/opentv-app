@@ -189,6 +189,19 @@ function shelfMovies(): LocalTitle[] {
 }
 
 /**
+ * MY SIDE OF "COMPARE WITH THE PEOPLE YOU FOLLOW", keyed exactly as my shelf
+ * is published, so a show on their shelf and the same show in my library are
+ * the same string. Uncapped: this never leaves the phone — the comparison is
+ * done here, against what the other person already publishes.
+ */
+export function ownShelfKeys(): { shows: string[]; movies: string[] } {
+  return {
+    shows: titlesForPublish(shelfShows(), 'show').map((x) => x.target_key),
+    movies: titlesForPublish(shelfMovies(), 'movie').map((x) => x.target_key),
+  };
+}
+
+/**
  * Trim to what one request carries, without ever dropping a favourite.
  *
  * The cap has to fall somewhere and it must not fall on a title the owner
