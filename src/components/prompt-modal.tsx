@@ -15,6 +15,9 @@ export function PromptModal({
   title,
   initial,
   keyboardType = 'default',
+  multiline = false,
+  maxLength,
+  hint,
   onCancel,
   onSubmit,
 }: {
@@ -22,6 +25,12 @@ export function PromptModal({
   title: string;
   initial: string;
   keyboardType?: 'default' | 'number-pad';
+  /** A paragraph rather than a field — Return adds a line instead of saving,
+   *  so only the Save button saves (private notes). */
+  multiline?: boolean;
+  maxLength?: number;
+  /** One quiet line under the title, e.g. "Only on this phone". */
+  hint?: string;
   /** return true if the value was accepted (modal closes); false keeps it open */
   onSubmit: (value: string) => boolean;
   onCancel: () => void;
@@ -40,17 +49,20 @@ export function PromptModal({
           <Text style={styles.title} accessibilityRole="header">
             {title}
           </Text>
+          {hint ? <Text style={styles.hint}>{hint}</Text> : null}
           <TextInput
             value={text}
             onChangeText={setText}
             keyboardType={keyboardType}
             accessibilityLabel={title}
             autoFocus
-            selectTextOnFocus
-            style={styles.input}
+            selectTextOnFocus={!multiline}
+            multiline={multiline}
+            maxLength={maxLength}
+            style={[styles.input, multiline && styles.multiline]}
             placeholderTextColor={colors.faint}
-            returnKeyType="done"
-            onSubmitEditing={() => onSubmit(text)}
+            returnKeyType={multiline ? 'default' : 'done'}
+            onSubmitEditing={multiline ? undefined : () => onSubmit(text)}
           />
           <View style={styles.row}>
             <Pressable style={styles.btn} onPress={onCancel} hitSlop={6} accessibilityRole="button">
@@ -80,6 +92,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
+  // `textAlign: 'auto'` follows the layout direction, so a note starts at the
+  // right edge in Arabic; Android needs `textAlignVertical` or it centres.
+  multiline: { minHeight: 120, maxHeight: 260, textAlignVertical: 'top', textAlign: 'auto' },
+  hint: { color: colors.dim, fontSize: 13, marginTop: -8, marginBottom: 12 },
   row: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 16 },
   btn: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: radius.pill },
   cancel: { color: colors.dim, fontSize: 15, fontWeight: '600' },

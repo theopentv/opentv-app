@@ -7,6 +7,7 @@ import { PeriodSheet } from '@/components/period-picker';
 import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs } from '@/components/ui';
 import { badges, charVotes } from '@/bundled-data';
 import { tapLight } from '@/haptics';
+import { isJoined } from '@/community-session';
 import { getCharacterVoteStats } from '@/db';
 import { currentLocale, genreText, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
@@ -28,7 +29,21 @@ function usePageWidth(): number {
   return width - 2 * space.lg - 2 * space.lg;
 }
 
-const compareSoon = () => Alert.alert(t('stats.comingSoonTitle'), t('stats.comingSoonBody'));
+/**
+ * The compare screen, for members. Somebody who never joined is told why it
+ * needs joining, and nothing is requested: comparing reads what the people you
+ * follow publish, and there is nobody followed without an account.
+ */
+const openCompare = () => {
+  if (isJoined()) {
+    router.push('/compare');
+    return;
+  }
+  Alert.alert(t('compareFollowing.joinTitle'), t('compareFollowing.joinBody'), [
+    { text: t('common.cancel'), style: 'cancel' },
+    { text: t('compareFollowing.joinCta'), onPress: () => router.push('/join') },
+  ]);
+};
 
 function ClockRow({ months, days, hours }: { months: number; days: number; hours: number }) {
   return (
@@ -204,7 +219,7 @@ export default function StatsScreen() {
                 <View key="clock">
                   <ClockRow {...s.clock} />
                   <Text style={styles.sub}>{t('stats.hoursLast7Days', { count: s.last7dHours })}</Text>
-                  <Text style={styles.compare} onPress={compareSoon}>
+                  <Text style={styles.compare} onPress={openCompare} accessibilityRole="link">
                     {t('stats.compareWithFollowers')}
                   </Text>
                 </View>,
@@ -290,7 +305,7 @@ export default function StatsScreen() {
 
             <StatCard title={t('stats.shows.comments')}>
               <Text style={styles.bigNum}>{s.showComments}</Text>
-              <Text style={styles.compare} onPress={compareSoon}>
+              <Text style={styles.compare} onPress={openCompare} accessibilityRole="link">
                 {t('stats.compareWithFollowers')}
               </Text>
             </StatCard>
@@ -412,7 +427,7 @@ export default function StatsScreen() {
                 <View key="clock">
                   <ClockRow {...m.clock} />
                   <Text style={styles.sub}>{t('stats.hoursLast7Days', { count: m.last7dHours })}</Text>
-                  <Text style={styles.compare} onPress={compareSoon}>
+                  <Text style={styles.compare} onPress={openCompare} accessibilityRole="link">
                     {t('stats.compareWithFollowers')}
                   </Text>
                 </View>,
@@ -458,7 +473,7 @@ export default function StatsScreen() {
             <StatCard title={t('stats.movies.comments')}>
               <Text style={styles.bigNum}>{m.comments}</Text>
               <Text style={styles.sub}>{t('stats.movies.overMovies', { count: m.commentMovies })}</Text>
-              <Text style={styles.compare} onPress={compareSoon}>
+              <Text style={styles.compare} onPress={openCompare} accessibilityRole="link">
                 {t('stats.compareWithFollowers')}
               </Text>
             </StatCard>
@@ -540,10 +555,9 @@ const styles = StyleSheet.create({
   clockNum: { color: colors.text, fontSize: 30, fontWeight: '800', fontVariant: ['tabular-nums'] },
   clockUnit: { color: colors.dim, fontSize: 11, fontWeight: '700', letterSpacing: ls(1), marginTop: 2 },
   sub: { color: colors.dim, fontSize: 13, marginTop: 8 },
-  // hidden until accounts/community exist — "compare with people you follow"
-  // implies other users, which OpenTV doesn't have yet (Owdver's review). Flip
-  // display back on and wire compareSoon to the real feature when it ships.
-  compare: { display: 'none', color: colors.blue, fontSize: 12.5, fontWeight: '700', letterSpacing: ls(0.5), marginTop: 14, textAlign: 'center' },
+  // Hidden until 2.0.0, when there was nobody to compare with (Owdver's
+  // review). Shown to everyone now: a non-member is told why it needs joining.
+  compare: { color: colors.blue, fontSize: 12.5, fontWeight: '700', letterSpacing: ls(0.5), marginTop: 14, textAlign: 'center' },
   bigNum: { color: colors.text, fontSize: 30, fontWeight: '800', fontVariant: ['tabular-nums'] },
   allTime: { color: colors.faint, fontSize: 10.5, fontWeight: '700', letterSpacing: ls(1), textAlign: 'center', marginTop: 14 },
   dots: { flexDirection: 'row', gap: 6, alignSelf: 'center', marginTop: 12 },

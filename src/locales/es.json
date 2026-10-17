@@ -3655,5 +3655,30 @@
     "lastSynced": "Última sincronización",
     "otherDevices": "Otros dispositivos",
     "failing": "La sincronización no llega"
+  },
+  "privateNotes": {
+    "title": "Mi nota",
+    "add": "Añade una nota privada",
+    "private": "Solo en este teléfono. Nunca se comparte ni se publica."
+  },
+  "compareFollowing": {
+    "title": "Comparar",
+    "explain": "Tú junto a cada persona que sigues, según lo que comparte su perfil. La afinidad cuenta las series y películas que tenéis en común entre todas las que tiene cualquiera de los dos.",
+    "you": "Tú",
+    "time": "Tiempo visto",
+    "episodes": "Episodios",
+    "films": "Películas",
+    "showsInCommon": "Series en común",
+    "filmsInCommon": "Películas en común",
+    "percent": "{{pct}} %",
+    "match": "Afinidad {{pct}}",
+    "nothingPublished": "Aún no hay nada que comparar en su perfil",
+    "noneFollowed": "Aún no sigues a nadie.",
+    "findPeople": "Buscar personas",
+    "failed": "No se pudo cargar a las personas que sigues. Revisa tu conexión e inténtalo de nuevo.",
+    "joinTitle": "Para comparar necesitas la comunidad",
+    "joinBody": "Usa lo que las personas que sigues comparten en su perfil, así que primero tienes que unirte. No se envía nada hasta entonces.",
+    "joinCta": "Unirme",
+    "a11yLine": "{{label}}: tú {{mine}}, {{name}} {{theirs}}"
   }
 }

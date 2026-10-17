@@ -4,6 +4,7 @@ import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
 import { FlatList, Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
@@ -743,6 +744,12 @@ function EpisodePage({
           </View>
           {/* The live room on its air night — renders nothing on any other. */}
           <RoomPill tvdbId={tvdbId} season={season} episode={ep} watched={watched} showName={showName} />
+        </View>
+
+        {/* A private note, watched or not — it is yours, not a tracking
+            question. On this phone only; see components/note-row.tsx. */}
+        <View style={[styles.card, { paddingVertical: 0 }]}>
+          <NoteRow showId={tvdbId} season={season} episode={ep} inset={false} />
         </View>
 
         {/* the tracking questions only exist once you've watched it, like the real app */}

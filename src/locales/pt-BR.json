@@ -3655,5 +3655,30 @@
     "lastSynced": "Última sincronização",
     "otherDevices": "Outros aparelhos",
     "failing": "A sincronização não está chegando"
+  },
+  "privateNotes": {
+    "title": "Minha nota",
+    "add": "Adicionar uma nota privada",
+    "private": "Só neste celular. Nunca é compartilhada nem publicada."
+  },
+  "compareFollowing": {
+    "title": "Comparar",
+    "explain": "Você ao lado de cada pessoa que você segue, a partir do que o perfil dela compartilha. A afinidade conta as séries e filmes que vocês têm em comum entre todos os que qualquer um de vocês tem.",
+    "you": "Você",
+    "time": "Tempo assistido",
+    "episodes": "Episódios",
+    "films": "Filmes",
+    "showsInCommon": "Séries em comum",
+    "filmsInCommon": "Filmes em comum",
+    "percent": "{{pct}}%",
+    "match": "Afinidade {{pct}}",
+    "nothingPublished": "Ainda nada para comparar no perfil",
+    "noneFollowed": "Você ainda não segue ninguém.",
+    "findPeople": "Encontrar pessoas",
+    "failed": "Não foi possível carregar quem você segue. Verifique a conexão e tente de novo.",
+    "joinTitle": "Comparar precisa da comunidade",
+    "joinBody": "Usa o que as pessoas que você segue compartilham no perfil, então você precisa entrar primeiro. Nada é enviado antes disso.",
+    "joinCta": "Entrar",
+    "a11yLine": "{{label}}: você {{mine}}, {{name}} {{theirs}}"
   }
 }
