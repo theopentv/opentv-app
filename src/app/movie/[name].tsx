@@ -41,7 +41,7 @@ import { movieMeta, type MovieMeta, type MovieProvider } from '@/movie-metadata'
 import { franchiseRows, nextUp, progress, type Row } from '@/franchise';
 import { cachedFranchise, fetchFranchise, type Franchise } from '@/franchise-fetch';
 import { useMovieTvdbRevision } from '@/movie-tvdb-match';
-import { characterFace, characterPercents, emotionNames, emotionPercents, firstPlot, mergeCastForPoll, movieMatchState, movieYear, orderPollCast, pollLabel, starPercents, targetKey, providerLines, watchOptions, type WatchKind } from '@/pure';
+import { characterFace, characterPercents, emotionNames, emotionPercents, firstPlot, mergeCastForPoll, movieMatchState, movieRoute, movieYear, orderPollCast, pollLabel, starPercents, targetKey, providerLines, watchOptions, type WatchKind } from '@/pure';
 import { useJoined } from '@/community-session';
 import {
   clearCharacterVote,
@@ -1073,14 +1073,12 @@ export default function MovieScreen() {
                           accessibilityLabel={[r.title, r.unreleased ? t('franchise.soon') : r.release.slice(0, 4), r.watched ? t('a11y.watched') : null]
                             .filter(Boolean)
                             .join(', ')}
-                          // Nothing to open for a film the library never held — said, not just done.
-                          accessibilityState={{ disabled: !r.libraryName }}
                           onPress={() => {
                             tapSelection();
-                            /* Only somewhere real. A film the library has never
-                               held has no page to open, so the tap does
-                               nothing rather than opening an empty one. */
-                            if (r.libraryName) router.push(`/movie/${encodeURIComponent(r.libraryName)}`);
+                            /* A film the library never held opens as a preview by
+                               its TMDB id, the way a search result does. The id
+                               also keeps a held film from resolving by name alone. */
+                            router.push(movieRoute(r.libraryName ?? r.title, { tmdbId: r.tmdbId, poster: r.poster, year: r.release }) as never);
                           }}>
                           <View>
                             {r.poster ? (
