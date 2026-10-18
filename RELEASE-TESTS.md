@@ -424,3 +424,6 @@ signed in, so community and Plus-only items are left for the phone (TestFlight 5
 - [ ] Stremio sign-in (needs a Stremio account)
 - [x] Search → open a show → mark a whole season: no keyboard — simulator, 4 Oct (Noddy's Toyland Adventures, S2)
 - [ ] Android (APK on the emulator): opens, comments, Wrapped card, Arabic right-to-left
+- [ ] 2.0.0: `pod install` picks up expo-store-review 57.0.1 and the iOS build compiles (57.0.2+ fails on SceneGeometry)
+- [ ] 2.0.0: TV Time import of 50+ episodes → Apple's native rating sheet (one tap, stays in the app); Android → Play's in-app review
+- [ ] 2.0.0: share a Wrapped card → native rating sheet once per version (nothing on a build without the module)

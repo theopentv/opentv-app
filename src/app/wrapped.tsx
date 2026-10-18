@@ -443,6 +443,8 @@ async function shareCard(cardRef: RefObject<View | null>): Promise<void> {
         dialogTitle: t('plus.wrapped.shareTitle'),
       });
     }
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    (require('@/rate-us') as typeof import('@/rate-us')).maybeAskForRatingAfterShare();
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (msg.includes('native module') || msg.includes('RNViewShot')) {

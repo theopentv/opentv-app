@@ -5,13 +5,14 @@
  * stores. Almost nobody rates an app they were never asked to rate, and that
  * listing is the first thing a TV Time refugee sees before they ever open it.
  *
- * A LINK, NOT THE NATIVE SHEET, AND NOT BY CHOICE. `expo-store-review` is the
- * right tool — it draws Apple's in-app control, so the reader never leaves —
- * but version 57.0.3 does not compile against this Xcode: `cannot find
- * 'SceneGeometry' in scope`, in the module's own Swift. Not worth fighting
- * before a release, so this opens the store's review composer directly with
- * `?action=write-review`, which needs no native code at all. Swap it back the
- * day that module builds; `maybeAskForRating` is the only caller either way.
+ * THE NATIVE SHEET FIRST (2.0.0). `expo-store-review` draws Apple's and Play's
+ * in-app control, so the reader rates with one tap and never leaves. It is
+ * PINNED AT 57.0.1: 57.0.2 and 57.0.3 call `SceneGeometry.foregroundScene()`,
+ * which expo-modules-core 57.0.1 doesn't have ("cannot find 'SceneGeometry' in
+ * scope"). Unpin once expo-modules-core ships it. The OS decides whether the
+ * sheet actually shows (Apple: three times a year at most), so it is asked for
+ * directly, with no "do you like it?" in front of it. A build without the
+ * module falls back to the old Alert that opens the store's review composer.
  *
  * THE MOMENT MATTERS MORE THAN THE WORDING, and there is exactly one good one
  * here: the import has just finished and a decade of history is back on screen.
@@ -25,10 +26,20 @@
 import Constants from 'expo-constants';
 import { Alert, Linking, Platform } from 'react-native';
 
+
 import { getMeta, libraryOwner, setMeta, watchCount } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
 import { SIDELOADED } from '@/sideload';
+
+type StoreReview = { isAvailableAsync(): Promise<boolean>; hasAction(): Promise<boolean>; requestReview(): Promise<void> };
+let storeReview: StoreReview | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  storeReview = require('expo-store-review') as StoreReview;
+} catch {
+  storeReview = null;
+}
 
 const KEY = 'ratePromptedVersion';
 
@@ -41,6 +52,29 @@ export const REVIEW_URL =
 /** How much recovered history counts as a good moment. Below this the import
  *  was a trial run, and being asked to rate it is being asked about nothing. */
 const ENOUGH_EPISODES = 50;
+
+/** The native sheet if this build has it and the OS offers it; false means
+ *  the caller should fall back to its own Alert. */
+async function nativeAsk(): Promise<boolean> {
+  try {
+    if (!storeReview || !(await storeReview.isAvailableAsync()) || !(await storeReview.hasAction())) return false;
+    await storeReview.requestReview();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Ask with the native sheet, or with the Alert + composer link where there is none. */
+function ask(title: string, body: string): void {
+  void nativeAsk().then((shown) => {
+    if (shown) return;
+    Alert.alert(title, body, [
+      { text: t('rate.later'), style: 'cancel' },
+      { text: t('rate.now'), onPress: () => void Linking.openURL(REVIEW_URL) },
+    ]);
+  });
+}
 
 export function ratePromptAlreadyShown(): boolean {
   const v = Constants.expoConfig?.version ?? '';
@@ -70,10 +104,7 @@ export function maybeAskForRating(episodesRecovered: number): void {
      * "4182" where the profile and the import summary both say "4,182" — and
      * the whole point of the sentence is that the number feels large.
      */
-    Alert.alert(t('rate.title'), t('rate.body', { count: formatCount(episodesRecovered, currentLocale()) }), [
-      { text: t('rate.later'), style: 'cancel' },
-      { text: t('rate.now'), onPress: () => void Linking.openURL(REVIEW_URL) },
-    ]);
+    ask(t('rate.title'), t('rate.body', { count: formatCount(episodesRecovered, currentLocale()) }));
   } catch {
     // No store on this build, or a simulator. Both normal.
   }
@@ -94,11 +125,25 @@ export function maybeAskForRatingFresh(): void {
     const n = watchCount();
     if (n < FRESH_EPISODES) return;
     setMeta(KEY, Constants.expoConfig?.version ?? '');
-    Alert.alert(t('rate.freshTitle'), t('rate.freshBody', { count: formatCount(n, currentLocale()) }), [
-      { text: t('rate.later'), style: 'cancel' },
-      { text: t('rate.now'), onPress: () => void Linking.openURL(REVIEW_URL) },
-    ]);
+    ask(t('rate.freshTitle'), t('rate.freshBody', { count: formatCount(n, currentLocale()) }));
   } catch {
     // As above: never let a rating prompt break a mark.
+  }
+}
+
+/**
+ * THE THIRD MOMENT: a Wrapped card has just been shared, so the reader is
+ * proud of their month. Native sheet only. An Alert straight after the share
+ * sheet would be one dialog too many, so a build without the module asks
+ * nothing here. Once per version, sharing the other two asks' stamp.
+ */
+export function maybeAskForRatingAfterShare(): void {
+  try {
+    if (SIDELOADED || ratePromptAlreadyShown() || watchCount() < FRESH_EPISODES) return;
+    void nativeAsk().then((shown) => {
+      if (shown) setMeta(KEY, Constants.expoConfig?.version ?? '');
+    });
+  } catch {
+    // never let a rating prompt break a share
   }
 }

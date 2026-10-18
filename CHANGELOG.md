@@ -528,6 +528,11 @@ possible"):
 - ✅ DONE 1a84e73 — **Episode plots and Explore blurbs in your language.** The structure fetch also reads TheTVDB's episode list in each non-English language of the plot chain (one request per 500 episodes per language, never per episode), falling back to English; untranslated episodes come back "" (checked live). Episodes share the show's `plotLang` stamp. English mode asks for nothing new. Explore feed cards use `meta=translations` on their existing request. TMDB-only shows and the Explore grid stay English.
 - ✅ DONE 2bbf2d3 — **FIXED: shows named after their own id get their name back** (`SHOW_NAME_MISSING_WHERE`, tested on real SQLite; "1899"/"1923" untouched).
 
+### Added 18 Oct: more people from the stores
+- ✅ BUILT — **Native rating sheet** (`expo-store-review` pinned at 57.0.1; 57.0.2+ calls `SceneGeometry`, which our expo-modules-core lacks). Import and fresh-start moments now ask with Apple's / Play's in-app control instead of an Alert that leaves for the store; the Alert stays as the fallback. New third moment: after sharing a Wrapped card (native only). Needs `pod install` + a real build to confirm.
+- **Store listings (ASO) in all 9 languages** — name, subtitle, keywords, Play short description, first screenshots. No app update needed; changed in App Store Connect / Play Console. Review in `outreach/aso-review-2026-10-18.md`.
+- **Featuring nominations** — Apple (App Store Connect → Featuring → Nominations, "App Enhancements") and Google Play, sent 2–3 weeks before 2.0.0 ships.
+
 ### Decided 17 Oct: sync goes free, Plus gets new value
 - ✅ BUILT (merged) — **2.0.0: device sync through the user's own iCloud / Google Drive is FREE** (Drive on iPhone too; iPhone ↔ Android). Our server sync and OpenTV Backup stay Plus. Final, no going back (Mahmood). Branch `2.0.0-cloud-sync`.
 - ✅ BUILT (merged; not in the OpenTV-server backup ZIP) — **2.0.0, FREE: private notes on any show, film or episode** (on the phone only).
