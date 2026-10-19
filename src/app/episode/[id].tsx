@@ -1291,8 +1291,11 @@ export default function EpisodePagerScreen() {
             // `index` too: which page is hidden from VoiceOver changes with it
             extraData={[aggregates, index]}
             keyExtractor={(n) => String(n)}
-            initialScrollIndex={Math.min(startEp - 1, episodes.length - 1)}
-            contentOffset={{ x: W * Math.min(startEp - 1, episodes.length - 1), y: 0 }}
+            // The position, never `startEp - 1`: in a season with an episode
+            // zero that lands one page early (tapping S4E13 of Attack on Titan
+            // opened E12 while the header said E13).
+            initialScrollIndex={Math.max(0, Math.min(startEp - first, episodes.length - 1))}
+            contentOffset={{ x: W * Math.max(0, Math.min(startEp - first, episodes.length - 1)), y: 0 }}
             getItemLayout={(_, i) => ({ length: W, offset: W * i, index: i })}
             /*
              * ONE PAGE FIRST, NEIGHBOURS AFTER (14 Oct). FlatList's defaults —
