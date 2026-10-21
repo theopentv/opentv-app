@@ -484,7 +484,8 @@ export default function EmailSignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  body: { gap: 12, paddingTop: space.lg },
+  // the side inset sign-in.tsx gives its buttons, one screen back
+  body: { gap: 12, paddingTop: space.lg, paddingHorizontal: space.lg },
   // Visibly settled rather than merely unresponsive: a field that ignores taps
   // and looks editable reads as a bug.
   locked: { color: colors.dim },
