@@ -134,6 +134,37 @@ export function pickMovieMatch<T extends MovieCandidate>(
   return { hit: best, guessed: true };
 }
 
+export type TmdbMovieResult = { id: number; title?: string; original_title?: string; poster_path?: string; release_date?: string; vote_count?: number };
+
+/**
+ * The importer's TMDB pick for a film known by NAME (and maybe a year).
+ *
+ * Same title or original title once case, accents, Arabic diacritics/letter
+ * variants and punctuation are ignored; the most-voted wins. A wrong match is
+ * worse than none: unmatched films still import bare and get reported.
+ *
+ * WITH A YEAR, ONLY THAT YEAR (±1: a festival premiere and a release can
+ * straddle New Year). "Hope" (2026) must never become the better-known "Hope"
+ * (2013) because it shares the title — its id is what the film page opens.
+ */
+export function pickTmdbMovieResult<T extends TmdbMovieResult>(results: readonly T[], name: string, year: string | null | undefined): T | null {
+  const norm = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f\u064b-\u0670]/g, '')
+      .replace(/[أإآٱ]/g, 'ا')
+      .replace(/ى/g, 'ي')
+      .replace(/ة/g, 'ه')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+  const want = norm(name);
+  let exact = results.filter((x) => norm(x.title || '') === want || norm(x.original_title || '') === want);
+  const y = Number((year ?? '').slice(0, 4));
+  if (y > 1800) exact = exact.filter((x) => Math.abs(Number((x.release_date || '').slice(0, 4)) - y) <= 1);
+  return [...exact].sort((a, b) => (b.vote_count ?? 0) - (a.vote_count ?? 0))[0] ?? null;
+}
+
 /** Human-readable list of the CSVs found inside a ZIP — for the "imported 0"
  *  error so the user (and us) can see what the file actually contained. */
 export function foundCsvsMessage(fileKeys: string[]): string {

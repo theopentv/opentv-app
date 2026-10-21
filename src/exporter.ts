@@ -465,8 +465,10 @@ export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint
   // OpenTV-only sidecar: database links made in-app (import matching + Fix
   // match). TV Time's format has no columns for them, so without this a
   // restore would re-run matching and lose the user's manual fixes.
+  // A YEAR ALONE IS A LINK TOO: with no tmdbId the restore searches TMDB by
+  // title, and the year is what keeps "Hope" (2026) from becoming "Hope" (2013).
   const movieLinks = db.getAllSync<{ name: string; tmdbId: number | null; poster: string | null; year: string | null; watchedOn: string | null; stars: number | null; rewatchCount: number | null }>(
-    'SELECT name, tmdbId, poster, year, watchedOn, stars, rewatchCount FROM movies WHERE tmdbId IS NOT NULL OR watchedOn IS NOT NULL OR stars IS NOT NULL OR rewatchCount IS NOT NULL',
+    'SELECT name, tmdbId, poster, year, watchedOn, stars, rewatchCount FROM movies WHERE tmdbId IS NOT NULL OR year IS NOT NULL OR watchedOn IS NOT NULL OR stars IS NOT NULL OR rewatchCount IS NOT NULL',
   );
   const showLinks = db
     .getAllSync<{ tvdbId: number; posterUrl: string | null; addedAt: string | null; finished: number }>(

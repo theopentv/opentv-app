@@ -29,6 +29,7 @@ import {
   watchOptions,
   sortWatchList,
   pollKeys,
+  pickTmdbMovieResult,
   validWatchListSort,
   type WatchListEntry,
   secondaryAccent,
@@ -4000,5 +4001,21 @@ describe('pollKeys', () => {
       'Host', 'Correspondent', 'Correspondent#2', 'Correspondent#3',
     ]);
     expect(new Set(pollKeys(['a', 'a', 'a#2'])).size).toBe(3);
+  });
+});
+
+describe('pickTmdbMovieResult', () => {
+  const hope2013 = { id: 255709, title: 'Hope', release_date: '2013-10-02', vote_count: 900 };
+  const hope2026 = { id: 9000001, title: 'Hope', release_date: '2026-07-15', vote_count: 12 };
+  it('a known year keeps a newer film from becoming the better-known one', () => {
+    expect(pickTmdbMovieResult([hope2013, hope2026], 'Hope', '2026')?.id).toBe(9000001);
+    expect(pickTmdbMovieResult([hope2013], 'Hope', '2026')).toBeNull();
+  });
+  it('no year: the most-voted exact title, as before', () => {
+    expect(pickTmdbMovieResult([hope2026, hope2013], 'Hope', null)?.id).toBe(255709);
+    expect(pickTmdbMovieResult([{ id: 1, title: 'Hopeful' }], 'Hope', null)).toBeNull();
+  });
+  it('a year either side still matches', () => {
+    expect(pickTmdbMovieResult([{ ...hope2026, release_date: '2025-12-30' }], 'Hope', '2026')?.id).toBe(9000001);
   });
 });
