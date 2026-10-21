@@ -6,6 +6,7 @@ import {
   FEED_CACHE_MAX,
   asFeedPage,
   feedLocked,
+  feedRefreshDue,
   feedRoute,
   feedSince,
   feedStars,
@@ -183,5 +184,17 @@ describe('relativeTime, as the cards print it', () => {
   });
   it('says nothing for a timestamp it cannot read', () => {
     expect(relativeTime('yesterday', now)).toBeNull();
+  });
+});
+
+describe('feedRefreshDue (21 Oct: first visit read "No activity yet")', () => {
+  const now = 1_000_000;
+  it('throttles a focus inside the minute once the cache has been filled', () => {
+    expect(feedRefreshDue(false, now - 5_000, now - 5_000, now)).toBe(false);
+    expect(feedRefreshDue(false, now - 120_000, now - 120_000, now)).toBe(true);
+  });
+  it('never throttles a cache that was never filled, nor a pull', () => {
+    expect(feedRefreshDue(false, 0, now - 5_000, now)).toBe(true);
+    expect(feedRefreshDue(true, now - 5_000, now - 5_000, now)).toBe(true);
   });
 });

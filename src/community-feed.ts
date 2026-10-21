@@ -33,16 +33,16 @@ import { getToken, isJoined, useJoined } from '@/community-session';
 import { resolveUnknownTargets, targetLabel } from '@/community-target';
 import { getMeta, getMovies, hasWatchedTarget, onRemoteChange, setMeta } from '@/db';
 import {
-  FEED_THROTTLE_MS,
   asFeedPage,
   feedLocked,
+  feedRefreshDue,
   feedSince,
   mergeFeed,
   withoutActor,
   type FeedItem,
 } from '@/feed-pure';
 import { showMeta } from '@/metadata';
-import { prefetchDue, slug } from '@/pure';
+import { slug } from '@/pure';
 
 /** `{ fetchedAt, items, followsAnyone, more }` as JSON. Per account: cleared on sign-out. */
 const CACHE_KEY = 'communityFeed';
@@ -114,11 +114,11 @@ export async function refreshFeed(force = false): Promise<void> {
   if (!isJoined()) return;
   const now = Date.now();
   const last = Number(getMeta(AT_KEY) ?? '');
-  if (!force && !prefetchDue(Number.isFinite(last) ? last : null, now, FEED_THROTTLE_MS)) return;
+  const cache = readCache();
+  if (!feedRefreshDue(force, cache.fetchedAt, Number.isFinite(last) ? last : null, now)) return;
   // Stamped BEFORE the request, so two focuses in one second cannot both send.
   setMeta(AT_KEY, String(now));
 
-  const cache = readCache();
   // A PULL STARTS AGAIN FROM THE TOP instead of asking for a delta. A delta can
   // only ADD cards, so a friend who turned "Show my reactions" off, a deleted
   // comment or a hidden one stayed in the cache until it aged out — found on
@@ -218,13 +218,16 @@ export function useFeed(): FeedState {
   const olderMore = useRef<boolean | null>(null);
   const loading = useRef(false);
 
-  const reread = useCallback(() => {
+  // `settled`: a request has answered (or failed). Until then an EMPTY cache
+  // that was never filled is not "no activity" — it is the first visit, and
+  // spins rather than saying so (21 Oct).
+  const reread = useCallback((settled = true) => {
     const cache = readCache();
     const items = mergeFeed(cache.items, older.current, Number.POSITIVE_INFINITY);
     setCards(decorate(items));
     setFollowsAnyone(cache.followsAnyone);
     setMore(olderMore.current ?? cache.more);
-    setReady(true);
+    if (settled || cache.fetchedAt > 0) setReady(true);
     // Names for shows this phone has never heard of; the cards re-render when
     // they land. Silent on failure — "S2E5" stands.
     void resolveUnknownTargets(items).then((filled) => {
@@ -235,12 +238,12 @@ export function useFeed(): FeedState {
   useFocusEffect(
     useCallback(() => {
       if (!joined) return;
-      reread();
-      void refreshFeed().then(reread);
+      reread(false);
+      void refreshFeed().then(() => reread());
     }, [joined, reread]),
   );
-  useEffect(() => onFeed(reread), [reread]);
-  useEffect(() => onRemoteChange(reread), [reread]);
+  useEffect(() => onFeed(() => reread()), [reread]);
+  useEffect(() => onRemoteChange(() => reread()), [reread]);
 
   const refresh = useCallback(() => {
     setRefreshing(true);

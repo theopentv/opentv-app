@@ -7,6 +7,7 @@
  * every 2.0.0 branch appends to is a merge conflict waiting for each of them.
  */
 import type { LocaleKey } from '@/locales/keys';
+import { prefetchDue } from '@/pure';
 import { ratingFromTen } from '@/star-rating';
 
 export type FeedActor = {
@@ -48,6 +49,16 @@ export type FeedPage = { items: FeedItem[]; next_cursor: string | null; follows_
 export const FEED_CACHE_MAX = 100;
 /** A focus inside this of the last request reads the cache and sends nothing. */
 export const FEED_THROTTLE_MS = 60_000;
+
+/**
+ * Whether a focus may ask the server. Inside the throttle it may not — unless
+ * the cache has NEVER been filled (21 Oct): the stamp goes on before the
+ * request, so a first request that failed or was cut short throttled the retry
+ * and the first visit read "No activity yet" until somebody pulled.
+ */
+export function feedRefreshDue(force: boolean, fetchedAt: number, lastAt: number | null, now: number): boolean {
+  return force || fetchedAt === 0 || prefetchDue(lastAt, now, FEED_THROTTLE_MS);
+}
 
 const KINDS = new Set(['rating', 'comment', 'character']);
 const SOURCES = new Set(['tvdb', 'tmdb', 'title']);
