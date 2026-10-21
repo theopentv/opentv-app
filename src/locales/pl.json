@@ -1062,10 +1062,10 @@
     "episodeUnknownTitle": "Nieznany odcinek",
     "tmdbRatings": "Oceny TMDB",
     "communityVotes": {
-      "one": "OpenTV · {{avg}}/5 z {{count}} głosu",
-      "few": "OpenTV · {{avg}}/5 z {{count}} głosów",
-      "many": "OpenTV · {{avg}}/5 z {{count}} głosów",
-      "other": "OpenTV · {{avg}}/5 z {{count}} głosu"
+      "one": "OpenTV · {{avg}}/{{max}} z {{count}} głosu",
+      "few": "OpenTV · {{avg}}/{{max}} z {{count}} głosów",
+      "many": "OpenTV · {{avg}}/{{max}} z {{count}} głosów",
+      "other": "OpenTV · {{avg}}/{{max}} z {{count}} głosu"
     },
     "upcomingLeftTitle": "Nadchodzące odcinki pominięte",
     "upcomingLeftBody": "Odcinki, które jeszcze nie miały premiery, nie zostały oznaczone. Oznacz je po emisji albo włącz powiadomienia, żeby dowiedzieć się o premierze.",
@@ -1995,7 +1995,7 @@
       "daysInARow": "dni z rzędu",
       "activeDays": "Dni z oglądaniem",
       "perActiveDay": "Odcinki na aktywny dzień",
-      "meanStars": "Średnio {{mean}} na 5",
+      "meanStars": "Średnio {{mean}} na {{max}}",
       "spread": "Rozrzut {{spread}}",
       "personality": {
         "unrated": "Za mało ocen",
@@ -3454,7 +3454,7 @@
     "blockName": "Codzienna zagadka",
     "number": "#{{n}}",
     "cardSub": "Jeden tytuł dziennie z twojej biblioteki. Sześć prób.",
-    "cardProgress": "Próba {{n}} z 6 — graj dalej",
+    "cardProgress": "Próba {{n}} z {{max}} — graj dalej",
     "cardWon": "Rozwiązane w {{score}}",
     "cardLost": "Nie dziś. Jutro nowa.",
     "fromLibrary": "Z twojej biblioteki",
@@ -3599,7 +3599,7 @@
     "tabOf": "{{label}}, karta, {{n}} z {{total}}",
     "opensMarkAs": "Otwiera opcje Oznacz jako…",
     "tvdbScore": "Wynik TheTVDB, {{percent}}%",
-    "tvdbRating": "Ocena TheTVDB, {{score}} na 5",
+    "tvdbRating": "Ocena TheTVDB, {{score}} na {{max}}",
     "tvdbUnrated": "Brak oceny TheTVDB",
     "airDay": "Dzień emisji: {{day}}",
     "runtime": {
@@ -3676,7 +3676,7 @@
   },
   "halfStars": {
     "label": "Twoja ocena",
-    "value": "{{value}} na 5 gwiazdek",
+    "value": "{{value}} na {{max}} gwiazdek",
     "unrated": "Bez oceny",
     "hint": "Przesuń po gwiazdkach, by dać pół gwiazdki"
   },
@@ -3767,7 +3767,7 @@
   },
   "ratingBreakdown": {
     "title": "Oceny społeczności",
-    "averageLabel": "Ocena społeczności: {{value}} na 5",
+    "averageLabel": "Ocena społeczności: {{value}} na {{max}}",
     "averageHint": "Pokazuje, jak oceniają wszyscy",
     "row": {
       "one": "{{value}} gwiazdka, {{percent}}%",

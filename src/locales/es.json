@@ -1012,8 +1012,8 @@
     "episodeUnknownTitle": "Episodio desconocido",
     "tmdbRatings": "Valoraciones de TMDB",
     "communityVotes": {
-      "one": "OpenTV · {{avg}}/5 con {{count}} voto",
-      "other": "OpenTV · {{avg}}/5 con {{count}} votos"
+      "one": "OpenTV · {{avg}}/{{max}} con {{count}} voto",
+      "other": "OpenTV · {{avg}}/{{max}} con {{count}} votos"
     },
     "upcomingLeftTitle": "Episodios próximos sin marcar",
     "upcomingLeftBody": "Los episodios que aún no se han emitido no se marcaron. Márcalos cuando salgan, o activa las notificaciones para enterarte.",
@@ -1873,7 +1873,7 @@
       "daysInARow": "días seguidos",
       "activeDays": "Días viendo",
       "perActiveDay": "Episodios por día activo",
-      "meanStars": "Media {{mean}} de 5",
+      "meanStars": "Media {{mean}} de {{max}}",
       "spread": "Dispersión {{spread}}",
       "personality": {
         "unrated": "Aún no hay suficientes valoraciones",
@@ -3218,7 +3218,7 @@
     "blockName": "Reto del día",
     "number": "#{{n}}",
     "cardSub": "Un título al día, de tu biblioteca. Seis intentos.",
-    "cardProgress": "Intento {{n}} de 6 — sigue",
+    "cardProgress": "Intento {{n}} de {{max}} — sigue",
     "cardWon": "Resuelto en {{score}}",
     "cardLost": "Hoy no. Mañana, otro título.",
     "fromLibrary": "De tu biblioteca",
@@ -3345,7 +3345,7 @@
     "tabOf": "{{label}}, pestaña, {{n}} de {{total}}",
     "opensMarkAs": "Abre las opciones de Marcar como…",
     "tvdbScore": "Puntuación de TheTVDB, {{percent}} %",
-    "tvdbRating": "Valoración de TheTVDB, {{score}} de 5",
+    "tvdbRating": "Valoración de TheTVDB, {{score}} de {{max}}",
     "tvdbUnrated": "Aún sin valoración en TheTVDB",
     "airDay": "Día de emisión, {{day}}",
     "runtime": {
@@ -3414,7 +3414,7 @@
   },
   "halfStars": {
     "label": "Tu valoración",
-    "value": "{{value}} de 5 estrellas",
+    "value": "{{value}} de {{max}} estrellas",
     "unrated": "Sin valorar",
     "hint": "Desliza sobre las estrellas para medias estrellas"
   },
@@ -3495,7 +3495,7 @@
   },
   "ratingBreakdown": {
     "title": "Valoraciones de la comunidad",
-    "averageLabel": "Valoración de la comunidad {{value}} de 5",
+    "averageLabel": "Valoración de la comunidad {{value}} de {{max}}",
     "averageHint": "Muestra cómo lo valoró todo el mundo",
     "row": {
       "one": "{{value}} estrella, {{percent}} %",

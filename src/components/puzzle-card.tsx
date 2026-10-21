@@ -53,7 +53,7 @@ export function PuzzleCard() {
     game == null || game.guesses.length === 0
       ? t('puzzle.cardSub')
       : !isOver(game)
-        ? t('puzzle.cardProgress', { n: game.guesses.length + 1 })
+        ? t('puzzle.cardProgress', { n: game.guesses.length + 1, max: MAX_TRIES })
         : game.won
           ? t('puzzle.cardWon', { score: `${game.guesses.length}/${MAX_TRIES}` })
           : t('puzzle.cardLost');

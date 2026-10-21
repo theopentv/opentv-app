@@ -846,7 +846,7 @@ function EpisodePage({
               valueText={
                 stars == null
                   ? t('halfStars.unrated')
-                  : `${t('halfStars.value', { value: starNumber(stars) })}, ${t(STARS[myStar ?? 0])}`
+                  : `${t('halfStars.value', { value: starNumber(stars), max: 5 })}, ${t(STARS[myStar ?? 0])}`
               }
               onTap={rate}
               onSlide={setRating}

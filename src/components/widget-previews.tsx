@@ -91,7 +91,7 @@ function StatsPreview({ width }: { width: number }) {
           value: formatCount(totals.episodes, currentLocale()),
         },
         { key: 'mv', title: t('profile.movieTimeCard'), kind: 'clock', ...movie.clock },
-        { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: String(movie.watched) },
+        { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: formatCount(movie.watched, currentLocale()) },
       ]}
     />
     </View>

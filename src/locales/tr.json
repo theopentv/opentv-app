@@ -1012,8 +1012,8 @@
     "episodeUnknownTitle": "Bilinmeyen bölüm",
     "tmdbRatings": "TMDB puanları",
     "communityVotes": {
-      "one": "OpenTV · {{count}} oyla {{avg}}/5",
-      "other": "OpenTV · {{count}} oyla {{avg}}/5"
+      "one": "OpenTV · {{count}} oyla {{avg}}/{{max}}",
+      "other": "OpenTV · {{count}} oyla {{avg}}/{{max}}"
     },
     "upcomingLeftTitle": "Yayınlanmamış bölümlere dokunulmadı",
     "upcomingLeftBody": "Henüz yayınlanmamış bölümler işaretlenmedi. Yayınlanınca işaretle ya da yayınlandıklarında haber almak için bildirimleri aç.",
@@ -1873,7 +1873,7 @@
       "daysInARow": "gün üst üste",
       "activeDays": "İzleme günleri",
       "perActiveDay": "Aktif gün başına bölüm",
-      "meanStars": "Ortalama 5 üzerinden {{mean}}",
+      "meanStars": "Ortalama {{max}} üzerinden {{mean}}",
       "spread": "Dağılım {{spread}}",
       "personality": {
         "unrated": "Henüz yeterince puan yok",
@@ -3218,7 +3218,7 @@
     "blockName": "Günlük bulmaca",
     "number": "#{{n}}",
     "cardSub": "Her gün kitaplığından bir yapım. Altı deneme.",
-    "cardProgress": "Deneme {{n}}/6, devam et",
+    "cardProgress": "Deneme {{n}}/{{max}}, devam et",
     "cardWon": "Çözüldü: {{score}}",
     "cardLost": "Bugün olmadı. Yarın yenisi var.",
     "fromLibrary": "Kitaplığından",
@@ -3345,7 +3345,7 @@
     "tabOf": "{{label}}, sekme, {{n}}/{{total}}",
     "opensMarkAs": "İşaretle… seçeneklerini açar",
     "tvdbScore": "TheTVDB puanı, %{{percent}}",
-    "tvdbRating": "TheTVDB puanı, 5 üzerinden {{score}}",
+    "tvdbRating": "TheTVDB puanı, {{max}} üzerinden {{score}}",
     "tvdbUnrated": "Henüz TheTVDB puanı yok",
     "airDay": "Yayın günü: {{day}}",
     "runtime": {
@@ -3414,7 +3414,7 @@
   },
   "halfStars": {
     "label": "Puanın",
-    "value": "5 üzerinden {{value}} yıldız",
+    "value": "{{max}} üzerinden {{value}} yıldız",
     "unrated": "Puanlanmadı",
     "hint": "Yarım yıldız için yıldızların üzerinde kaydır"
   },
@@ -3495,7 +3495,7 @@
   },
   "ratingBreakdown": {
     "title": "Topluluk puanları",
-    "averageLabel": "Topluluk puanı 5 üzerinden {{value}}",
+    "averageLabel": "Topluluk puanı {{max}} üzerinden {{value}}",
     "averageHint": "Herkesin nasıl puanladığını gösterir",
     "row": {
       "one": "{{value}} yıldız, %{{percent}}",

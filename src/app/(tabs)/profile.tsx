@@ -1352,19 +1352,19 @@ export default function ProfileScreen() {
       cells={[
         {
           key: 'following',
-          value: String(followingCount),
+          value: formatCount(followingCount, currentLocale()),
           label: t('profile.statFollowing'),
           onPress: () => router.push('/following'),
         },
         {
           key: 'followers',
-          value: String(followersCount),
+          value: formatCount(followersCount, currentLocale()),
           label: t('profile.statFollowers'),
           onPress: () => router.push('/following?type=followers'),
         },
         {
           key: 'comments',
-          value: String(commentCount),
+          value: formatCount(commentCount, currentLocale()),
           label: t('profile.statComments'),
           onPress: () => router.push('/comments'),
         },
@@ -1378,7 +1378,7 @@ export default function ProfileScreen() {
           value: formatCount(totals.episodes, currentLocale()),
         },
         { key: 'mv', title: t('profile.movieTimeCard'), kind: 'clock', ...movieClock },
-        { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: String(movieClock.watched) },
+        { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: formatCount(movieClock.watched, currentLocale()) },
       ]}
       onStatsPress={() => router.push('/stats')}
       /**

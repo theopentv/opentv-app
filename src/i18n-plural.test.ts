@@ -10,8 +10,10 @@
 import { I18n, useMakePlural } from 'i18n-js';
 import { ar as arPluralRule, pl as plPluralRule } from 'make-plural';
 
+import { localiseNumbers, type Locale } from './locale-resolve';
 import ar from './locales/ar.json';
 import en from './locales/en.json';
+import fr from './locales/fr.json';
 import pl from './locales/pl.json';
 
 describe('Arabic plural selection at runtime', () => {
@@ -93,5 +95,40 @@ describe('the TV-time clock counts its units (21 Oct: "15 GODZINY")', () => {
     i18n.locale = 'en';
     expect(i18n.t('stats.clock.days', { count: 1 })).toBe('DAY');
     expect(i18n.t('stats.clock.days', { count: 0 })).toBe('DAYS');
+  });
+});
+
+describe('numbers in translated strings follow the locale (21 Oct: Western digits in Arabic)', () => {
+  // Wired exactly as i18n.ts wires it. Jest's ICU writes 'ar' with Western
+  // digits (see locale-resolve.test.ts), so the Arabic-Indic numbering system
+  // is asked for explicitly here to make the digits visible.
+  const make = (locale: string) => {
+    const i18n = new I18n({ en, ar, fr });
+    i18n.enableFallback = true;
+    i18n.pluralization.register('ar', useMakePlural({ pluralizer: arPluralRule }));
+    i18n.locale = locale.startsWith('ar') ? 'ar' : locale;
+    const base = i18n.interpolate;
+    i18n.interpolate = (self, message, options) => base(self, message, localiseNumbers(options, locale as Locale));
+    return i18n;
+  };
+
+  it('formats {{count}} while plural selection still reads the raw number', () => {
+    const i18n = make('ar-u-nu-arab');
+    expect(i18n.t('yearlyGoal.behind', { count: 3 })).toBe('متأخّر بـ٣'); // few
+    expect(i18n.t('yearlyGoal.behind', { count: 2 })).toBe('متأخّر باثنين'); // two
+    expect(i18n.t('halfStars.value', { value: '٤٫٥', max: 5 })).toBe('٤٫٥ من ٥ نجوم');
+  });
+
+  it('writes the decimal mark of the language, and never groups a year', () => {
+    const i18n = make('fr');
+    expect(i18n.t('show.communityVotes', { avg: 4.5, count: 2, max: 5 })).toBe('OpenTV · 4,5/5 avec 2 votes');
+    expect(localiseNumbers({ year: 2026, s: 'x' }, 'en')).toEqual({ year: '2026', s: 'x' });
+  });
+
+  it('carries no hard-coded star scale in any locale', () => {
+    for (const d of [en, ar, fr]) {
+      expect(d.halfStars.value).toContain('{{max}}');
+      expect(d.halfStars.value).not.toMatch(/\b5\b/);
+    }
   });
 });

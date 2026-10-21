@@ -12,7 +12,7 @@ import { createElement, Fragment, useSyncExternalStore, type ReactElement, type 
 import { I18nManager } from 'react-native';
 
 import { getMeta, setMeta } from '@/db';
-import { isRtlLocale, resolveLocale, type Locale } from '@/locale-resolve';
+import { isRtlLocale, localiseNumbers, resolveLocale, type Locale } from '@/locale-resolve';
 import type { LocaleKey } from '@/locales/keys';
 import { needsDirectionChange, plotTmdbLang, plotTvdbLangs, showEnumKey, type PlotLanguage } from '@/pure';
 
@@ -62,6 +62,11 @@ i18n.pluralization.register('fr', useMakePlural({ pluralizer: frPluralRule }));
 i18n.pluralization.register('pl', useMakePlural({ pluralizer: plPluralRule }));
 
 let active: Locale = 'en';
+
+// Every `{{n}}` in the app's digits and decimal mark — see localiseNumbers.
+// Both plain and plural lookups go through `i18n.interpolate`.
+const baseInterpolate = i18n.interpolate;
+i18n.interpolate = (self, message, options) => baseInterpolate(self, message, localiseNumbers(options, active));
 
 /** The user's Settings choice, or null when following the phone. */
 function storedOverride(): string | null {

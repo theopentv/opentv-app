@@ -242,13 +242,13 @@ export default function StatsScreen() {
               <StatCard title={t('stats.shows.biggestMarathons')}>
                 <StatTable
                   headers={{ name: t('stats.headers.show'), a: t('stats.headers.episodes'), b: t('stats.headers.hours') }}
-                  rows={s.marathons.map((x) => ({ name: x.name, a: String(x.count), b: String(x.hours) }))}
+                  rows={s.marathons.map((x) => ({ name: x.name, a: formatCount(x.count, currentLocale()), b: formatCount(x.hours, currentLocale()) }))}
                 />
               </StatCard>
             )}
 
             <StatCard title={t('stats.shows.addedShows')}>
-              <Text style={styles.bigNum}>{s.addedShows}</Text>
+              <Text style={styles.bigNum}>{formatCount(s.addedShows, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.shows.inProduction', { count: s.inProduction })}</Text>
             </StatCard>
 
@@ -256,7 +256,7 @@ export default function StatsScreen() {
               <StatCard title={t('stats.shows.topGenres')}>
                 <StatTable
                   headers={{ name: t('stats.headers.genre'), a: t('stats.headers.shows') }}
-                  rows={s.genres.map((g) => ({ name: genreText(g.name), a: String(g.count) }))}
+                  rows={s.genres.map((g) => ({ name: genreText(g.name), a: formatCount(g.count, currentLocale()) }))}
                 />
               </StatCard>
             )}
@@ -265,13 +265,13 @@ export default function StatsScreen() {
               <StatCard title={t('stats.shows.topNetworks')}>
                 <StatTable
                   headers={{ name: t('stats.headers.network'), a: t('stats.headers.shows') }}
-                  rows={s.networks.map((n) => ({ name: n.name, a: String(n.count) }))}
+                  rows={s.networks.map((n) => ({ name: n.name, a: formatCount(n.count, currentLocale()) }))}
                 />
               </StatCard>
             )}
 
             <StatCard title={t('stats.votedRatings')}>
-              <Text style={styles.bigNum}>{s.votes}</Text>
+              <Text style={styles.bigNum}>{formatCount(s.votes, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.shows.onShows', { count: s.voteShows })}</Text>
             </StatCard>
 
@@ -286,7 +286,7 @@ export default function StatsScreen() {
             )}
 
             <StatCard title={t('stats.characterVotes')}>
-              <Text style={styles.bigNum}>{cv.total}</Text>
+              <Text style={styles.bigNum}>{formatCount(cv.total, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.shows.onShows', { count: cv.shows })}</Text>
             </StatCard>
 
@@ -304,14 +304,14 @@ export default function StatsScreen() {
             )}
 
             <StatCard title={t('stats.shows.comments')}>
-              <Text style={styles.bigNum}>{s.showComments}</Text>
+              <Text style={styles.bigNum}>{formatCount(s.showComments, currentLocale())}</Text>
               <Text style={styles.compare} onPress={openCompare} accessibilityRole="link">
                 {t('stats.compareWithFollowers')}
               </Text>
             </StatCard>
 
             <StatCard title={t('stats.earnedLikes')}>
-              <Text style={styles.bigNum}>{s.likes}</Text>
+              <Text style={styles.bigNum}>{formatCount(s.likes, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.shows.likesPerComment', { count: s.likes })}</Text>
             </StatCard>
 
@@ -439,7 +439,7 @@ export default function StatsScreen() {
               title={t('stats.movies.watched')}
               pages={[
                 <View key="total">
-                  <Text style={styles.bigNum}>{m.watched}</Text>
+                  <Text style={styles.bigNum}>{formatCount(m.watched, currentLocale())}</Text>
                   <Text style={styles.sub}>{t('stats.countLast7Days', { count: m.last7dCount })}</Text>
                 </View>,
                 <Bars key="chart" values={m.weekly} labels={m.weekLabels} axis={t('stats.axis.perWeek')} />,
@@ -447,7 +447,7 @@ export default function StatsScreen() {
             />
 
             <StatCard title={t('stats.movies.added')}>
-              <Text style={styles.bigNum}>{m.added}</Text>
+              <Text style={styles.bigNum}>{formatCount(m.added, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.movies.onWatchlist', { count: m.watchlist })}</Text>
             </StatCard>
 
@@ -455,13 +455,13 @@ export default function StatsScreen() {
               <StatCard title={t('stats.movies.topGenres')}>
                 <StatTable
                   headers={{ name: t('stats.headers.genre'), a: t('stats.headers.movies') }}
-                  rows={m.genres.map((g) => ({ name: genreText(g.name), a: String(g.count) }))}
+                  rows={m.genres.map((g) => ({ name: genreText(g.name), a: formatCount(g.count, currentLocale()) }))}
                 />
               </StatCard>
             )}
 
             <StatCard title={t('stats.votedRatings')}>
-              <Text style={styles.bigNum}>{m.rated}</Text>
+              <Text style={styles.bigNum}>{formatCount(m.rated, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.movies.onMovies', { count: m.rated })}</Text>
             </StatCard>
 
@@ -471,7 +471,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.movies.comments')}>
-              <Text style={styles.bigNum}>{m.comments}</Text>
+              <Text style={styles.bigNum}>{formatCount(m.comments, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.movies.overMovies', { count: m.commentMovies })}</Text>
               <Text style={styles.compare} onPress={openCompare} accessibilityRole="link">
                 {t('stats.compareWithFollowers')}
@@ -479,7 +479,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.earnedLikes')}>
-              <Text style={styles.bigNum}>{m.commentLikes}</Text>
+              <Text style={styles.bigNum}>{formatCount(m.commentLikes, currentLocale())}</Text>
               <Text style={styles.sub}>
                 {t('stats.movies.likesPerComment', { count: m.comments > 0 ? Math.round(m.commentLikes / m.comments) : 0 })}
               </Text>
@@ -494,7 +494,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.movies.remaining')}>
-              <Text style={styles.bigNum}>{m.remaining}</Text>
+              <Text style={styles.bigNum}>{formatCount(m.remaining, currentLocale())}</Text>
               <Text style={styles.sub}>{t('stats.movies.notYetReleased')}</Text>
             </StatCard>
 

@@ -1012,8 +1012,8 @@
     "episodeUnknownTitle": "Unknown episode",
     "tmdbRatings": "TMDB ratings",
     "communityVotes": {
-      "one": "OpenTV · {{avg}}/5 from {{count}} vote",
-      "other": "OpenTV · {{avg}}/5 from {{count}} votes"
+      "one": "OpenTV · {{avg}}/{{max}} from {{count}} vote",
+      "other": "OpenTV · {{avg}}/{{max}} from {{count}} votes"
     },
     "upcomingLeftTitle": "Upcoming episodes left alone",
     "upcomingLeftBody": "Episodes that haven't aired yet weren't marked. Mark them once they're out, or turn on notifications to be told when they air.",
@@ -1873,7 +1873,7 @@
       "daysInARow": "days in a row",
       "activeDays": "Days watching",
       "perActiveDay": "Episodes per active day",
-      "meanStars": "Average {{mean}} of 5",
+      "meanStars": "Average {{mean}} of {{max}}",
       "spread": "Spread {{spread}}",
       "personality": {
         "unrated": "Not enough ratings yet",
@@ -3218,7 +3218,7 @@
     "blockName": "Daily puzzle",
     "number": "#{{n}}",
     "cardSub": "One title a day, from your library. Six tries.",
-    "cardProgress": "Try {{n}} of 6 — keep going",
+    "cardProgress": "Try {{n}} of {{max}} — keep going",
     "cardWon": "Solved in {{score}}",
     "cardLost": "Not today. A new one tomorrow.",
     "fromLibrary": "From your library",
@@ -3345,7 +3345,7 @@
     "tabOf": "{{label}}, tab, {{n}} of {{total}}",
     "opensMarkAs": "Opens the Mark as… options",
     "tvdbScore": "TheTVDB score, {{percent}}%",
-    "tvdbRating": "TheTVDB rating, {{score}} out of 5",
+    "tvdbRating": "TheTVDB rating, {{score}} out of {{max}}",
     "tvdbUnrated": "No TheTVDB rating yet",
     "airDay": "Air day, {{day}}",
     "runtime": {
@@ -3414,7 +3414,7 @@
   },
   "halfStars": {
     "label": "Your rating",
-    "value": "{{value}} out of 5 stars",
+    "value": "{{value}} out of {{max}} stars",
     "unrated": "Not rated",
     "hint": "Slide across the stars for half stars"
   },
@@ -3495,7 +3495,7 @@
   },
   "ratingBreakdown": {
     "title": "Community ratings",
-    "averageLabel": "Community rating {{value}} out of 5",
+    "averageLabel": "Community rating {{value}} out of {{max}}",
     "averageHint": "Shows how everyone rated it",
     "row": {
       "one": "{{value}} star, {{percent}}%",

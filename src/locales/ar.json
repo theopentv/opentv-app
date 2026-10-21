@@ -1112,12 +1112,12 @@
     "episodeUnknownTitle": "حلقة غير معروفة",
     "tmdbRatings": "تقييمات TMDB",
     "communityVotes": {
-      "zero": "OpenTV · {{avg}}/5 من {{count}} تصويت",
-      "one": "OpenTV · {{avg}}/5 من تصويت واحد",
-      "two": "OpenTV · {{avg}}/5 من تصويتين",
-      "few": "OpenTV · {{avg}}/5 من {{count}} تصويتات",
-      "many": "OpenTV · {{avg}}/5 من {{count}} تصويتًا",
-      "other": "OpenTV · {{avg}}/5 من {{count}} تصويت"
+      "zero": "OpenTV · {{avg}}/{{max}} من {{count}} تصويت",
+      "one": "OpenTV · {{avg}}/{{max}} من تصويت واحد",
+      "two": "OpenTV · {{avg}}/{{max}} من تصويتين",
+      "few": "OpenTV · {{avg}}/{{max}} من {{count}} تصويتات",
+      "many": "OpenTV · {{avg}}/{{max}} من {{count}} تصويتًا",
+      "other": "OpenTV · {{avg}}/{{max}} من {{count}} تصويت"
     },
     "upcomingLeftTitle": "الحلقات القادمة ما تأشرت",
     "upcomingLeftBody": "الحلقات اللي ما انعرضت بعد ما تم تأشيرها. أشّرها بعد ما تنزل، أو فعّل الإشعارات حتى نخبرك وقت عرضها.",
@@ -2117,7 +2117,7 @@
       "daysInARow": "أيام متتالية",
       "activeDays": "أيام المشاهدة",
       "perActiveDay": "حلقات في اليوم النشط",
-      "meanStars": "المتوسط {{mean}} من 5",
+      "meanStars": "المتوسط {{mean}} من {{max}}",
       "spread": "التشتت {{spread}}",
       "personality": {
         "unrated": "لا توجد تقييمات كافية بعد",
@@ -3690,7 +3690,7 @@
     "blockName": "لغز اليوم",
     "number": "#{{n}}",
     "cardSub": "عمل واحد كل يوم، من مكتبتك. ست محاولات.",
-    "cardProgress": "المحاولة {{n}} من 6 — واصل",
+    "cardProgress": "المحاولة {{n}} من {{max}} — واصل",
     "cardWon": "حُلّ في {{score}}",
     "cardLost": "ليس اليوم. عمل جديد غداً.",
     "fromLibrary": "من مكتبتك",
@@ -3853,7 +3853,7 @@
     "tabOf": "{{label}}، علامة تبويب، {{n}} من {{total}}",
     "opensMarkAs": "يفتح خيارات «وضع علامة كـ…»",
     "tvdbScore": "تقييم TheTVDB، {{percent}}%",
-    "tvdbRating": "تقييم TheTVDB، {{score}} من 5",
+    "tvdbRating": "تقييم TheTVDB، {{score}} من {{max}}",
     "tvdbUnrated": "لا يوجد تقييم على TheTVDB بعد",
     "airDay": "يوم العرض، {{day}}",
     "runtime": {
@@ -3938,7 +3938,7 @@
   },
   "halfStars": {
     "label": "تقييمك",
-    "value": "{{value}} من 5 نجوم",
+    "value": "{{value}} من {{max}} نجوم",
     "unrated": "بلا تقييم",
     "hint": "اسحب على النجوم لتعطي نصف نجمة"
   },
@@ -4039,7 +4039,7 @@
   },
   "ratingBreakdown": {
     "title": "تقييمات المجتمع",
-    "averageLabel": "تقييم المجتمع {{value}} من 5",
+    "averageLabel": "تقييم المجتمع {{value}} من {{max}}",
     "averageHint": "يعرض كيف قيّمه الجميع",
     "row": {
       "zero": "{{value}} نجمة، {{percent}}٪",

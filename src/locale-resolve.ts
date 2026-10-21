@@ -42,6 +42,28 @@ export function formatCount(n: number, locale: Locale): string {
 }
 
 /**
+ * EVERY NUMBER IN A TRANSLATED STRING IN THE APP'S OWN DIGITS (21 Oct). A raw
+ * `{{count}}` went in as `String(n)` — Western digits and an English decimal
+ * point in Arabic and French — while numbers formatted by hand followed the
+ * locale, so one screen mixed the two. i18n.ts runs every interpolation's
+ * variables through this. Plural selection is unaffected: i18n-js picks the
+ * form from the raw `count` before it interpolates.
+ *
+ * No grouping, so a year stays "2026"; counts that want "1,234" already arrive
+ * as strings from formatCount, which pass through untouched.
+ */
+export function localiseNumbers<T extends Record<string, unknown>>(vars: T, locale: Locale): T {
+  const out: Record<string, unknown> = { ...vars };
+  for (const k of Object.keys(out)) {
+    const v = out[k];
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      out[k] = v.toLocaleString(locale, { useGrouping: false, maximumFractionDigits: 20 });
+    }
+  }
+  return out as T;
+}
+
+/**
  * A count of what has been LOADED, when more pages may exist: "25+" while the
  * server still has a next page, the exact number once it has none. The thread
  * API returns no total, so the loaded count alone read "OpenTV (25)" with 41.

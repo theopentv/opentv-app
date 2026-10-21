@@ -146,7 +146,7 @@ export default function AdvancedScreen() {
             trackId="settings.app.reviewMatchedMovies"
             title={t('settings.app.reviewMatchedMovies')}
             sub={t('settings.app.reviewMatchedMoviesSub', { count: guessedMovies })}
-            value={String(guessedMovies)}
+            value={formatCount(guessedMovies, currentLocale())}
             onPress={() => router.push('/review-movies')}
           />
         )}

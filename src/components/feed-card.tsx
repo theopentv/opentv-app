@@ -53,7 +53,7 @@ function contentText(card: FeedCardModel, hidden: boolean): string {
     case 'rating': {
       const stars = feedStars(item.score);
       // "3.5 out of 5 stars", the number in the reader's own digits
-      const said = stars != null ? t('halfStars.value', { value: stars.toLocaleString(currentLocale()) }) : null;
+      const said = stars != null ? t('halfStars.value', { value: stars.toLocaleString(currentLocale()), max: 5 }) : null;
       return [said, ...item.emotions.map(emotionLabel)]
         .filter(Boolean)
         .join(', ');

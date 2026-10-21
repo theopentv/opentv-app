@@ -217,7 +217,7 @@ export default function DeepStatsScreen() {
               <StatCard title={t('plus.stats.topShows')}>
                 <StatTable
                   headers={{ name: t('stats.headers.show'), a: t('stats.headers.episodes'), b: t('stats.headers.hours') }}
-                  rows={d.topShows.map((x) => ({ name: x.name, a: String(x.episodes), b: hours(x.minutes) }))}
+                  rows={d.topShows.map((x) => ({ name: x.name, a: formatCount(x.episodes, locale), b: hours(x.minutes) }))}
                 />
               </StatCard>
 
@@ -232,7 +232,7 @@ export default function DeepStatsScreen() {
               )}
 
               <StatCard title={t('plus.stats.binge')}>
-                <Text style={styles.bigNum}>{d.binge.biggestDay}</Text>
+                <Text style={styles.bigNum}>{formatCount(d.binge.biggestDay, locale)}</Text>
                 <Text style={styles.sub}>
                   {t('plus.stats.biggestDay')}
                   {d.binge.biggestDayDate ? ` — ${t('plus.stats.biggestDayOn', { date: d.binge.biggestDayDate })}` : ''}
@@ -251,7 +251,7 @@ export default function DeepStatsScreen() {
                 <Text style={styles.bigNum}>{t(`plus.stats.personality.${d.personality.label}` as 'plus.stats.personality.balanced')}</Text>
                 {d.personality.total > 0 && (
                   <Text style={styles.sub}>
-                    {t('plus.stats.meanStars', { mean: one(d.personality.mean) })} · {t('plus.stats.spread', { spread: one(d.personality.spread) })}
+                    {t('plus.stats.meanStars', { mean: one(d.personality.mean), max: 5 })} · {t('plus.stats.spread', { spread: one(d.personality.spread) })}
                   </Text>
                 )}
                 <Bars values={d.starCounts} labels={['1★', '2★', '3★', '4★', '5★']} color={colors.yellow} />
@@ -275,7 +275,7 @@ export default function DeepStatsScreen() {
                   <Text style={styles.note}>{t('plus.stats.crowdNeedMore')}</Text>
                 ) : (
                   <>
-                    <Text style={styles.bigNum}>{crowd.score}</Text>
+                    <Text style={styles.bigNum}>{formatCount(crowd.score, locale)}</Text>
                     <Text style={styles.sub}>
                       {t('plus.stats.contrarian')} — {t('plus.stats.contrarianSub')}
                     </Text>

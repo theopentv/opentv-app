@@ -1012,8 +1012,8 @@
     "episodeUnknownTitle": "Épisode inconnu",
     "tmdbRatings": "Notes TMDB",
     "communityVotes": {
-      "one": "OpenTV · {{avg}}/5 avec {{count}} vote",
-      "other": "OpenTV · {{avg}}/5 avec {{count}} votes"
+      "one": "OpenTV · {{avg}}/{{max}} avec {{count}} vote",
+      "other": "OpenTV · {{avg}}/{{max}} avec {{count}} votes"
     },
     "upcomingLeftTitle": "Épisodes à venir non cochés",
     "upcomingLeftBody": "Les épisodes pas encore diffusés n'ont pas été cochés. Cochez-les à leur sortie, ou activez les notifications pour être prévenu.",
@@ -1873,7 +1873,7 @@
       "daysInARow": "jours d'affilée",
       "activeDays": "Jours de visionnage",
       "perActiveDay": "Épisodes par jour actif",
-      "meanStars": "Moyenne {{mean}} sur 5",
+      "meanStars": "Moyenne {{mean}} sur {{max}}",
       "spread": "Écart {{spread}}",
       "personality": {
         "unrated": "Pas encore assez de notes",
@@ -3218,7 +3218,7 @@
     "blockName": "Énigme du jour",
     "number": "#{{n}}",
     "cardSub": "Un titre par jour, tiré de votre bibliothèque. Six essais.",
-    "cardProgress": "Essai {{n}} sur 6 — continuez",
+    "cardProgress": "Essai {{n}} sur {{max}} — continuez",
     "cardWon": "Résolue en {{score}}",
     "cardLost": "Pas aujourd'hui. Un nouveau titre demain.",
     "fromLibrary": "De votre bibliothèque",
@@ -3345,7 +3345,7 @@
     "tabOf": "{{label}}, onglet, {{n}} sur {{total}}",
     "opensMarkAs": "Ouvre les options Marquer comme…",
     "tvdbScore": "Note TheTVDB, {{percent}} %",
-    "tvdbRating": "Note TheTVDB, {{score}} sur 5",
+    "tvdbRating": "Note TheTVDB, {{score}} sur {{max}}",
     "tvdbUnrated": "Pas encore de note TheTVDB",
     "airDay": "Jour de diffusion, {{day}}",
     "runtime": {
@@ -3414,7 +3414,7 @@
   },
   "halfStars": {
     "label": "Votre note",
-    "value": "{{value}} sur 5 étoiles",
+    "value": "{{value}} sur {{max}} étoiles",
     "unrated": "Pas noté",
     "hint": "Fais glisser sur les étoiles pour des demi-étoiles"
   },
@@ -3495,7 +3495,7 @@
   },
   "ratingBreakdown": {
     "title": "Notes de la communauté",
-    "averageLabel": "Note de la communauté {{value}} sur 5",
+    "averageLabel": "Note de la communauté {{value}} sur {{max}}",
     "averageHint": "Montre comment tout le monde l’a noté",
     "row": {
       "one": "{{value}} étoile, {{percent}} %",

@@ -1012,8 +1012,8 @@
     "episodeUnknownTitle": "Unbekannte Folge",
     "tmdbRatings": "TMDB-Bewertungen",
     "communityVotes": {
-      "one": "OpenTV · {{avg}}/5 aus {{count}} Stimme",
-      "other": "OpenTV · {{avg}}/5 aus {{count}} Stimmen"
+      "one": "OpenTV · {{avg}}/{{max}} aus {{count}} Stimme",
+      "other": "OpenTV · {{avg}}/{{max}} aus {{count}} Stimmen"
     },
     "upcomingLeftTitle": "Kommende Folgen nicht markiert",
     "upcomingLeftBody": "Folgen, die noch nicht ausgestrahlt wurden, wurden nicht markiert. Markiere sie, sobald sie draußen sind, oder schalte Mitteilungen ein, damit du Bescheid bekommst.",
@@ -1873,7 +1873,7 @@
       "daysInARow": "Tage am Stück",
       "activeDays": "Tage mit Schauen",
       "perActiveDay": "Folgen pro aktivem Tag",
-      "meanStars": "Schnitt {{mean}} von 5",
+      "meanStars": "Schnitt {{mean}} von {{max}}",
       "spread": "Streuung {{spread}}",
       "personality": {
         "unrated": "Noch zu wenige Bewertungen",
@@ -3218,7 +3218,7 @@
     "blockName": "Tägliches Rätsel",
     "number": "#{{n}}",
     "cardSub": "Ein Titel pro Tag, aus deiner Bibliothek. Sechs Versuche.",
-    "cardProgress": "Versuch {{n}} von 6 – weiter so",
+    "cardProgress": "Versuch {{n}} von {{max}} – weiter so",
     "cardWon": "Gelöst in {{score}}",
     "cardLost": "Heute nicht. Morgen gibt's ein neues.",
     "fromLibrary": "Aus deiner Bibliothek",
@@ -3345,7 +3345,7 @@
     "tabOf": "{{label}}, Tab, {{n}} von {{total}}",
     "opensMarkAs": "Öffnet die Optionen „Markieren als…“",
     "tvdbScore": "TheTVDB-Score, {{percent}} %",
-    "tvdbRating": "TheTVDB-Bewertung, {{score}} von 5",
+    "tvdbRating": "TheTVDB-Bewertung, {{score}} von {{max}}",
     "tvdbUnrated": "Noch keine TheTVDB-Bewertung",
     "airDay": "Sendetag, {{day}}",
     "runtime": {
@@ -3414,7 +3414,7 @@
   },
   "halfStars": {
     "label": "Deine Bewertung",
-    "value": "{{value}} von 5 Sternen",
+    "value": "{{value}} von {{max}} Sternen",
     "unrated": "Nicht bewertet",
     "hint": "Über die Sterne wischen für halbe Sterne"
   },
@@ -3495,7 +3495,7 @@
   },
   "ratingBreakdown": {
     "title": "Community-Bewertungen",
-    "averageLabel": "Community-Bewertung {{value}} von 5",
+    "averageLabel": "Community-Bewertung {{value}} von {{max}}",
     "averageHint": "Zeigt, wie alle es bewertet haben",
     "row": {
       "one": "{{value}} Stern, {{percent}} %",

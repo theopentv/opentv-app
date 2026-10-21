@@ -1086,7 +1086,7 @@ export default function ShowScreen() {
           <View
             style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: space.lg, marginTop: 8 }}
             accessible
-            accessibilityLabel={meta?.rating ? t('a11y.tvdbRating', { score: fmtDecimal(meta.rating / 2) }) : t('a11y.tvdbUnrated')}>
+            accessibilityLabel={meta?.rating ? t('a11y.tvdbRating', { score: fmtDecimal(meta.rating / 2), max: 5 }) : t('a11y.tvdbUnrated')}>
             <View style={styles.tBadge}>
               <Text style={{ fontWeight: '800', color: colors.onYellow, fontSize: 13 }}>T</Text>
             </View>
@@ -1106,7 +1106,7 @@ export default function ShowScreen() {
                 </Text>
               ))}
             </Text>
-            <Text style={styles.caption2}>{meta?.rating ? `${fmtDecimal(meta.rating / 2)}/5` : '—/5'}</Text>
+            <Text style={styles.caption2}>{`${meta?.rating ? fmtDecimal(meta.rating / 2) : '—'}/${(5).toLocaleString(currentLocale())}`}</Text>
           </View>
           {/* the only prose paragraph on this screen — capped so a 1366pt iPad
               doesn't render the overview as one enormous line; everything
@@ -1281,7 +1281,7 @@ export default function ShowScreen() {
                     </View>
                     {shown.community && (
                       <Text style={[styles.caption2, { paddingHorizontal: space.lg, marginTop: 2 }]}>
-                        {t('show.communityVotes', { avg: fmtDecimal(shown.avg), count: shown.votes })}
+                        {t('show.communityVotes', { avg: fmtDecimal(shown.avg), count: shown.votes, max: 5 })}
                       </Text>
                     )}
                   </>

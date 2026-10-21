@@ -1165,7 +1165,7 @@ export default function MovieScreen() {
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: space.lg, marginTop: 8 }}
                   accessible
                   accessibilityLabel={[
-                    rating5 ? t('a11y.tvdbRating', { score: fmtDecimal(rating5) }) : t('a11y.tvdbUnrated'),
+                    rating5 ? t('a11y.tvdbRating', { score: fmtDecimal(rating5), max: 5 }) : t('a11y.tvdbUnrated'),
                     mm?.votes ? t('movie.ratingsCount', { count: countLabel(mm.votes) }) : null,
                   ]
                     .filter(Boolean)
@@ -1177,7 +1177,7 @@ export default function MovieScreen() {
                     {'★'.repeat(filled)}
                     {'☆'.repeat(5 - filled)}
                   </Text>
-                  <Text style={styles.caption2}>{rating5 ? `${fmtDecimal(rating5)}/5` : '—/5'}</Text>
+                  <Text style={styles.caption2}>{`${rating5 ? fmtDecimal(rating5) : '—'}/${(5).toLocaleString(currentLocale())}`}</Text>
                   {mm?.votes ? <Text style={styles.caption2}> {t('movie.ratingsCount', { count: countLabel(mm.votes) })}</Text> : null}
                 </View>
                 {/* the only prose paragraph on this screen — capped so a
@@ -1296,7 +1296,7 @@ export default function MovieScreen() {
                   style={styles.rateBox}
                   cellStyle={styles.starCell}
                   label={t('halfStars.label')}
-                  valueText={stars == null ? t('halfStars.unrated') : t('halfStars.value', { value: starNumber(stars) })}
+                  valueText={stars == null ? t('halfStars.unrated') : t('halfStars.value', { value: starNumber(stars), max: 5 })}
                   onTap={rate}
                   onSlide={setRating}
                   onPreview={setStarPreview}

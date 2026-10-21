@@ -45,6 +45,7 @@ import {
 import { fmtDecimal, genreText, t } from '@/i18n';
 import { documentFileUri } from '@/library';
 import { currentLocale } from '@/i18n';
+import { formatCount } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
 import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
@@ -330,7 +331,7 @@ export function renderWidget(
     const n = isVisitor ? Number(pub?.n ?? 0) : watchStreak();
     return (
       <WidgetBox label={t('profile.blockStreak')} span={span}>
-        <Figure value={String(n)} sub={t('profile.blockStreakDays', { count: n })} />
+        <Figure value={formatCount(n, currentLocale())} sub={t('profile.blockStreakDays', { count: n })} />
       </WidgetBox>
     );
   }
@@ -365,7 +366,7 @@ export function renderWidget(
     if (!b?.n || b.day == null) return null;
     return (
       <WidgetBox label={t('profile.widgetBinge')} span={span}>
-        <Figure value={String(b.n)} sub={wide ? day(String(b.day)) : t('profile.widgetEpisodes', { count: b.n })} />
+        <Figure value={formatCount(b.n, currentLocale())} sub={wide ? day(String(b.day)) : t('profile.widgetEpisodes', { count: b.n })} />
       </WidgetBox>
     );
   }
@@ -386,7 +387,7 @@ export function renderWidget(
     if (n === 0) return null;
     return (
       <WidgetBox label={t('profile.widgetFinished')} span={span}>
-        <Figure value={String(n)} sub={t('profile.widgetShows', { count: n })} />
+        <Figure value={formatCount(n, currentLocale())} sub={t('profile.widgetShows', { count: n })} />
       </WidgetBox>
     );
   }
@@ -426,7 +427,7 @@ export function renderWidget(
     if (n === 0) return null;
     return (
       <WidgetBox label={t('profile.widgetWatchlist')} span={span}>
-        <Figure value={String(n)} sub={t('profile.widgetFilms', { count: n })} />
+        <Figure value={formatCount(n, currentLocale())} sub={t('profile.widgetFilms', { count: n })} />
       </WidgetBox>
     );
   }

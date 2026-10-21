@@ -54,8 +54,8 @@ export function CommunityRating({
   // NO HEAD COUNT. TV Time printed "4.9/5" and never how many had voted
   // (design/referance/12 and 13); a count was added here and taken out again
   // on the developer's check (14 Oct). The sheet shows shares, not people.
-  const line = `${avg}/5`;
-  const label = t('ratingBreakdown.averageLabel', { value: avg });
+  const line = `${avg}/${(5).toLocaleString(currentLocale())}`;
+  const label = t('ratingBreakdown.averageLabel', { value: avg, max: 5 });
   // the average drawn to the nearest half star — 3.9 is four, 3.7 three and a half
   const ten = Math.round(b.average * 2);
 
