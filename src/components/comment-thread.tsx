@@ -34,6 +34,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -96,6 +97,25 @@ import { colors, radius, space, ls } from '@/theme';
  */
 /** A comment and how deep it sits. Exported with `CommentRow`, which takes it. */
 export type Row = { comment: Comment; depth: 0 | 1 };
+
+/**
+ * ANDROID KEYBOARD GAP (21 Oct): with the keyboard up a composer's toolbar sits
+ * on the keyboard, not the gesture bar, so its bottom inset was a gap above it.
+ * Always false on iOS, whose composers were calibrated with the inset.
+ */
+export function useAndroidKeyboardUp(): boolean {
+  const [up, setUp] = useState(false);
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const show = Keyboard.addListener('keyboardDidShow', () => setUp(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setUp(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+  return up;
+}
 
 /** One line of the merged thread: one of ours, or one from CommsUni. */
 type Item = { kind: 'own'; row: Row } | { kind: 'shared'; c: SharedComment };
@@ -456,6 +476,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
   // The one-time CommsUni question, before the first comment on a shared board.
   const [asking, setAsking] = useState(false);
   const insets = useSafeAreaInsets();
+  const keyboardUp = useAndroidKeyboardUp();
 
   const [menuFor, setMenuFor] = useState<Comment | null>(null);
   const [reportFor, setReportFor] = useState<Comment | null>(null);
@@ -1092,7 +1113,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
               </Pressable>
             </View>
           )}
-          <View style={[styles.writeTools, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+          <View style={[styles.writeTools, { paddingBottom: keyboardUp ? 10 : Math.max(insets.bottom, 10) }]}>
             {attach.canAttach && (
               <Pressable hitSlop={8} style={styles.attachBtn} onPress={() => (isPlus() ? attach.open() : paywall.open('comment_image'))} disabled={sending} accessibilityRole="button" accessibilityLabel={t('a11y.attachImage')}>
                 <Ionicons

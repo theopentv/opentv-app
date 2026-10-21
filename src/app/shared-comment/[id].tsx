@@ -45,6 +45,7 @@ import { getHandle, useJoined } from '@/community-session';
 import { getMeta } from '@/db';
 import { CommentCard, formatCommentDate } from '@/components/comment-card';
 import { CommsuniAttribution, ConsentSheet, useReport } from '@/components/commsuni-board';
+import { useAndroidKeyboardUp } from '@/components/comment-thread';
 import { GifSearch } from '@/components/gif-search';
 import { isPlus, usePaywallOverModal, usePlusUi } from '@/plus';
 import { Image } from 'expo-image';
@@ -107,6 +108,7 @@ const newClientId = () => `${Date.now().toString(36)}-${Math.random().toString(3
 
 export default function SharedCommentScreen() {
   const insets = useSafeAreaInsets();
+  const keyboardUp = useAndroidKeyboardUp();
   const joined = useJoined();
   const { id = '' } = useLocalSearchParams<{ id?: string }>();
   const root = sharedById(id);
@@ -374,7 +376,7 @@ export default function SharedCommentScreen() {
               </Pressable>
             </View>
           )}
-          <View style={[styles.tools, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+          <View style={[styles.tools, { paddingBottom: keyboardUp ? 10 : Math.max(insets.bottom, 10) }]}>
             {/* PLUS, as a picture on a comment is everywhere else in the app. */}
             {plusUi && (
               <Pressable accessibilityRole="button"
