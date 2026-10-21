@@ -28,6 +28,7 @@
         ]
       },
       "infoPlist": {
+        "CFBundleLocalizations": ["en", "ar", "fr", "it", "es", "pt-BR", "de", "pl", "tr"],
         "NSUbiquitousContainers": {
           "iCloud.com.insightfy.opentv": {
             "NSUbiquitousContainerIsDocumentScopePublic": true,
