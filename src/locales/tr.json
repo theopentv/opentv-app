@@ -1389,7 +1389,8 @@
       "handleTaken": "Bu kullanıcı adı alınmış.",
       "handleInvalid": "Bu kullanıcı adına izin verilmiyor.",
       "generic": "Bir şeyler ters gitti. Tekrar dene.",
-      "emailUnverified": "Önce e-posta adresini onayla."
+      "emailUnverified": "Önce e-posta adresini onayla.",
+      "listFull": "Bu liste dolu."
     },
     "banner": {
       "text": "OpenTV topluluğuna katıl"

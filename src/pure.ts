@@ -1415,6 +1415,7 @@ export function communityErrorKey(
   | 'community.error.handleTaken'
   | 'community.error.handleInvalid'
   | 'community.error.emailUnverified'
+  | 'community.error.listFull'
   | 'community.error.generic' {
   switch (code) {
     case 'network':
@@ -1432,6 +1433,10 @@ export function communityErrorKey(
     // refusal, it is an unfinished step, and the app has a screen for it.
     case 'email_unverified':
       return 'community.error.emailUnverified';
+    // A shared list or together at its ceiling. It was `forbidden`, and read
+    // as "That sign-in wasn't accepted" to somebody joining a full sofa.
+    case 'list_full':
+      return 'community.error.listFull';
     default:
       return 'community.error.generic';
   }

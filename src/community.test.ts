@@ -223,6 +223,8 @@ describe('communityErrorKey', () => {
     expect(communityErrorKey('forbidden')).toBe('community.error.signInRejected');
     expect(communityErrorKey('handle_taken')).toBe('community.error.handleTaken');
     expect(communityErrorKey('handle_invalid')).toBe('community.error.handleInvalid');
+    // A full list is about the list, not the person — never "sign-in rejected".
+    expect(communityErrorKey('list_full')).toBe('community.error.listFull');
   });
 
   it('falls back rather than throwing on anything else', () => {

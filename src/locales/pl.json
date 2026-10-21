@@ -1461,7 +1461,8 @@
       "handleTaken": "Ta nazwa użytkownika jest zajęta.",
       "handleInvalid": "Ta nazwa użytkownika jest niedozwolona.",
       "generic": "Coś poszło nie tak. Spróbuj ponownie.",
-      "emailUnverified": "Najpierw potwierdź adres e-mail."
+      "emailUnverified": "Najpierw potwierdź adres e-mail.",
+      "listFull": "Ta lista jest pełna."
     },
     "banner": {
       "text": "Dołącz do społeczności OpenTV"

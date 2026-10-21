@@ -392,6 +392,7 @@ export type LocaleKey =
   | "community.error.generic"
   | "community.error.handleInvalid"
   | "community.error.handleTaken"
+  | "community.error.listFull"
   | "community.error.network"
   | "community.error.rateLimited"
   | "community.error.signInRejected"

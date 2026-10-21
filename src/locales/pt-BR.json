@@ -1389,7 +1389,8 @@
       "handleTaken": "Esse nome de usuário já está em uso.",
       "handleInvalid": "Esse nome de usuário não é permitido.",
       "generic": "Algo deu errado. Tente de novo.",
-      "emailUnverified": "Confirme seu e-mail primeiro."
+      "emailUnverified": "Confirme seu e-mail primeiro.",
+      "listFull": "Esta lista está cheia."
     },
     "banner": {
       "text": "Entre na comunidade do OpenTV"

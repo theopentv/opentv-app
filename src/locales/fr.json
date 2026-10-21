@@ -1389,7 +1389,8 @@
       "handleTaken": "Ce pseudo est déjà pris.",
       "handleInvalid": "Ce pseudo n'est pas autorisé.",
       "generic": "Quelque chose s'est mal passé. Réessaie.",
-      "emailUnverified": "Confirmez d’abord votre adresse e-mail."
+      "emailUnverified": "Confirmez d’abord votre adresse e-mail.",
+      "listFull": "Cette liste est complète."
     },
     "banner": {
       "text": "Rejoins la communauté OpenTV"
