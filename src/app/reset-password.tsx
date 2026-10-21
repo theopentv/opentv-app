@@ -22,7 +22,6 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -94,7 +93,7 @@ export default function ResetPasswordScreen() {
   return (
     <Screen>
       <NavHeader title={t('community.resetPassword.title')} />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <ContentColumn>
           <View style={styles.body}>
             <Text style={styles.blurb}>{t('community.resetPassword.blurb')}</Text>

@@ -21,7 +21,6 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -377,7 +376,7 @@ export default function EmailSignInScreen() {
   return (
     <Screen>
       <NavHeader title={t(mode === "create" ? "community.email.createTitle" : "community.email.signInTitle")} close />
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView contentContainerStyle={{ paddingBottom: space.lg + insets.bottom }} keyboardShouldPersistTaps="handled">
           <ContentColumn>
             <View style={styles.body}>
