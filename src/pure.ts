@@ -8376,7 +8376,8 @@ export type WatchListEntry = {
  * UNKNOWN IS LAST, NEVER ZERO. A card with no air date or no count yet has not
  * been measured; sorting it as the oldest or the least behind would claim
  * something the metadata never said. Ties fall back to recency (most behind) or
- * the show's name (release date), so the order never shuffles between visits.
+ * the show's name (release date; Z–A when newest first), so the order never
+ * shuffles between visits.
  */
 export function sortWatchList<T extends WatchListEntry>(
   items: readonly T[],
@@ -8396,10 +8397,12 @@ export function sortWatchList<T extends WatchListEntry>(
     for (let i = 0; i < name.length; i++) h = Math.imul(h ^ name.charCodeAt(i), 16777619) >>> 0;
     return h;
   };
+  // Newest first is the whole order reversed, ties included (A–Z oldest
+  // first, Z–A newest first); the undated tail stays A–Z either way.
   const byDate = (dir: 1 | -1) => (a: T, b: T) =>
     (a.nextAir == null ? 1 : 0) - (b.nextAir == null ? 1 : 0) ||
     dir * (a.nextAir ?? '').localeCompare(b.nextAir ?? '') ||
-    byName(a, b);
+    (a.nextAir == null ? 1 : dir) * byName(a, b);
   const cmp =
     sort === 'releaseDate'
       ? byDate(1)

@@ -3974,6 +3974,11 @@ describe('sortWatchList: newest first and random', () => {
     );
     expect(out.map((x) => x.name)).toEqual(['New', 'Old', 'NoDate', 'Never']);
   });
+  it('newest first: a tie on the date is reversed too, the undated tail stays A–Z', () => {
+    const items = [e('A', { nextAir: '2020-01-01' }), e('Z'), e('B', { nextAir: '2020-01-01' }), e('Y')];
+    expect(sortWatchList(items, 'releaseDateNewest').map((x) => x.name)).toEqual(['B', 'A', 'Y', 'Z']);
+    expect(sortWatchList(items, 'releaseDate').map((x) => x.name)).toEqual(['A', 'B', 'Y', 'Z']);
+  });
   it('random: the same seed gives the same order, not started still last', () => {
     const items = ['A', 'B', 'C', 'D', 'E', 'F'].map((n) => e(n)).concat(e('Never', { started: false }));
     const a = sortWatchList(items, 'random', 42).map((x) => x.name);
