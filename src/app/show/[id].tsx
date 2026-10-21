@@ -725,31 +725,36 @@ export default function ShowScreen() {
               const archived = !!dbShow?.archived;
               const finished = !!dbShow?.finished;
               const refresh = () => setTick((t) => t + 1);
+              // An untracked preview has no row to flag. Following one is how TV
+              // Time adds a show, so Follow does exactly what ADD SHOW does;
+              // favourite and stop-watching have nothing to act on until then.
+              const tracked = !!dbShow;
               const actions: SheetAction[] = [
-                {
-                  icon: favorited ? 'heart-dislike-outline' : 'heart-outline',
+                ...(tracked ? [{
+                  icon: (favorited ? 'heart-dislike-outline' : 'heart-outline') as SheetAction['icon'],
                   text: favorited ? t('media.actions.removeFavorite') : t('media.actions.addFavorite'),
                   onPress: () => {
                     setShowFavorited(show.tvdbId, !favorited);
                     refresh();
                   },
-                },
+                }] : []),
                 {
                   icon: following ? 'eye-off-outline' : 'eye-outline',
                   text: following ? t('show.actions.stopFollowing') : t('show.actions.follow'),
                   onPress: () => {
-                    setFollowing(show.tvdbId, !following);
+                    if (tracked) setFollowing(show.tvdbId, !following);
+                    else addShow(tvdbId, fetched?.name ?? show.name, fetched?.poster ?? null);
                     refresh();
                   },
                 },
-                {
-                  icon: archived ? 'play-circle-outline' : 'pause-circle-outline',
+                ...(tracked ? [{
+                  icon: (archived ? 'play-circle-outline' : 'pause-circle-outline') as SheetAction['icon'],
                   text: archived ? t('show.actions.resumeWatching') : t('show.actions.stopWatching'),
                   onPress: () => {
                     setShowArchived(show.tvdbId, !archived);
                     refresh();
                   },
-                },
+                }] : []),
                 {
                   icon: finished ? 'refresh-outline' : 'checkmark-done-outline',
                   text: finished ? t('show.actions.markNotFinished') : t('show.actions.markFinished'),

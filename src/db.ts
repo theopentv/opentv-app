@@ -1206,7 +1206,8 @@ export function addShow(tvdbId: number, name: string, posterUrl: string | null):
 /** Follow/unfollow without touching history — unfollowed shows stay in the
  * library but leave Up Next (and the widgets, which filter on followed). */
 export function setFollowing(showId: number, followed: boolean): void {
-  db.runSync('UPDATE shows SET followed = ? WHERE tvdbId = ?', [followed ? 1 : 0, showId]);
+  // no row = not in the library: nothing changed, so nothing to tell other devices
+  if (!db.runSync('UPDATE shows SET followed = ? WHERE tvdbId = ?', [followed ? 1 : 0, showId]).changes) return;
   queueOp({ t: 'showFlag', show: showId, flag: 'followed', on: followed });
 }
 
@@ -1251,6 +1252,8 @@ function normaliseFavoriteRanks(table: 'shows' | 'movies', col: 'tvdbId' | 'name
  * Everything else shifts down one; drag from there.
  */
 export function setShowFavorited(showId: number, favorited: boolean): void {
+  // an untracked show has no row to flag, and no op to send (see setFollowing)
+  if (!db.getFirstSync('SELECT 1 FROM shows WHERE tvdbId = ?', [showId])) return;
   if (favorited) {
     normaliseFavoriteRanks('shows', 'tvdbId');
     db.withTransactionSync(() => {
@@ -1266,11 +1269,12 @@ export function setShowFavorited(showId: number, favorited: boolean): void {
 /** "Stopped watching" — archived shows leave Up Next/widgets and land in the
  * Stopped filter, keeping their history. Archiving also unfollows. */
 export function setShowArchived(showId: number, archived: boolean): void {
-  db.runSync('UPDATE shows SET archived = ?, followed = CASE WHEN ? THEN 0 ELSE followed END WHERE tvdbId = ?', [
+  const r = db.runSync('UPDATE shows SET archived = ?, followed = CASE WHEN ? THEN 0 ELSE followed END WHERE tvdbId = ?', [
     archived ? 1 : 0,
     archived ? 1 : 0,
     showId,
   ]);
+  if (!r.changes) return; // untracked — see setFollowing
   queueOp({ t: 'showFlag', show: showId, flag: 'archived', on: archived });
 }
 
@@ -1278,7 +1282,7 @@ export function setShowArchived(showId: number, archived: boolean): void {
  * (offline / not on TMDB) or that the user just wants to force to "finished".
  * Purely a display flag; it never touches watch history. */
 export function setShowFinished(showId: number, finished: boolean): void {
-  db.runSync('UPDATE shows SET finished = ? WHERE tvdbId = ?', [finished ? 1 : 0, showId]);
+  if (!db.runSync('UPDATE shows SET finished = ? WHERE tvdbId = ?', [finished ? 1 : 0, showId]).changes) return; // untracked — see setFollowing
   queueOp({ t: 'showFlag', show: showId, flag: 'finished', on: finished });
 }
 
