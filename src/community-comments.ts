@@ -88,6 +88,8 @@ export type Comment = {
   image_pending?: boolean;
   /** Also posted to CommsUni. */
   shared?: boolean;
+  /** An imported TV Time reply whose original is not on the server (yet). */
+  orphan_reply?: boolean;
 };
 
 export type TargetSource = 'tvdb' | 'tmdb' | 'title';

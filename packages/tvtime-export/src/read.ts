@@ -522,6 +522,18 @@ export type ExportComment = {
   ratio: number | null;
   /** TV Time's own comment uuid; null for the legacy file, which predates them */
   tvtimeUuid: string | null;
+  /**
+   * TV Time's id for THIS row and for the comment it answers, prefixed by id
+   * space so the two files can never name each other's rows: `e:<id>` from
+   * `episode_comment.csv` (`id` / `parent_comment_id`), `c:<uuid>` from
+   * `comments-prod-comments.csv` (`uuid` / `parent_uuid`). The parent is
+   * usually somebody else's comment and is not in this export — the id is
+   * kept so the server can hang the reply under it once its author arrives.
+   *
+   * Not `tvtimeUuid`: on a reply row `comment_uuid` is the PARENT's uuid.
+   */
+  tvtimeId: string | null;
+  tvtimeParentId: string | null;
 };
 
 /**
@@ -532,6 +544,17 @@ export type ExportComment = {
  *
  * A row with neither text nor a picture is not a comment and is dropped.
  */
+/**
+ * `e:123` / `c:<uuid>`, or null for an empty cell, the legacy file's 0, or
+ * anything not shaped like TV Time's own ids — OpenTV's own backup writes
+ * `ec-1`-style row numbers there, which name nothing outside that file.
+ */
+function prefixed(space: 'e' | 'c', raw: string | undefined): string | null {
+  const v = (raw ?? '').trim();
+  const ok = space === 'e' ? /^[1-9]\d{0,19}$/.test(v) : /^[0-9A-Za-z-]{1,64}$/.test(v);
+  return ok ? `${space}:${v}` : null;
+}
+
 export function readComments(x: Pick<ExportReader, 'csvLoose'>): ExportComment[] {
   const imgUrlOf = (blob: string) => /url:(https?:\/\/[^\s\]]+)/.exec(blob || '')?.[1] ?? null;
   const imgRatioOf = (blob: string) => {
@@ -554,6 +577,8 @@ export function readComments(x: Pick<ExportReader, 'csvLoose'>): ExportComment[]
       ratio: imgRatioOf(r.image),
       // `comment_uuid` in every export seen; `uuid` is the same file's row id
       tvtimeUuid: (r.comment_uuid || r.uuid || '').trim() || null,
+      tvtimeId: prefixed('c', r.uuid || (r.type === 'comment' ? r.comment_uuid : '')),
+      tvtimeParentId: r.type === 'reply' ? prefixed('c', r.parent_uuid || r.comment_uuid) : null,
     }));
   const memes = x.csvLoose('meme');
   const memeUrlOf = (commentId: string) => {
@@ -565,7 +590,8 @@ export function readComments(x: Pick<ExportReader, 'csvLoose'>): ExportComment[]
     .csvLoose('episode_comment')
     .filter((r) => r.tv_show_name)
     .map((r) => ({
-      type: 'comment',
+      // The legacy file has no `type`; a parent id is what makes a row a reply.
+      type: prefixed('e', r.parent_comment_id) ? 'reply' : 'comment',
       entity: `${r.tv_show_name} S${Number(r.episode_season_number || 0)}E${Number(r.episode_number || 0)}`,
       text: commentText(r.comment) || commentText(r.extended_comment),
       date: r.created_at || '',
@@ -574,6 +600,8 @@ export function readComments(x: Pick<ExportReader, 'csvLoose'>): ExportComment[]
       imageUrl: memeUrlOf(r.id),
       ratio: null,
       tvtimeUuid: null,
+      tvtimeId: prefixed('e', r.id),
+      tvtimeParentId: prefixed('e', r.parent_comment_id),
     }))
     .filter((c) => c.text || c.imageUrl);
   return [...current, ...legacy];
