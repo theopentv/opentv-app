@@ -14,7 +14,7 @@ failure written next to it, not in a commit message.
 
 ## 2.0.0 — merged 14 Oct 2026, not yet on a device
 
-Deploy the server first, in this order: D1 migrations 0055, 0056 and 0059, then the Worker. The deploy also applies Durable Object migration v1. 0055 MUST land before the Worker, or `/v1/me/feed` answers 500. Two test accounts: amanda (A) and opentvtestamanda (B), who follow each other.
+Deploy the server first, in this order: D1 migrations 0055, 0056, 0059 and 0061, then the Worker. The deploy also applies Durable Object migration v1. 0055 MUST land before the Worker, or `/v1/me/feed` answers 500. 0061 (personal offers, backend branch `2.0.0-offers`) is not deployed yet, and offers can't be tested until it is. Simkl needs a client id in `src/simkl-key.ts`, which is still empty. Two test accounts: amanda (A) and opentvtestamanda (B), who follow each other.
 
 ### Friends feed (Explore → Activity), free
 - [ ] B rates S1E1 (watched on A) and comments on S1E2 (unwatched on A). On A: the S1E1 card shows stars and the feeling, and the S1E2 card is locked ("Watch it to see").
@@ -89,6 +89,101 @@ Deploy the server first, in this order: D1 migrations 0055, 0056 and 0059, then 
 - [ ] Comments: like, attach and send are labelled, and the spoiler toggle is a checkbox.
 - [ ] Add/remove list rows say checked or unchecked. Onboarding season pills read "Season 2, selected".
 - [ ] TalkBack: repeat the sheet checks. With TalkBack off, tapping outside a sheet still closes it.
+
+### Added after 14 Oct — none of this has been on a device
+
+### Free sync through your own iCloud / Google Drive (no Plus, OpenTV sync off)
+- [ ] Settings → Library → Backup: "Sync between your devices" shows "Sync through iCloud" (iPhone only) and "Sync through Google Drive".
+- [ ] Two iPhones, same Apple ID, free account: Sync through iCloud on both. A mark on one arrives on the other within a few minutes. Unmark arrives too.
+- [ ] iPhone ↔ Android: Sync through Google Drive on both, same Google account. A mark arrives within about a minute while the app is open on both, in both directions.
+- [ ] Drive on the iPhone: Google asks for the hidden app-data permission only when sync is turned on, not at backup. The Google Drive backup turns on with it.
+- [ ] A new device that turns sync on gets the whole library from the backup in that cloud first, then the changes.
+- [ ] "Last synced" updates and "Other devices" lists the other phone. Airplane mode for a while shows "Sync is not getting through"; back online, it catches up with nothing doubled.
+- [ ] Plus with OpenTV sync on: the cloud rows say "OpenTV sync is on, so your devices sync through it instead…", and nothing goes through iCloud or Drive.
+- [ ] Ratings, emotions, comments and notes made on one phone show up on the other. Arabic layout.
+
+### Private notes (free, no account)
+- [ ] Show, film and episode pages each have "Add a private note". Typing a note shows it under "My note"; clearing it brings "Add a private note" back.
+- [ ] A long note with line breaks survives a reopen and an app restart. VoiceOver reads "My note" and the note, with the hint "Only on this phone. Never shared or published."
+- [ ] Backup → Export my data, wipe, import: the notes come back. Importing over a newer note does not overwrite it.
+- [ ] iCloud / Google Drive restore keeps the notes. An OpenTV Backup restore (Plus) has no notes, by design.
+- [ ] A signed-in account: nothing about the note reaches the server (Worker logs, the public profile).
+
+### Compare with the people you follow (free, needs an account)
+- [ ] Signed out: Stats → "COMPARE WITH THE PEOPLE YOU FOLLOW" asks "Comparing needs the community", with Cancel and Join. Nothing is requested.
+- [ ] A (follows B): the link opens "Compare". B's row shows time watched, episodes, films, shows and films in common, and "Taste match N%".
+- [ ] B makes the profile private or hides sections: A sees "Nothing on their profile to compare yet" or only what is still shown. A blocked B is gone.
+- [ ] Following nobody: "You don't follow anyone yet." with Find people. Airplane mode: the "Couldn't load…" line, no crash.
+
+### Smart episode reminders (Plus) and the free plain reminder
+- [ ] Free: Settings → Notifications still sends the plain reminder at your hour. "Smart reminders" has a Plus chip and opens the paywall.
+- [ ] Plus: Smart reminders → When: "When it airs", "An hour after", "Three hours after" and "Next morning" each move the next episode's reminder (check the scheduled list). Shows with no air time keep your reminder time.
+- [ ] "Weekends only": the week's episodes come together on Saturday as "N new episodes are waiting".
+- [ ] "When the whole season is out": one reminder when the last episode airs ("…: the whole season is out"), and none per episode.
+- [ ] Nothing arrives between 23:00 and 08:00; it comes in the morning.
+- [ ] A followed show → ⋯ → "Reminders for this show": "Use my usual settings" off lets one show choose for itself. An unfollowed show has no row. Free sees "(Plus)".
+- [ ] Plus lapses: "Smart reminders are part of Plus" shows, the choices are kept, and reminders go back to the usual time.
+
+### On my services (Plus)
+- [ ] Free: Settings → "My streaming services" opens the paywall.
+- [ ] Plus: pick two services → "2 services picked". "Tell me when it's on my services" on.
+- [ ] The first check announces nothing. A watchlist film or an unstarted show that arrives later gives one "Now on <service>" notification, and never the same title and service twice.
+- [ ] Shows and Movies → Filters → "Streaming" → "On my services" leaves only titles on your services. Free has no such filter.
+- [ ] Airplane mode on the picker: "Couldn't load the list…". Plus lapses: the services are kept, with no alerts and no filter.
+
+### Offers on the subscription screen (needs 0061 deployed for personal offers)
+- [ ] A new Apple ID eligible for the intro price: the card reads "<price> — For the first year, then <full price>/year". An ineligible one sees the plain price.
+- [ ] A lapsed subscriber with an Apple win-back offer, and a Play account with a developer offer, see that price. A creator code still shows "Code … applied ✓".
+- [ ] Dashboard → Give offer to A: A's subscription screen shows "A special offer for you" and "Ends in …", counting down. Buying it charges that price, and the card is gone after.
+- [ ] An offer that ended, or no signed Apple offer / matching Play option: no card, the normal price. Signed out: no offer request.
+
+### Watch List sort
+- [ ] Watch List → sort: "Recent", "Release date", "Release date, newest first", "Most behind" and "Random". Each one sticks after a restart.
+- [ ] "Release date, newest first" is the exact reverse of "Release date". Choosing "Random" again gives a new order.
+- [ ] VoiceOver reads "Sort the watch list. Now: …". Tapping WATCH LIST while on it scrolls back to WATCH NEXT.
+
+### Plots and blurbs in your language
+- [ ] App in Italian (and Polish, Turkish): show, film and episode plots arrive in that language after the background pass, with English where there's no translation, never blank.
+- [ ] Explore feed cards show the blurb in that language. The Explore grid and TMDB-only shows stay English.
+- [ ] Settings → Language → "Plot language" → "English" brings English plots back. Titles never change.
+
+### German, Polish and Turkish
+- [ ] Settings → Language lists Deutsch, Polski and Türkçe. Each one redraws the app, the tab bar and the widgets in that language without a restart.
+- [ ] A phone set to de-AT or de-CH gets German on "Match the phone".
+- [ ] Polish plurals: 1, 2, 5 and 22 episodes read right (one, few, many). Turkish capitals: "DİZİ", not "DIZI".
+- [ ] Numbers, dates, month letters and Wrapped hours use the locale's form. A long German label stays inside its button.
+- [ ] App Store → the listing's Languages shows all nine (CFBundleLocalizations). iOS Settings → OpenTV → Language offers all nine.
+
+### The native rating sheet
+- [ ] `pod install` picks up expo-store-review 57.0.1 and the iOS build compiles (57.0.2+ fails on SceneGeometry).
+- [ ] A TV Time import of 50+ episodes: Apple's rating sheet appears in the app (no Alert, no store). Android: Play's in-app review.
+- [ ] Start fresh, then mark the 25th episode by hand: the same sheet, once.
+- [ ] Share a Wrapped card: the sheet once per version. Never twice in one version across the three moments.
+- [ ] The GitHub APK asks nothing at any of the three.
+
+### List name cards fill, and shows named after their id
+- [ ] A public list with a show that had no poster (habiba's "Anime"): the owner's next publish fills it, and a viewer on another phone sees the poster too.
+- [ ] A show no longer on TheTVDB keeps its name card, not a blank tile.
+- [ ] A library show stored as its own id (`UPDATE shows SET name='78857' WHERE tvdbId=78857`): after a relaunch it gets its name back. "1899" and "1923" are untouched.
+
+### Guess the title (the puzzle after 14 Oct)
+- [ ] The Explore card says "Guess the title". Some days the answer is a film, with "Released in", "Directed by" and "Starring" clues and "Open the film".
+- [ ] No streak anywhere. Explore and the game show Played, Win % and Avg. tries. "Try 1 of 6" sits under the squares.
+- [ ] A film from the right series but the wrong part gives "Right series, wrong part!".
+- [ ] Share your result: "Share as image" and "Share as text". Neither names the title.
+- [ ] Archive (Plus to replay a past day; today is always free). The "Daily reminder" fires only if today is unplayed.
+
+### The 2.0.0 cherry-picks
+- [ ] A film's series: tapping a film you don't have opens it as a preview, the way a search result does. A film you have opens your own page.
+- [ ] Attack on Titan S4 (has an episode 0): tapping E13 opens E13, with the right header and page. A season with no episode 0 still opens the episode you tap.
+
+### Before release day
+- [ ] `PUZZLE_EPOCH` in `src/puzzle.ts` (now 2026-11-01) set to the release day. It must never move after release.
+- [ ] `docs/privacy.html`: the live-room and the watching-together sentences (CHANGELOG "Built 14 Oct"), and free sync through your own iCloud / Drive.
+- [ ] Google OAuth verification covers the `drive.appdata` scope, or Drive sync shows the "unverified app" screen.
+- [ ] Promotional offers set up in App Store Connect and developer offers in Play Console, with matching ids for the dashboard's personal offers.
+- [ ] Store listings (ASO) in all 9 languages: name, subtitle, keywords, Play short description, first screenshots (`outreach/aso-review-2026-10-18.md`).
+- [ ] Featuring nominations sent to Apple and Google Play, 2–3 weeks before 2.0.0 ships.
 
 ---
 
@@ -424,6 +519,3 @@ signed in, so community and Plus-only items are left for the phone (TestFlight 5
 - [ ] Stremio sign-in (needs a Stremio account)
 - [x] Search → open a show → mark a whole season: no keyboard — simulator, 4 Oct (Noddy's Toyland Adventures, S2)
 - [ ] Android (APK on the emulator): opens, comments, Wrapped card, Arabic right-to-left
-- [ ] 2.0.0: `pod install` picks up expo-store-review 57.0.1 and the iOS build compiles (57.0.2+ fails on SceneGeometry)
-- [ ] 2.0.0: TV Time import of 50+ episodes → Apple's native rating sheet (one tap, stays in the app); Android → Play's in-app review
-- [ ] 2.0.0: share a Wrapped card → native rating sheet once per version (nothing on a build without the module)
