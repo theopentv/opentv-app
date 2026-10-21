@@ -137,7 +137,7 @@ export default function ResetPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  body: { gap: 14, paddingTop: space.lg },
+  body: { gap: 14, paddingTop: space.lg, paddingHorizontal: space.lg },
   blurb: { color: colors.dim, fontSize: 15, lineHeight: 21 },
   field: {
     flexDirection: 'row',
