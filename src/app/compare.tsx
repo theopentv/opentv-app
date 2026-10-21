@@ -10,15 +10,15 @@
  * this phone and the arithmetic (`compare-pure.ts`) happens on it.
  *
  * ONE REQUEST PER ROW, AND ONLY FOR ROWS ON SCREEN. A FlatList mounts what is
- * visible; each row asks for its own person when it mounts, and the answer is
- * kept for the session so scrolling back costs nothing. Following three hundred
- * people does not mean three hundred requests on open.
+ * visible; each row asks for its own person when it mounts (and on every
+ * focus), and the last answer is kept for the session so it paints at once.
+ * Following three hundred people does not mean three hundred requests on open.
  *
  * Somebody who never joined does not get here — the Stats link explains instead
  * — and if they do (a deep link) the screen says the same and asks nothing.
  */
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { fetchFollowing, fetchPublishedProfile, type ProfileEdge, type PublishedProfile } from '@/community-profiles';
@@ -53,19 +53,28 @@ const hours = (m: number | null): string => (m == null ? '—' : t('duration.hou
 
 function CompareRow({ person, mine }: { person: ProfileEdge; mine: Mine }) {
   const [pub, setPub] = useState<PublishedProfile | null>(() => seen.get(person.handle) ?? null);
-  useEffect(() => {
-    if (seen.has(person.handle)) return;
-    let cancelled = false;
-    void fetchPublishedProfile(person.handle).then((p) => {
-      // A failure arrives as the empty shape, indistinguishable from "nothing
-      // published" — so only a real answer is kept, and a tunnel retries.
-      if (p.stats || p.shows.length > 0 || p.movies.length > 0) seen.set(person.handle, p);
-      if (!cancelled) setPub(p);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [person.handle]);
+  /*
+   * ASKED AGAIN ON EVERY FOCUS; the cache is only the first paint. Kept for
+   * the session and never refetched, a person who hid a section or blocked you
+   * went on showing their old numbers until the app restarted (21 Oct).
+   *
+   * An empty answer replaces the cached one too: a failure arrives as the same
+   * empty shape as a block (the server's 404 is swallowed into it), and stale
+   * numbers for somebody who has blocked you are the worse of the two.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      void fetchPublishedProfile(person.handle).then((p) => {
+        if (p.stats || p.shows.length > 0 || p.movies.length > 0) seen.set(person.handle, p);
+        else seen.delete(person.handle);
+        if (!cancelled) setPub(p);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, [person.handle]),
+  );
 
   const name = person.display_name || `@${person.handle}`;
   const open = () => router.push(`/profile/${encodeURIComponent(person.handle)}`);
