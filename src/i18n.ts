@@ -8,7 +8,7 @@
 import * as Localization from 'expo-localization';
 import { I18n, useMakePlural } from 'i18n-js';
 import { ar as arPluralRule, fr as frPluralRule, pl as plPluralRule } from 'make-plural';
-import { useSyncExternalStore } from 'react';
+import { createElement, Fragment, useSyncExternalStore, type ReactElement, type ReactNode } from 'react';
 import { I18nManager } from 'react-native';
 
 import { getMeta, setMeta } from '@/db';
@@ -148,6 +148,10 @@ export function setLocale(locale: Locale | null): { needsRestart: boolean } {
 
   active = next;
   i18n.locale = next;
+  // The widgets print our words too, and nothing else rewrites them until the
+  // app next goes to background. Required lazily: widget-sync → widget-data
+  // reaches back into this module.
+  void (require('@/widget-sync') as typeof import('@/widget-sync')).syncWidgets();
 
   if (wasRtl !== willBeRtl) {
     I18nManager.allowRTL(willBeRtl);
@@ -233,4 +237,26 @@ export function fmtDecimal(n: number, digits = 1): string {
  *  mounted across a switch — the tab bar — which nothing else tells. */
 export function useLocale(): Locale {
   return useSyncExternalStore((onChange) => i18n.onChange(onChange), currentLocale);
+}
+
+/**
+ * STALE TEXT AFTER A LANGUAGE SWITCH (21 Oct). The React Compiler caches every
+ * `t('literal')` forever — no argument ever changes — so a screen that stayed
+ * mounted across the switch (a tab, the show page under Settings) kept the old
+ * language: "Private" on the profile, "Notum / Özel not ekle" on a show.
+ * Rather than un-memoise screens one at a time, both navigators wrap every
+ * screen in this: a new locale is a new key, the screen remounts, and every
+ * `t()` runs again. Navigation state lives in the navigator, so the stack and
+ * the selected tab survive; only screen-local state (scroll, a draft) resets.
+ */
+function LocaleRemount({ children }: { children: ReactNode }) {
+  return createElement(Fragment, { key: useLocale() }, children);
+}
+
+/** `screenLayout` for a navigator. `keep` names a route NOT to remount — one
+ *  holding a nested navigator, whose remount would reset its state. */
+export function remountOnLocale(keep?: string) {
+  return function LocaleScreenLayout({ route, children }: { route: { name: string }; children: ReactElement }): ReactElement {
+    return route.name === keep ? children : createElement(LocaleRemount, null, children);
+  };
 }

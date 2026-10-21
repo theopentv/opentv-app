@@ -141,4 +141,14 @@ describe('planner with smart shows', () => {
     const out = planNotifications(input([past]), local(2026, 10, 22, 12), ON);
     expect(out.map((n) => n.at)).toEqual([atEvening('2026-10-24', 20)]);
   });
+
+  it('a finale delivered off its air day does not say tonight', () => {
+    const finale = { ...EP, episode: 8 };
+    const at = (smart: SmartPrefs) => planNotifications(input([{ ...finale, smart }]), now, ON)[0].bodyKey;
+    expect(at(prefs({ delay: 'usual' }))).toBe('localNotifications.seasonFinaleBody');
+    expect(at(prefs({ delay: 'nextMorning' }))).toBe('localNotifications.seasonFinaleBodyOut');
+    expect(at(prefs({ weekendsOnly: true }))).toBe('localNotifications.seasonFinaleBodyOut');
+    const plain = planNotifications(input([{ ...EP, smart: prefs({ delay: 'nextMorning' }) }]), now, ON)[0];
+    expect(plain.bodyKey).toBe('localNotifications.episodeBodyOut');
+  });
 });

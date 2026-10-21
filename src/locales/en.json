@@ -53,6 +53,10 @@
     "episodeBodyNamed": "{{code}} · {{title}} airs today",
     "seasonFinaleBody": "🔥 Season finale tonight!",
     "seriesFinaleBody": "🎬 The final episode airs today",
+    "episodeBodyOut": "{{code}} is out",
+    "episodeBodyNamedOut": "{{code}} · {{title}} is out",
+    "seasonFinaleBodyOut": "🔥 The season finale is out",
+    "seriesFinaleBodyOut": "🎬 The final episode is out",
     "catchupBody": {
       "one": "Only {{count}} episode left in Season {{season}}",
       "other": "Only {{count}} episodes left in Season {{season}}"
@@ -723,9 +727,18 @@
     "comingSoonBody": "Comparing with the people you follow arrives with accounts.",
     "compareWithFollowers": "COMPARE WITH THE PEOPLE YOU FOLLOW",
     "clock": {
-      "months": "MONTHS",
-      "days": "DAYS",
-      "hours": "HOURS",
+      "months": {
+        "one": "MONTH",
+        "other": "MONTHS"
+      },
+      "days": {
+        "one": "DAY",
+        "other": "DAYS"
+      },
+      "hours": {
+        "one": "HOUR",
+        "other": "HOURS"
+      },
       "monthsShort": "mo",
       "daysShort": "d",
       "hoursShort": "h"
@@ -2873,8 +2886,14 @@
   },
   "backupPrompt": {
     "title": "Keep your library safe",
-    "icloudBody": "Your {{count}} episodes live only on this phone. Turn on iCloud Drive and OpenTV keeps a copy there automatically — free, in your own iCloud.",
-    "driveBody": "Your {{count}} episodes live only on this phone. A copy in your own Google Drive means losing the phone never loses them — free, no account.",
+    "icloudBody": {
+      "one": "Your {{count}} episode lives only on this phone. Turn on iCloud Drive and OpenTV keeps a copy there automatically — free, in your own iCloud.",
+      "other": "Your {{count}} episodes live only on this phone. Turn on iCloud Drive and OpenTV keeps a copy there automatically — free, in your own iCloud."
+    },
+    "driveBody": {
+      "one": "Your {{count}} episode lives only on this phone. A copy in your own Google Drive means losing the phone never loses it — free, no account.",
+      "other": "Your {{count}} episodes live only on this phone. A copy in your own Google Drive means losing the phone never loses them — free, no account."
+    },
     "later": "Not now",
     "openSettings": "Open Settings",
     "turnOnDrive": "Back up to Google Drive"

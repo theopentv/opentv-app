@@ -50,9 +50,9 @@ function ClockRow({ months, days, hours }: { months: number; days: number; hours
     <View style={styles.clockRow}>
       {(
         [
-          [months, t('stats.clock.months')],
-          [days, t('stats.clock.days')],
-          [hours, t('stats.clock.hours')],
+          [months, t('stats.clock.months', { count: months })],
+          [days, t('stats.clock.days', { count: days })],
+          [hours, t('stats.clock.hours', { count: hours })],
         ] as const
       ).map(([v, u]) => (
         <View key={u} style={{ alignItems: 'center' }}>

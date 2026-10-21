@@ -49,7 +49,7 @@ import { UpdateGate } from '@/components/update-gate';
 installNavGuard();
 markIconsDecorative();
 import { PopcornGame } from '@/components/popcorn-game';
-import { initI18n, t } from '@/i18n';
+import { initI18n, remountOnLocale, t } from '@/i18n';
 import { useNotifyAsked, useOnboarded } from '@/session-store';
 import { decideWhatsNewAtLaunch } from '@/whats-new';
 import { MESSAGE_ROUTES } from '@/pure';
@@ -82,6 +82,9 @@ async function applySiriQueue(): Promise<void> {
     // No App Group in this build, or nothing queued. Both are normal.
   }
 }
+
+/** Every root screen remounts on a language switch, except the tab host. */
+const SCREEN_LAYOUT = remountOnLocale('(tabs)');
 
 export default function RootLayout() {
   // Runs exactly once, before the first paint: a lazy useState initialiser
@@ -625,6 +628,9 @@ export default function RootLayout() {
           */}
         <StatusBar style={appliedLight() ? 'dark' : 'light'} />
         <Stack
+        // Re-reads every t() after a language switch. Not (tabs): it holds the
+        // tab navigator, which listens for itself and remounts its own screens.
+        screenLayout={SCREEN_LAYOUT}
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.bg },

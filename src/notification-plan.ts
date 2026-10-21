@@ -344,6 +344,17 @@ export function isSeriesFinale(e: UpcomingEpisode): boolean {
   return e.ended && e.lastSeason != null && e.season === e.lastSeason && isSeasonFinale(e);
 }
 
+/**
+ * "TONIGHT" ONLY ON THE NIGHT (21 Oct). A smart reminder delivered the next
+ * morning, or parked on Saturday by weekends-only, still said "Season finale
+ * tonight!" / "airs today". Off the air day the body says it is out instead.
+ * The air day is the local date of the air instant when the time is known.
+ */
+export function onAirDay(e: Pick<UpcomingEpisode, 'air' | 'airsTime' | 'airZone'>, at: number): boolean {
+  const aired = new Date(airInstant(e.air, e.airsTime, e.airZone) ?? atEvening(e.air, 0));
+  return aired.toDateString() === new Date(at).toDateString();
+}
+
 function episodeCode(season: number, episode: number): string {
   return `S${String(season).padStart(2, '0')}E${String(episode).padStart(2, '0')}`;
 }
@@ -437,13 +448,21 @@ export function planNotifications(
             ? 'localNotifications.seasonFinaleTitle'
             : 'localNotifications.episodeTitle',
         titleParams: { show: e.showName },
-        bodyKey: series
-          ? 'localNotifications.seriesFinaleBody'
-          : season
-            ? 'localNotifications.seasonFinaleBody'
-            : e.title
-              ? 'localNotifications.episodeBodyNamed'
-              : 'localNotifications.episodeBody',
+        bodyKey: onAirDay(e, at)
+          ? series
+            ? 'localNotifications.seriesFinaleBody'
+            : season
+              ? 'localNotifications.seasonFinaleBody'
+              : e.title
+                ? 'localNotifications.episodeBodyNamed'
+                : 'localNotifications.episodeBody'
+          : series
+            ? 'localNotifications.seriesFinaleBodyOut'
+            : season
+              ? 'localNotifications.seasonFinaleBodyOut'
+              : e.title
+                ? 'localNotifications.episodeBodyNamedOut'
+                : 'localNotifications.episodeBodyOut',
         // finale bodies are fixed text — only the plain-episode bodies interpolate
         bodyParams: series || season ? undefined : e.title ? { code, title: e.title } : { code },
         at,

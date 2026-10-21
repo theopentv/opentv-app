@@ -15,15 +15,12 @@ import { alertNotOnTvdb } from '@/not-on-tvdb';
 import { movieRoute } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 import { tapSelection } from '@/haptics';
-import { t } from '@/i18n';
+import { compactCount } from '@/compact-count';
+import { currentLocale, t } from '@/i18n';
 
 type FeedItem = CatalogItem;
 
-function countLabel(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
+const countLabel = (n: number): string => compactCount(n, currentLocale());
 
 /**
  * This week's trending shows + movies — TheTVDB first, TMDB as fallback.

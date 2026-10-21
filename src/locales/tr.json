@@ -53,6 +53,10 @@
     "episodeBodyNamed": "{{code}} · {{title}} bugün yayında",
     "seasonFinaleBody": "🔥 Sezon finali bu akşam!",
     "seriesFinaleBody": "🎬 Final bölümü bugün yayında",
+    "episodeBodyOut": "{{code}} yayınlandı",
+    "episodeBodyNamedOut": "{{code}} · {{title}} yayınlandı",
+    "seasonFinaleBodyOut": "🔥 Sezon finali yayınlandı",
+    "seriesFinaleBodyOut": "🎬 Final bölümü yayınlandı",
     "catchupBody": {
       "one": "Sezon {{season}}: yalnızca {{count}} bölüm kaldı",
       "other": "Sezon {{season}}: yalnızca {{count}} bölüm kaldı"
@@ -723,9 +727,18 @@
     "comingSoonBody": "Takip ettiğin kişilerle karşılaştırma hesaplarla birlikte geliyor.",
     "compareWithFollowers": "TAKİP ETTİKLERİNLE KARŞILAŞTIR",
     "clock": {
-      "months": "AY",
-      "days": "GÜN",
-      "hours": "SAAT",
+      "months": {
+        "one": "AY",
+        "other": "AY"
+      },
+      "days": {
+        "one": "GÜN",
+        "other": "GÜN"
+      },
+      "hours": {
+        "one": "SAAT",
+        "other": "SAAT"
+      },
       "monthsShort": "ay",
       "daysShort": "g",
       "hoursShort": "sa"
@@ -2873,8 +2886,14 @@
   },
   "backupPrompt": {
     "title": "Kitaplığını güvende tut",
-    "icloudBody": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda.",
-    "driveBody": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez.",
+    "icloudBody": {
+      "one": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda.",
+      "other": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda."
+    },
+    "driveBody": {
+      "one": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez.",
+      "other": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez."
+    },
     "later": "Şimdi değil",
     "openSettings": "Ayarlar'ı aç",
     "turnOnDrive": "Google Drive'a yedekle"

@@ -53,6 +53,10 @@
     "episodeBodyNamed": "{{code}} · {{title}} läuft heute",
     "seasonFinaleBody": "🔥 Heute Abend ist Staffelfinale!",
     "seriesFinaleBody": "🎬 Die letzte Folge läuft heute",
+    "episodeBodyOut": "{{code}} ist da",
+    "episodeBodyNamedOut": "{{code}} · {{title}} ist da",
+    "seasonFinaleBodyOut": "🔥 Das Staffelfinale ist da",
+    "seriesFinaleBodyOut": "🎬 Die letzte Folge ist da",
     "catchupBody": {
       "one": "Nur noch {{count}} Folge in Staffel {{season}}",
       "other": "Nur noch {{count}} Folgen in Staffel {{season}}"
@@ -723,9 +727,18 @@
     "comingSoonBody": "Der Vergleich mit den Leuten, denen du folgst, kommt mit den Konten.",
     "compareWithFollowers": "MIT LEUTEN VERGLEICHEN, DENEN DU FOLGST",
     "clock": {
-      "months": "MONATE",
-      "days": "TAGE",
-      "hours": "STUNDEN",
+      "months": {
+        "one": "MONAT",
+        "other": "MONATE"
+      },
+      "days": {
+        "one": "TAG",
+        "other": "TAGE"
+      },
+      "hours": {
+        "one": "STUNDE",
+        "other": "STUNDEN"
+      },
       "monthsShort": "Mon.",
       "daysShort": "T",
       "hoursShort": "Std."
@@ -2873,8 +2886,14 @@
   },
   "backupPrompt": {
     "title": "Halte deine Bibliothek sicher",
-    "icloudBody": "Deine {{count}} Folgen gibt es nur auf diesem Handy. Schalte iCloud Drive ein, und OpenTV legt dort automatisch eine Kopie ab – kostenlos, in deiner eigenen iCloud.",
-    "driveBody": "Deine {{count}} Folgen gibt es nur auf diesem Handy. Mit einer Kopie in deinem eigenen Google Drive verlierst du sie nie, auch wenn das Handy weg ist – kostenlos, ohne Konto.",
+    "icloudBody": {
+      "one": "Deine {{count}} Folge gibt es nur auf diesem Handy. Schalte iCloud Drive ein, und OpenTV legt dort automatisch eine Kopie ab – kostenlos, in deiner eigenen iCloud.",
+      "other": "Deine {{count}} Folgen gibt es nur auf diesem Handy. Schalte iCloud Drive ein, und OpenTV legt dort automatisch eine Kopie ab – kostenlos, in deiner eigenen iCloud."
+    },
+    "driveBody": {
+      "one": "Deine {{count}} Folge gibt es nur auf diesem Handy. Mit einer Kopie in deinem eigenen Google Drive verlierst du sie nie, auch wenn das Handy weg ist – kostenlos, ohne Konto.",
+      "other": "Deine {{count}} Folgen gibt es nur auf diesem Handy. Mit einer Kopie in deinem eigenen Google Drive verlierst du sie nie, auch wenn das Handy weg ist – kostenlos, ohne Konto."
+    },
     "later": "Nicht jetzt",
     "openSettings": "Einstellungen öffnen",
     "turnOnDrive": "In Google Drive sichern"

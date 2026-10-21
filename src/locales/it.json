@@ -53,6 +53,10 @@
     "episodeBodyNamed": "{{code}} · {{title}} va in onda oggi",
     "seasonFinaleBody": "🔥 Finale di stagione stasera!",
     "seriesFinaleBody": "🎬 L'episodio finale va in onda oggi",
+    "episodeBodyOut": "{{code}} è disponibile",
+    "episodeBodyNamedOut": "{{code}} · {{title}} è disponibile",
+    "seasonFinaleBodyOut": "🔥 Il finale di stagione è disponibile",
+    "seriesFinaleBodyOut": "🎬 L'episodio finale è disponibile",
     "catchupBody": {
       "one": "Manca solo {{count}} episodio alla fine della Stagione {{season}}",
       "other": "Mancano solo {{count}} episodi alla fine della Stagione {{season}}"
@@ -723,9 +727,18 @@
     "comingSoonBody": "Il confronto con le persone che segui arriverà con gli account.",
     "compareWithFollowers": "CONFRONTA CON LE PERSONE CHE SEGUI",
     "clock": {
-      "months": "MESI",
-      "days": "GIORNI",
-      "hours": "ORE",
+      "months": {
+        "one": "MESE",
+        "other": "MESI"
+      },
+      "days": {
+        "one": "GIORNO",
+        "other": "GIORNI"
+      },
+      "hours": {
+        "one": "ORA",
+        "other": "ORE"
+      },
       "monthsShort": "mesi",
       "daysShort": "g",
       "hoursShort": "h"
@@ -2873,8 +2886,14 @@
   },
   "backupPrompt": {
     "title": "Proteggi la tua libreria",
-    "icloudBody": "I tuoi {{count}} episodi sono solo su questo telefono. Attiva iCloud Drive e OpenTV ne tiene una copia automaticamente — gratis, nel tuo iCloud.",
-    "driveBody": "I tuoi {{count}} episodi sono solo su questo telefono. Una copia nel tuo Google Drive e perdere il telefono non li perde più — gratis, senza account.",
+    "icloudBody": {
+      "one": "Il tuo {{count}} episodio è solo su questo telefono. Attiva iCloud Drive e OpenTV ne tiene una copia automaticamente — gratis, nel tuo iCloud.",
+      "other": "I tuoi {{count}} episodi sono solo su questo telefono. Attiva iCloud Drive e OpenTV ne tiene una copia automaticamente — gratis, nel tuo iCloud."
+    },
+    "driveBody": {
+      "one": "Il tuo {{count}} episodio è solo su questo telefono. Una copia nel tuo Google Drive e perdere il telefono non lo perde più — gratis, senza account.",
+      "other": "I tuoi {{count}} episodi sono solo su questo telefono. Una copia nel tuo Google Drive e perdere il telefono non li perde più — gratis, senza account."
+    },
     "later": "Non ora",
     "openSettings": "Apri Impostazioni",
     "turnOnDrive": "Backup su Google Drive"

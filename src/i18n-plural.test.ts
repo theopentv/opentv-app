@@ -8,10 +8,11 @@
  * translate/pluralize code path — the thing under doubt.
  */
 import { I18n, useMakePlural } from 'i18n-js';
-import { ar as arPluralRule } from 'make-plural';
+import { ar as arPluralRule, pl as plPluralRule } from 'make-plural';
 
 import ar from './locales/ar.json';
 import en from './locales/en.json';
+import pl from './locales/pl.json';
 
 describe('Arabic plural selection at runtime', () => {
   const i18n = new I18n({ en, ar });
@@ -59,5 +60,38 @@ describe('Arabic plural selection at runtime', () => {
     expect(unregistered.t('stats.shows.onShows', { count: 3 })).not.toBe(
       i18n.t('stats.shows.onShows', { count: 3 }),
     );
+  });
+});
+
+describe('backup prompt counts its episodes (21 Oct: "Your 1 episodes")', () => {
+  const i18n = new I18n({ en, ar });
+  i18n.pluralization.register('ar', useMakePlural({ pluralizer: arPluralRule }));
+
+  it('reads singular at 1 in English and Arabic', () => {
+    i18n.locale = 'en';
+    expect(i18n.t('backupPrompt.icloudBody', { count: 1 })).toMatch(/^Your 1 episode lives/);
+    expect(i18n.t('backupPrompt.driveBody', { count: 2 })).toMatch(/^Your 2 episodes live/);
+    i18n.locale = 'ar';
+    expect(i18n.t('backupPrompt.driveBody', { count: 1 })).toMatch(/^حلقتك الوحيدة/);
+    expect(i18n.t('backupPrompt.driveBody', { count: 2 })).toMatch(/^حلقتاك الاثنتان/);
+  });
+});
+
+describe('the TV-time clock counts its units (21 Oct: "15 GODZINY")', () => {
+  const i18n = new I18n({ en, pl });
+  i18n.pluralization.register('pl', useMakePlural({ pluralizer: plPluralRule }));
+
+  it('Polish one/few/many', () => {
+    i18n.locale = 'pl';
+    expect(i18n.t('stats.clock.hours', { count: 1 })).toBe('GODZINA');
+    expect(i18n.t('stats.clock.hours', { count: 3 })).toBe('GODZINY');
+    expect(i18n.t('stats.clock.hours', { count: 15 })).toBe('GODZIN');
+    expect(i18n.t('stats.clock.months', { count: 22 })).toBe('MIESIĄCE');
+  });
+
+  it('English one/other', () => {
+    i18n.locale = 'en';
+    expect(i18n.t('stats.clock.days', { count: 1 })).toBe('DAY');
+    expect(i18n.t('stats.clock.days', { count: 0 })).toBe('DAYS');
   });
 });
