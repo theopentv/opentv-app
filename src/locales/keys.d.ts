@@ -1244,6 +1244,7 @@ export type LocaleKey =
   | "pickGif.coverTitle"
   | "pickGif.failedTitle"
   | "pickGif.gif"
+  | "pickGif.gifNumber"
   | "pickGif.noKey"
   | "pickGif.none"
   | "pickGif.notice"

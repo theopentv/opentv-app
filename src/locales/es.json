@@ -2336,6 +2336,7 @@
     "noKey": "La búsqueda de GIF necesita una clave API de GIPHY en esta versión — mira src/giphy-key.example.ts.",
     "failedTitle": "No se pudo guardar el GIF",
     "gif": "GIF",
+    "gifNumber": "GIF {{n}} de {{total}}",
     "coverTitle": "Elige un GIF de banner",
     "pickTitle": "Elige una serie o película de tu biblioteca.",
     "none": "No se encontraron GIF para este.",

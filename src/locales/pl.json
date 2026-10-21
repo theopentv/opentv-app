@@ -2522,6 +2522,7 @@
     "noKey": "Wyszukiwanie GIF-ów wymaga klucza API GIPHY w tej wersji — zobacz src/giphy-key.example.ts.",
     "failedTitle": "Nie udało się zapisać GIF-a",
     "gif": "GIF",
+    "gifNumber": "GIF {{n}} z {{total}}",
     "coverTitle": "Wybierz GIF na baner",
     "pickTitle": "Wybierz serial lub film ze swojej biblioteki.",
     "none": "Brak GIF-ów dla tego tytułu.",

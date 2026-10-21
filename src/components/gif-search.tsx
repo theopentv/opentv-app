@@ -48,7 +48,8 @@ const GAP = 8;
  * a decoder to read one frame would be absurd when the service already
  * publishes that frame as a photograph.
  */
-export type GifHit = { id: string; preview: string; full: string; still: string };
+/** `label` is GIPHY's alt text or title, for screen readers; '' when it sent none. */
+export type GifHit = { id: string; preview: string; full: string; still: string; label: string };
 
 export function GifSearch({ onPick, busyId }: { onPick: (hit: GifHit) => void; busyId?: string | null }) {
   /*
@@ -166,6 +167,8 @@ export function GifSearch({ onPick, busyId }: { onPick: (hit: GifHit) => void; b
       type GiphyImage = { url?: string; webp?: string };
       type GiphyHit = {
         id: string;
+        title?: string;
+        alt_text?: string;
         images?: {
           fixed_width?: GiphyImage;
           fixed_width_downsampled?: GiphyImage;
@@ -192,6 +195,7 @@ export function GifSearch({ onPick, busyId }: { onPick: (hit: GifHit) => void; b
                 // A profile widget does not need the tens.
                 full: r.images?.downsized?.url ?? r.images?.original?.url ?? '',
                 still: r.images?.['480w_still']?.url ?? '',
+                label: (r.alt_text || r.title || '').trim(),
               }))
               .filter((h) => h.preview && h.full),
           );
@@ -302,8 +306,11 @@ export function GifSearch({ onPick, busyId }: { onPick: (hit: GifHit) => void; b
           style={{ flex: 1 }}
           contentContainerStyle={{ padding: space.lg, gap: GAP }}
           columnWrapperStyle={{ gap: GAP }}
-          renderItem={({ item }) => (
-            <Pressable accessibilityRole="button" accessibilityLabel={t('pickGif.gif')} onPress={() => onPick(item)} style={{ width: cell }}>
+          renderItem={({ item, index }) => (
+            <Pressable
+              accessibilityRole="button"
+              // GIPHY's own words for it, else its place in the grid (21 Oct: every one read "GIF").
+              accessibilityLabel={item.label || t('pickGif.gifNumber', { n: index + 1, total: hits.length })} onPress={() => onPick(item)} style={{ width: cell }}>
               <Image source={{ uri: item.preview }} style={[s.gif, { width: cell }]} contentFit="cover" cachePolicy="memory-disk" recyclingKey={item.id} />
               {busyId === item.id && (
                 <View style={s.savingVeil}>

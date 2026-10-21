@@ -2336,6 +2336,7 @@
     "noKey": "GIF araması için bu sürümde bir GIPHY API anahtarı gerekiyor; bkz. src/giphy-key.example.ts.",
     "failedTitle": "GIF kaydedilemedi",
     "gif": "GIF",
+    "gifNumber": "GIF {{n}}/{{total}}",
     "coverTitle": "Bir banner GIF'i seç",
     "pickTitle": "Kitaplığından bir dizi ya da film seç.",
     "none": "Bunun için GIF bulunamadı.",
