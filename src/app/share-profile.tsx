@@ -8,7 +8,8 @@ import seed from '@/seed';
 import { getMeta, getMovieTotals, getTotals } from '@/db';
 import { isSeedLibrary, profileImageUri } from '@/library';
 import { colors, radius, ls } from '@/theme';
-import { t } from '@/i18n';
+import { compactCount } from '@/compact-count';
+import { currentLocale, t } from '@/i18n';
 import { getHandle } from '@/community-session';
 import { profilePath, withLink } from '@/share-link';
 import { oneAtATime } from '@/one-at-a-time';
@@ -29,11 +30,7 @@ const BRAND_H = 34;
 const F = CARD_W / 358;
 const fs = (n: number) => Math.round(n * F * 2) / 2;
 
-function countLabel(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return String(n);
-}
+const countLabel = (n: number): string => compactCount(n, currentLocale());
 
 /**
  * THE NON-ZERO PARTS, LARGEST FIRST.
