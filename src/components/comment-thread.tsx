@@ -1013,7 +1013,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
 
       {/* Non-members never reach here — the gate above returns first (1.6.7). */}
       <Pressable accessibilityRole="button"
-        style={styles.pencil}
+        style={[styles.pencil, { bottom: space.xl + (process.env.EXPO_OS === 'android' ? insets.bottom : 0) }]}
         accessibilityLabel={t('community.comments.placeholder')}
         onPress={() => {
           tapSelection();

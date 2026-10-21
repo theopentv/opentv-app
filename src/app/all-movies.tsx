@@ -5,6 +5,7 @@ import { Keyboard, Pressable, SectionList, StyleSheet, Text, TextInput, View, us
 
 import { Poster, posterSpeech } from '@/components/poster';
 import { NavHeader, Screen } from '@/components/ui';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovies, type MovieRow, getRecentMovies } from '@/db';
 import { movieFacts } from '@/filter-facts';
 import { useFilters } from '@/filters-store';
@@ -38,6 +39,7 @@ export default function AllMoviesScreen() {
 
   const active = activeFilterCount(filters);
 
+  const insets = useSafeAreaInsets();
   // rows of N posters, N following the viewport — 3 on a phone, more on a tablet
   const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
 
@@ -159,7 +161,7 @@ export default function AllMoviesScreen() {
           )}
         />
         {/* floating yellow FILTERS pill, like the real app */}
-        <Pressable accessibilityRole="button" style={styles.filtersPill} onPress={() => router.push('/movie-filters')}>
+        <Pressable accessibilityRole="button" style={[styles.filtersPill, { bottom: 40 + (process.env.EXPO_OS === 'android' ? insets.bottom : 0) }]} onPress={() => router.push('/movie-filters')}>
           <Ionicons name="filter" size={16} color={colors.onYellow} />
           <Text style={styles.filtersText}>{t('allMovies.filters')}</Text>
           {/* persistent filters have to announce themselves — see all-shows */}

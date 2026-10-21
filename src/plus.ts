@@ -268,7 +268,20 @@ export function usePlusUi(): boolean {
  */
 export function usePaywallOverModal() {
   const [away, setAway] = useState<string | null>(null);
-  useFocusEffect(useCallback(() => setAway(null), []));
+  // iOS focuses this screen as the paywall STARTS closing, and refuses to present
+  // the RN Modal while that dismissal is still animating — state says visible,
+  // nothing shows, and the pencil is dead. So wait out the animation there.
+  // ponytail: fixed delay, a dismissal-finished event if one ever proves too short.
+  useFocusEffect(
+    useCallback(() => {
+      if (process.env.EXPO_OS !== 'ios') {
+        setAway(null);
+        return;
+      }
+      const id = setTimeout(() => setAway(null), 600);
+      return () => clearTimeout(id);
+    }, []),
+  );
   return {
     away: away != null,
     /** Call instead of `requirePlus(from)` from inside the Modal. */

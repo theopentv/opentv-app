@@ -1411,7 +1411,7 @@ export default function MovieScreen() {
 
           {/* comments float over More, spoiler-guarded while unwatched */}
           {tab === 'More' && inDb && (
-            <Pressable style={styles.commentsPill} onPress={openComments} accessibilityRole="button">
+            <Pressable style={[styles.commentsPill, { bottom: 20 + (process.env.EXPO_OS === 'android' ? insets.bottom : 0) }]} onPress={openComments} accessibilityRole="button">
               <Text style={styles.commentsText}>{t('media.commentsPill')}</Text>
               <Ionicons name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'} size={16} color="#FFF" />
             </Pressable>

@@ -166,6 +166,7 @@ function EpisodePage({
   /** A neighbour the pager keeps mounted but is not showing — see the pager. */
   offscreen?: boolean;
 }) {
+  const insets = useSafeAreaInsets();
   // real watch state from the database — toggling writes back to it
   const existing = show ? getWatch(show.tvdbId, season, ep) : null;
   const vote = show ? getEpisodeVote(show.tvdbId, season, ep) : { stars: null, emotions: [] };
@@ -1060,7 +1061,7 @@ function EpisodePage({
 
       {/* watched: the blue comments pill floats over the content */}
       {watched && (
-        <Pressable style={styles.commentsPillFloat} onPress={openComments} accessibilityRole="button">
+        <Pressable style={[styles.commentsPillFloat, { bottom: 20 + (process.env.EXPO_OS === 'android' ? insets.bottom : 0) }]} onPress={openComments} accessibilityRole="button">
           <Text style={styles.commentsText}>{t('media.commentsPill')}</Text>
           <Ionicons name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'} size={16} color="#FFF" />
         </Pressable>
