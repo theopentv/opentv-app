@@ -1183,8 +1183,24 @@ export function addShow(tvdbId: number, name: string, posterUrl: string | null):
     'INSERT OR IGNORE INTO shows (tvdbId, name, posterUrl, episodesSeen, followed, favorited, archived, addedAt) VALUES (?, ?, ?, 0, 1, 0, 0, ?)',
     [tvdbId, name, posterUrl, now],
   );
+  /*
+   * A ROW THAT WAS ONLY AN ID GETS ITS NAME. Another device's tick can land
+   * before its add (or with no add at all, for a show added before sync was
+   * on), and `markWatched` then makes the row from the id — "81189", no
+   * poster. The add that follows must heal it, not be ignored by the OR IGNORE.
+   */
+  if (name.trim()) {
+    db.runSync(
+      "UPDATE shows SET name = ? WHERE tvdbId = ? AND (name IS NULL OR TRIM(name) = '' OR TRIM(name) = CAST(tvdbId AS TEXT))",
+      [name, tvdbId],
+    );
+  }
+  if (posterUrl) {
+    db.runSync("UPDATE shows SET posterUrl = ? WHERE tvdbId = ? AND (posterUrl IS NULL OR posterUrl = '')", [posterUrl, tvdbId]);
+  }
   // a new show may need metadata — let the offline pre-cache run again
   db.runSync('DELETE FROM meta WHERE key = ?', ['metaCacheComplete']);
+  queueOp({ t: 'showAdd', show: tvdbId, name, poster: posterUrl });
 }
 
 /** Follow/unfollow without touching history — unfollowed shows stay in the

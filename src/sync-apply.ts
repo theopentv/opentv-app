@@ -10,6 +10,7 @@
  */
 import {
   addMovieRewatch,
+  addShow,
   addMovieToWatchlist,
   clearEpisodeRating,
   clearMovieStars,
@@ -18,6 +19,8 @@ import {
   DESIGN_AT_KEY,
   episodeEmotions,
   getMeta,
+  getShowsMissingName,
+  getShowsMissingPoster,
   markRewatched,
   markWatched,
   notifyRemoteChange,
@@ -31,6 +34,8 @@ import {
   setShowArchived,
   setShowFavorited,
   setShowFinished,
+  setShowName,
+  setShowPoster,
   toggleEpisodeEmotion,
   unmarkWatched,
 } from '@/db';
@@ -56,10 +61,12 @@ export function applyRemoteOps<T extends RemoteOp>(
   onEach: (op: T) => void,
   skip?: (a: Action, op: T) => boolean,
 ): void {
+  const ticked = new Set<number>();
   setApplyingRemote(true);
   try {
     for (const op of orderOps(ops)) {
       const a = parseOp(op.kind, op.payload);
+      if (a?.t === 'watch') ticked.add(a.show);
       // `null` is a newer build's vocabulary. Skip it and keep the cursor
       // moving — refusing the batch would wedge this device for good.
       if (a && !skip?.(a, op)) {
@@ -76,6 +83,30 @@ export function applyRemoteOps<T extends RemoteOp>(
     setApplyingRemote(false);
   }
   if (ops.length > 0) notifyRemoteChange();
+  if (ticked.size > 0) {
+    const nameless = getShowsMissingName().map((r) => r.tvdbId).filter((id) => ticked.has(id));
+    if (nameless.length) void nameShows(nameless);
+  }
+}
+
+/**
+ * A SHOW THIS DEVICE FIRST MET AS A TICK. With no `showAdd` before it — a show
+ * added before sync was on, or by a build without that op — `markWatched`
+ * makes the row from the id alone, and it read "81189" with no poster until
+ * the next launch's backfill. Named now, from TheTVDB, the way the backfill
+ * would. Offline: the launch backfill still gets it.
+ */
+async function nameShows(ids: number[]): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { tvdbSeries } = require('@/tvdb') as typeof import('@/tvdb');
+  const posterless = new Set(getShowsMissingPoster().map((r) => r.tvdbId));
+  for (const id of ids) {
+    const hit = await tvdbSeries(id);
+    const name = hit?.name?.trim();
+    if (name && name !== String(id)) setShowName(id, name);
+    if (posterless.has(id) && hit?.image && !hit.image.includes('/images/missing/')) setShowPoster(id, hit.image);
+  }
+  notifyRemoteChange();
 }
 
 /** Everything one op means, done through the same functions the screens use. */
@@ -104,6 +135,9 @@ function apply(a: Action, ts = 0): void {
       break;
     case 'showDelete':
       deleteShow(a.show);
+      break;
+    case 'showAdd':
+      addShow(a.show, a.name, a.poster);
       break;
     case 'movieWatch':
       setMovieWatched(a.name, a.on);

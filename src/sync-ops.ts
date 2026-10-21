@@ -36,6 +36,11 @@ export type Action =
   | { t: 'unrate'; show: number; s: number; e: number }
   | { t: 'showFlag'; show: number; flag: 'followed' | 'favorited' | 'archived' | 'finished'; on: boolean }
   | { t: 'showDelete'; show: number }
+  /** A show put in the library with nothing watched yet (21 Oct). Without it
+   *  the other device never heard of the show until an episode was ticked, and
+   *  then made the row from the id alone — "81189", no poster. The name and
+   *  poster are what the adding device's search result already had. */
+  | { t: 'showAdd'; show: number; name: string; poster: string | null }
   | { t: 'movieWatch'; name: string; on: boolean }
   /** `ten: null` is an UNRATE. A device on an older build fails to parse
    *  it and drops the op, which loses the undo but never invents a zero.
@@ -203,6 +208,10 @@ export function parseOp(kind: string, payload: string): Action | null {
     }
     case 'showDelete':
       return show != null ? { t: 'showDelete', show } : null;
+    case 'showAdd':
+      // A blank name is allowed — some add paths have none yet — and is filled
+      // by the name backfill, as on the device that added it.
+      return show != null && show > 0 ? { t: 'showAdd', show, name: name ?? '', poster: str(o.poster) } : null;
     case 'movieWatch':
       return name && typeof o.on === 'boolean' ? { t: 'movieWatch', name, on: o.on } : null;
     case 'movieStars': {

@@ -41,6 +41,8 @@ describe('round trip', () => {
     { t: 'unrate', show: 72454, s: 2, e: 3 },
     { t: 'showFlag', show: 72454, flag: 'archived', on: true },
     { t: 'showDelete', show: 72454 },
+    { t: 'showAdd', show: 81189, name: 'Breaking Bad', poster: 'https://artworks.thetvdb.com/p.jpg' },
+    { t: 'showAdd', show: 81189, name: '', poster: null },
     { t: 'movieWatch', name: 'Dune', on: false },
     { t: 'movieStars', name: 'Dune', ten: 7, stars: 4 },
     { t: 'movieStars', name: 'Dune', ten: null, stars: null },
@@ -71,6 +73,11 @@ describe('what is refused', () => {
     expect(parseOp('rate', '{"show":1,"s":1,"e":1,"stars":0}')).toBeNull();
     expect(parseOp('rate', '{"show":1,"s":1,"e":1,"ten":0,"stars":0}')).toBeNull();
     expect(parseOp('rate', '{"show":1,"s":1,"e":1,"ten":11,"stars":5}')).toBeNull();
+  });
+
+  it('refuses a show add with no usable id', () => {
+    expect(parseOp('showAdd', '{"name":"x"}')).toBeNull();
+    expect(parseOp('showAdd', '{"show":0,"name":"x"}')).toBeNull();
   });
 
   it('refuses a flag it does not own', () => {
