@@ -1,3 +1,4 @@
+import { AR_TAG } from '@/arabic-digits-shim';
 /**
  * Which language the app runs in. Pure so it can be tested without a device:
  * the wrapper that reads the phone and the database lives in src/i18n.ts.
@@ -39,7 +40,7 @@ export function isRtlLocale(locale: Locale): boolean {
  * formatter goes through this; the i18n lookup keeps the bare 'ar'.
  */
 export function intlTag(locale: string): string {
-  return locale === 'ar' ? 'ar-u-nu-arab' : locale;
+  return locale === 'ar' ? AR_TAG : locale;
 }
 
 /**
