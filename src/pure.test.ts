@@ -780,6 +780,13 @@ describe('gridGeometry tablet breakpoint', () => {
     expect(gridGeometry(1366, PAD, GAP).cols).toBe(9); // iPad 13" landscape
   });
 
+  it.each(PAIRS)('gives the open iPhone Duo an even count, no poster column on the fold (PAD=$PAD)', ({ PAD, GAP }) => {
+    expect(gridGeometry(669, PAD, GAP).cols).toBe(6); // 5.3 would round to 5
+    for (let w = 600; w < TABLET_MIN_W; w++) expect(gridGeometry(w, PAD, GAP).cols % 2).toBe(0);
+    // the Duo closed (386pt) is a phone: three, as ever
+    expect(gridGeometry(386, PAD, GAP).cols).toBe(3);
+  });
+
   it.each(PAIRS)('keeps the phone target just below the breakpoint (PAD=$PAD)', ({ PAD, GAP }) => {
     expect(gridGeometry(TABLET_MIN_W - 1, PAD, GAP).cols).toBe(6);
   });
@@ -1086,17 +1093,16 @@ describe('commentsSplitLayout (iPhone Duo open: the page beside its comments)', 
     }
   });
 
-  it('splits the Duo opened: 669pt is a 375pt page and 294pt of comments', () => {
-    expect(commentsSplitLayout(669)).toEqual({ split: true, pageW: 375, threadW: 294 });
+  it('splits the Duo opened in half, seam on the fold: 335 | 334', () => {
+    expect(commentsSplitLayout(669)).toEqual({ split: true, pageW: 335, threadW: 334 });
   });
 
-  it('gives the page more once there is more, and the two halves always fill the width', () => {
+  it('the two halves always fill the width, a point apart at most', () => {
     for (const w of [600, 669, 744, 834, 899]) {
       const l = commentsSplitLayout(w);
       expect(l.split).toBe(true);
-      expect(l.pageW).toBeGreaterThanOrEqual(375);
-      expect(l.pageW).toBeGreaterThan(l.threadW);
       expect(l.pageW + l.threadW).toBe(w);
+      expect(Math.abs(l.pageW - l.threadW)).toBeLessThanOrEqual(1);
     }
   });
 

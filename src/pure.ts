@@ -545,6 +545,17 @@ export type GridGeometry = {
  *  two separate constants (a breakpoint vs. a layout cap); do not merge them. */
 export const TABLET_MIN_W = 700;
 
+/** The iPhone Duo opened is 669pt wide and reports a REGULAR width size class,
+ *  like an iPad; every phone held upright is 440pt or less. 600 sits between
+ *  the two, so the Duo open (and an iPad in portrait) splits and no phone
+ *  ever does. Above DETAIL_PANE_MIN_W the detail is already a pane beside the
+ *  list, and that layout stays as it is.
+ *
+ *  Declared up here, above `gridGeometry`, on purpose: that is a worklet, and
+ *  a worklet captures the constants it reads when it is DEFINED. Declared
+ *  below it, this read as undefined inside it and the rule never fired. */
+export const COMMENTS_SPLIT_MIN_W = 600;
+
 /** Poster width each layout aims for. A tablet is held further away, so its
  *  posters are bigger rather than merely more numerous — reusing the phone's
  *  118pt would give ~11 columns of postage stamps on a 13" iPad.
@@ -563,7 +574,16 @@ export function gridGeometry(width: number, hPad: number, gap: number): GridGeom
   'worklet';
   const inner = width - hPad * 2;
   const target = width >= TABLET_MIN_W ? TARGET_CELL_W_TABLET : TARGET_CELL_W;
-  const cols = Math.max(3, Math.round((inner + gap) / (target + gap)));
+  const fit = (inner + gap) / (target + gap);
+  // Between a phone and a tablet is the open iPhone Duo (669pt), whose hinge
+  // runs down the middle: an odd count puts a column of posters across the
+  // fold, so there it rounds UP to an even count (669pt: 5.3 -> 6). Up, not
+  // to the nearest: 599pt is already 5, and the count must never shrink as
+  // the window grows.
+  const cols =
+    width >= COMMENTS_SPLIT_MIN_W && width < TABLET_MIN_W
+      ? 2 * Math.ceil(fit / 2)
+      : Math.max(3, Math.round(fit));
   const cellW = (inner - gap * (cols - 1)) / cols;
   const cellH = cellW * 1.5; // poster aspect 2:3
   return { cols, cellW, cellH, slotW: cellW + gap, slotH: cellH + gap };
@@ -903,23 +923,18 @@ export function hasWindowControls(iPhone: boolean, appW: number, screenW: number
   return !iPhone && appW < screenW - 1;
 }
 
-/** The iPhone Duo opened is 669pt wide and reports a REGULAR width size class,
- *  like an iPad; every phone held upright is 440pt or less. 600 sits between
- *  the two, so the Duo open (and an iPad in portrait) splits and no phone
- *  ever does. Above DETAIL_PANE_MIN_W the detail is already a pane beside the
- *  list, and that layout stays as it is. */
-export const COMMENTS_SPLIT_MIN_W = 600;
-/** The page keeps at least a small phone's width; the comments get the rest. */
-const SPLIT_PAGE_MIN_W = 375;
-
 /**
  * A show, episode or film page with its comments BESIDE it rather than behind
  * a Comments row — the open iPhone Duo's two halves, the way Mail puts the
- * message beside its list. 669pt splits 375 | 294.
+ * message beside its list.
+ *
+ * HALF AND HALF, ON THE FOLD. The Duo's hinge runs down the middle of the
+ * inner display, and Apple's split puts the seam there so that neither side's
+ * controls sit across it when the phone is partly folded. 669pt splits 335 | 334.
  */
 export function commentsSplitLayout(width: number): { split: boolean; pageW: number; threadW: number } {
   if (width < COMMENTS_SPLIT_MIN_W || width >= DETAIL_PANE_MIN_W) return { split: false, pageW: width, threadW: 0 };
-  const pageW = Math.max(SPLIT_PAGE_MIN_W, Math.round(width * 0.55));
+  const pageW = Math.round(width / 2);
   return { split: true, pageW, threadW: width - pageW };
 }
 
