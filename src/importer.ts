@@ -41,7 +41,8 @@ import { ratingFromStars, ratingFromTen } from '@/star-rating';
 import { notesFromSidecar } from '@/notes-pure';
 import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, listPlaceholderName, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
 import { tmdb, pool } from '@/tmdb';
-import { isNetworkError, netIsOpen, netReachable, netUnreachable } from '@/net-circuit';
+import { fetchToDocuments } from '@/fetch-to-documents';
+import { netIsOpen } from '@/net-circuit';
 
 export type Progress = { phase: string; done: number; total: number; counts?: { shows: number; episodes: number; movies: number } };
 /** total = rows in the export; added = new this import; existing = already in
@@ -380,34 +381,7 @@ export function restoreWatchesFromExport(tvdbIds: number[]): number {
   return restored;
 }
 
-// grab a CDN image into the app's documents; returns the saved filename.
-// hard 15s timeout: a dead-but-hanging CDN link (TV Time's are dying) must
-// never stall the import — it aborts and the letter/placeholder stands in
-async function fetchToDocuments(url: string, name: string, timeoutMs = 15000): Promise<string | null> {
-  // The breaker, for the same reason the metadata lookups have it: these run
-  // through `pool` too, and a library with hundreds of comment images on a
-  // dead network spends its whole timeout budget discovering that one dead
-  // network hundreds of times. Returning null early is exactly what a dead
-  // CDN link already does, so no caller needs to change.
-  if (netIsOpen()) return null;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, { signal: ctrl.signal });
-    netReachable(); // a 404 from a CDN is still a CDN answering
-    if (!res.ok) return null;
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    const dest = new File(Paths.document, name);
-    if (dest.exists) dest.delete();
-    dest.write(bytes);
-    return name;
-  } catch (err) {
-    if (isNetworkError(err)) netUnreachable();
-    return null; // CDN link dead or timed out — the letter avatar stands in
-  } finally {
-    clearTimeout(timer);
-  }
-}
+// grab a CDN image into the app's documents -- streamed, see fetch-to-documents.ts
 
 // the original link first, then the TheTVDB rewrite (`tvdbRescueUrl`, in the
 // package) now that the original is dead
@@ -600,6 +574,8 @@ export function relinkOrphanedCommentImages(): void {
 }
 
 let commentFillRunning = false;
+/** How many missing comment pictures one launch (or import) fetches. */
+const COMMENT_FILL_PER_PASS = 50;
 /** Download comment images not grabbed during import (beyond the in-import
  * batch, or a run cut short) and store them locally. Each image is attempted
  * once — a dead CloudFront link sets imageTried so it's never retried forever.
@@ -610,8 +586,13 @@ export async function downloadPendingCommentImages(): Promise<void> {
   try {
     // free wins first: images already on the device from an earlier import
     relinkOrphanedCommentImages();
+    // A BATCH PER PASS, not the archive. 296 pictures approved at once all
+    // became "pending" on the next launch, and the fill went for every one of
+    // them while the first screen was still settling. The rest wait for the
+    // next launch; each row is still tried exactly once.
     const pending = db.getAllSync<{ id: number; imageUrl: string }>(
-      "SELECT id, imageUrl FROM comments WHERE imageUrl IS NOT NULL AND imageUrl != '' AND (image IS NULL OR image = '') AND imageTried = 0",
+      "SELECT id, imageUrl FROM comments WHERE imageUrl IS NOT NULL AND imageUrl != '' AND (image IS NULL OR image = '') AND imageTried = 0 ORDER BY id LIMIT ?",
+      [COMMENT_FILL_PER_PASS],
     );
     if (pending.length === 0) return;
     await pool(
@@ -624,7 +605,7 @@ export async function downloadPendingCommentImages(): Promise<void> {
         db.runSync('UPDATE comments SET image = COALESCE(?, image), imageTried = 1 WHERE id = ?', [saved, row.id]);
         return null;
       },
-      6,
+      3,
     );
   } finally {
     commentFillRunning = false;
