@@ -3520,6 +3520,18 @@
     "openFilm": "Apri il film",
     "memoryFilm": "L'hai visto nel {{year}}"
   },
+  "puzzleStreak": {
+    "start": "🧩 Giorno 1 — torna domani per non perdere la serie",
+    "days": {
+      "one": "🧩 Serie di puzzle: {{count}} giorno",
+      "other": "🧩 Serie di puzzle: {{count}} giorni"
+    },
+    "bannerNew": "Il puzzle di oggi è pronto — indovina il titolo",
+    "bannerKeep": {
+      "one": "Il puzzle di oggi è pronto — non perdere la serie di {{count}} giorno",
+      "other": "Il puzzle di oggi è pronto — non perdere la serie di {{count}} giorni"
+    }
+  },
   "puzzlePolish": {
     "played": "Partite",
     "win": "% vinte",

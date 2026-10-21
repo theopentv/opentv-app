@@ -56,6 +56,7 @@ import {
   type Pinned,
   type PuzzleId,
   type Clues,
+  puzzleStreak,
 } from '@/puzzle';
 
 describe('days', () => {
@@ -670,5 +671,24 @@ describe('the whole library goes round before anything repeats (14 Oct)', () => 
       pinned.push({ d: day, id });
     }
     expect(seen.size).toBe(90);
+  });
+});
+
+describe('puzzle streak', () => {
+  const r = (d: string, won = true) => ({ d, id: 1, tries: won ? 2 : MAX_TRIES, won });
+
+  it('counts consecutive days played, losses included', () => {
+    expect(puzzleStreak([], '2026-10-22')).toBe(0);
+    // The very first game: day 1.
+    expect(puzzleStreak([r('2026-10-22')], '2026-10-22')).toBe(1);
+    expect(puzzleStreak([r('2026-10-20'), r('2026-10-21', false), r('2026-10-22')], '2026-10-22')).toBe(3);
+    // Across a month end.
+    expect(puzzleStreak([r('2026-10-31'), r('2026-11-01')], '2026-11-01')).toBe(2);
+  });
+
+  it('keeps yesterday’s run while today is unplayed, and a missed day resets it', () => {
+    expect(puzzleStreak([r('2026-10-20'), r('2026-10-21')], '2026-10-22')).toBe(2);
+    expect(puzzleStreak([r('2026-10-19'), r('2026-10-20')], '2026-10-22')).toBe(0);
+    expect(puzzleStreak([r('2026-10-18'), r('2026-10-20'), r('2026-10-21'), r('2026-10-22')], '2026-10-22')).toBe(3);
   });
 });

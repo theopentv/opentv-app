@@ -3520,6 +3520,18 @@
     "openFilm": "Filmi aç",
     "memoryFilm": "{{year}} yılında izledin"
   },
+  "puzzleStreak": {
+    "start": "🧩 1. gün — serini sürdürmek için yarın yine gel",
+    "days": {
+      "one": "🧩 {{count}} günlük bulmaca serisi",
+      "other": "🧩 {{count}} günlük bulmaca serisi"
+    },
+    "bannerNew": "Bugünün bulmacası hazır — adını tahmin et",
+    "bannerKeep": {
+      "one": "Bugünün bulmacası hazır — {{count}} günlük serini sürdür",
+      "other": "Bugünün bulmacası hazır — {{count}} günlük serini sürdür"
+    }
+  },
   "puzzlePolish": {
     "played": "Oynanan",
     "win": "Kazanma %",

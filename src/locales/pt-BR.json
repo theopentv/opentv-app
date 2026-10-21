@@ -3520,6 +3520,18 @@
     "openFilm": "Abrir o filme",
     "memoryFilm": "Você assistiu em {{year}}"
   },
+  "puzzleStreak": {
+    "start": "🧩 Dia 1 — volte amanhã para manter sua sequência",
+    "days": {
+      "one": "🧩 Sequência de puzzles: {{count}} dia",
+      "other": "🧩 Sequência de puzzles: {{count}} dias"
+    },
+    "bannerNew": "O puzzle de hoje está pronto — adivinhe o título",
+    "bannerKeep": {
+      "one": "O puzzle de hoje está pronto — mantenha sua sequência de {{count}} dia",
+      "other": "O puzzle de hoje está pronto — mantenha sua sequência de {{count}} dias"
+    }
+  },
   "puzzlePolish": {
     "played": "Jogos",
     "win": "% de vitórias",

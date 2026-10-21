@@ -3520,6 +3520,18 @@
     "openFilm": "Film öffnen",
     "memoryFilm": "Du hast ihn {{year}} geschaut"
   },
+  "puzzleStreak": {
+    "start": "🧩 Tag 1 — komm morgen wieder, um deine Serie zu halten",
+    "days": {
+      "one": "🧩 Rätselserie: {{count}} Tag",
+      "other": "🧩 Rätselserie: {{count}} Tage"
+    },
+    "bannerNew": "Das heutige Rätsel ist bereit — errate den Titel",
+    "bannerKeep": {
+      "one": "Das heutige Rätsel ist bereit — halte deine Serie von {{count}} Tag",
+      "other": "Das heutige Rätsel ist bereit — halte deine Serie von {{count}} Tagen"
+    }
+  },
   "puzzlePolish": {
     "played": "Gespielt",
     "win": "Siege %",

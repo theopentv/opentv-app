@@ -3520,6 +3520,18 @@
     "openFilm": "Open the film",
     "memoryFilm": "You watched it in {{year}}"
   },
+  "puzzleStreak": {
+    "start": "🧩 Day 1 — come back tomorrow to keep your streak",
+    "days": {
+      "one": "🧩 {{count}}-day puzzle streak",
+      "other": "🧩 {{count}}-day puzzle streak"
+    },
+    "bannerNew": "Today's puzzle is ready — guess the title",
+    "bannerKeep": {
+      "one": "Today's puzzle is ready — keep your {{count}}-day streak",
+      "other": "Today's puzzle is ready — keep your {{count}}-day streak"
+    }
+  },
   "puzzlePolish": {
     "played": "Played",
     "win": "Win %",

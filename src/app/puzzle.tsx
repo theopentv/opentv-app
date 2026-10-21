@@ -68,6 +68,7 @@ import {
   answerPool,
   cluesFor,
   currentStats,
+  currentStreak,
   devFreshGame,
   finishGame,
   gameFor,
@@ -116,6 +117,7 @@ export default function PuzzleScreen() {
   /** undefined while it is being resolved; null when the phone has nothing. */
   const [picture, setPicture] = useState<string | null | undefined>(undefined);
   const [stats, setStats] = useState(currentStats);
+  const [streak, setStreak] = useState(() => currentStreak(day));
   const [sharing, setSharing] = useState(false);
   const [query, setQuery] = useState('');
   const [added, setAdded] = useState(false);
@@ -225,6 +227,7 @@ export default function PuzzleScreen() {
     track('puzzle_finished', { won: next.won ? 1 : 0, tries: next.guesses.length, archive: archive ? 1 : 0 });
     if (archive) return;
     setStats(currentStats());
+    setStreak(currentStreak(day));
     // Today's "you haven't played" is now moot: re-plan so it is dropped.
     void syncEpisodeNotifications(true);
   };
@@ -499,6 +502,13 @@ export default function PuzzleScreen() {
               {!archive && (
                 <View style={s.statsFrame}>
                   <StatsRow stats={stats} big />
+                  {/* THE PUZZLE'S OWN STREAK (22 Oct), back after a week away —
+                      here only, beside the stats it belongs to, and spelled
+                      "🧩 … puzzle streak" so it is never read as the
+                      profile's watching streak. Never on the share card. */}
+                  {streak > 0 && (
+                    <Text style={s.streak}>{streak === 1 ? t('puzzleStreak.start') : t('puzzleStreak.days', { count: streak })}</Text>
+                  )}
                 </View>
               )}
 
@@ -521,6 +531,7 @@ export default function PuzzleScreen() {
                       setPicture(undefined);
                       setQuery('');
                       setStats(currentStats());
+                      setStreak(currentStreak(day));
                       setGame(g);
                     }}>
                     <Text style={s.tomorrow}>Dev: play another</Text>
@@ -549,6 +560,7 @@ const s = StyleSheet.create({
   headRight: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   archiveNote: { color: colors.dim, fontSize: 12.5, textAlign: 'center', marginHorizontal: space.lg, marginTop: 12 },
   statsFrame: { marginHorizontal: space.lg, marginTop: 20 },
+  streak: { color: colors.text, fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 12 },
   empty: { color: colors.dim, fontSize: 15, textAlign: 'center', padding: 40 },
   frame: {
     marginHorizontal: space.lg,

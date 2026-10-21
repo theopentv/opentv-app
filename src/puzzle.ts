@@ -5,9 +5,12 @@
  * film — whichever the day picks out of what the player has watched. Wordle's lesson is not the word
  * game, it is the shape: one puzzle for everybody today, a grid of squares that
  * says how it went without saying what it was, and three numbers — played,
- * win %, average tries — that make tomorrow matter. NO STREAK (14 Oct): the
- * profile already shows a WATCHING streak, and two streaks on one page read as
- * one confused number. The edge nobody else has is WHERE THE SHOW COMES FROM — a
+ * win %, average tries — that make tomorrow matter. The streak was taken out
+ * on 14 Oct because the profile already shows a WATCHING streak, and two
+ * streaks on one page read as one confused number. It came back on 22 Oct
+ * (`puzzleStreak`) ONLY on the puzzle's own result screen, labelled 🧩 and
+ * "puzzle streak" — never on the profile, never in the block, never in the
+ * share text or anything else that leaves the phone. The edge nobody else has is WHERE THE SHOW COMES FROM — a
  * still from a show the player has actually watched, which `puzzle-data.ts`
  * picks from the library. Framed and Moviedle cannot do that; they do not have
  * your history.
@@ -549,6 +552,27 @@ export function puzzleStats(history: readonly Result[]): Stats {
     win: played ? Math.round((100 * wins.length) / played) : 0,
     avg: wins.length ? Math.round((10 * wins.reduce((n, r) => n + r.tries, 0)) / wins.length) / 10 : null,
   };
+}
+
+/**
+ * Consecutive days played, today's games only (the archive is replaying, not
+ * playing — it never fills a gap). Counted back from today if today is
+ * played, else from yesterday: today not played YET does not break
+ * yesterday's run, a whole missed day does. A loss counts as played.
+ *
+ * Counted from the per-day history, never stored: the 10 Oct build kept a
+ * `puzzle.streak` meta, which is ignored, so a counter that drifted then
+ * cannot drift now.
+ */
+export function puzzleStreak(history: readonly Result[], today: string): number {
+  const days = new Set(history.map((r) => r.d));
+  let day = days.has(today) ? today : shiftDay(today, -1);
+  let n = 0;
+  while (days.has(day)) {
+    n++;
+    day = shiftDay(day, -1);
+  }
+  return n;
 }
 
 /**

@@ -8,8 +8,9 @@
  *
  * EVERYTHING LIVES IN `meta`, under `puzzle.` keys. Turning the game off is
  * one flag; the history, the pinned answers and today's game stay exactly
- * where they were, so switching it back on is not a fresh start. The streak
- * of 10 Oct is gone (14 Oct); an old `puzzle.streak` is never read again.
+ * where they were, so switching it back on is not a fresh start. The stored
+ * streak of 10 Oct is gone (14 Oct); an old `puzzle.streak` is never read
+ * again. Since 22 Oct the streak is COUNTED from the history (`puzzleStreak`).
  * `wipeAllData` clears `meta` with everything else.
  *
  * WHERE TODAY'S TITLE COMES FROM. The library first — a show watched enough
@@ -46,6 +47,7 @@ import {
   nextPuzzleReminder,
   parseGame,
   parseHistory,
+  puzzleStreak,
   parsePinned,
   pickAnswer,
   pickPicture,
@@ -629,6 +631,11 @@ export function finishGame(g: Game, archive = false): void {
 /** Played, win %, average tries — today's games only, never the archive's. */
 export function currentStats(): Stats {
   return puzzleStats(loadHistory());
+}
+
+/** Consecutive days played — the result screen's 🧩 line, nowhere else. */
+export function currentStreak(day = today()): number {
+  return puzzleStreak(loadHistory(), day);
 }
 
 /** What the owner's own block draws: this month's squares and the stats.

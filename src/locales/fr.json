@@ -3520,6 +3520,18 @@
     "openFilm": "Ouvrir le film",
     "memoryFilm": "Vous l'avez vu en {{year}}"
   },
+  "puzzleStreak": {
+    "start": "🧩 Jour 1 — revenez demain pour garder votre série",
+    "days": {
+      "one": "🧩 Série de puzzles : {{count}} jour",
+      "other": "🧩 Série de puzzles : {{count}} jours"
+    },
+    "bannerNew": "Le puzzle du jour est prêt — devinez le titre",
+    "bannerKeep": {
+      "one": "Le puzzle du jour est prêt — gardez votre série de {{count}} jour",
+      "other": "Le puzzle du jour est prêt — gardez votre série de {{count}} jours"
+    }
+  },
   "puzzlePolish": {
     "played": "Parties",
     "win": "% gagnées",

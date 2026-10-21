@@ -3796,6 +3796,22 @@
     "openFilm": "Otwórz film",
     "memoryFilm": "Obejrzane w {{year}}"
   },
+  "puzzleStreak": {
+    "start": "🧩 Dzień 1 — wróć jutro, żeby utrzymać serię",
+    "days": {
+      "one": "🧩 Seria zagadek: {{count}} dzień",
+      "few": "🧩 Seria zagadek: {{count}} dni",
+      "many": "🧩 Seria zagadek: {{count}} dni",
+      "other": "🧩 Seria zagadek: {{count}} dnia"
+    },
+    "bannerNew": "Dzisiejsza zagadka jest gotowa — zgadnij tytuł",
+    "bannerKeep": {
+      "one": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dzień",
+      "few": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dni",
+      "many": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dni",
+      "other": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dnia"
+    }
+  },
   "puzzlePolish": {
     "played": "Rozegrane",
     "win": "% wygranych",
