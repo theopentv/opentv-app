@@ -180,7 +180,7 @@ Deploy the server first, in this order: D1 migrations 0055, 0056, 0059 and 0061,
 ### Before release day
 - [ ] `PUZZLE_EPOCH` in `src/puzzle.ts` (now 2026-11-01) set to the release day. It must never move after release.
 - [ ] `docs/privacy.html`: the live-room and the watching-together sentences (CHANGELOG "Built 14 Oct"), and free sync through your own iCloud / Drive.
-- [ ] Google OAuth verification covers the `drive.appdata` scope, or Drive sync shows the "unverified app" screen.
+- [x] `drive.appdata` added in Google Auth Platform → Data Access (project 452943907676), next to `drive.file`. Both non-sensitive, so no Google review; the app is In production (21 Oct 2026).
 - [ ] Promotional offers set up in App Store Connect and developer offers in Play Console, with matching ids for the dashboard's personal offers.
 - [ ] Store listings (ASO) in all 9 languages: name, subtitle, keywords, Play short description, first screenshots (`outreach/aso-review-2026-10-18.md`).
 - [ ] Featuring nominations sent to Apple and Google Play, 2–3 weeks before 2.0.0 ships.
