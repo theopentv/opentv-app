@@ -2150,6 +2150,7 @@ export default function ShowScreen() {
         <Pressable
           style={[styles.addBar, { paddingBottom: insets.bottom + 14 }]}
           accessibilityRole="button"
+          accessibilityLabel={t('show.addShowButton')}
           onPress={() => {
             addShow(tvdbId, fetched?.name ?? show.name, fetched?.poster ?? null);
             setTick((t) => t + 1);
