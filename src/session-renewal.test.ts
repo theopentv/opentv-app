@@ -161,3 +161,23 @@ describe('an account without the community', () => {
     expect(session.showSignedOutNotice()).toBe(false);
   });
 });
+
+/**
+ * Email sign-up signed the new account straight back out, 21 Oct 2026. The
+ * Profile tab fetched the placeholder `user_p_…` just after the handle claim
+ * renamed it, got a 404, and took that as "your account was deleted". A 404
+ * for your own handle now asks `GET /v1/me` instead — which is what this pins.
+ */
+describe('a 404 for your own handle, after a rename', () => {
+  it('keeps the session and adopts the new handle', async () => {
+    meta.set('community.signedOutByServer', '');
+    await session.signIn('t', 'p_me', 'user_p_abc');
+    session.joinCommunity();
+    reply = { handle: 'amanda' };
+    await session.refreshSession();
+    expect(session.hasAccount()).toBe(true);
+    expect(session.isJoined()).toBe(true);
+    expect(session.getHandle()).toBe('amanda');
+    expect(meta.get('community.signedOutByServer')).not.toBe('1');
+  });
+});

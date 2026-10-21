@@ -15,7 +15,7 @@ import { fetchProfile, pushHiddenSections, type PublicProfile } from '@/communit
 import { fetchSharedLists, type SharedListRow } from '@/community-shared-lists';
 import { ApiError } from '@/api';
 import { publishHeld, releasePublishHold } from '@/community-publish';
-import { dismissSignedOutNotice, getHandle, signOutLocally, useJoined, useSignedOutByServer } from '@/community-session';
+import { dismissSignedOutNotice, getHandle, refreshSession, useJoined, useSignedOutByServer } from '@/community-session';
 import { Heatmap, monthOf, todayISO } from '@/components/heatmap';
 import { MemoryCard } from '@/components/memory-card';
 import { SectionHeader } from '@/components/profile-sections';
@@ -487,8 +487,18 @@ export default function ProfileScreen() {
              *
              * Everything else — a tunnel, a captive portal, a 502 — still falls
              * through to the handle alone, which is true and still tappable.
+             *
+             * AND A 404 FOR YOUR OWN HANDLE IS NOT PROOF EITHER (21 Oct). The
+             * handle above was read when this focus began; an email sign-up
+             * renames `user_p_…` to the imported name a moment later, so the
+             * fetch asks for a name that has just stopped existing and every
+             * new email account was signed straight back out. So ask
+             * `GET /v1/me`, which is keyed on the session, not the name: a
+             * deleted account answers 401 (or `not_found`) and
+             * `refreshSession` signs out; a renamed one answers with the new
+             * handle, which it stores.
              */
-            if (e instanceof ApiError && e.code === 'not_found') void signOutLocally({ byServer: true });
+            if (e instanceof ApiError && e.code === 'not_found') void refreshSession().catch(() => {});
           });
       }
       return () => clearTimeout(refresh);
