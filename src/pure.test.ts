@@ -84,6 +84,8 @@ import {
   suggestedHandle,
   watchRuntimeSeconds,
   detailPaneLayout,
+  commentsSplitLayout,
+  hasWindowControls,
   disambiguatedMovieName,
   effectiveEpisodesSeen,
   cardGrid,
@@ -1062,6 +1064,44 @@ describe('detailPaneLayout (detail beside the list, not on top of it)', () => {
     for (const w of [390, 900, 1376]) {
       expect(detailPaneLayout(w).width).toBeLessThanOrEqual(w);
     }
+  });
+});
+
+describe('hasWindowControls (room for the iPad window buttons)', () => {
+  it('is never true on an iPhone, the Duo closed included (386pt app on a 466pt screen)', () => {
+    expect(hasWindowControls(true, 386, 466)).toBe(false);
+    expect(hasWindowControls(true, 440, 440)).toBe(false);
+  });
+
+  it('is true for an iPad window narrower than the screen, and only then', () => {
+    expect(hasWindowControls(false, 507, 1024)).toBe(true);
+    expect(hasWindowControls(false, 1024, 1024)).toBe(false);
+  });
+});
+
+describe('commentsSplitLayout (iPhone Duo open: the page beside its comments)', () => {
+  it('never splits a phone: every iPhone and the Duo closed (386pt window) keep the full page', () => {
+    for (const w of [320, 375, 386, 402, 440, 599]) {
+      expect(commentsSplitLayout(w)).toEqual({ split: false, pageW: w, threadW: 0 });
+    }
+  });
+
+  it('splits the Duo opened: 669pt is a 375pt page and 294pt of comments', () => {
+    expect(commentsSplitLayout(669)).toEqual({ split: true, pageW: 375, threadW: 294 });
+  });
+
+  it('gives the page more once there is more, and the two halves always fill the width', () => {
+    for (const w of [600, 669, 744, 834, 899]) {
+      const l = commentsSplitLayout(w);
+      expect(l.split).toBe(true);
+      expect(l.pageW).toBeGreaterThanOrEqual(375);
+      expect(l.pageW).toBeGreaterThan(l.threadW);
+      expect(l.pageW + l.threadW).toBe(w);
+    }
+  });
+
+  it('leaves the iPad list|detail pane (900pt and up) exactly as it was', () => {
+    for (const w of [900, 1024, 1376]) expect(commentsSplitLayout(w).split).toBe(false);
   });
 });
 

@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
+import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
 import { CheckCircle, ContentColumn, TopTabs, useDetailPaneStyle } from '@/components/ui';
 import {
   addMovieToWatchlist,
@@ -519,6 +520,8 @@ export default function MovieScreen() {
   const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown();
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
+  // Opened wide (iPhone Duo), the film's thread sits beside the page.
+  const split = useCommentsSplit();
   const panRef = useRef<GestureType | undefined>(undefined);
   const pan = useMemo(() => gesture.withRef(panRef), [gesture]);
 
@@ -919,7 +922,8 @@ export default function MovieScreen() {
 
   return (
     <GestureDetector gesture={pan}>
-      <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle]}>
+      <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
+        <SplitPage split={split}>
         {/* The backdrop runs under the status bar, so its glyphs follow the
             artwork rather than the page — dark-on-dark otherwise. */}
         <StatusBarOnCover />
@@ -1410,7 +1414,7 @@ export default function MovieScreen() {
           </ScrollView>
 
           {/* comments float over More, spoiler-guarded while unwatched */}
-          {tab === 'More' && inDb && (
+          {tab === 'More' && inDb && !split && (
             <Pressable style={[styles.commentsPill, { bottom: 20 + (process.env.EXPO_OS === 'android' ? insets.bottom : 0) }]} onPress={openComments} accessibilityRole="button">
               <Text style={styles.commentsText}>{t('media.commentsPill')}</Text>
               <Ionicons name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'} size={16} color="#FFF" />
@@ -1426,6 +1430,13 @@ export default function MovieScreen() {
           )}
         </View>
         <ActionSheet visible={menu != null} title={title} actions={menu ?? []} onClose={() => setMenu(null)} />
+        </SplitPage>
+        <SideThread
+          split={split}
+          target={{ source: 'title', key: currentCommunityKey(), season: null, episode: null, title }}
+          tvdbMovie={tvdbId}
+          spoilerGate={!watched}
+        />
       </Animated.View>
     </GestureDetector>
   );

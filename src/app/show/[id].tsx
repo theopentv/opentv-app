@@ -24,7 +24,8 @@ import { posterSpeech } from '@/components/poster';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
-import { CheckCircle, ContentColumn, TopTabs, useDetailPaneStyle, useDetailWidth } from '@/components/ui';
+import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
+import { CheckCircle, ContentColumn, TopTabs, useDetailPaneStyle } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatched, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatched } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -90,7 +91,9 @@ export default function ShowScreen() {
   // the pane's width when this screen sits beside the list, else the window's.
   // The carousel and the ratings chart both page against this, so measuring the
   // window instead would make every page wider than its own container.
-  const W = useDetailWidth();
+  const W = usePageWidth();
+  // Opened wide (iPhone Duo), the show's thread sits beside the page.
+  const split = useCommentsSplit();
   // the community-ratings chart is a full-width band, not capped prose — it
   // sizes against the raw window width
   const CHART_W = W;
@@ -687,7 +690,8 @@ export default function ShowScreen() {
 
   return (
     <GestureDetector gesture={pan}>
-    <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle]}>
+    <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
+      <SplitPage split={split}>
       {/* The backdrop runs under the status bar, so its glyphs follow the
           artwork rather than the page — dark-on-dark otherwise. */}
       <StatusBarOnCover />
@@ -1638,6 +1642,8 @@ export default function ShowScreen() {
               an account — joining is what buys the composer. Somebody who has
               NOT joined gets the archive instead, because they have no server
               and must not acquire one by tapping Comments. */}
+          {/* Opened wide, the thread is beside the page: no door to it. */}
+          {!split && (<>
           <View style={[styles.divider, { marginTop: 18 }]} />
           <Pressable
             style={styles.rowBetween}
@@ -1661,6 +1667,7 @@ export default function ShowScreen() {
             {/* drawn, not said: "Comments, ›" */}
             <Text style={{ color: colors.dim, fontSize: 15 }} {...a11yHidden()}>›</Text>
           </Pressable>
+          </>)}
         </ScrollView>
       ) : (
         <ScrollView
@@ -2184,6 +2191,8 @@ export default function ShowScreen() {
         actions={menu ?? []}
         onClose={() => setMenu(null)}
       />
+      </SplitPage>
+      <SideThread split={split} target={{ source: 'tvdb', key: String(show.tvdbId), season: null, episode: null, title: show.name }} />
     </Animated.View>
     </GestureDetector>
   );

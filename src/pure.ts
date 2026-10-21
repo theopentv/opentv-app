@@ -890,6 +890,40 @@ export function detailPaneLayout(width: number): { paned: boolean; width: number
 }
 
 /**
+ * Whether the system draws window controls over the top-left of the app — an
+ * iPad in Split View, Stage Manager or a tiled window, recognised by the app
+ * being narrower than the screen.
+ *
+ * NEVER ON AN iPHONE. The iPhone Duo closed is a 466pt screen whose status bar
+ * and camera take a column down the right, so the app's window is 386pt: by
+ * the width test alone it "is windowed", and every header on the Duo slid its
+ * back button 76pt in for controls that do not exist.
+ */
+export function hasWindowControls(iPhone: boolean, appW: number, screenW: number): boolean {
+  return !iPhone && appW < screenW - 1;
+}
+
+/** The iPhone Duo opened is 669pt wide and reports a REGULAR width size class,
+ *  like an iPad; every phone held upright is 440pt or less. 600 sits between
+ *  the two, so the Duo open (and an iPad in portrait) splits and no phone
+ *  ever does. Above DETAIL_PANE_MIN_W the detail is already a pane beside the
+ *  list, and that layout stays as it is. */
+export const COMMENTS_SPLIT_MIN_W = 600;
+/** The page keeps at least a small phone's width; the comments get the rest. */
+const SPLIT_PAGE_MIN_W = 375;
+
+/**
+ * A show, episode or film page with its comments BESIDE it rather than behind
+ * a Comments row — the open iPhone Duo's two halves, the way Mail puts the
+ * message beside its list. 669pt splits 375 | 294.
+ */
+export function commentsSplitLayout(width: number): { split: boolean; pageW: number; threadW: number } {
+  if (width < COMMENTS_SPLIT_MIN_W || width >= DETAIL_PANE_MIN_W) return { split: false, pageW: width, threadW: 0 };
+  const pageW = Math.max(SPLIT_PAGE_MIN_W, Math.round(width * 0.55));
+  return { split: true, pageW, threadW: width - pageW };
+}
+
+/**
  * Whether the drag-to-dismiss gesture should be armed after a scroll event.
  *
  * The gesture is only allowed while the list sits at its top, otherwise a

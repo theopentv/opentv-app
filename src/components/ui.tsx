@@ -1,14 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
-import { Dimensions, I18nManager, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
+import { Dimensions, I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';
 import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
-import { detailPaneLayout } from '@/pure';
+import { detailPaneLayout, hasWindowControls } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 
@@ -127,7 +127,7 @@ export function NavHeader({
   // width is narrower than the physical screen. Full screen on any device —
   // including every phone — leaves this at 0 and the header untouched.
   const appW = useWindowDimensions().width;
-  const windowed = appW < Dimensions.get('screen').width - 1;
+  const windowed = hasWindowControls(Platform.OS === 'ios' && !Platform.isPad, appW, Dimensions.get('screen').width);
   return (
     <View style={[s.navHead, windowed && { paddingLeft: WINDOW_CONTROLS_W }]}>
       <Pressable

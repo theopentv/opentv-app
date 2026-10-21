@@ -18,7 +18,8 @@ import { HalfStarControl, HalfStarHint } from '@/components/half-stars';
 import { CommunityRating } from '@/components/rating-breakdown';
 import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
-import { CheckCircle, ContentColumn, useDetailPaneStyle, useDetailWidth } from '@/components/ui';
+import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
+import { CheckCircle, ContentColumn, useDetailPaneStyle } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -615,7 +616,9 @@ function EpisodePage({
   // live width, so a page is sized for the CURRENT orientation rather than the
   // one the module happened to load in
   // the pane's width when beside the list, the window's otherwise
-  const W = useDetailWidth();
+  const W = usePageWidth();
+  // Opened wide, the thread is already beside the page: no door to it here.
+  const split = useCommentsSplit();
 
   return (
     <View style={{ width: W, flex: 1 }} {...a11yHidden(!!offscreen)}>
@@ -1039,7 +1042,7 @@ function EpisodePage({
         {/* unwatched: plain comments row card, like the real app. When watched
             the blue pill below is the entry instead, so this must not also
             render or the screen has two doors to one place. */}
-        {!watched && (
+        {!watched && !split && (
           <Pressable
             style={[styles.card, styles.commentsRow]}
             onPress={openComments}
@@ -1060,7 +1063,7 @@ function EpisodePage({
       </ScrollView>
 
       {/* watched: the blue comments pill floats over the content */}
-      {watched && (
+      {watched && !split && (
         <Pressable style={[styles.commentsPillFloat, { bottom: 20 + (process.env.EXPO_OS === 'android' ? insets.bottom : 0) }]} onPress={openComments} accessibilityRole="button">
           <Text style={styles.commentsText}>{t('media.commentsPill')}</Text>
           <Ionicons name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'} size={16} color="#FFF" />
@@ -1072,7 +1075,8 @@ function EpisodePage({
 
 export default function EpisodePagerScreen() {
   // the pane's width when beside the list, the window's otherwise
-  const W = useDetailWidth();
+  const W = usePageWidth();
+  const split = useCommentsSplit();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // ids look like "72454-s1e2" — resolve the show from the library first
@@ -1186,6 +1190,16 @@ export default function EpisodePagerScreen() {
   // fires, so remember offsets and re-sync the atTop flag ourselves
   const pageOffsets = useRef<Record<number, number>>({});
 
+  // THE PAGE WIDTH CAN CHANGE UNDER AN OPEN PAGER: unfolding an iPhone Duo,
+  // rotating or resizing an iPad. The pager's offset is in the OLD width, so
+  // the page on screen would slide half off; put it back on its page.
+  const listRef = useRef<FlatList<number>>(null);
+  useEffect(() => {
+    listRef.current?.scrollToOffset({ offset: W * index, animated: false });
+    // Only a new width moves it; a new index came from the pager itself.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [W]);
+
   // scrolled into the page → the dots give way to "Show S05 | E35"
   const [titleMode, setTitleMode] = useState(false);
   // The episode NUMBER at this position, not the position plus one: in a season
@@ -1250,7 +1264,8 @@ export default function EpisodePagerScreen() {
 
   return (
     <GestureDetector gesture={pan}>
-      <Animated.View style={[{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }, animatedStyle, paneStyle]}>
+      <Animated.View style={[{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }, animatedStyle, paneStyle, split && splitRow]}>
+        <SplitPage split={split}>
         {/* header right under the status bar: close + pager dots — it never
             scrolls, so dragging it down always dismisses */}
         <GestureDetector gesture={headerGesture}>
@@ -1277,6 +1292,7 @@ export default function EpisodePagerScreen() {
         {/* swipe left/right = previous/next episode; grey page surface like the real app */}
         {!I18nManager.isRTL && (
           <FlatList
+            ref={listRef}
             style={{ backgroundColor: colors.bg }}
             horizontal
             pagingEnabled
@@ -1385,6 +1401,13 @@ export default function EpisodePagerScreen() {
             </Animated.View>
           </GestureDetector>
         )}
+        </SplitPage>
+        {/* The episode on screen, following the pager as it turns. */}
+        <SideThread
+          split={split}
+          padTop={false}
+          target={{ source: 'tvdb', key: String(tvdbId), season, episode: episodes[index] ?? startEp, title: show?.name ?? showMeta(tvdbId)?.name }}
+        />
       </Animated.View>
     </GestureDetector>
   );
