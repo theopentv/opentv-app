@@ -30,6 +30,7 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/text';
 
 import { track } from '@/analytics';
@@ -89,6 +90,7 @@ export default function PuzzleScreen() {
   /* The day is fixed when the screen opens: a game that straddles midnight
      finishes as the day it started, which is the day its answer belongs to. */
   const params = useLocalSearchParams<{ day?: string }>();
+  const insets = useSafeAreaInsets();
   const [{ day, archive }] = useState(() => {
     const now = today();
     const asked = typeof params.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(params.day) ? params.day : null;
@@ -305,7 +307,8 @@ export default function PuzzleScreen() {
         ref={scrollRef}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
-        contentContainerStyle={{ paddingBottom: 40 }}>
+        // Clear of the system navigation bar: edge-to-edge Android draws under it.
+        contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
         <ContentColumn>
           {/* THE STILL. Blur is `expo-image`'s own, lowered per miss — on the
               phone, free, and nothing is uploaded anywhere. */}

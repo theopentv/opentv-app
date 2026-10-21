@@ -21,7 +21,8 @@
  */
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, type TextInput } from 'react-native';
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, type TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   fetchComment,
@@ -45,6 +46,7 @@ import { t } from '@/i18n';
 import { colors, space } from '@/theme';
 
 export default function CommentScreen() {
+  const insets = useSafeAreaInsets();
   const { id: raw } = useLocalSearchParams<{ id?: string }>();
   const id = raw ?? '';
   const joined = useJoined();
@@ -237,7 +239,9 @@ export default function CommentScreen() {
         // BOTH PLATFORMS (21 Oct): edge-to-edge Android no longer resizes the
         // window for the keyboard, so `undefined` left the toolbar under it.
         behavior="padding"
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
+        // Minus the bottom inset: the spacer under the composer belongs to the
+        // home indicator / navigation bar, and slides under the keyboard.
+        keyboardVerticalOffset={(Platform.OS === 'ios' ? 90 : 0) - insets.bottom}>
         <FlatList
           data={rows}
           keyExtractor={(r) => r.comment.id}
@@ -283,6 +287,9 @@ export default function CommentScreen() {
           onAttach={attach.canAttach ? attach.open : undefined}
           onRemoveAttachment={attach.clear}
         />
+        {/* The composer is the last thing on the screen, so it clears the
+            system navigation bar itself (s46: under 3-button nav). */}
+        <View style={{ height: insets.bottom }} />
         {attach.ui}
       </KeyboardAvoidingView>
       {moderation.sheets}
