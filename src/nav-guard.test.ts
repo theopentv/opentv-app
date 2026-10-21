@@ -1,4 +1,6 @@
-import { isDuplicatePush, navTransitionEnded } from '@/nav-guard';
+import { router } from 'expo-router';
+
+import { installNavGuard, isDuplicatePush, navTransitionEnded } from '@/nav-guard';
 
 describe('nav guard', () => {
   it('lets the first push through', () => {
@@ -56,5 +58,26 @@ describe('nav guard', () => {
     isDuplicatePush('/movie/B', 80_010);
     navTransitionEnded();
     expect(isDuplicatePush('/movie/A', 80_020)).toBe(false);
+  });
+});
+
+describe('back with nothing behind it', () => {
+  it('goes home instead of doing nothing, and still goes back when it can', () => {
+    const back = jest.spyOn(router, 'back');
+    const replace = jest.spyOn(router, 'replace');
+    const canGoBack = jest.spyOn(router, 'canGoBack');
+    installNavGuard();
+
+    canGoBack.mockReturnValue(false);
+    const bare = router.back; // swipe-down passes it to runOnJS unbound
+    bare();
+    expect(replace).toHaveBeenCalledWith('/');
+    expect(back).not.toHaveBeenCalled();
+
+    replace.mockClear();
+    canGoBack.mockReturnValue(true);
+    router.back();
+    expect(back).toHaveBeenCalledTimes(1);
+    expect(replace).not.toHaveBeenCalled();
   });
 });

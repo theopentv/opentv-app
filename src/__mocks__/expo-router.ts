@@ -18,4 +18,7 @@ export const router = {
   push(_href: string): void {},
   back(): void {},
   replace(_href: string): void {},
+  canGoBack(): boolean {
+    return true;
+  },
 };

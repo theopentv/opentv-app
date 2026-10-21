@@ -25,8 +25,8 @@
  * still works. 700ms is longer than the push animation and far longer than a
  * human double tap; nobody deliberately opens the same screen twice inside it.
  *
- * `replace` and `back` are left alone. `replace` swaps rather than stacks and
- * `back` cannot stack; the bug is `push`'s alone.
+ * `replace` is left alone: it swaps rather than stacks. `back` is wrapped only
+ * for the empty stack -- see the end of `installNavGuard`.
  *
  * AND NOTHING ELSE UNTIL THE SCREEN HAS ARRIVED (14 Oct). The 700ms window was
  * measured on the wall clock, and that is not the clock a slow open runs on.
@@ -98,4 +98,17 @@ export function installNavGuard(): void {
     if (isDuplicatePush(key, Date.now())) return;
     return push(href, options);
   }) as typeof router.push;
+  /*
+   * BACK WITH NOTHING BEHIND IT GOES HOME (21 Oct). A cold deep link
+   * (`opentv://movie/X`, a notification) opens a detail screen as the only
+   * route, and every close button, NavHeader and swipe-down calls `back()` —
+   * which there is "GO_BACK was not handled" and a screen you cannot leave.
+   * One wrap here covers every caller rather than a fallback in each.
+   * Not bound to `this`: swipe-down hands `router.back` to `runOnJS` bare.
+   */
+  const back = router.back.bind(router);
+  router.back = () => {
+    if (router.canGoBack()) back();
+    else router.replace('/');
+  };
 }
