@@ -2393,6 +2393,7 @@
     "joinAction": "Rejoindre",
     "joinIsFree": "Rejoindre est toujours gratuit.",
     "joinFailedTitle": "Impossible de rejoindre",
+    "joinNoList": "Aucune liste avec ce code. Vérifiez-le et réessayez.",
     "inviteLabel": "Code d'invitation",
     "inviteMessage": "Rejoins ma liste partagée « {{name}} » sur OpenTV. Code : {{code}}",
     "you": "Toi",

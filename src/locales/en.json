@@ -2393,6 +2393,7 @@
     "joinAction": "Join",
     "joinIsFree": "Joining is always free.",
     "joinFailedTitle": "Couldn't join",
+    "joinNoList": "No list with that code. Check it and try again.",
     "inviteLabel": "Invite code",
     "inviteMessage": "Join my shared list \"{{name}}\" on OpenTV. Code: {{code}}",
     "you": "You",

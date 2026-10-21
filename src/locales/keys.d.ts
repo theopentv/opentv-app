@@ -2222,6 +2222,7 @@ export type LocaleKey =
   | "shared.joinAction"
   | "shared.joinFailedTitle"
   | "shared.joinIsFree"
+  | "shared.joinNoList"
   | "shared.leaveAction"
   | "shared.leaveBody"
   | "shared.leaveList"

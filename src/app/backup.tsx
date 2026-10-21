@@ -292,6 +292,7 @@ export default function BackupScreen() {
                   <Switch
                     value={via === 'icloud'}
                     disabled={viaBusy || serverSync}
+                    accessibilityState={{ disabled: viaBusy || serverSync }}
                     onValueChange={(v) => void toggleVia('icloud', v)}
                     trackColor={{ true: colors.green }}
                   />
@@ -307,6 +308,7 @@ export default function BackupScreen() {
                   <Switch
                     value={via === 'gdrive'}
                     disabled={viaBusy || serverSync}
+                    accessibilityState={{ disabled: viaBusy || serverSync }}
                     onValueChange={(v) => void toggleVia('gdrive', v)}
                     trackColor={{ true: colors.green }}
                   />

@@ -2393,6 +2393,7 @@
     "joinAction": "Katıl",
     "joinIsFree": "Katılmak her zaman ücretsiz.",
     "joinFailedTitle": "Katılınamadı",
+    "joinNoList": "Bu koda sahip bir liste yok. Kontrol edip tekrar dene.",
     "inviteLabel": "Davet kodu",
     "inviteMessage": "OpenTV'deki ortak listeme katıl: \"{{name}}\". Kod: {{code}}",
     "you": "Sen",

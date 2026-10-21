@@ -2587,6 +2587,7 @@
     "joinAction": "Dołącz",
     "joinIsFree": "Dołączanie jest zawsze za darmo.",
     "joinFailedTitle": "Nie udało się dołączyć",
+    "joinNoList": "Nie ma listy z tym kodem. Sprawdź go i spróbuj ponownie.",
     "inviteLabel": "Kod zaproszenia",
     "inviteMessage": "Dołącz do mojej wspólnej listy „{{name}}” w OpenTV. Kod: {{code}}",
     "you": "Ty",

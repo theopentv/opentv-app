@@ -11,6 +11,7 @@
  * Somebody who was sent a link is the most valuable person on this screen: they
  * did not come looking for the app, the app came to them.
  */
+import { ApiError } from '@/api';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -91,7 +92,9 @@ export default function SharedListsScreen() {
       if (res.kind === 'together') await publishPositions();
       router.push(`/shared/${res.id}`);
     } catch (e) {
-      Alert.alert(t('shared.joinFailedTitle'), communityErrorText(e));
+      // A wrong code is `not_found`, which the shared mapping can't name for
+      // every screen; here it means exactly one thing.
+      Alert.alert(t('shared.joinFailedTitle'), e instanceof ApiError && e.code === 'not_found' ? t('shared.joinNoList') : communityErrorText(e));
     } finally {
       setJoining(false);
     }
