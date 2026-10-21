@@ -1038,7 +1038,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
           setWriting(false);
           setReplyTo(null);
         }}>
-        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior="padding">
           <View style={styles.writeHead}>
             <Pressable accessibilityRole="button"
               hitSlop={12}

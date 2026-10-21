@@ -234,8 +234,10 @@ export default function CommentScreen() {
       <NavHeader close title={t('community.comments.title')} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={90}>
+        // BOTH PLATFORMS (21 Oct): edge-to-edge Android no longer resizes the
+        // window for the keyboard, so `undefined` left the toolbar under it.
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
         <FlatList
           data={rows}
           keyExtractor={(r) => r.comment.id}

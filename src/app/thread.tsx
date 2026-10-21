@@ -78,7 +78,9 @@ export default function ThreadScreen() {
       <NavHeader title={title || t('community.comments.title')} close />
       <KeyboardAvoidingView
         style={styles.fill}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        // BOTH PLATFORMS (21 Oct): edge-to-edge Android no longer resizes the
+        // window for the keyboard, so `undefined` left the toolbar under it.
+        behavior="padding"
         // The header is already laid out above this, so the inset the keyboard
         // has to clear is only what sits below it.
         keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>

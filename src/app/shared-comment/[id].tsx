@@ -22,7 +22,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -340,7 +339,7 @@ export default function SharedCommentScreen() {
       />
 
       <Modal visible={writing && !paywall.away} animationType="slide" presentationStyle="fullScreen" onDismiss={paywall.onDismiss} onRequestClose={() => setWriting(false)}>
-        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior="padding">
           <View style={styles.writeHead}>
             <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('community.comments.closeWriting')} onPress={() => setWriting(false)}>
               <Ionicons name="close" size={26} color={colors.text} />
