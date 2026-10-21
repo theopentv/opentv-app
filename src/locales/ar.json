@@ -53,6 +53,10 @@
     "episodeBodyNamed": "تُعرض {{code}} · {{title}} اليوم",
     "seasonFinaleBody": "🔥 نهاية الموسم الليلة!",
     "seriesFinaleBody": "🎬 تُعرض الحلقة الأخيرة اليوم",
+    "episodeBodyOut": "حلقة {{code}} متاحة الآن",
+    "episodeBodyNamedOut": "{{code}} · {{title}} متاحة الآن",
+    "seasonFinaleBodyOut": "🔥 نهاية الموسم متاحة الآن",
+    "seriesFinaleBodyOut": "🎬 الحلقة الأخيرة متاحة الآن",
     "catchupBody": {
       "zero": "لم تتبقَّ حلقات من الموسم {{season}}",
       "one": "تبقّت حلقة واحدة فقط من الموسم {{season}}",

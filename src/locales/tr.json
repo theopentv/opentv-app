@@ -53,6 +53,10 @@
     "episodeBodyNamed": "{{code}} · {{title}} bugün yayında",
     "seasonFinaleBody": "🔥 Sezon finali bu akşam!",
     "seriesFinaleBody": "🎬 Final bölümü bugün yayında",
+    "episodeBodyOut": "{{code}} yayınlandı",
+    "episodeBodyNamedOut": "{{code}} · {{title}} yayınlandı",
+    "seasonFinaleBodyOut": "🔥 Sezon finali yayınlandı",
+    "seriesFinaleBodyOut": "🎬 Final bölümü yayınlandı",
     "catchupBody": {
       "one": "Sezon {{season}}: yalnızca {{count}} bölüm kaldı",
       "other": "Sezon {{season}}: yalnızca {{count}} bölüm kaldı"

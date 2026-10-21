@@ -53,6 +53,10 @@
     "episodeBodyNamed": "{{code}} · {{title}} se estrena hoy",
     "seasonFinaleBody": "🔥 ¡Final de temporada esta noche!",
     "seriesFinaleBody": "🎬 El episodio final se estrena hoy",
+    "episodeBodyOut": "{{code}} ya está disponible",
+    "episodeBodyNamedOut": "{{code}} · {{title}} ya está disponible",
+    "seasonFinaleBodyOut": "🔥 El final de temporada ya está disponible",
+    "seriesFinaleBodyOut": "🎬 El episodio final ya está disponible",
     "catchupBody": {
       "one": "Solo queda {{count}} episodio de la Temporada {{season}}",
       "other": "Solo quedan {{count}} episodios de la Temporada {{season}}"
