@@ -723,9 +723,18 @@
     "comingSoonBody": "Comparing with the people you follow arrives with accounts.",
     "compareWithFollowers": "COMPARE WITH THE PEOPLE YOU FOLLOW",
     "clock": {
-      "months": "MONTHS",
-      "days": "DAYS",
-      "hours": "HOURS",
+      "months": {
+        "one": "MONTH",
+        "other": "MONTHS"
+      },
+      "days": {
+        "one": "DAY",
+        "other": "DAYS"
+      },
+      "hours": {
+        "one": "HOUR",
+        "other": "HOURS"
+      },
       "monthsShort": "mo",
       "daysShort": "d",
       "hoursShort": "h"

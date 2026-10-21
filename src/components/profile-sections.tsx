@@ -360,9 +360,9 @@ function shownClockParts(months: number, days: number, hours: number) {
    * form and translators own both.
    */
   const all = [
-    { v: months, u: t('stats.clock.months'), s: t('stats.clock.monthsShort') },
-    { v: days, u: t('stats.clock.days'), s: t('stats.clock.daysShort') },
-    { v: hours, u: t('stats.clock.hours'), s: t('stats.clock.hoursShort') },
+    { v: months, u: t('stats.clock.months', { count: months }), s: t('stats.clock.monthsShort') },
+    { v: days, u: t('stats.clock.days', { count: days }), s: t('stats.clock.daysShort') },
+    { v: hours, u: t('stats.clock.hours', { count: hours }), s: t('stats.clock.hoursShort') },
   ];
   const some = all.filter((p) => p.v > 0);
   /*

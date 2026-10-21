@@ -723,9 +723,18 @@
     "comingSoonBody": "Der Vergleich mit den Leuten, denen du folgst, kommt mit den Konten.",
     "compareWithFollowers": "MIT LEUTEN VERGLEICHEN, DENEN DU FOLGST",
     "clock": {
-      "months": "MONATE",
-      "days": "TAGE",
-      "hours": "STUNDEN",
+      "months": {
+        "one": "MONAT",
+        "other": "MONATE"
+      },
+      "days": {
+        "one": "TAG",
+        "other": "TAGE"
+      },
+      "hours": {
+        "one": "STUNDE",
+        "other": "STUNDEN"
+      },
       "monthsShort": "Mon.",
       "daysShort": "T",
       "hoursShort": "Std."

@@ -759,9 +759,30 @@
     "comingSoonBody": "مقارنة نتائجك مع من تتابعهم ستتوفر مع الحسابات.",
     "compareWithFollowers": "قارن مع من تتابعهم",
     "clock": {
-      "months": "أشهر",
-      "days": "أيام",
-      "hours": "ساعات",
+      "months": {
+        "zero": "شهر",
+        "one": "شهر",
+        "two": "شهران",
+        "few": "أشهر",
+        "many": "شهرًا",
+        "other": "شهر"
+      },
+      "days": {
+        "zero": "يوم",
+        "one": "يوم",
+        "two": "يومان",
+        "few": "أيام",
+        "many": "يومًا",
+        "other": "يوم"
+      },
+      "hours": {
+        "zero": "ساعة",
+        "one": "ساعة",
+        "two": "ساعتان",
+        "few": "ساعات",
+        "many": "ساعة",
+        "other": "ساعة"
+      },
       "monthsShort": "ش",
       "daysShort": "ي",
       "hoursShort": "س"

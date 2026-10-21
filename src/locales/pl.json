@@ -741,9 +741,24 @@
     "comingSoonBody": "Porównanie z obserwowanymi osobami pojawi się razem z kontami.",
     "compareWithFollowers": "PORÓWNAJ Z OBSERWOWANYMI",
     "clock": {
-      "months": "MIESIĄCE",
-      "days": "DNI",
-      "hours": "GODZINY",
+      "months": {
+        "one": "MIESIĄC",
+        "few": "MIESIĄCE",
+        "many": "MIESIĘCY",
+        "other": "MIESIĄCA"
+      },
+      "days": {
+        "one": "DZIEŃ",
+        "few": "DNI",
+        "many": "DNI",
+        "other": "DNIA"
+      },
+      "hours": {
+        "one": "GODZINA",
+        "few": "GODZINY",
+        "many": "GODZIN",
+        "other": "GODZINY"
+      },
       "monthsShort": "mies.",
       "daysShort": "d",
       "hoursShort": "h"

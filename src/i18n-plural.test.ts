@@ -8,10 +8,11 @@
  * translate/pluralize code path — the thing under doubt.
  */
 import { I18n, useMakePlural } from 'i18n-js';
-import { ar as arPluralRule } from 'make-plural';
+import { ar as arPluralRule, pl as plPluralRule } from 'make-plural';
 
 import ar from './locales/ar.json';
 import en from './locales/en.json';
+import pl from './locales/pl.json';
 
 describe('Arabic plural selection at runtime', () => {
   const i18n = new I18n({ en, ar });
@@ -73,5 +74,24 @@ describe('backup prompt counts its episodes (21 Oct: "Your 1 episodes")', () => 
     i18n.locale = 'ar';
     expect(i18n.t('backupPrompt.driveBody', { count: 1 })).toMatch(/^حلقتك الوحيدة/);
     expect(i18n.t('backupPrompt.driveBody', { count: 2 })).toMatch(/^حلقتاك الاثنتان/);
+  });
+});
+
+describe('the TV-time clock counts its units (21 Oct: "15 GODZINY")', () => {
+  const i18n = new I18n({ en, pl });
+  i18n.pluralization.register('pl', useMakePlural({ pluralizer: plPluralRule }));
+
+  it('Polish one/few/many', () => {
+    i18n.locale = 'pl';
+    expect(i18n.t('stats.clock.hours', { count: 1 })).toBe('GODZINA');
+    expect(i18n.t('stats.clock.hours', { count: 3 })).toBe('GODZINY');
+    expect(i18n.t('stats.clock.hours', { count: 15 })).toBe('GODZIN');
+    expect(i18n.t('stats.clock.months', { count: 22 })).toBe('MIESIĄCE');
+  });
+
+  it('English one/other', () => {
+    i18n.locale = 'en';
+    expect(i18n.t('stats.clock.days', { count: 1 })).toBe('DAY');
+    expect(i18n.t('stats.clock.days', { count: 0 })).toBe('DAYS');
   });
 });

@@ -723,9 +723,18 @@
     "comingSoonBody": "Takip ettiğin kişilerle karşılaştırma hesaplarla birlikte geliyor.",
     "compareWithFollowers": "TAKİP ETTİKLERİNLE KARŞILAŞTIR",
     "clock": {
-      "months": "AY",
-      "days": "GÜN",
-      "hours": "SAAT",
+      "months": {
+        "one": "AY",
+        "other": "AY"
+      },
+      "days": {
+        "one": "GÜN",
+        "other": "GÜN"
+      },
+      "hours": {
+        "one": "SAAT",
+        "other": "SAAT"
+      },
       "monthsShort": "ay",
       "daysShort": "g",
       "hoursShort": "sa"
