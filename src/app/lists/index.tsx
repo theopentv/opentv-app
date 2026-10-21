@@ -301,11 +301,13 @@ export default function ListsScreen() {
         {/* Where the lists CAME FROM matters less than what the profile does
             with them, so it steps aside rather than stacking a second line of
             grey under the first. */}
+        {/* "No lists yet" only when there are none of ANY kind: it sat under
+            a column of shared lists, contradicting them (21 Oct). */}
         {lists.length > 0 ? (
           !isSeedLibrary() && !overCap && <Text style={styles.note}>{t('listsIndex.importedNote')}</Text>
-        ) : (
+        ) : sharedLists.length === 0 ? (
           <Text style={styles.note}>{t('listsIndex.emptyNote')}</Text>
-        )}
+        ) : null}
       </Animated.ScrollView>
       <ActionSheet
         visible={sheet}
