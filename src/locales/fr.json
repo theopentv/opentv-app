@@ -3544,7 +3544,7 @@
     "public": "Puzzle sur votre profil public",
     "publicSub": "Jours, couleurs et statistiques seulement, jamais le titre.",
     "offerTitle": "Un rappel pour la nouvelle énigme de chaque jour ?",
-    "offerBody": "Une notification par jour à {{time}}, seulement si vous n'avez pas encore joué. Modifiable dans les Réglages."
+    "offerBody": "Une notification par jour à {{time}}, seulement si vous n'avez pas encore joué."
   },
   "puzzleFair": {
     "close": "Bonne saga, mauvais volet !",

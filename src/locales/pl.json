@@ -3820,7 +3820,7 @@
     "public": "Zagadka na profilu publicznym",
     "publicSub": "Tylko dni, kolory i statystyki, nigdy tytuł.",
     "offerTitle": "Przypominać o nowej zagadce każdego dnia?",
-    "offerBody": "Jedno powiadomienie dziennie o {{time}}, tylko jeśli zagadka jeszcze czeka. Można to zmienić w Ustawieniach."
+    "offerBody": "Jedno powiadomienie dziennie o {{time}}, tylko jeśli zagadka jeszcze czeka."
   },
   "puzzleFair": {
     "close": "Dobra seria, zła część!",

@@ -28,11 +28,13 @@ import {
   notifyKindEnabled,
   reminderHour,
   setNotifyKind,
+  setPuzzleReminder,
   setReminderHour,
 } from '@/notifications';
 import { MenuRow, NavHeader, PlusChip, Screen } from '@/components/ui';
 import { t } from '@/i18n';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
+import { puzzleOn, puzzleReminderHour, puzzleReminderOn } from '@/puzzle-data';
 import { colors, space } from '@/theme';
 
 export default function NotificationsScreen() {
@@ -61,6 +63,8 @@ export default function NotificationsScreen() {
   // ITS OWN SWITCH, and that is the point of it. Wanting to know an episode
   // aired and wanting to be reminded of three years ago are different people.
   const [memory, setMemory] = useState(() => notifyKindEnabled('memory'));
+  // The daily puzzle's reminder, also on its own settings screen with its hour.
+  const [puzzle, setPuzzle] = useState(puzzleReminderOn);
   const plus = usePlus();
   const plusUi = usePlusUi();
 
@@ -201,6 +205,24 @@ export default function NotificationsScreen() {
             />
           }
         />
+        {puzzleOn() && (
+          <MenuRow trackId="puzzle.settings.remind"
+            title={t('puzzle.settings.title')}
+            sub={t('puzzlePolish.offerBody', { time: `${String(puzzleReminderHour()).padStart(2, '0')}:00` })}
+            right={
+              <Switch
+                value={puzzle}
+                onValueChange={(v) => {
+                  void setPuzzleReminder(v).then((ok) => {
+                    if (ok) setPuzzle(v);
+                    else Alert.alert(t('settings.app.notificationsOffTitle'), t('settings.app.notificationsOffBody'));
+                  });
+                }}
+                trackColor={{ true: colors.green }}
+              />
+            }
+          />
+        )}
       </ScrollView>
     </Screen>
   );

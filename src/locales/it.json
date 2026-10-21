@@ -3544,7 +3544,7 @@
     "public": "Puzzle sul tuo profilo pubblico",
     "publicSub": "Solo giorni, colori e statistiche, mai il titolo.",
     "offerTitle": "Vuoi un promemoria per la nuova enigma di ogni giorno?",
-    "offerBody": "Una notifica al giorno alle {{time}}, solo se non hai ancora giocato. Puoi cambiarlo nelle Impostazioni."
+    "offerBody": "Una notifica al giorno alle {{time}}, solo se non hai ancora giocato."
   },
   "puzzleFair": {
     "close": "Saga giusta, capitolo sbagliato!",

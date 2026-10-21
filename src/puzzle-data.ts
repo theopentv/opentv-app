@@ -43,6 +43,7 @@ import {
   isOver,
   libraryCandidates,
   newGame,
+  nextPuzzleReminder,
   parseGame,
   parseHistory,
   parsePinned,
@@ -78,6 +79,8 @@ const K = {
   /** The one archive game in progress. */
   archiveGame: 'puzzle.archiveGame',
   remind: 'puzzle.remind',
+  /** Stamped once the first-open "want a reminder?" has been asked, either answer. */
+  remindOffered: 'puzzle.remindOffered',
   remindHour: 'puzzle.remindHour',
   public: 'puzzle.public',
 } as const;
@@ -100,6 +103,14 @@ export function puzzleReminderOn(): boolean {
 }
 export function setPuzzleReminderOn(on: boolean): void {
   setMeta(K.remind, on ? '1' : '');
+}
+
+/** The one-time offer on the puzzle screen: due until asked, and moot once on. */
+export function puzzleReminderOfferDue(): boolean {
+  return puzzleOn() && !puzzleReminderOn() && getMeta(K.remindOffered) !== '1';
+}
+export function markPuzzleReminderOffered(): void {
+  setMeta(K.remindOffered, '1');
 }
 
 /** Same default and same parsing as the episode reminders' hour. */
@@ -684,21 +695,19 @@ export async function republishPuzzleBlock(): Promise<void> {
 // ── the reminder ────────────────────────────────────────────────────────────
 
 /**
- * When today's reminder should fire, or null: the game or the reminder is off,
- * today's puzzle is already finished, or the chosen hour has passed.
- * "You haven't played today's puzzle" — no streak to threaten since 14 Oct.
- * `notifications.ts` schedules it on every sync, so "once a day" is the DATE
- * trigger itself, and finishing the game re-plans, which drops it.
+ * When the next reminder should fire, or null while the game or the reminder
+ * is off. Today if today is unplayed and the hour is ahead, else tomorrow —
+ * see `nextPuzzleReminder`. "You haven't played today's puzzle" — no streak
+ * to threaten since 14 Oct. `notifications.ts` schedules it on every sync, so
+ * "once a day" is the DATE trigger itself, and finishing the game re-plans,
+ * which moves it to tomorrow.
  */
 export function puzzleReminderAt(now: Date): { at: number } | null {
   if (!puzzleOn() || !puzzleReminderOn()) return null;
   const day = localDayStamp(now);
   const g = loadGame(day);
-  if ((g && isOver(g)) || loadHistory().some((r) => r.d === day)) return null;
-  const at = new Date(now);
-  at.setHours(puzzleReminderHour(), 0, 0, 0);
-  if (at.getTime() <= now.getTime()) return null;
-  return { at: at.getTime() };
+  const played = (g != null && isOver(g)) || loadHistory().some((r) => r.d === day);
+  return { at: nextPuzzleReminder(now, puzzleReminderHour(), played) };
 }
 
 /**

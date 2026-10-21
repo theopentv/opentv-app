@@ -3544,7 +3544,7 @@
     "public": "Puzzle on your public profile",
     "publicSub": "Days, colours and stats only, never which title.",
     "offerTitle": "Want a reminder for each day's new puzzle?",
-    "offerBody": "One notification a day at {{time}}, only if you haven't played yet. You can change it in Settings."
+    "offerBody": "One notification a day at {{time}}, only if you haven't played yet."
   },
   "puzzleFair": {
     "close": "Right series, wrong part!",

@@ -30,7 +30,7 @@ import {
   type UpcomingEpisode,
 } from '@/notification-plan';
 import { memoryFor, memoryNotificationAt, memorySentence } from '@/on-this-day';
-import { puzzleReminderAt } from '@/puzzle-data';
+import { puzzleReminderAt, setPuzzleReminderOn } from '@/puzzle-data';
 import { shouldResync } from '@/pure';
 import { GOAL_NUDGED_AT_KEY, goalNudgeAt, goalNudgeOn, goalStatus, mostBehind } from '@/yearly-goal';
 import type { LocaleKey } from '@/locales/keys';
@@ -158,6 +158,19 @@ export async function enableEpisodeNotifications(): Promise<boolean> {
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') return false;
   setMeta(KEYS.episode, '1');
+  await syncEpisodeNotifications(true);
+  return true;
+}
+
+/**
+ * The daily puzzle reminder on or off, from every switch that offers it (the
+ * puzzle's settings, Notifications, the puzzle's first-open question). On has
+ * to open the master switch too — nothing is planned while it is shut — so it
+ * asks for permission the same way. False when that was refused.
+ */
+export async function setPuzzleReminder(on: boolean): Promise<boolean> {
+  if (on && !notificationsEnabled() && !(await enableEpisodeNotifications())) return false;
+  setPuzzleReminderOn(on);
   await syncEpisodeNotifications(true);
   return true;
 }
@@ -407,10 +420,10 @@ export async function syncEpisodeNotifications(force = false): Promise<void> {
      * TODAY'S PUZZLE, NOT PLAYED YET (10 Oct; a streak warning until the
      * streak went on 14 Oct). Same shape as the memory above — it reads
      * `meta`, so it is scheduled here rather than planned. `puzzleReminderAt`
-     * is null unless the reminder is on, today is unplayed and the chosen
-     * hour is still ahead; and the
-     * trigger is one DATE, so "once a day" is the shape of the thing rather
-     * than a counter. Finishing the puzzle re-plans, which drops it.
+     * is null unless the reminder is on, and otherwise the next unplayed
+     * day's hour — today's, or tomorrow's once today is played or past; and
+     * the trigger is one DATE, so "once a day" is the shape of the thing
+     * rather than a counter. Finishing the puzzle re-plans, which moves it on.
      */
     const puzzle = puzzleReminderAt(new Date(now));
     if (puzzle) {

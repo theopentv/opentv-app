@@ -3544,7 +3544,7 @@
     "public": "Rätsel auf deinem öffentlichen Profil",
     "publicSub": "Nur Tage, Farben und Statistiken, nie welcher Titel.",
     "offerTitle": "Möchtest du an das neue Rätsel jedes Tages erinnert werden?",
-    "offerBody": "Eine Mitteilung am Tag um {{time}}, nur wenn du noch nicht gespielt hast. Änderbar in den Einstellungen."
+    "offerBody": "Eine Mitteilung am Tag um {{time}}, nur wenn du noch nicht gespielt hast."
   },
   "puzzleFair": {
     "close": "Richtige Reihe, falscher Teil!",

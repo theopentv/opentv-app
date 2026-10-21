@@ -416,6 +416,19 @@ export function isOver(g: Game): boolean {
   return g.won || g.guesses.length >= MAX_TRIES;
 }
 
+/**
+ * When the daily reminder should next fire: today at `hour` while today is
+ * unplayed and the hour is still ahead, otherwise TOMORROW at `hour` — a day
+ * not yet begun cannot have been played. Returning null for the second case
+ * (before 2.0.0) left nothing scheduled after a game, so the reminder only
+ * came on a day the app had been opened before the hour.
+ */
+export function nextPuzzleReminder(now: Date, hour: number, playedToday: boolean): number {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour);
+  if (!playedToday && today.getTime() > now.getTime()) return today.getTime();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, hour).getTime();
+}
+
 /** One try. A finished game ignores further guesses rather than growing.
  *  `close` marks a film of the answer's series (`isClose`); it is ignored on
  *  the answer itself and on anything that is not a film. */

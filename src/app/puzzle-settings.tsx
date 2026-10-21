@@ -21,7 +21,7 @@ import { Alert, ScrollView, StyleSheet, Switch, Text } from 'react-native';
 
 import { MenuRow, NavHeader, Screen } from '@/components/ui';
 import { t } from '@/i18n';
-import { enableEpisodeNotifications, notificationsEnabled, syncEpisodeNotifications } from '@/notifications';
+import { setPuzzleReminder, syncEpisodeNotifications } from '@/notifications';
 import {
   puzzleOn,
   puzzlePublicOn,
@@ -31,7 +31,6 @@ import {
   setPuzzleOn,
   setPuzzlePublicOn,
   setPuzzleReminderHour,
-  setPuzzleReminderOn,
 } from '@/puzzle-data';
 import { colors, space } from '@/theme';
 
@@ -42,23 +41,8 @@ export default function PuzzleSettingsScreen() {
   const [pub, setPub] = useState(puzzlePublicOn);
 
   const toggleRemind = (v: boolean) => {
-    if (!v) {
-      setRemind(false);
-      setPuzzleReminderOn(false);
-      void syncEpisodeNotifications(true);
-      return;
-    }
-    const arm = () => {
-      setRemind(true);
-      setPuzzleReminderOn(true);
-      void syncEpisodeNotifications(true);
-    };
-    if (notificationsEnabled()) {
-      arm();
-      return;
-    }
-    void enableEpisodeNotifications().then((ok) => {
-      if (ok) arm();
+    void setPuzzleReminder(v).then((ok) => {
+      if (ok) setRemind(v);
       else Alert.alert(t('settings.app.notificationsOffTitle'), t('settings.app.notificationsOffBody'));
     });
   };

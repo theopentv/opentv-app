@@ -3544,7 +3544,7 @@
     "public": "Herkese açık profilinde bulmaca",
     "publicSub": "Yalnızca günler, renkler ve istatistikler; hangi yapım olduğu asla.",
     "offerTitle": "Her günün yeni bulmacası için hatırlatıcı ister misin?",
-    "offerBody": "Günde bir bildirim (saat {{time}}), yalnızca henüz oynamadıysan. Ayarlar'dan değiştirebilirsin."
+    "offerBody": "Günde bir bildirim (saat {{time}}), yalnızca henüz oynamadıysan."
   },
   "puzzleFair": {
     "close": "Seri doğru, film yanlış!",

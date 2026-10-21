@@ -3544,7 +3544,7 @@
     "public": "Puzzle en tu perfil público",
     "publicSub": "Solo días, colores y estadísticas, nunca el título.",
     "offerTitle": "¿Quieres un recordatorio para el nuevo reto de cada día?",
-    "offerBody": "Una notificación al día a las {{time}}, solo si aún no has jugado. Puedes cambiarlo en Ajustes."
+    "offerBody": "Una notificación al día a las {{time}}, solo si aún no has jugado."
   },
   "puzzleFair": {
     "close": "¡Saga correcta, entrega equivocada!",
