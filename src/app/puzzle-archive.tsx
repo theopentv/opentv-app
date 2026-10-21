@@ -28,11 +28,12 @@ import { requirePlus, usePlus } from '@/plus';
 import { MAX_TRIES, archiveDays, puzzleNumber, winLevel, type Result } from '@/puzzle';
 import { firstPlayedDay, resultsByDay, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 type Row = { d: string; n: number; r: Result | null };
 
 const longDay = (d: string): string =>
-  new Date(`${d}T12:00:00`).toLocaleDateString(currentLocale(), { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  new Date(`${d}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
 export default function PuzzleArchiveScreen() {
   const plus = usePlus();

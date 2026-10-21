@@ -38,6 +38,7 @@ import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { postOnboardingRoute, setOnboarded } from '@/session-store';
 import { colors, radius, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 type Stage = 'signIn' | 'looking' | 'found' | 'none';
 
@@ -184,7 +185,7 @@ export default function RestoreScreen() {
                 <Text style={s.cardName}>{backup.username ?? t('restore.yourLibrary')}</Text>
                 {!!backup.updatedAt && (
                   <Text style={s.cardDate}>
-                    {new Date(backup.updatedAt).toLocaleString(currentLocale(), {
+                    {new Date(backup.updatedAt).toLocaleString(intlTag(currentLocale()), {
                       dateStyle: 'medium',
                       timeStyle: 'short',
                     })}

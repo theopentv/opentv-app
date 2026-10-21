@@ -23,6 +23,7 @@ import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { busyDayCount, heatLevel, heatShades, monthColumns, monthsGrid, shiftMonth } from '@/pure';
 import { colors, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** Today as 'YYYY-MM-DD' in LOCAL time — watch dates are local days, and a
  *  UTC day would put an evening's watching on tomorrow's square east of GMT. */
@@ -118,7 +119,7 @@ export function Heatmap({
   const shade = (level: number) => shades[level] ?? shades[0];
 
   const monthName = (m: string, withYear = false) =>
-    new Date(`${m}-01T00:00:00`).toLocaleDateString(currentLocale(), {
+    new Date(`${m}-01T00:00:00`).toLocaleDateString(intlTag(currentLocale()), {
       month: 'short',
       ...(withYear ? { year: 'numeric' } : {}),
     });
@@ -197,7 +198,7 @@ export function Heatmap({
                     importantForAccessibility={onPressDay != null && c.count > 0 ? 'yes' : 'no-hide-descendants'}
                     accessibilityRole="button"
                     accessibilityLabel={t('a11y.dayWatched', {
-                      date: new Date(`${c.date}T12:00:00`).toLocaleDateString(currentLocale(), { day: 'numeric', month: 'long' }),
+                      date: new Date(`${c.date}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { day: 'numeric', month: 'long' }),
                       count: c.count,
                     })}
                     style={[

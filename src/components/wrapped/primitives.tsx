@@ -18,6 +18,7 @@ import { createContext, useContext, type ReactNode } from 'react';
 import { StyleSheet, View, type TextStyle, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export const WRAPPED_YELLOW = '#FFD400';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -285,7 +286,7 @@ export function MonthBars({ months, width, height, locale }: { months: readonly 
             {/* three letters in a column a bar wide: small, no tracking, and
                 allowed to overhang the bar rather than be ellipsised */}
             <Text style={{ color: top ? INK : FAINT, fontSize: 7.5, fontWeight: '800', marginTop: 8, textTransform: 'uppercase', width: bar + gap, textAlign: 'center' }}>
-              {new Date(2000, i, 1).toLocaleDateString(locale, { month: 'short' }).replace('.', '').slice(0, 3)}
+              {new Date(2000, i, 1).toLocaleDateString(intlTag(locale), { month: 'short' }).replace('.', '').slice(0, 3)}
             </Text>
           </View>
         );

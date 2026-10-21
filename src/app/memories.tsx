@@ -45,6 +45,7 @@ import { memoryArchive, type DatedMemory } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { memorySentence } from '@/on-this-day';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** The mark on the left when there is no artwork — per kind, because the strip
  *  only ever shows one memory and a list of forty wants them told apart. */
@@ -76,7 +77,7 @@ function line(m: DatedMemory['event']): string {
 function prettyDate(at: string): string {
   const d = new Date(`${at.slice(0, 10)}T00:00:00`);
   if (Number.isNaN(d.getTime())) return at.slice(0, 10);
-  return d.toLocaleDateString(currentLocale(), { year: 'numeric', month: 'long', day: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 export default function MemoriesScreen() {

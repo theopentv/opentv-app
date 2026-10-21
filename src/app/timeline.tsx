@@ -32,6 +32,7 @@ import { getMeta } from '@/db';
 import { isPlus, usePlus } from '@/plus';
 import { watchTimeline, type TimelineRow } from '@/stats-calc';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 const PAGE = 60;
 
@@ -62,7 +63,7 @@ function dayLabel(day: string): string {
   // date once you are scrolling through years.
   if (diff === 0) return t('timeline.today');
   if (diff === 1) return t('timeline.yesterday');
-  return d.toLocaleDateString(currentLocale(), {
+  return d.toLocaleDateString(intlTag(currentLocale()), {
     weekday: 'short',
     day: 'numeric',
     month: 'short',

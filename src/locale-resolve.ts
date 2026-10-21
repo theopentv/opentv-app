@@ -32,13 +32,24 @@ export function isRtlLocale(locale: Locale): boolean {
 }
 
 /**
+ * THE TAG TO HAND Intl, NOT THE APP'S LOCALE. Plain 'ar' resolves to Western
+ * digits in current CLDR on iOS (Hermes) and to Arabic-Indic on Android ICU, so
+ * the same screen read "390" on one phone and "٣٩٠" on the other. Ask for the
+ * Arabic numbering system explicitly so both agree. Every toLocale*() and Intl
+ * formatter goes through this; the i18n lookup keeps the bare 'ar'.
+ */
+export function intlTag(locale: string): string {
+  return locale === 'ar' ? 'ar-u-nu-arab' : locale;
+}
+
+/**
  * Format a plain integer/decimal count using the target language's grouping
  * and decimal conventions (en: "1,234,567" vs es/it/pt-BR: "1.234.567").
  * Pure wrapper around Intl so the "always pass the app's locale, never the
  * device's" rule is centralised and testable — see locale-resolve.test.ts.
  */
 export function formatCount(n: number, locale: Locale): string {
-  return n.toLocaleString(locale);
+  return n.toLocaleString(intlTag(locale));
 }
 
 /**
@@ -57,7 +68,7 @@ export function localiseNumbers<T extends Record<string, unknown>>(vars: T, loca
   for (const k of Object.keys(out)) {
     const v = out[k];
     if (typeof v === 'number' && Number.isFinite(v)) {
-      out[k] = v.toLocaleString(locale, { useGrouping: false, maximumFractionDigits: 20 });
+      out[k] = v.toLocaleString(intlTag(locale), { useGrouping: false, maximumFractionDigits: 20 });
     }
   }
   return out as T;
@@ -85,5 +96,5 @@ export function formatPeriod(key: string, locale: Locale): string {
   if (/^\d{4}$/.test(key)) return key;
   if (!/^\d{4}-\d{2}$/.test(key)) return key;
   const d = new Date(`${key}-01T00:00:00`);
-  return Number.isNaN(d.getTime()) ? key : d.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+  return Number.isNaN(d.getTime()) ? key : d.toLocaleDateString(intlTag(locale), { month: 'long', year: 'numeric' });
 }

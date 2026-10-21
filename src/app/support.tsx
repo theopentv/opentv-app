@@ -21,6 +21,7 @@ import { NavHeader, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { colors, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 type Msg = { id: number; fromDev: boolean; body: string; at: string };
 
@@ -108,7 +109,7 @@ export default function SupportScreen() {
                 {item.fromDev && <Text style={s.from}>{t('support.from')}</Text>}
                 <Text style={[s.body, !item.fromDev && s.bodyMe]}>{item.body}</Text>
                 <Text style={[s.at, !item.fromDev && s.atMe]}>
-                  {new Date(item.at).toLocaleString(currentLocale(), { dateStyle: 'medium', timeStyle: 'short' })}
+                  {new Date(item.at).toLocaleString(intlTag(currentLocale()), { dateStyle: 'medium', timeStyle: 'short' })}
                 </Text>
               </View>
             )}

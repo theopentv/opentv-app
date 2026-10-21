@@ -24,7 +24,7 @@ import { Alert, ScrollView } from 'react-native';
 import { MenuRow, NavHeader, Screen } from '@/components/ui';
 import { getGuessedMovies, getMeta } from '@/db';
 import { currentLocale, t } from '@/i18n';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, intlTag } from '@/locale-resolve';
 import { discardSnapshot, restoreSnapshot, snapshotCounts, snapshotTakenAt } from '@/pre-tvdb-snapshot';
 import { refreshAllShowMetadata } from '@/show-meta-fetch';
 import { space } from '@/theme';
@@ -81,7 +81,7 @@ export default function AdvancedScreen() {
       t('settings.app.undoMigrationConfirmTitle'),
       t('settings.app.undoMigrationConfirmBody', {
         count: formatCount(total, currentLocale()),
-        date: new Date(snapAt ?? '').toLocaleDateString(currentLocale()),
+        date: new Date(snapAt ?? '').toLocaleDateString(intlTag(currentLocale())),
       }),
       [
         {
@@ -129,7 +129,7 @@ export default function AdvancedScreen() {
           <MenuRow
             trackId="settings.app.undoMigration"
             title={t('settings.app.undoMigration')}
-            sub={t('settings.app.undoMigrationSub', { date: new Date(snapAt).toLocaleDateString(currentLocale()) })}
+            sub={t('settings.app.undoMigrationSub', { date: new Date(snapAt).toLocaleDateString(intlTag(currentLocale())) })}
             onPress={undoMigration}
           />
         )}

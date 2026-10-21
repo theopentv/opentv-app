@@ -16,7 +16,7 @@ import { PixelRatio, StyleSheet, View, type LayoutChangeEvent, type ViewStyle } 
 import { Text } from '@/components/text';
 
 import { currentLocale, genreText, t } from '@/i18n';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, intlTag } from '@/locale-resolve';
 import { WRAPPED_SUMMARY, filmOfTheMonth, watchingType, wrappedSummaryLayout, wrappedSummaryRoomGuess } from '@/pure';
 import { starsValue, starText } from '@/star-rating';
 import type { Wrapped } from '@/stats-calc';
@@ -33,7 +33,7 @@ const tt = (key: string, opts?: Record<string, unknown>) => t(key as any, opts a
 const m = (key: string, opts?: Record<string, unknown>) => tt(`plus.wrapped.cards.m.${key}`, opts);
 
 const shortDate = (at: string | Date) =>
-  (typeof at === 'string' ? new Date(at.includes('T') ? at : `${at.replace(' ', 'T')}Z`) : at).toLocaleDateString(currentLocale(), {
+  (typeof at === 'string' ? new Date(at.includes('T') ? at : `${at.replace(' ', 'T')}Z`) : at).toLocaleDateString(intlTag(currentLocale()), {
     day: 'numeric',
     month: 'short',
   });
@@ -296,8 +296,8 @@ function Barcode({ seed }: { seed: string }) {
 export function MonthGuide({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
   const day = new Date(`${d.biggestDay.date}T12:00:00`);
-  const weekday = day.toLocaleDateString(currentLocale(), { weekday: 'long' });
-  const date = day.toLocaleDateString(currentLocale(), { day: 'numeric', month: 'long' });
+  const weekday = day.toLocaleDateString(intlTag(currentLocale()), { weekday: 'long' });
+  const date = day.toLocaleDateString(intlTag(currentLocale()), { day: 'numeric', month: 'long' });
   // A run of the same show is one listing ("8 EP"), not eight identical rows.
   const items: { title: string; sub: string; time: Date }[] = [];
   let run = 0;
@@ -336,7 +336,7 @@ export function MonthGuide({ d, label, width, handle }: CardProps) {
   const maxRows = 6;
   const rows = items.length > maxRows ? items.slice(0, maxRows - 1) : items;
   const extra = items.length - rows.length;
-  const time = (x: Date) => x.toLocaleTimeString(currentLocale(), { hour: '2-digit', minute: '2-digit' });
+  const time = (x: Date) => x.toLocaleTimeString(intlTag(currentLocale()), { hour: '2-digit', minute: '2-digit' });
   return (
     <Canvas width={width}>
       <YellowLight size={width * 1.2} x={width * 0.85} y={H * 0.15} strength={0.7} />
@@ -541,7 +541,7 @@ export function MonthClock({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
   const max = Math.max(1, ...d.hours);
   const peak = d.hours.indexOf(max);
-  const at = new Date(2000, 0, 1, peak).toLocaleTimeString(currentLocale(), { hour: 'numeric' });
+  const at = new Date(2000, 0, 1, peak).toLocaleTimeString(intlTag(currentLocale()), { hour: 'numeric' });
   const day = d.hours.slice(6, 18).reduce((a, b) => a + b, 0);
   const all = d.hours.reduce((a, b) => a + b, 0);
   // Said about the PEAK, so the line can never contradict the big number.
@@ -549,7 +549,7 @@ export function MonthClock({ d, label, width, handle }: CardProps) {
   const gap = 3;
   const bw = (width - 36 - gap * 23) / 24;
   const chartH = H * 0.3;
-  const tick = (h: number) => new Date(2000, 0, 1, h).toLocaleTimeString(currentLocale(), { hour: 'numeric' });
+  const tick = (h: number) => new Date(2000, 0, 1, h).toLocaleTimeString(intlTag(currentLocale()), { hour: 'numeric' });
   return (
     <Canvas width={width}>
       <YellowLight size={width * 1.3} x={18 + peak * (bw + gap)} y={H * 0.55} strength={1} />
@@ -589,7 +589,7 @@ export function MonthVerdict({ d, label, width, handle }: CardProps) {
       <Head label={label} kicker={m('verdictKicker')} />
       <View style={abs({ left: 18, right: 18, top: H * 0.15 })}>
         <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-          <Display size={150} lines={1} colour={C.YELLOW} style={{ letterSpacing: ls(-6) }}>{avg.toLocaleString(currentLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</Display>
+          <Display size={150} lines={1} colour={C.YELLOW} style={{ letterSpacing: ls(-6) }}>{avg.toLocaleString(intlTag(currentLocale()), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</Display>
           <Text style={{ color: C.YELLOW, fontSize: 64, fontWeight: '900', marginLeft: 6 }}>★</Text>
         </View>
         <Display size={24} lines={1} colour={C.INK}>{m('verdictLine', { count: d.ratedCount }).replace(String(d.ratedCount), n(d.ratedCount))}</Display>
@@ -692,7 +692,7 @@ export function MonthWeekday({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
   // Monday first; 2024-01-01 was a Monday, so day i is Jan (1 + i).
   const order = [1, 2, 3, 4, 5, 6, 0];
-  const name = (wd: number, style: 'long' | 'short') => new Date(2024, 0, wd === 0 ? 7 : wd).toLocaleDateString(currentLocale(), { weekday: style });
+  const name = (wd: number, style: 'long' | 'short') => new Date(2024, 0, wd === 0 ? 7 : wd).toLocaleDateString(intlTag(currentLocale()), { weekday: style });
   const max = Math.max(1, ...d.weekdays);
   const peak = d.weekdays.indexOf(max);
   const day = name(peak, 'long');
@@ -752,7 +752,7 @@ export function MonthSummary({ d, label, width, handle }: CardProps) {
   const [month, year] = [label.split(' ')[0] ?? label, label.split(' ').slice(1).join(' ')];
   const filmsAll = [...d.filmList]
     .sort((a, b) => (b.stars ?? 0) - (a.stars ?? 0) || b.minutes - a.minutes)
-    .map((f) => ({ poster: f.poster, title: f.title, badge: f.stars ? `★ ${starsValue(f.stars).toLocaleString(currentLocale())}` : null }));
+    .map((f) => ({ poster: f.poster, title: f.title, badge: f.stars ? `★ ${starsValue(f.stars).toLocaleString(intlTag(currentLocale()))}` : null }));
   const showsAll = d.topShows.map((s) => ({ poster: s.poster, title: s.name, badge: `${n(s.episodes)} EP` }));
   // The poster room's height. The frame before `onLayout` has measured it
   // uses a guess from the width — so it draws posters rather than an empty

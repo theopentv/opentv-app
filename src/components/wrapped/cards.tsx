@@ -25,7 +25,7 @@ import { Text } from '@/components/text';
 
 import { goalShareLine } from '@/components/yearly-goal';
 import { currentLocale, genreText, t } from '@/i18n';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, intlTag } from '@/locale-resolve';
 import { monthlyActivity, pickArtwork, titlesInGenre, watchingType, type ArtSource } from '@/pure';
 import type { Wrapped } from '@/stats-calc';
 
@@ -387,7 +387,7 @@ function BiggestDayMonth({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
   const locale = currentLocale();
   const date = new Date(`${d.biggestDay.date}T00:00:00`);
-  const dayText = date.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
+  const dayText = date.toLocaleDateString(intlTag(locale), { day: 'numeric', month: 'long' });
   const count = n(d.biggestDay.count);
   // An abstract month: six rows of seven, the day lit. Cells are floored and
   // the grid sized by height as well as width, so the 31st never wraps into
@@ -433,8 +433,8 @@ function BiggestDayYear({ d, label, width, handle }: CardProps) {
   const H = width * (16 / 9);
   const locale = currentLocale();
   const date = new Date(`${d.biggestDay.date}T00:00:00`);
-  const dateText = date.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
-  const weekday = date.toLocaleDateString(locale, { weekday: 'long' });
+  const dateText = date.toLocaleDateString(intlTag(locale), { day: 'numeric', month: 'long' });
+  const weekday = date.toLocaleDateString(intlTag(locale), { weekday: 'long' });
   const count = n(d.biggestDay.count);
   const month = date.getMonth();
   const gap = 4;

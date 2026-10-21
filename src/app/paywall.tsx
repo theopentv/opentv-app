@@ -30,7 +30,7 @@ import { getProfileId } from '@/community-session';
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, intlTag } from '@/locale-resolve';
 import { formatCountdown, offerSecondsLeft, planOffer, type ShownOffer } from '@/offers';
 import { FREE_PUBLISHED_FAVOURITES, FREE_PUBLISHED_LISTS, setPlusEntitled, usePlus } from '@/plus';
 import {
@@ -377,7 +377,7 @@ export default function PaywallScreen() {
                         ? 'plus.renewsOn'
                         : 'plus.endsOn',
                     {
-                      date: new Date(status.expires).toLocaleDateString(currentLocale(), {
+                      date: new Date(status.expires).toLocaleDateString(intlTag(currentLocale()), {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric',

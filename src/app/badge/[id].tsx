@@ -10,6 +10,7 @@ import { currentLocale, t } from '@/i18n';
 import type { LocaleKey } from '@/locales/keys';
 import { withLink } from '@/share-link';
 import { oneAtATime } from '@/one-at-a-time';
+import { intlTag } from '@/locale-resolve';
 
 type AppBadge = { id: string; name: string; image?: string; unlocked?: boolean; date?: string };
 type WatchBadge = { id: string; show: string; tier?: string; detail?: string; image?: string; date?: string };
@@ -57,7 +58,7 @@ function longDate(iso?: string | null): string | null {
   if (!iso) return null;
   const d = new Date(`${iso}T12:00:00`);
   if (Number.isNaN(d.getTime())) return null;
-  return d.toLocaleDateString(currentLocale(), { month: 'long', day: 'numeric', year: 'numeric' }).toLocaleUpperCase(currentLocale());
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'long', day: 'numeric', year: 'numeric' }).toLocaleUpperCase(currentLocale());
 }
 
 export default function BadgeScreen() {

@@ -47,6 +47,7 @@ import { profileImageUri } from '@/library';
 import { withLink } from '@/share-link';
 import { colors, radius, ls } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
+import { intlTag } from '@/locale-resolve';
 
 const W = Math.min(Dimensions.get('window').width, 420);
 
@@ -544,7 +545,7 @@ export default function ShareFavoritesScreen() {
     const dates = shown.map((i) => i.on).filter((d): d is string => !!d).sort();
     if (dates.length === 0) return null;
     const fmt = (d: string) =>
-      new Date(d).toLocaleDateString(currentLocale(), { day: 'numeric', month: 'short' });
+      new Date(d).toLocaleDateString(intlTag(currentLocale()), { day: 'numeric', month: 'short' });
     const first = fmt(dates[0]);
     const last = fmt(dates[dates.length - 1]);
     const range = first === last ? first : `${first} – ${last}`;

@@ -28,6 +28,7 @@ import { currentLocale, t } from '@/i18n';
 import { nuvioProfiles, nuvioSignIn } from '@/nuvio';
 import { disconnectNuvio, getNuvioSession, nuvioEmail, nuvioProfileChoices, nuvioSyncedAt, setNuvioProfile, setNuvioSession, syncNuvio } from '@/nuvio-sync';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export default function NuvioScreen() {
   const [connected, setConnected] = useState(false);
@@ -130,7 +131,7 @@ export default function NuvioScreen() {
     ]);
   };
 
-  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(currentLocale()) : t('plex.never');
+  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(intlTag(currentLocale())) : t('plex.never');
 
   return (
     <Screen>

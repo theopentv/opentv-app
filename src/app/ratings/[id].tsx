@@ -38,6 +38,7 @@ import { communityScore, communityScoreFromCounts, ratingGrid } from '@/pure';
 import { filledStarText } from '@/star-rating';
 import { colors, radius, space, ls } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
+import { intlTag } from '@/locale-resolve';
 
 const TABS = ['Overview', 'Episodes'] as const;
 
@@ -76,7 +77,7 @@ export default function RatingsScreen() {
    * with no date is a claim about today being read next month.
    */
   const username = getHandle() ?? getMeta('username') ?? null;
-  const madeOn = new Date().toLocaleDateString(currentLocale(), {
+  const madeOn = new Date().toLocaleDateString(intlTag(currentLocale()), {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -479,7 +480,7 @@ function shortDate(iso: string): string {
   const d = new Date(iso);
   return isNaN(d.getTime())
     ? ''
-    : d.toLocaleDateString(currentLocale(), { year: 'numeric', month: 'short', day: 'numeric' });
+    : d.toLocaleDateString(intlTag(currentLocale()), { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function EpisodeCard({

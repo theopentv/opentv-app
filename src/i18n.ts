@@ -12,7 +12,7 @@ import { createElement, Fragment, useSyncExternalStore, type ReactElement, type 
 import { I18nManager } from 'react-native';
 
 import { getMeta, setMeta } from '@/db';
-import { isRtlLocale, localiseNumbers, resolveLocale, type Locale } from '@/locale-resolve';
+import { isRtlLocale, localiseNumbers, resolveLocale, type Locale, intlTag } from '@/locale-resolve';
 import type { LocaleKey } from '@/locales/keys';
 import { needsDirectionChange, plotTmdbLang, plotTvdbLangs, showEnumKey, type PlotLanguage } from '@/pure';
 
@@ -225,7 +225,7 @@ const RLM = '\u200F';
 export function monthYear(iso: string): string {
   const d = new Date(iso.replace(' ', 'T'));
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString(currentLocale(), { month: 'long', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'long', year: 'numeric' });
 }
 
 /**
@@ -247,7 +247,7 @@ export const genreText = (raw: string): string => enumText('genre', raw);
 /** A decimal in the app's language: "4.1" in English, "4,1" in Turkish, German,
  *  Polish, French… `toFixed` always wrote the English point (15 Oct). */
 export function fmtDecimal(n: number, digits = 1): string {
-  return n.toLocaleString(active, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  return n.toLocaleString(intlTag(active), { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
 /** The app language, re-rendering the caller when it changes. For what stays

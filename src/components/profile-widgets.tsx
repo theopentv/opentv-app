@@ -45,7 +45,7 @@ import {
 import { fmtDecimal, genreText, t } from '@/i18n';
 import { documentFileUri } from '@/library';
 import { currentLocale } from '@/i18n';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, intlTag } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
 import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
@@ -121,7 +121,7 @@ function Bar({ pct }: { pct: number }) {
 }
 
 const day = (iso: string): string =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString(currentLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
+  new Date(`${iso}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { day: 'numeric', month: 'short', year: 'numeric' });
 
 /**
  * The hour, spelled the way people say it.
@@ -131,7 +131,7 @@ const day = (iso: string): string =>
  * languages, exactly as hardcoding the clock units nearly did.
  */
 const hourLabel = (h: number): string =>
-  new Date(2026, 0, 1, h).toLocaleTimeString(currentLocale(), { hour: 'numeric' });
+  new Date(2026, 0, 1, h).toLocaleTimeString(intlTag(currentLocale()), { hour: 'numeric' });
 
 /**
  * Draw one widget, or nothing.
@@ -356,7 +356,7 @@ export function renderWidget(
     if (n === 0) return null;
     return (
       <WidgetBox label={t('profile.widgetThisYear', { year: String(year) })} span={span}>
-        <Figure value={n.toLocaleString(currentLocale())} sub={t('profile.widgetEpisodes', { count: n })} />
+        <Figure value={n.toLocaleString(intlTag(currentLocale()))} sub={t('profile.widgetEpisodes', { count: n })} />
       </WidgetBox>
     );
   }
@@ -398,7 +398,7 @@ export function renderWidget(
     return (
       <WidgetBox label={t('profile.widgetRated')} span={span}>
         <Figure
-          value={r.n.toLocaleString(currentLocale())}
+          value={r.n.toLocaleString(intlTag(currentLocale()))}
           sub={t('profile.widgetRatedAvg', { avg: fmtDecimal(Number(r.avg ?? 0)) })}
         />
       </WidgetBox>

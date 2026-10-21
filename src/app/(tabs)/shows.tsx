@@ -19,6 +19,7 @@ import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
+import { intlTag } from '@/locale-resolve';
 
 const TABS = ['Watch List', 'Upcoming'] as const;
 
@@ -33,7 +34,7 @@ const SORT_ICON: Record<WatchListSort, 'time-outline' | 'calendar-outline' | 'ca
 function shortDate(iso: string): string {
   const d = new Date(iso.replace(' ', 'T'));
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(currentLocale(), { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 /** The actual next episode, respecting season structure when we know it.
@@ -769,7 +770,7 @@ export default function ShowsScreen() {
             const today = new Date();
             const days = Math.round((d.getTime() - new Date(today.toDateString()).getTime()) / 86400000);
             const label =
-              days <= 0 ? t('shows.today') : days === 1 ? t('shows.tomorrow') : d.toLocaleDateString(currentLocale(), { weekday: 'short', month: 'short', day: 'numeric' });
+              days <= 0 ? t('shows.today') : days === 1 ? t('shows.tomorrow') : d.toLocaleDateString(intlTag(currentLocale()), { weekday: 'short', month: 'short', day: 'numeric' });
             const title = u.title ?? t('show.episodeFallbackTitle', { n: u.episode });
             return (
               <View>

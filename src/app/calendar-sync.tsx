@@ -24,6 +24,7 @@ import { MenuRow, NavHeader, Screen } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { usePlus } from '@/plus';
 import { colors } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export default function CalendarSyncScreen() {
   const plus = usePlus();
@@ -38,7 +39,7 @@ export default function CalendarSyncScreen() {
   );
 
   const label = at
-    ? new Date(at).toLocaleString(currentLocale(), { dateStyle: 'medium', timeStyle: 'short' })
+    ? new Date(at).toLocaleString(intlTag(currentLocale()), { dateStyle: 'medium', timeStyle: 'short' })
     : t('calendarSync.never');
 
   // A refused permission can only be fixed in the phone's own Settings, so the

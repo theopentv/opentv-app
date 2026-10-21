@@ -34,6 +34,7 @@ import { pinAuthUrl, pollForPin, requestPin, type PinResult, type PlexPin } from
 import { disconnectPlex, getPlexToken, plexClientId, plexSyncedAt, setPlexToken, syncPlex } from '@/plex-sync';
 import { mixHex } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** Plex publishes no interval, so this is chosen: often enough that approving
  *  in a browser feels immediate, rarely enough not to hammer plex.tv. */
@@ -160,7 +161,7 @@ export default function PlexScreen() {
     ]);
   };
 
-  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(currentLocale()) : t('plex.never');
+  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(intlTag(currentLocale())) : t('plex.never');
 
   return (
     <Screen>

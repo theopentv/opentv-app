@@ -50,6 +50,7 @@ import { shareLibraryExport } from '@/manual-backup';
 import { MenuRow, NavHeader, Screen } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { colors, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** Export as a TV Time-format ZIP (images bundled) — our importer reads it
  *  back losslessly. Shares via the Android-safe helper. */
@@ -82,7 +83,7 @@ async function exportJson() {
 
 function when(at: number | string | null): string {
   if (at == null) return t('settings.data.never');
-  return new Date(at).toLocaleString(currentLocale(), { dateStyle: 'medium', timeStyle: 'short' });
+  return new Date(at).toLocaleString(intlTag(currentLocale()), { dateStyle: 'medium', timeStyle: 'short' });
 }
 
 export default function BackupScreen() {

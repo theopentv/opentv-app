@@ -17,6 +17,7 @@ import { runtimeLabel } from '@/duration';
 import { withLink } from '@/share-link';
 import { StarRow } from '@/components/half-stars';
 import { oneAtATime } from '@/one-at-a-time';
+import { intlTag } from '@/locale-resolve';
 
 // A share card is captured as an IMAGE, so a fixed size is correct — it should
 // not reflow with orientation. Clamped so a tablet (or a landscape launch)
@@ -194,7 +195,7 @@ export default function ShareCardScreen() {
    */
   const watchedOn =
     isMovie && movie?.watchedAt
-      ? new Date(movie.watchedAt).toLocaleDateString(currentLocale(), {
+      ? new Date(movie.watchedAt).toLocaleDateString(intlTag(currentLocale()), {
           day: 'numeric',
           month: 'long',
           year: 'numeric',

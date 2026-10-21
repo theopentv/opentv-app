@@ -41,10 +41,11 @@ import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
 import { ratingForTap, starsValue, wholeStars } from '@/star-rating';
+import { intlTag } from '@/locale-resolve';
 
 const STARS = ['media.stars.bad', 'media.stars.ok', 'media.stars.good', 'media.stars.super', 'media.stars.wow'] as const;
 /** Out of ten as the reader writes stars: 7 → "3.5", or "3,5" in French. */
-const starNumber = (ten: number) => starsValue(ten).toLocaleString(currentLocale());
+const starNumber = (ten: number) => starsValue(ten).toLocaleString(intlTag(currentLocale()));
 
 // TV Time's full 12-emotion set, 3 rows of 4 — indexes line up with the
 // imported vote ids (db.ts stores the value as index + 28), so the order
@@ -129,7 +130,7 @@ type Show = { tvdbId: number; name: string };
 function shortDate(iso: string): string {
   const d = new Date(iso.replace(' ', 'T'));
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(currentLocale(), { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function EpisodePage({

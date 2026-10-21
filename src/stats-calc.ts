@@ -9,6 +9,7 @@ import { starsValue, wholeStars } from '@/star-rating';
 import seed from '@/seed';
 import { isSeedLibrary } from '@/library';
 import { currentLocale } from '@/i18n';
+import { intlTag } from '@/locale-resolve';
 import {
   bingeReport,
   collagePosters,
@@ -887,5 +888,5 @@ export function watchTimeline(limit: number, offset: number): TimelineRow[] {
 /** A chart's month initial in the app's language — J F M… was English in all
  *  nine, where Turkish counts O Ş M N and Polish S L M K (15 Oct). */
 function monthLetter(d: Date): string {
-  return d.toLocaleDateString(currentLocale(), { month: 'narrow' }).toLocaleUpperCase(currentLocale());
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'narrow' }).toLocaleUpperCase(currentLocale());
 }

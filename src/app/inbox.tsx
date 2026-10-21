@@ -51,6 +51,7 @@ import { getMeta } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { documentFileUri } from '@/library';
 import { colors, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 // ── the TV Time archive (unchanged behaviour, now virtualised) ───────────────
 
@@ -68,7 +69,7 @@ function loadArchive(): ArchiveItem[] {
 function prettyDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(currentLocale(), { month: 'long', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 /** One TV Time row — unchanged behaviour, now drawn inside the merged list. */

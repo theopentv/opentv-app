@@ -18,6 +18,7 @@
  * Types only from react-native-purchases: this file must load under Jest.
  */
 import type { PricingPhase, PurchasesIntroPrice, PurchasesStoreProductDiscount, SubscriptionOption } from 'react-native-purchases';
+import { intlTag } from '@/locale-resolve';
 
 export type OfferUnit = 'DAY' | 'WEEK' | 'MONTH' | 'YEAR';
 /** How long the offer price lasts, in the largest whole unit. */
@@ -148,6 +149,6 @@ export function offerSecondsLeft(endsAt: string, nowMs: number): number {
 
 /** 47:59:05 — hours run past 24 on purpose: "2 days" would hide that it is moving. */
 export function formatCountdown(seconds: number, locale: string): string {
-  const two = (n: number) => n.toLocaleString(locale, { minimumIntegerDigits: 2, useGrouping: false });
+  const two = (n: number) => n.toLocaleString(intlTag(locale), { minimumIntegerDigits: 2, useGrouping: false });
   return `${two(Math.floor(seconds / 3600))}:${two(Math.floor((seconds % 3600) / 60))}:${two(seconds % 60)}`;
 }

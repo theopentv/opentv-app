@@ -41,6 +41,7 @@ import { isPlus } from '@/plus';
 import { MAX_TRIES, SKIP, isClose, type Game, type Stats } from '@/puzzle';
 import { SITE } from '@/share-link';
 import { ACCENTS, DEFAULT_ACCENT, ls, onAccent } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 const INK = '#0B0B0D';
 const TEXT = '#FFFFFF';
@@ -132,7 +133,7 @@ export function PuzzleShareCard({
   const verdict = game.won ? t('puzzle.wonTitle', { count: game.guesses.length }) : t('puzzle.lostTitle');
   const who = useByline();
   const accent = useAccent();
-  const date = new Date(`${day}T12:00:00`).toLocaleDateString(currentLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
+  const date = new Date(`${day}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { day: 'numeric', month: 'long', year: 'numeric' });
   return (
     <View ref={cardRef} collapsable={false} style={s.card}>
       <LinearGradient colors={[`${accent}38`, `${accent}00`]} style={StyleSheet.absoluteFill} end={{ x: 0.5, y: 0.7 }} />

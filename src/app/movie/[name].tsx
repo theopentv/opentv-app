@@ -65,11 +65,12 @@ import { a11yHidden } from '@/a11y';
 import { HalfStarControl, HalfStarHint } from '@/components/half-stars';
 import { CommunityRating } from '@/components/rating-breakdown';
 import { ratingForTap, starsValue, wholeStars } from '@/star-rating';
+import { intlTag } from '@/locale-resolve';
 
 const TABS = ['About', 'More'] as const;
 
 /** A rating out of ten as stars in the reader's own digits: 7 → "3.5", "3,5" in French. */
-const starNumber = (ten: number) => starsValue(ten).toLocaleString(currentLocale());
+const starNumber = (ten: number) => starsValue(ten).toLocaleString(intlTag(currentLocale()));
 
 const STARS = ['media.stars.bad', 'media.stars.ok', 'media.stars.good', 'media.stars.super', 'media.stars.wow'] as const;
 
@@ -109,12 +110,12 @@ const EMOTIONS = [
 function shortDate(iso: string): string {
   const d = new Date(iso.replace(' ', 'T'));
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(currentLocale(), { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 /** In the locale's own digits, whole — see the show page's countLabel. */
 function countLabel(n: number): string {
-  return n.toLocaleString(currentLocale());
+  return n.toLocaleString(intlTag(currentLocale()));
 }
 
 type RemoteMeta = MovieMeta & { poster: string | null };
@@ -1177,7 +1178,7 @@ export default function MovieScreen() {
                     {'★'.repeat(filled)}
                     {'☆'.repeat(5 - filled)}
                   </Text>
-                  <Text style={styles.caption2}>{`${rating5 ? fmtDecimal(rating5) : '—'}/${(5).toLocaleString(currentLocale())}`}</Text>
+                  <Text style={styles.caption2}>{`${rating5 ? fmtDecimal(rating5) : '—'}/${(5).toLocaleString(intlTag(currentLocale()))}`}</Text>
                   {mm?.votes ? <Text style={styles.caption2}> {t('movie.ratingsCount', { count: countLabel(mm.votes) })}</Text> : null}
                 </View>
                 {/* the only prose paragraph on this screen — capped so a

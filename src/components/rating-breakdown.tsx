@@ -23,11 +23,12 @@ import { currentLocale, t } from '@/i18n';
 import { ratingBreakdown } from '@/pure';
 import { starsValue } from '@/star-rating';
 import { colors, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** "3.9", "4.0" — always one decimal, as TV Time's "4.9/5" was. */
-const oneDecimal = (n: number) => n.toLocaleString(currentLocale(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const oneDecimal = (n: number) => n.toLocaleString(intlTag(currentLocale()), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 /** A step as a reader says it: 10 → "5", 7 → "3.5". */
-const stepText = (ten: number) => starsValue(ten).toLocaleString(currentLocale());
+const stepText = (ten: number) => starsValue(ten).toLocaleString(intlTag(currentLocale()));
 
 /**
  * The line, and the sheet it opens. Draws nothing when nobody has scored the
@@ -54,7 +55,7 @@ export function CommunityRating({
   // NO HEAD COUNT. TV Time printed "4.9/5" and never how many had voted
   // (design/referance/12 and 13); a count was added here and taken out again
   // on the developer's check (14 Oct). The sheet shows shares, not people.
-  const line = `${avg}/${(5).toLocaleString(currentLocale())}`;
+  const line = `${avg}/${(5).toLocaleString(intlTag(currentLocale()))}`;
   const label = t('ratingBreakdown.averageLabel', { value: avg, max: 5 });
   // the average drawn to the nearest half star — 3.9 is four, 3.7 three and a half
   const ten = Math.round(b.average * 2);

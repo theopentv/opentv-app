@@ -22,6 +22,7 @@ import { currentLocale, t } from '@/i18n';
 import { authenticate, normaliseServerUrl } from '@/jellyfin';
 import { disconnectJellyfin, getJellyfinSession, jellyfinDeviceId, jellyfinServer, jellyfinSyncedAt, setJellyfinSession, syncJellyfin } from '@/jellyfin-sync';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export default function JellyfinScreen() {
   const [connected, setConnected] = useState(false);
@@ -92,7 +93,7 @@ export default function JellyfinScreen() {
     ]);
   };
 
-  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(currentLocale()) : t('plex.never');
+  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(intlTag(currentLocale())) : t('plex.never');
 
   return (
     <Screen>

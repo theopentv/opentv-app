@@ -33,6 +33,7 @@ import { orderDevices, type Device } from '@/devices';
 import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { colors, radius, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export default function DevicesScreen() {
   const [items, setItems] = useState<Device[] | null>(null);
@@ -149,7 +150,7 @@ export default function DevicesScreen() {
 function DeviceRow({ d, mine, onRemove }: { d: Device; mine: boolean; onRemove: () => void }) {
   const name = d.name ?? t('devices.unnamed');
   const seen = t('devices.lastSeen', {
-    date: new Date(d.last_seen).toLocaleDateString(currentLocale(), { dateStyle: 'medium' }),
+    date: new Date(d.last_seen).toLocaleDateString(intlTag(currentLocale()), { dateStyle: 'medium' }),
   });
   const icon = d.platform === 'android' ? 'logo-android' : d.platform === 'ios' ? 'logo-apple' : 'phone-portrait-outline';
   return (

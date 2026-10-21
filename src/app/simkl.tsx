@@ -29,6 +29,7 @@ import { currentLocale, t } from '@/i18n';
 import { simklConfigured, simklDeviceCode, simklPollToken, type SimklDeviceCode, type SimklPoll } from '@/simkl';
 import { answerSimklMatch, disconnectSimkl, getSimklTokens, setSimklTokens, simklPending, simklSyncedAt, syncSimkl, type SimklPendingMatch } from '@/simkl-sync';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /**
  * Poll at Simkl's interval until the code is approved or runs out. Outside the
@@ -147,7 +148,7 @@ export default function SimklScreen() {
     ]);
   };
 
-  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(currentLocale()) : t('plex.never');
+  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(intlTag(currentLocale())) : t('plex.never');
 
   return (
     <Screen>

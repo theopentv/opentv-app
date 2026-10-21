@@ -31,6 +31,7 @@ import { watchDayCounts } from '@/stats-calc';
 import { currentLocale, t } from '@/i18n';
 import { dominantEmotion, emotionColor, EMOTION_NAMES, shiftMonth } from '@/pure';
 import { colors, radius, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** Six months, the same window the profile heatmap uses at full size. */
 const MONTHS = 6;
@@ -119,7 +120,7 @@ export default function EmotionCalendarScreen() {
         {day != null && (
           <View style={s.daySheet}>
             <Text style={s.dayTitle}>
-              {new Date(`${day}T12:00:00`).toLocaleDateString(currentLocale(), {
+              {new Date(`${day}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), {
                 weekday: 'long',
                 day: 'numeric',
                 month: 'long',

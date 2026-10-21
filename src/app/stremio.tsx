@@ -20,6 +20,7 @@ import { currentLocale, t } from '@/i18n';
 import { stremioLogin } from '@/stremio';
 import { disconnectStremio, getStremioSession, setStremioSession, stremioEmail, stremioSyncedAt, syncStremio } from '@/stremio-sync';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export default function StremioScreen() {
   const [connected, setConnected] = useState(false);
@@ -88,7 +89,7 @@ export default function StremioScreen() {
     ]);
   };
 
-  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(currentLocale()) : t('plex.never');
+  const syncedLabel = lastSync ? new Date(lastSync).toLocaleString(intlTag(currentLocale())) : t('plex.never');
 
   return (
     <Screen>

@@ -48,6 +48,7 @@ import { communityErrorText } from '@/community-error-text';
 import { startTogether } from '@/community-together';
 import { TogetherStrip } from '@/components/together-strip';
 import { withLink } from '@/share-link';
+import { intlTag } from '@/locale-resolve';
 
 const TABS = ['About', 'Episodes'] as const;
 
@@ -66,7 +67,7 @@ const INTERESTS = [
  * "11,080", "11.080" — which reads right everywhere, so no suffix table of our own.
  */
 function countLabel(n: number): string {
-  return n.toLocaleString(currentLocale());
+  return n.toLocaleString(intlTag(currentLocale()));
 }
 
 // carousel geometry, derived per render from the live window width so an iPad
@@ -84,7 +85,7 @@ type CarItem =
 function shortDate(iso: string): string {
   const d = new Date(iso.replace(' ', 'T'));
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(currentLocale(), { month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export default function ShowScreen() {
@@ -1106,7 +1107,7 @@ export default function ShowScreen() {
                 </Text>
               ))}
             </Text>
-            <Text style={styles.caption2}>{`${meta?.rating ? fmtDecimal(meta.rating / 2) : '—'}/${(5).toLocaleString(currentLocale())}`}</Text>
+            <Text style={styles.caption2}>{`${meta?.rating ? fmtDecimal(meta.rating / 2) : '—'}/${(5).toLocaleString(intlTag(currentLocale()))}`}</Text>
           </View>
           {/* the only prose paragraph on this screen — capped so a 1366pt iPad
               doesn't render the overview as one enormous line; everything
@@ -1126,13 +1127,13 @@ export default function ShowScreen() {
               accessible
               accessibilityLabel={
                 meta?.lastAir
-                  ? t('a11y.airDay', { day: new Date(`${meta.lastAir}T12:00:00`).toLocaleDateString(currentLocale(), { weekday: 'long' }) })
+                  ? t('a11y.airDay', { day: new Date(`${meta.lastAir}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { weekday: 'long' }) })
                   : undefined
               }>
               <Ionicons name="time-outline" size={22} color={colors.text} />
               <Text style={styles.factText}>
                 {meta?.lastAir
-                  ? new Date(`${meta.lastAir}T12:00:00`).toLocaleDateString(currentLocale(), { weekday: 'short' })
+                  ? new Date(`${meta.lastAir}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { weekday: 'short' })
                   : '—'}
               </Text>
             </View>

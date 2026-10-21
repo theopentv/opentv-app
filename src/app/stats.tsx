@@ -11,7 +11,7 @@ import { isJoined } from '@/community-session';
 import { getCharacterVoteStats } from '@/db';
 import { currentLocale, genreText, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, intlTag } from '@/locale-resolve';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
 import { computeMovieStats, computeShowStats } from '@/stats-calc';
 import { colors, radius, space, ls } from '@/theme';
@@ -338,7 +338,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.catchingUpTitle')}>
-              <Text style={styles.bigNum}>{t('stats.shows.pace', { pace: s.pace.toLocaleString(currentLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</Text>
+              <Text style={styles.bigNum}>{t('stats.shows.pace', { pace: s.pace.toLocaleString(intlTag(currentLocale()), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</Text>
               <Text style={styles.sub}>{t('stats.shows.basedOnRecent')}</Text>
             </StatCard>
 
@@ -508,7 +508,7 @@ export default function StatsScreen() {
             </StatCard>
 
             <StatCard title={t('stats.catchingUpTitle')}>
-              <Text style={styles.bigNum}>{t('stats.movies.pace', { pace: m.pace.toLocaleString(currentLocale(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</Text>
+              <Text style={styles.bigNum}>{t('stats.movies.pace', { pace: m.pace.toLocaleString(intlTag(currentLocale()), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) })}</Text>
               <Text style={styles.sub}>{t('stats.movies.basedOnRecent')}</Text>
             </StatCard>
 

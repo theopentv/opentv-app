@@ -16,6 +16,7 @@ import { a11yHidden } from '@/a11y';
 import { currentLocale, t } from '@/i18n';
 import { calendarMonth, recentDayOptions, shiftMonth } from '@/pure';
 import { colors, space } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 /** Today, as the local `YYYY-MM-DD` the calendar and the database both speak. */
 function localDay(d: Date): string {
@@ -78,7 +79,7 @@ export default function MarkAsSheet() {
   // locale, so an Arabic phone set to English read the month, the weekdays and
   // every day button in Arabic. `currentLocale()`, as the show screen does.
   const locale = currentLocale();
-  const monthLabel = new Date(`${month}-01T12:00:00`).toLocaleDateString(locale, {
+  const monthLabel = new Date(`${month}-01T12:00:00`).toLocaleDateString(intlTag(locale), {
     month: 'long',
     year: 'numeric',
   });
@@ -86,7 +87,7 @@ export default function MarkAsSheet() {
   // Arabic and French rather than being hard-coded English. 1 Feb 2026 is a
   // Sunday, which is where `calendarMonth` starts its weeks.
   const weekdays = Array.from({ length: 7 }, (_, i) =>
-    new Date(2026, 1, 1 + i).toLocaleDateString(locale, { weekday: 'narrow' }),
+    new Date(2026, 1, 1 + i).toLocaleDateString(intlTag(locale), { weekday: 'narrow' }),
   );
 
   return (
@@ -141,7 +142,7 @@ export default function MarkAsSheet() {
                       accessible={day != null}
                       importantForAccessibility={day != null ? 'yes' : 'no-hide-descendants'}
                       accessibilityRole="button"
-                      accessibilityLabel={day ? new Date(`${day}T12:00:00`).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' }) : undefined}
+                      accessibilityLabel={day ? new Date(`${day}T12:00:00`).toLocaleDateString(intlTag(locale), { weekday: 'long', day: 'numeric', month: 'long' }) : undefined}
                       onPress={() => day && act(() => setDay(day))}>
                       {day && (
                         <View style={[styles.dayInner, day === today && styles.dayToday]}>
@@ -170,7 +171,7 @@ export default function MarkAsSheet() {
                       : // Weekday AND date: "Friday" alone is ambiguous the
                         // moment a week has passed, and the number is what
                         // somebody checks their memory against.
-                        `${new Date(`${day}T12:00:00`).toLocaleDateString(locale, { weekday: 'long' })} ${Number(day.slice(-2))}`}
+                        `${new Date(`${day}T12:00:00`).toLocaleDateString(intlTag(locale), { weekday: 'long' })} ${Number(day.slice(-2))}`}
                 </Text>
               </Pressable>
             ))}

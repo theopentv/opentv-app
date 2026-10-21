@@ -40,6 +40,7 @@ import { cloudStorageAllowed, isPlus, useCloudStorageAllowed } from '@/plus';
 import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { colors, radius, space, ls } from '@/theme';
+import { intlTag } from '@/locale-resolve';
 
 export default function CloudBackupScreen() {
   /* PLUS, OR A SERVER OF THEIR OWN — see `cloudStorageAllowed` in plus.ts.
@@ -91,7 +92,7 @@ export default function CloudBackupScreen() {
   useFocusEffect(reread);
 
   const label = at
-    ? new Date(at).toLocaleString(currentLocale(), { dateStyle: 'medium', timeStyle: 'short' })
+    ? new Date(at).toLocaleString(intlTag(currentLocale()), { dateStyle: 'medium', timeStyle: 'short' })
     : t('cloudBackup.never');
 
   /* WHAT IS STILL WAITING, said before when it last ran. Somebody who has just
@@ -100,7 +101,7 @@ export default function CloudBackupScreen() {
   const syncLabel = waiting > 0
     ? t('deviceSync.waiting', { count: waiting })
     : syncAt
-      ? new Date(syncAt).toLocaleString(currentLocale(), { dateStyle: 'medium', timeStyle: 'short' })
+      ? new Date(syncAt).toLocaleString(intlTag(currentLocale()), { dateStyle: 'medium', timeStyle: 'short' })
       : t('cloudBackup.never');
 
   const runSync = async () => {

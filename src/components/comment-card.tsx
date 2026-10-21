@@ -27,6 +27,7 @@ import { type ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'rea
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import { cachedTranslation, type Translation } from '@/community-translate';
+import { intlTag } from '@/locale-resolve';
 
 /**
  * The one date format a comment card uses, wherever it is drawn.
@@ -39,7 +40,7 @@ import { cachedTranslation, type Translation } from '@/community-translate';
 export function formatCommentDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString(currentLocale(), { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  return d.toLocaleDateString(intlTag(currentLocale()), { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export type CommentCardProps = {
