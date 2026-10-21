@@ -58,7 +58,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
-import { isPlus, markPlusAnnounced, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
+import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
 import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, wrappedToOffer, mixHex } from '@/pure';
@@ -89,6 +89,19 @@ function movieClockNow() {
 
 /** The Plus cloud-backup banner, closed for good by its ✕ (the 'off' kind only). */
 const PLUS_BACKUP_DISMISSED = 'plusBackupBannerDismissed';
+
+/** What the Plus backup banner should say right now; null for no banner. */
+function plusBackupState(): 'off' | 'stalled' | null {
+  if (!isPlus()) return null;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { backupDestination, lastServerBackupAt, serverBackupFailing } = require('@/cloud-backup') as typeof import('@/cloud-backup');
+  if (backupDestination() == null) return getMeta(PLUS_BACKUP_DISMISSED) === '1' ? null : 'off';
+  // A DAY OF GRACE. One failed run is a tunnel or a train; the catch-up on open
+  // and the 60 s timer retry by themselves, so the banner waits until no copy
+  // has landed for a day (14 Oct).
+  const last = lastServerBackupAt();
+  return last == null || (serverBackupFailing() && Date.now() - last > 24 * 60 * 60 * 1000) ? 'stalled' : null;
+}
 const GOAL_BANNER_CLOSED = 'goalBannerClosed';
 /** Once per launch: the hold question is not worth asking on every tab switch. */
 let askedAboutHold = false;
@@ -396,27 +409,9 @@ export default function ProfileScreen() {
        * destination here means a copy exists.
        */
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { backupDestination, lastServerBackupAt, serverBackupFailing } = require('@/cloud-backup') as typeof import('@/cloud-backup');
+      const { backupDestination } = require('@/cloud-backup') as typeof import('@/cloud-backup');
       const offDevice = backupDestination() != null;
-      {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { isPlus } = require('@/plus') as typeof import('@/plus');
-        const last = lastServerBackupAt();
-        setPlusBackup(
-          !isPlus()
-            ? null
-            : !offDevice
-              ? getMeta(PLUS_BACKUP_DISMISSED) === '1'
-                ? null
-                : 'off'
-              : // A DAY OF GRACE. One failed run is a tunnel or a train; the
-                // catch-up on open and the 60 s timer retry by themselves, so
-                // the banner waits until no copy has landed for a day (14 Oct).
-                last == null || (serverBackupFailing() && Date.now() - last > 24 * 60 * 60 * 1000)
-                ? 'stalled'
-                : null,
-        );
-      }
+      setPlusBackup(plusBackupState());
       if (offDevice) {
         setCloudOff(false);
         setBackupOverdue(false);
@@ -658,6 +653,14 @@ export default function ProfileScreen() {
   // Render-safe subscription, so a purchase or a restore flips the chip on this
   // screen without a navigation — see the React Compiler note in `plus.ts`.
   const plus = usePlus();
+  /*
+   * PLUS IS OFTEN LEARNED AFTER THIS TAB OPENS — a fresh sign-in resolves the
+   * entitlement a moment later — and the focus read above had already decided
+   * "not Plus", so a PLUS badge stood over the free tier's iCloud banner until
+   * the next launch. Set from the subscription's callback, never read in
+   * render, so the React Compiler has nothing to memoise away.
+   */
+  useEffect(() => subscribePlus(() => setPlusBackup(plusBackupState())), []);
   /*
    * THE SEASON'S LOOK, as state read on focus — a render-time read of meta
    * would be memoised by the React Compiler and never change. Coming back
