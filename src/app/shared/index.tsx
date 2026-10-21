@@ -14,7 +14,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, StyleSheet, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, AppState, FlatList, Pressable, RefreshControl, StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { NavHeader, Screen } from '@/components/ui';
@@ -58,6 +58,12 @@ export default function SharedListsScreen() {
   useFocusEffect(
     useCallback(() => {
       void load();
+      // And on the way back into the app: a focus does not fire for a screen
+      // already open, so a list its owner deleted meanwhile stayed (21 Oct).
+      const sub = AppState.addEventListener('change', (s) => {
+        if (s === 'active') void load();
+      });
+      return () => sub.remove();
     }, [load]),
   );
 

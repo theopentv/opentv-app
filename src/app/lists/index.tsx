@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AppState, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedRef, useScrollViewOffset } from 'react-native-reanimated';
 
 import { track } from '@/analytics';
@@ -110,16 +110,25 @@ export default function ListsScreen() {
     useCallback(() => {
       if (!joined) return;
       let live = true;
-      void fetchSharedLists()
-        .then((rows) => {
-          noteTogetherIndex(rows);
-          if (live) setSharedLists(rows);
-        })
-        .catch(() => {
-          // Offline: the local lists are still the whole screen, as before.
-        });
+      const load = () =>
+        void fetchSharedLists()
+          .then((rows) => {
+            noteTogetherIndex(rows);
+            if (live) setSharedLists(rows);
+          })
+          .catch(() => {
+            // Offline: the local lists are still the whole screen, as before.
+          });
+      load();
+      // AND ON THE WAY BACK INTO THE APP. A focus does not fire for a screen
+      // that was already open, so a list its owner deleted meanwhile stayed
+      // here until something else refocused it (21 Oct).
+      const sub = AppState.addEventListener('change', (s) => {
+        if (s === 'active') load();
+      });
       return () => {
         live = false;
+        sub.remove();
       };
     }, [joined]),
   );
