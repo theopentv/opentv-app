@@ -390,7 +390,22 @@ export function ArrangeableBlock({
         // Positioned by TRANSFORM from (0,0), not by left/top: the layout box
         // never moves, so `onLayout` below reports pure content height and a
         // reorder animates on the UI thread without a relayout.
-        style={[s.abs, { width: rect.w }, fixedHeight && { height: rect.h }, style]}
+        /*
+         * AT REST, REACT PLACES IT (21 Oct). Writing the slot into a shared
+         * value is a UI-thread props update that React never hears about, and
+         * on Android/Fabric a block set or height that changed while the tab
+         * was hidden left blocks drawn at their OLD slots — two layouts over
+         * each other after sign-in, gaps in Arabic — until a cold start. A
+         * plain style is part of the commit and cannot go stale. The animated
+         * style only drives the arrange mode, where the shared values already
+         * hold the current slot when it attaches (the effect above keeps them).
+         */
+        style={[
+          s.abs,
+          { width: rect.w },
+          fixedHeight && { height: rect.h },
+          editing ? style : { transform: [{ translateX: rtl ? -rect.x : rect.x }, { translateY: rect.y }] },
+        ]}
         onLayout={
           onMeasure ? (e: LayoutChangeEvent) => onMeasure(e.nativeEvent.layout.height) : undefined
         }>
