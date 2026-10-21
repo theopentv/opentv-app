@@ -1799,7 +1799,10 @@ const styles = StyleSheet.create({
   sharedMark: {
     position: 'absolute',
     top: 10,
-    end: 12,
+    // START, as on the Lists screen (21 Oct): the band's posters fill from the
+    // start edge, so with two of them `end` put the mark over empty band —
+    // the far left in Arabic, away from the card it labels.
+    start: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
