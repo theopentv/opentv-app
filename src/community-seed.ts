@@ -146,13 +146,23 @@ const CHARACTERS_DONE_KEY = 'communitySeedCharactersDone';
  * of a profile listed them among the person's own comments, four where the
  * owner's tab said two. See `SEEDABLE_COMMENT_WHERE` in `db.ts`.
  *
+ * Revision 10 sends replies again, WITH THEIR LINK: TV Time's id for each
+ * comment and for the one it answers (`tvtime_id`, `tvtime_parent_id`). The
+ * export did carry the link after all — `parent_comment_id` in the legacy file,
+ * `parent_uuid` in the current one — and every legacy episode reply had been
+ * going up as a top-level post all along, because that file has no `type`.
+ * The server backfills the ids onto rows it already holds (same derived id)
+ * and hangs each reply under its original as soon as that is there. Libraries
+ * imported before the ids were kept get them from the preserved export first —
+ * see `ensureCommentThreadIds`.
+ *
  * BUMP IT WHEN, AND ONLY WHEN, THE PAYLOAD CHANGES MEANING: a new field the
  * server stores, a whole new artifact (as here), a field whose cardinality
  * changes (one → many), a changed identity/target rule. Do NOT bump it for a
  * bug fix on this side that sends the same rows, and never bump it casually:
  * every bump costs every user a full re-walk of their archive.
  */
-export const SEED_REVISION = 9;
+export const SEED_REVISION = 10;
 
 /** The revision the last fully successful run uploaded under. */
 const REVISION_KEY = 'communitySeedRevision';
@@ -181,6 +191,37 @@ const SYNC_OWNER_KEY = 'communitySeedOwner';
 const FRIENDS_FINGERPRINT_KEY = 'communityFriendsFingerprint';
 /** The last matches, kept so the screen can show them without a second call. */
 const FRIEND_MATCHES_KEY = 'communityFriendMatches';
+
+/** Set once the library's comments carry TV Time's ids — see `ensureCommentThreadIds`. */
+export const THREAD_IDS_KEY = 'commentThreadIds';
+
+/**
+ * Make sure the archive's comments carry TV Time's comment and parent ids
+ * before they are sent. A library imported before 2.0.0 has none, and the
+ * preserved export is the only place they still exist. Once per install; an
+ * import stamps it too, because it has just written them.
+ *
+ * False only when the export is unreachable RIGHT NOW (iCloud): the caller
+ * should not upload yet, or the re-seed would stamp itself done without them.
+ * `originalZipBytes` turns a lasting miss into 'none' after three launches, so
+ * this can never hold the archive back for good.
+ */
+export async function ensureCommentThreadIds(): Promise<boolean> {
+  try {
+    if (getMeta(THREAD_IDS_KEY) === '1') return true;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { originalZipBytes } = require('@/migrations') as typeof import('@/migrations');
+    const bytes = await originalZipBytes();
+    if (bytes === null) return false;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { backfillCommentThreadIdsFromZip } = require('@/importer') as typeof import('@/importer');
+    backfillCommentThreadIdsFromZip(bytes === 'none' ? undefined : bytes);
+    setMeta(THREAD_IDS_KEY, '1');
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // ── counting, before anything is offered ─────────────────────────────────────
 
@@ -993,6 +1034,10 @@ export type SeedEverythingResult = {
  * re-running finishes what was left rather than starting over.
  */
 export async function seedEverything(onProgress?: (p: SeedProgress) => void): Promise<SeedEverythingResult> {
+  // Best effort here: the seed screen is somebody pressing a button, and an
+  // unreachable iCloud should not refuse them — but the run is then not stamped,
+  // so the next launch re-walks with the ids.
+  const idsReady = await ensureCommentThreadIds();
   const counts = countSeedable();
   const total = counts.comments + counts.ratings + counts.characters;
   // Taken BEFORE a byte is sent, and stamped only if all three kinds walk to the
@@ -1040,7 +1085,7 @@ export async function seedEverything(onProgress?: (p: SeedProgress) => void): Pr
   // Stamped HERE rather than only in `syncArchiveIfNeeded` so the run the seed
   // screen starts counts too: a user who has just watched their archive upload
   // should not have the next launch decide it was never done and send it again.
-  if (finished && fingerprintAtStart) {
+  if (finished && fingerprintAtStart && idsReady) {
     try {
       setMeta(REVISION_KEY, String(SEED_REVISION));
       setMeta(SYNC_FINGERPRINT_KEY, fingerprintAtStart);
@@ -1161,6 +1206,9 @@ export async function syncArchiveIfNeeded(): Promise<void> {
     void syncAppearanceIfNeeded();
 
     if (action === 'nothing') return;
+
+    // Before anything is walked: the re-seed exists to carry these ids.
+    if (!(await ensureCommentThreadIds())) return;
 
     if (action === 'full') resetSeedProgress();
 

@@ -2116,6 +2116,14 @@ describe('localCommentToSeed and picture-only comments', () => {
     expect(item).toMatchObject({ body: '', has_image: true });
   });
 
+  it('carries TV Time’s ids, which are what hang a reply under its original', () => {
+    const item = localCommentToSeed({ ...base, text: 'É isso', tvtimeId: 'e:101', tvtimeParentId: 'e:100' }, resolve);
+    expect(item).toMatchObject({ tvtime_id: 'e:101', tvtime_parent_id: 'e:100' });
+    const plain = localCommentToSeed({ ...base, text: 'top level' }, resolve);
+    expect(plain).not.toHaveProperty('tvtime_id');
+    expect(plain).not.toHaveProperty('tvtime_parent_id');
+  });
+
   it('still drops a comment with neither words nor a picture', () => {
     expect(localCommentToSeed({ ...base }, resolve)).toBeNull();
     expect(localCommentToSeed({ ...base, image: '  ', imageUrl: '' }, resolve)).toBeNull();
@@ -2511,6 +2519,12 @@ describe('isOrphanedReply', () => {
 
   it('says nothing about a comment this phone never imported', () => {
     expect(isOrphanedReply(undefined, null)).toBe(false);
+  });
+
+  it('takes the server’s word for it, so every reader sees the line, not only the author', () => {
+    expect(isOrphanedReply(undefined, null, true)).toBe(true);
+    // adopted since: the parent is here now
+    expect(isOrphanedReply({ type: 'reply' }, 'imp_abc', true)).toBe(false);
   });
 });
 

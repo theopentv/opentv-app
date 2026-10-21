@@ -2724,6 +2724,9 @@ export type LocalComment = {
   imageUrl?: string | null;
   /** TV Time's `created_at`: "2021-05-21 11:45:57", occasionally already ISO. */
   date: string;
+  /** TV Time's ids for this row and the comment it answers — see `readComments`. */
+  tvtimeId?: string | null;
+  tvtimeParentId?: string | null;
 };
 
 /** What a resolver answers with: the thread this entity addresses, or nothing. */
@@ -2751,6 +2754,13 @@ export type SeedItem = {
    * file, so it is never a claim the upload cannot honour.
    */
   has_image?: boolean;
+  /**
+   * TV Time's id for this comment and the one it answers. Never part of the
+   * derived id, so a re-seed reaches the same row and only fills these in;
+   * the server hangs a reply under its original whenever that is there.
+   */
+  tvtime_id?: string;
+  tvtime_parent_id?: string;
 };
 
 /** "Show Name S4E28" → the season and episode, and the name without them. */
@@ -2799,10 +2809,9 @@ export function seedTimestamp(raw: string | null | undefined): string | null {
  * which then drives other people's language filters. Unknown is the honest
  * value, and the column is nullable for exactly this case.
  *
- * A `reply` row lands as a TOP-LEVEL comment: the export carries no link to the
- * comment it answered, and the parent is somebody else's row that was never in
- * this database. Losing the thread shape is the honest cost of keeping the
- * words; inventing a parent would be worse.
+ * A `reply` carries TV Time's id for the comment it answered. That original is
+ * usually somebody else's and not in this database; the server keeps the link
+ * and attaches the reply when the original's author imports.
  */
 export function localCommentToSeed(row: LocalComment, resolveTarget: SeedTargetResolver): SeedItem | null {
   const body = (row.text ?? '').trim();
@@ -2853,6 +2862,8 @@ export function localCommentToSeed(row: LocalComment, resolveTarget: SeedTargetR
     created_at,
     lang: null,
     ...(hasImage ? { has_image: true } : {}),
+    ...(row.tvtimeId ? { tvtime_id: row.tvtimeId } : {}),
+    ...(row.tvtimeParentId ? { tvtime_parent_id: row.tvtimeParentId } : {}),
   };
 }
 
@@ -4198,12 +4209,17 @@ export type LocalCommentPicture = {
  * non-sequitur: "Happy that you loved the movie" sitting alone at the top of a
  * thread, answering a question no one can see.
  *
- * The server does not carry the distinction (an imported reply arrives with
- * `parent_id` null, because there is no parent row to point at), so this is
- * decided from the local archive and only for comments this phone imported.
+ * The server now says so itself (`orphan_reply`, from TV Time's parent id kept
+ * at import), which is what reaches every other reader; the local archive's
+ * `type` still answers for this phone's own rows before a re-seed has sent it.
  */
-export function isOrphanedReply(local: { type?: string | null } | undefined, serverParentId: string | null): boolean {
-  return serverParentId === null && (local?.type ?? '').toLowerCase() === 'reply';
+export function isOrphanedReply(
+  local: { type?: string | null } | undefined,
+  serverParentId: string | null,
+  /** The server's own word for it (`orphan_reply`), which reaches every reader, not only the author. */
+  serverOrphan?: boolean,
+): boolean {
+  return serverParentId === null && (serverOrphan === true || (local?.type ?? '').toLowerCase() === 'reply');
 }
 
 /** What a server comment carries back for the same post. */

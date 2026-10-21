@@ -211,6 +211,48 @@ export function backfillCommentUuidsFromZip(zipBytes?: Uint8Array): number {
   return filled;
 }
 
+/**
+ * TV Time's ids for a comment already in the library, and — for a legacy
+ * episode reply, which used to arrive as `comment` — its type. FILLS BLANKS
+ * ONLY, matched the way the merge import matches (entity, text, date), so it
+ * can run any number of times and never overwrites a value.
+ */
+function fillCommentThreadIds(c: { entity: string; text: string; date: string; tvtimeId: string | null; tvtimeParentId: string | null }): number {
+  if (!c.tvtimeId && !c.tvtimeParentId) return 0;
+  return (
+    db.runSync(
+      `UPDATE comments SET tvtimeId = COALESCE(tvtimeId, ?), tvtimeParentId = COALESCE(tvtimeParentId, ?),
+              type = CASE WHEN ? IS NOT NULL THEN 'reply' ELSE type END
+        WHERE entity = ? AND text = ? AND date = ? AND tvtimeId IS NULL`,
+      [c.tvtimeId, c.tvtimeParentId, c.tvtimeParentId, c.entity, c.text, c.date],
+    ).changes ?? 0
+  );
+}
+
+/**
+ * Put back TV Time's comment and parent ids for a library imported before they
+ * were kept — out of the preserved export, like `backfillCommentUuidsFromZip`.
+ * Without them the re-seed has nothing to tell the server, and every reply in
+ * the archive stays a top-level post. Returns how many rows it filled.
+ */
+export function backfillCommentThreadIdsFromZip(zipBytes?: Uint8Array): number {
+  let files: Record<string, Uint8Array>;
+  try {
+    if (zipBytes) {
+      files = unzipSync(zipBytes);
+    } else {
+      const local = new File(Paths.document, 'tvtime-original.zip');
+      if (!local.exists) return 0;
+      files = unzipSync(b64ToBytes(local.base64Sync()));
+    }
+  } catch {
+    return 0;
+  }
+  let filled = 0;
+  for (const c of readComments(exportReader(files))) filled += fillCommentThreadIds(c);
+  return filled;
+}
+
 export function rebuildImportedListsFromZip(zipBytes?: Uint8Array): number {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { getCustomLists, saveCustomLists } = require('@/db') as typeof import('@/db');
@@ -1200,6 +1242,8 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       imageUrl: null,
       ratio: null,
       tvtimeUuid: null,
+      tvtimeId: null,
+      tvtimeParentId: null,
     })),
   ];
 
@@ -2078,13 +2122,16 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
         merge &&
         db.getFirstSync<{ x: number }>('SELECT 1 AS x FROM comments WHERE entity = ? AND text = ? AND date = ? LIMIT 1', [c.entity, c.text, c.date])
       ) {
+        fillCommentThreadIds(c);
         continue;
       }
       db.runSync(
-        'INSERT INTO comments (type, entity, text, date, likes, replies, image, imageUrl, ratio, tvtimeUuid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [c.type, c.entity, c.text, c.date, c.likes, c.replies, c.imageUrl ? (commentImages.get(c.imageUrl) ?? null) : null, c.imageUrl, c.ratio, c.tvtimeUuid],
+        'INSERT INTO comments (type, entity, text, date, likes, replies, image, imageUrl, ratio, tvtimeUuid, tvtimeId, tvtimeParentId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [c.type, c.entity, c.text, c.date, c.likes, c.replies, c.imageUrl ? (commentImages.get(c.imageUrl) ?? null) : null, c.imageUrl, c.ratio, c.tvtimeUuid, c.tvtimeId, c.tvtimeParentId],
       );
     }
+    // This export's ids are on every row now — see `ensureCommentThreadIds`.
+    setMeta('commentThreadIds', '1');
     // followers (with names + avatars) and names for the people you follow,
     // both mined from the notifications file; image = local copy, imageUrl = original
     const person = (id: string, name: string | null, imageUrl: string | null) => ({

@@ -250,6 +250,35 @@ describe('profile, comments and notifications', () => {
     ]);
   });
 
+  // Manifest S04E20: a reply stood in its thread as a post, because its link was thrown away
+  it('keeps TV Time’s comment and parent ids, in two id spaces, and marks legacy replies as replies', () => {
+    const c = readComments(
+      exportReader(
+        files({
+          'acct/comments-prod-comments.csv':
+            'type,movie_name,series_name,text,created_at,uuid,comment_uuid,parent_uuid\n' +
+            'comment,Heat,,top,2021-01-01,u1,u1,\n' +
+            'reply,Heat,,answer,2021-01-02,r1,p9,p9',
+          'acct/episode_comment.csv':
+            'id,tv_show_name,episode_season_number,episode_number,comment,created_at,parent_comment_id,depth\n' +
+            '7,Manifest,4,20,root,2022-01-01,,0\n' +
+            '8,Manifest,4,20,@tallitaferraz É isso,2022-01-02,5,1\n' +
+            'ec-3,Manifest,4,20,from an OpenTV backup,2022-01-03,,',
+        }),
+      ),
+    );
+    expect(c.map((x) => [x.type, x.text, x.tvtimeId, x.tvtimeParentId])).toEqual([
+      ['comment', 'top', 'c:u1', null],
+      ['reply', 'answer', 'c:r1', 'c:p9'],
+      ['comment', 'root', 'e:7', null],
+      ['reply', '@tallitaferraz É isso', 'e:8', 'e:5'],
+      // OpenTV's own backup numbers its rows; those name nothing outside the file
+      ['comment', 'from an OpenTV backup', null, null],
+    ]);
+    // unchanged: CommsUni's archive is addressed by this
+    expect(c[1].tvtimeUuid).toBe('p9');
+  });
+
   it('finds followers once each, and keeps the newest notifications first', () => {
     const n = readNotifications(
       parseCsv(

@@ -86,6 +86,17 @@ jest.mock('@/api', () => {
   };
 });
 
+/** The preserved export, as `originalZipBytes` answers: null = unreachable now. */
+let zip: Uint8Array | null | 'none' = 'none';
+let backfills = 0;
+jest.mock('@/migrations', () => ({ originalZipBytes: async () => zip }));
+jest.mock('@/importer', () => ({
+  backfillCommentThreadIdsFromZip: () => {
+    backfills++;
+    return 0;
+  },
+}));
+
 // Below the mocks on purpose: the module under test reads `@/db` at import
 // time, so the fakes have to be registered before it is pulled in.
 // eslint-disable-next-line import/first
@@ -109,6 +120,28 @@ beforeEach(() => {
   calls = [];
   failing = new Set();
   profileId = 'p_owner';
+  zip = 'none';
+  backfills = 0;
+});
+
+describe('TV Time thread ids before a re-seed', () => {
+  it('waits while the export is unreachable, then fills the ids ONCE and uploads', async () => {
+    stamped('9', '0.2.1.0.0.0.0');
+    zip = null; // iCloud not answering this launch
+    await syncArchiveIfNeeded();
+    // sending now would stamp revision 10 without the ids it exists to carry
+    expect(calls.filter((c) => c.endsWith('/import'))).toEqual([]);
+    expect(meta.get(REVISION_KEY)).toBe('9');
+
+    zip = new Uint8Array([1]);
+    await syncArchiveIfNeeded();
+    expect(backfills).toBe(1);
+    expect(meta.get(REVISION_KEY)).toBe(String(SEED_REVISION));
+
+    meta.set(REVISION_KEY, '9');
+    await syncArchiveIfNeeded();
+    expect(backfills).toBe(1); // once per install
+  });
 });
 
 describe('an unchanged launch', () => {

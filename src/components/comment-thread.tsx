@@ -281,7 +281,7 @@ export function CommentRow({
               null and renders at the top of a thread as a stray sentence.
               Saying what it is costs one line and turns a non-sequitur back
               into a comment. */}
-          {isOrphanedReply(picture?.(c), c.parent_id) && (
+          {isOrphanedReply(picture?.(c), c.parent_id, c.orphan_reply) && (
             <Text style={styles.orphanReply}>{t('community.comments.orphanReply')}</Text>
           )}
           {c.body.length > 0 && <Text style={styles.body}>{showTranslated && translation ? translation.text : c.body}</Text>}

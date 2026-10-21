@@ -477,6 +477,20 @@ try {
 } catch {
   // column already there
 }
+// TV Time's id for the row and for the comment it answers (`e:<id>` /
+// `c:<uuid>`, see `readComments`). Sent with the seed so the server can hang a
+// reply under its original — which is usually somebody else's, and arrives
+// when they import. `backfillCommentThreadIdsFromZip` fills older libraries.
+try {
+  db.execSync('ALTER TABLE comments ADD COLUMN tvtimeId TEXT');
+} catch {
+  // column already there
+}
+try {
+  db.execSync('ALTER TABLE comments ADD COLUMN tvtimeParentId TEXT');
+} catch {
+  // column already there
+}
 try {
   db.execSync('ALTER TABLE comments ADD COLUMN serverId TEXT');
 } catch {
@@ -2078,7 +2092,15 @@ export function getRawCommentCount(): number {
 }
 
 /** One comment, with the row id the community seeder resumes from. */
-export type SeedableComment = { id: number; type: string; entity: string; text: string; date: string };
+export type SeedableComment = {
+  id: number;
+  type: string;
+  entity: string;
+  text: string;
+  date: string;
+  tvtimeId?: string | null;
+  tvtimeParentId?: string | null;
+};
 
 /**
  * How many own comments could be brought to the community.
@@ -2114,15 +2136,17 @@ export function countSeedableCommentRows(): number {
  * former is the export's own proof that this comment WAS a picture, the latter
  * is whether the file reached this device before TV Time's CDN went dark.
  *
- * AND NEVER A REPLY. The export carries no link to the comment a reply answers,
- * so one used to be uploaded as a top-level comment — the parent was somebody
+ * AND A REPLY ONLY WITH ITS LINK. A reply without `tvtimeParentId` used to be
+ * uploaded as a top-level comment — the parent was somebody
  * else's row that was never in this database. That is how a profile came to
  * show four comments to a visitor while its owner's own tab showed two: the two
  * extra were replies, standing on the server as if they were posts, reading as
  * non-sequiturs and dragging a fragment of a stranger's thread with them.
  *
- * `type != 'reply'` is exactly the test `getVisibleOwnComments()` makes, so the
- * archive, the profile tab and the server now answer with one set.
+ * A reply that carries TV Time's parent id goes up AS a reply: the server hangs
+ * it under its original, or flags it as one whose original is not there yet,
+ * and leaves it off the profile either way — the same set `type != 'reply'`
+ * gives the profile tab here.
  */
 /** How many of the reader's own comments sharing would cover, and when they
  *  span. The consent prompt has to show both -- the guide asks for the
@@ -2136,7 +2160,8 @@ export function commsuniEligible(): { count: number; first: string | null; last:
   return { count: row?.n ?? 0, first: row?.first ?? null, last: row?.last ?? null };
 }
 
-const SEEDABLE_COMMENT_WHERE = `type != 'reply' AND origin IS NOT 'app' AND (TRIM(text) <> '' OR (imageUrl IS NOT NULL AND TRIM(imageUrl) <> ''))`;
+const SEEDABLE_TYPE = `(type != 'reply' OR tvtimeParentId IS NOT NULL)`;
+const SEEDABLE_COMMENT_WHERE = `${SEEDABLE_TYPE} AND origin IS NOT 'app' AND (TRIM(text) <> '' OR (imageUrl IS NOT NULL AND TRIM(imageUrl) <> ''))`;
 
 /**
  * Own comments in `id` order, after `afterId` — the order a cancelled seeding
@@ -2151,7 +2176,7 @@ const SEEDABLE_COMMENT_WHERE = `type != 'reply' AND origin IS NOT 'app' AND (TRI
  */
 export function getSeedableComments(afterId: number): SeedableComment[] {
   return db.getAllSync<SeedableComment>(
-    `SELECT id, type, entity, text, date, image, imageUrl FROM comments WHERE id > ? AND ${SEEDABLE_COMMENT_WHERE} ORDER BY id`,
+    `SELECT id, type, entity, text, date, image, imageUrl, tvtimeId, tvtimeParentId FROM comments WHERE id > ? AND ${SEEDABLE_COMMENT_WHERE} ORDER BY id`,
     [afterId],
   );
 }
@@ -2196,7 +2221,7 @@ export function clearPublishedCommentOrigin(): number {
  * the comment's id from them, and a different projection here would be a
  * different id there.
  *
- * `type != 'reply'` for that same reason — a reply's comment is no longer
+ * `SEEDABLE_TYPE` for that same reason — a reply without its link is not
  * uploaded, so its picture would be attaching itself to a row that does not
  * exist on the server.
  */
@@ -2219,7 +2244,7 @@ export function getSeedableCommentImages(
 ): (SeedableComment & { image: string })[] {
   return db.getAllSync<SeedableComment & { image: string }>(
     `SELECT id, type, entity, text, date, image FROM comments
-      WHERE id > ? AND type != 'reply' AND image IS NOT NULL AND TRIM(image) <> ''
+      WHERE id > ? AND ${SEEDABLE_TYPE} AND image IS NOT NULL AND TRIM(image) <> ''
         ${includeLocal ? '' : "AND origin IS NOT 'local'"}
       ORDER BY id`,
     [afterId],
