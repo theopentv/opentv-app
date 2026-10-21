@@ -1157,7 +1157,8 @@
     "ratePollLabel": "BEWERTE DIESE FOLGE",
     "episodeInfoTitle": "Folgeninfo",
     "noSynopsis": "Für diese Folge ist keine Inhaltsangabe verfügbar.",
-    "spoilersBody": "Du hast diese Folge noch nicht gesehen. Willst du die Kommentare wirklich lesen?"
+    "spoilersBody": "Du hast diese Folge noch nicht gesehen. Willst du die Kommentare wirklich lesen?",
+    "watchedThisEpisode": "Ich hab die Folge gesehen"
   },
   "shows": {
     "tabs": {

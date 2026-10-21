@@ -1157,7 +1157,8 @@
     "ratePollLabel": "AVALIE ESTE EPISÓDIO",
     "episodeInfoTitle": "Informações do episódio",
     "noSynopsis": "Nenhuma sinopse disponível para este episódio.",
-    "spoilersBody": "Você ainda não assistiu a este episódio. Tem certeza de que quer ler os comentários?"
+    "spoilersBody": "Você ainda não assistiu a este episódio. Tem certeza de que quer ler os comentários?",
+    "watchedThisEpisode": "Já assisti a este episódio"
   },
   "shows": {
     "tabs": {

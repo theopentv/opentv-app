@@ -1227,7 +1227,8 @@
     "ratePollLabel": "OCEŃ TEN ODCINEK",
     "episodeInfoTitle": "O odcinku",
     "noSynopsis": "Brak opisu tego odcinka.",
-    "spoilersBody": "Ten odcinek nie jest jeszcze obejrzany. Na pewno chcesz czytać komentarze?"
+    "spoilersBody": "Ten odcinek nie jest jeszcze obejrzany. Na pewno chcesz czytać komentarze?",
+    "watchedThisEpisode": "Ten odcinek mam obejrzany"
   },
   "shows": {
     "tabs": {

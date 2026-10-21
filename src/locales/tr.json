@@ -1157,7 +1157,8 @@
     "ratePollLabel": "BU BÖLÜMÜ PUANLA",
     "episodeInfoTitle": "Bölüm bilgileri",
     "noSynopsis": "Bu bölüm için özet yok.",
-    "spoilersBody": "Bu bölümü izlemedin. Yorumları okumak istediğine emin misin?"
+    "spoilersBody": "Bu bölümü izlemedin. Yorumları okumak istediğine emin misin?",
+    "watchedThisEpisode": "Bu bölümü izledim"
   },
   "shows": {
     "tabs": {

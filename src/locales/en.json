@@ -1157,7 +1157,8 @@
     "ratePollLabel": "RATE THIS EPISODE",
     "episodeInfoTitle": "Episode info",
     "noSynopsis": "No synopsis available for this episode.",
-    "spoilersBody": "You haven't watched this episode. Are you sure you want to read the comments?"
+    "spoilersBody": "You haven't watched this episode. Are you sure you want to read the comments?",
+    "watchedThisEpisode": "I've watched this episode"
   },
   "shows": {
     "tabs": {

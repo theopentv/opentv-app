@@ -1157,7 +1157,8 @@
     "ratePollLabel": "VALORA ESTE EPISODIO",
     "episodeInfoTitle": "Información del episodio",
     "noSynopsis": "No hay sinopsis disponible para este episodio.",
-    "spoilersBody": "Todavía no has visto este episodio. ¿Seguro que quieres leer los comentarios?"
+    "spoilersBody": "Todavía no has visto este episodio. ¿Seguro que quieres leer los comentarios?",
+    "watchedThisEpisode": "Ya he visto este episodio"
   },
   "shows": {
     "tabs": {

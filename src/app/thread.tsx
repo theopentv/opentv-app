@@ -16,17 +16,18 @@
  * and keeps one virtualised list per screen. The thread itself lives in
  * `components/comment-thread.tsx` and is used by both.
  */
-import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
 import type { ThreadTarget } from '@/community-comments';
 import { CommentThread } from '@/components/comment-thread';
-import { isEpisodeWatched, SpoilerGate } from '@/components/side-thread';
+import { isEpisodeWatched } from '@/components/side-thread';
 import { NavHeader, Screen } from '@/components/ui';
 import { boardTargetFor } from '@/pure';
 import { episodeGated, revealEpisode } from '@/spoiler-gate';
 import { t } from '@/i18n';
+import { markWatchedWithPrompt } from '@/mark';
 
 /** A route param that must be a non-negative integer, or nothing at all. */
 function numberParam(raw: string | undefined): number | null {
@@ -85,6 +86,35 @@ export default function ThreadScreen() {
   const [shown, setShown] = useState<string | null>(null);
   const gated = episodeGated(target, isEpisodeWatched, shown);
 
+  /*
+   * THE FILM'S QUESTION, WORD FOR WORD (22 Oct, Mahmood): the same alert and
+   * the same three answers a film asks with — read anyway, "I've watched this
+   * episode" (marks it, then opens), or Cancel, which leaves the screen.
+   */
+  useEffect(() => {
+    if (!gated) return;
+    const open = () => setShown(revealEpisode(target));
+    Alert.alert(
+      t('movie.spoilersTitle'),
+      t('episode.spoilersBody'),
+      [
+        { text: t('movie.displayAnyway'), onPress: open },
+        {
+          text: t('episode.watchedThisEpisode'),
+          // Cancel in the previous-episodes prompt undoes the mark: then it is
+          // still unwatched, so leave rather than open.
+          onPress: () =>
+            markWatchedWithPrompt(Number(target.key), target.season as number, target.episode as number, () =>
+              isEpisodeWatched(Number(target.key), target.season as number, target.episode as number) ? open() : router.back(),
+            ),
+        },
+        { text: t('common.cancel'), style: 'cancel', onPress: () => router.back() },
+      ],
+      { cancelable: true, onDismiss: () => router.back() },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per gated arrival
+  }, [gated]);
+
   return (
     <Screen>
       <NavHeader title={title || t('community.comments.title')} close />
@@ -97,7 +127,7 @@ export default function ThreadScreen() {
         // has to clear is only what sits below it.
         keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
         {gated ? (
-          <SpoilerGate onShow={() => setShown(revealEpisode(target))} />
+          <View style={styles.fill} />
         ) : (
           <CommentThread target={target} board={board} />
         )}

@@ -771,6 +771,7 @@ export type LocaleKey =
   | "episode.spoilersBody"
   | "episode.watchTiles.computer"
   | "episode.watchTiles.tv"
+  | "episode.watchedThisEpisode"
   | "explore.discoverCaption"
   | "explore.feedNeedsInternetCaption"
   | "explore.feedNeedsInternetTitle"
