@@ -242,7 +242,10 @@ export function CommentRow({
                 rename (2 Oct: @itsnoddy.dev still read "mahmoodbashar08"), and
                 the handle is what people search and mention. Once, when there
                 is no display name to differ from it. */}
-            <Text style={styles.meta} numberOfLines={1}>
+            {/* TWO LINES, not one: "@handle · 3 years ago · From TV Time ·
+                OpenTV only" is wider than a 430pt phone, and one line cut off
+                the very part that says where the comment lives. */}
+            <Text style={styles.meta} numberOfLines={2}>
               {c.author.display_name ? `@${c.author.handle} · ` : ''}
               {/* Not yet on the server: say so, instead of "just now" (facc's checklist). */}
               {isTemp(c) ? t('community.comments.sending') : age ? t(age.key, { count: age.count }) : ''}
