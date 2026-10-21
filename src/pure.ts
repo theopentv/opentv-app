@@ -134,6 +134,37 @@ export function pickMovieMatch<T extends MovieCandidate>(
   return { hit: best, guessed: true };
 }
 
+export type TmdbMovieResult = { id: number; title?: string; original_title?: string; poster_path?: string; release_date?: string; vote_count?: number };
+
+/**
+ * The importer's TMDB pick for a film known by NAME (and maybe a year).
+ *
+ * Same title or original title once case, accents, Arabic diacritics/letter
+ * variants and punctuation are ignored; the most-voted wins. A wrong match is
+ * worse than none: unmatched films still import bare and get reported.
+ *
+ * WITH A YEAR, ONLY THAT YEAR (±1: a festival premiere and a release can
+ * straddle New Year). "Hope" (2026) must never become the better-known "Hope"
+ * (2013) because it shares the title — its id is what the film page opens.
+ */
+export function pickTmdbMovieResult<T extends TmdbMovieResult>(results: readonly T[], name: string, year: string | null | undefined): T | null {
+  const norm = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f\u064b-\u0670]/g, '')
+      .replace(/[أإآٱ]/g, 'ا')
+      .replace(/ى/g, 'ي')
+      .replace(/ة/g, 'ه')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+  const want = norm(name);
+  let exact = results.filter((x) => norm(x.title || '') === want || norm(x.original_title || '') === want);
+  const y = Number((year ?? '').slice(0, 4));
+  if (y > 1800) exact = exact.filter((x) => Math.abs(Number((x.release_date || '').slice(0, 4)) - y) <= 1);
+  return [...exact].sort((a, b) => (b.vote_count ?? 0) - (a.vote_count ?? 0))[0] ?? null;
+}
+
 /** Human-readable list of the CSVs found inside a ZIP — for the "imported 0"
  *  error so the user (and us) can see what the file actually contained. */
 export function foundCsvsMessage(fileKeys: string[]): string {
@@ -3187,6 +3218,23 @@ export function pollLabel(c: PollCastEntry): string {
  */
 export function orderPollCast<T extends PollCastEntry>(cast: T[], percents: Record<string, number>): T[] {
   return [...cast].sort((a, b) => (percents[pollLabel(b)] ?? 0) - (percents[pollLabel(a)] ?? 0));
+}
+
+/**
+ * React keys for a poll row: the label, with `#2`, `#3`… on a repeat. The Daily
+ * Show has a dozen "Correspondent"s, and one key for all of them is a React
+ * warning and cards that swap faces. Taken AFTER `orderPollCast`: equal labels
+ * have equal votes and the sort is stable, so a repeat keeps its suffix when
+ * the row re-sorts, and a unique label is just itself.
+ */
+export function pollKeys(labels: readonly string[]): string[] {
+  const used = new Set<string>();
+  return labels.map((l) => {
+    let k = l;
+    for (let n = 2; used.has(k); n++) k = `${l}#${n}`;
+    used.add(k);
+    return k;
+  });
 }
 
 /**
@@ -8381,7 +8429,8 @@ export type WatchListEntry = {
  * UNKNOWN IS LAST, NEVER ZERO. A card with no air date or no count yet has not
  * been measured; sorting it as the oldest or the least behind would claim
  * something the metadata never said. Ties fall back to recency (most behind) or
- * the show's name (release date), so the order never shuffles between visits.
+ * the show's name (release date; Z–A when newest first), so the order never
+ * shuffles between visits.
  */
 export function sortWatchList<T extends WatchListEntry>(
   items: readonly T[],
@@ -8401,10 +8450,12 @@ export function sortWatchList<T extends WatchListEntry>(
     for (let i = 0; i < name.length; i++) h = Math.imul(h ^ name.charCodeAt(i), 16777619) >>> 0;
     return h;
   };
+  // Newest first is the whole order reversed, ties included (A–Z oldest
+  // first, Z–A newest first); the undated tail stays A–Z either way.
   const byDate = (dir: 1 | -1) => (a: T, b: T) =>
     (a.nextAir == null ? 1 : 0) - (b.nextAir == null ? 1 : 0) ||
     dir * (a.nextAir ?? '').localeCompare(b.nextAir ?? '') ||
-    byName(a, b);
+    (a.nextAir == null ? 1 : dir) * byName(a, b);
   const cmp =
     sort === 'releaseDate'
       ? byDate(1)
@@ -8419,6 +8470,18 @@ export function sortWatchList<T extends WatchListEntry>(
           byName(a, b);
   return [...items].sort((a, b) => (a.started ? 0 : 1) - (b.started ? 0 : 1) || cmp(a, b));
 }
+
+/**
+ * A show's seasons with their watched counts — `getSeasons` runs it; here so a
+ * test can run it against real SQLite.
+ *
+ * EPISODE 0 IS NOT COUNTED. TV Time exports carry the odd "S04E00" (Attack on
+ * Titan has one), which no catalogue lists and no episode row draws — so it
+ * made "31 of 30 watched" and could tick a season complete one episode early.
+ * The watch row itself is kept; it just isn't an episode of the season.
+ */
+export const SEASONS_SQL = `SELECT season, COUNT(DISTINCT CASE WHEN episode > 0 THEN episode END) AS watched, MAX(watchedAt) AS lastWatchedAt
+     FROM watches WHERE showId = ? GROUP BY season ORDER BY season`;
 
 /**
  * WHICH SHOW ROWS NEED A NAME, as SQL — `getShowsMissingName` runs it, and it

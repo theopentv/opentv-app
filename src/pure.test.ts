@@ -28,6 +28,8 @@ import {
   validWatchRegion,
   watchOptions,
   sortWatchList,
+  pollKeys,
+  pickTmdbMovieResult,
   validWatchListSort,
   type WatchListEntry,
   secondaryAccent,
@@ -3974,6 +3976,11 @@ describe('sortWatchList: newest first and random', () => {
     );
     expect(out.map((x) => x.name)).toEqual(['New', 'Old', 'NoDate', 'Never']);
   });
+  it('newest first: a tie on the date is reversed too, the undated tail stays A–Z', () => {
+    const items = [e('A', { nextAir: '2020-01-01' }), e('Z'), e('B', { nextAir: '2020-01-01' }), e('Y')];
+    expect(sortWatchList(items, 'releaseDateNewest').map((x) => x.name)).toEqual(['B', 'A', 'Y', 'Z']);
+    expect(sortWatchList(items, 'releaseDate').map((x) => x.name)).toEqual(['A', 'B', 'Y', 'Z']);
+  });
   it('random: the same seed gives the same order, not started still last', () => {
     const items = ['A', 'B', 'C', 'D', 'E', 'F'].map((n) => e(n)).concat(e('Never', { started: false }));
     const a = sortWatchList(items, 'random', 42).map((x) => x.name);
@@ -3985,5 +3992,30 @@ describe('sortWatchList: newest first and random', () => {
     const items = 'ABCDEFGHIJ'.split('').map((n) => e(n));
     const orders = new Set([1, 2, 3, 4, 5].map((s) => sortWatchList(items, 'random', s).map((x) => x.name).join('')));
     expect(orders.size).toBeGreaterThan(1);
+  });
+});
+
+describe('pollKeys', () => {
+  it('suffixes repeated labels and leaves unique ones alone', () => {
+    expect(pollKeys(['Host', 'Correspondent', 'Correspondent', 'Correspondent'])).toEqual([
+      'Host', 'Correspondent', 'Correspondent#2', 'Correspondent#3',
+    ]);
+    expect(new Set(pollKeys(['a', 'a', 'a#2'])).size).toBe(3);
+  });
+});
+
+describe('pickTmdbMovieResult', () => {
+  const hope2013 = { id: 255709, title: 'Hope', release_date: '2013-10-02', vote_count: 900 };
+  const hope2026 = { id: 9000001, title: 'Hope', release_date: '2026-07-15', vote_count: 12 };
+  it('a known year keeps a newer film from becoming the better-known one', () => {
+    expect(pickTmdbMovieResult([hope2013, hope2026], 'Hope', '2026')?.id).toBe(9000001);
+    expect(pickTmdbMovieResult([hope2013], 'Hope', '2026')).toBeNull();
+  });
+  it('no year: the most-voted exact title, as before', () => {
+    expect(pickTmdbMovieResult([hope2026, hope2013], 'Hope', null)?.id).toBe(255709);
+    expect(pickTmdbMovieResult([{ id: 1, title: 'Hopeful' }], 'Hope', null)).toBeNull();
+  });
+  it('a year either side still matches', () => {
+    expect(pickTmdbMovieResult([{ ...hope2026, release_date: '2025-12-30' }], 'Hope', '2026')?.id).toBe(9000001);
   });
 });

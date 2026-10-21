@@ -176,6 +176,8 @@ export default function BackupScreen() {
         if (which === 'gdrive') setDriveOn(driveConnected());
       } else if (r === 'icloud-off') {
         Alert.alert(t('settings.data.icloudOffTitle'), t('settings.data.icloudOffBody'));
+      } else if (r === 'server-on') {
+        setServerSync(true);
       } else if (r !== 'cancelled') {
         Alert.alert(
           t('settings.data.driveFailedTitle'),
@@ -289,7 +291,7 @@ export default function BackupScreen() {
                 right={
                   <Switch
                     value={via === 'icloud'}
-                    disabled={viaBusy}
+                    disabled={viaBusy || serverSync}
                     onValueChange={(v) => void toggleVia('icloud', v)}
                     trackColor={{ true: colors.green }}
                   />
@@ -304,7 +306,7 @@ export default function BackupScreen() {
                 right={
                   <Switch
                     value={via === 'gdrive'}
-                    disabled={viaBusy}
+                    disabled={viaBusy || serverSync}
                     onValueChange={(v) => void toggleVia('gdrive', v)}
                     trackColor={{ true: colors.green }}
                   />

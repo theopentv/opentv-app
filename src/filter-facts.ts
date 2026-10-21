@@ -17,6 +17,7 @@ import { myServices, servicesSeen } from '@/availability';
 import { getShowFilterFacts, type MovieRow, type ShowProgress } from '@/db';
 import { showMeta } from '@/metadata';
 import { movieMeta } from '@/movie-metadata';
+import { isPlus } from '@/plus';
 import { runtimeBand, seasonAirState, type TitleFacts } from '@/pure';
 import { starsValue } from '@/star-rating';
 import { watchRegion } from '@/show-meta-fetch';
@@ -56,13 +57,19 @@ export function showProgressClass(sp: ShowProgress): string {
  * check has not reached yet simply does not qualify rather than qualifying on
  * somebody else's catalogue.
  */
+/** The user's services, or none without Plus: a lapsed subscriber's saved
+ *  list must not keep the axis on offer (the alert loop checks the same). */
+function myServicesIfPlus(): string[] {
+  return isPlus() ? myServices() : [];
+}
+
 function servicesFact(mine: readonly string[], titleServices: readonly string[] | undefined): string[] {
   return mine.length && titleServices && onMyServices(titleServices, mine).length ? ['mine'] : [];
 }
 
 export function showFacts(rows: readonly ShowProgress[]): TitleFacts[] {
   const extra = getShowFilterFacts();
-  const mine = myServices();
+  const mine = myServicesIfPlus();
   const seen = mine.length ? servicesSeen() : new Map<string, string[]>();
   const region = mine.length ? watchRegion() : '';
   const todayIso = new Date().toISOString().slice(0, 10);
@@ -89,7 +96,7 @@ export function showFacts(rows: readonly ShowProgress[]): TitleFacts[] {
 }
 
 export function movieFacts(rows: readonly MovieRow[]): TitleFacts[] {
-  const mine = myServices();
+  const mine = myServicesIfPlus();
   const seen = mine.length ? servicesSeen() : new Map<string, string[]>();
   return rows.map((mv) => {
     const m = movieMeta(mv.tmdbId);

@@ -33,7 +33,7 @@ import {
   unzipExport,
 } from '../packages/tvtime-export/src';
 import { classifyForeignJson, cp1252, detectForeignSource, imdbRows, imdbRemoteHit, imdbTvRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRows, simklRows, traktRows, type ImdbTvHit, type ImdbTvRef, type SerializdLink, type SerializdRecord } from '@/foreign-import';
-import { importVerdict, type ImportDiagnosis } from '@/pure';
+import { importVerdict, pickTmdbMovieResult, type ImportDiagnosis } from '@/pure';
 
 import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, deletedShowIds, getMeta, hasLibrary, libraryOwner, mergeImportedCustomLists, recountShow, setMeta, unmarkedEpisodeKeys, wipeAllData } from '@/db';
 import { withImportLock } from '@/import-lock';
@@ -1649,23 +1649,16 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       const res = await tmdb<{
         results: { title?: string; original_title?: string; poster_path?: string; release_date?: string; id: number; vote_count?: number }[];
       }>(`/search/movie?query=${encodeURIComponent(m.name)}`);
-      // confident matches only — same title or original title once case,
-      // accents, Arabic diacritics/letter variants and punctuation are
-      // ignored. A wrong poster is worse than no poster: unmatched movies
-      // still import bare and get reported
-      const norm = (s: string) =>
-        s
-          .toLowerCase()
-          .normalize('NFKD')
-          .replace(/[\u0300-\u036f\u064b-\u0670]/g, '')
-          .replace(/[أإآٱ]/g, 'ا')
-          .replace(/ى/g, 'ي')
-          .replace(/ة/g, 'ه')
-          .replace(/[^\p{L}\p{N}]+/gu, ' ')
-          .trim();
-      const want = norm(m.name);
-      const exact = res.results.filter((x) => norm(x.title || '') === want || norm(x.original_title || '') === want);
-      const pick = exact.sort((a, b) => (b.vote_count ?? 0) - (a.vote_count ?? 0))[0];
+      // Confident matches only (see `pickTmdbMovieResult`). THE YEAR THE
+      // LIBRARY ALREADY KNOWS narrows them: a restore merges into rows the
+      // phone already has — "Hope" (2026), picked in onboarding with its
+      // TheTVDB id — and a title-only search handed it the 2013 "Hope", whose
+      // TMDB id then opened as the film. No year known: the old rule.
+      const knownYear =
+        ex?.year ??
+        db.getFirstSync<{ year: string | null }>('SELECT year FROM movies WHERE name = ? OR originalName = ?', [m.name, m.name])?.year ??
+        null;
+      const pick = pickTmdbMovieResult(res.results, m.name, knownYear);
       if (pick) {
         movieInfo.set(m.name, {
           poster: pick.poster_path ? `https://image.tmdb.org/t/p/w342${pick.poster_path}` : null,

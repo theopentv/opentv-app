@@ -6,9 +6,10 @@
  * the show, which is the one thing a card on a tab anybody can
  * glance at must not give away.
  *
- * TWO `meta` READS AND NOTHING ELSE. The Explore tab is opened constantly;
+ * A FEW `meta` READS AND NOTHING ELSE. The Explore tab is opened constantly;
  * the answer pool (every show's cached metadata) is the game screen's cost,
- * not this card's.
+ * not this card's. Once today's game is over the card also shows Played /
+ * Win % / Avg. tries — the game screen's `StatsRow`, not a copy of it.
  *
  * READ ON FOCUS, NOT IN RENDER, for the reason `memory-card.tsx` gives: the
  * React Compiler memoises a render-time read, and this card is the one that
@@ -19,13 +20,14 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { StatsRow } from '@/components/puzzle-block';
 import { Squares } from '@/components/puzzle-share-card';
 import { t } from '@/i18n';
-import { MAX_TRIES, isOver, puzzleNumber, type Game } from '@/puzzle';
-import { loadGame, puzzleOn, today } from '@/puzzle-data';
+import { MAX_TRIES, isOver, puzzleNumber, type Game, type Stats } from '@/puzzle';
+import { currentStats, loadGame, puzzleOn, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 
-type Seen = { on: boolean; number: number; game: Game | null };
+type Seen = { on: boolean; number: number; game: Game | null; stats: Stats | null };
 
 export function PuzzleCard() {
   const [seen, setSeen] = useState<Seen | null>(null);
@@ -33,12 +35,19 @@ export function PuzzleCard() {
   useFocusEffect(
     useCallback(() => {
       const day = today();
-      setSeen({ on: puzzleOn(), number: puzzleNumber(day), game: loadGame(day) });
+      const game = loadGame(day);
+      setSeen({
+        on: puzzleOn(),
+        number: puzzleNumber(day),
+        game,
+        // Only after today's game: before it, the numbers are yesterday's news.
+        stats: game != null && isOver(game) ? currentStats() : null,
+      });
     }, []),
   );
 
   if (!seen?.on) return null;
-  const { game, number } = seen;
+  const { game, number, stats } = seen;
 
   const sub =
     game == null || game.guesses.length === 0
@@ -68,6 +77,11 @@ export function PuzzleCard() {
         {game != null && game.guesses.length > 0 && (
           <View style={{ marginTop: 4 }}>
             <Squares game={game} size={14} gap={4} />
+          </View>
+        )}
+        {stats != null && (
+          <View style={{ marginTop: 8 }}>
+            <StatsRow stats={stats} />
           </View>
         )}
       </View>

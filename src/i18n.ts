@@ -152,6 +152,8 @@ export function setLocale(locale: Locale | null): { needsRestart: boolean } {
   // app next goes to background. Required lazily: widget-sync → widget-data
   // reaches back into this module.
   void (require('@/widget-sync') as typeof import('@/widget-sync')).syncWidgets();
+  // "The app's language" is the default plot language, so it moved too.
+  if (plotLanguage() === 'app') plotsWanted();
 
   if (wasRtl !== willBeRtl) {
     I18nManager.allowRTL(willBeRtl);
@@ -176,6 +178,16 @@ export function plotLanguage(): PlotLanguage {
 
 export function setPlotLanguage(v: PlotLanguage): void {
   setMeta(PLOT_KEY, v === 'eng' ? 'eng' : '');
+  plotsWanted();
+}
+
+/**
+ * THE LIBRARY'S PLOTS ARE OWED AGAIN. `cacheAllShowMetadata` skips its whole
+ * scan once `metaCacheComplete` is stamped, so a change of plot language must
+ * clear the stamp or no cached plot is ever looked at again.
+ */
+function plotsWanted(): void {
+  setMeta('metaCacheComplete', '');
 }
 
 /** TheTVDB translation codes to try for a plot, best first, always ending in `eng`. */

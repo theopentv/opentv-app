@@ -30,7 +30,7 @@ import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, 
 import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
 import { showTvdbIdForTmdb } from '@/catalog';
-import { absoluteEpisode, episodeMeta, seasonTotal, showMeta, tvdbIdForTmdb, type SimilarMeta, orderedEpisodes } from '@/metadata';
+import { absoluteEpisode, episodeMeta, onShowMetaChange, seasonTotal, showMeta, tvdbIdForTmdb, type SimilarMeta, orderedEpisodes } from '@/metadata';
 import { airCountdown, communityScore, communityScoreFromCounts, ratingSeries, characterFace } from '@/pure';
 import { filledStarText } from '@/star-rating';
 import { readSeasonAggregates, useSeasonAggregates } from '@/community-ratings';
@@ -224,6 +224,9 @@ export default function ShowScreen() {
      and coming back — see `onRemoteChange`. Same `setTick` every in-screen
      action already uses, so nothing new has to be kept in step. */
   useRemoteChange(() => setTick((t) => t + 1));
+  /* And when THIS show's metadata is replaced while the page is open — the
+     plot refetched in a newly chosen language by the background pass. */
+  useEffect(() => onShowMetaChange((id) => id === tvdbId && setTick((t) => t + 1)), [tvdbId]);
   useFocusEffect(
     useCallback(() => {
       setTick((t) => t + 1);

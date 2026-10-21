@@ -7,6 +7,7 @@ import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { currentLocale, hasLocaleOverride, plotLanguage, setLocale, setPlotLanguage, t } from '@/i18n';
 import type { PlotLanguage } from '@/pure';
 import { SUPPORTED, type Locale } from '@/locale-resolve';
+import { cacheAllShowMetadata } from '@/show-meta-fetch';
 import { colors, radius, space } from '@/theme';
 
 /** Each language named in itself — a Spanish speaker looks for "Español". */
@@ -31,17 +32,20 @@ export default function LanguageScreen() {
   const [isSystem, setIsSystem] = useState<boolean>(() => !hasLocaleOverride());
   const [plot, setPlot] = useState<PlotLanguage>(plotLanguage);
 
-  /* Nothing is refetched here. Every cached plot carries the language it was
-     asked in, `showMetaIsStale` / `tvdbMovieDetail` compare it with this
-     choice, and the normal background pass replaces them — old text on screen
-     until the new arrives. Changing the app language above does the same. */
+  /* Every cached plot carries the language it was asked in, and
+     `showMetaIsStale` / `tvdbMovieDetail` compare it with this choice. The
+     setters clear the library pass's "complete" stamp, and the pass starts
+     NOW rather than at the next launch — old text on screen until the new
+     arrives, and an open show page redraws when its record lands. */
   const pickPlot = (v: PlotLanguage) => {
     setPlotLanguage(v);
     setPlot(v);
+    void cacheAllShowMetadata();
   };
 
   const pick = (locale: Locale | null) => {
     const { needsRestart } = setLocale(locale);
+    if (plotLanguage() === 'app') void cacheAllShowMetadata();
     setActive(currentLocale());
     setIsSystem(locale === null);
     if (!needsRestart) return;
