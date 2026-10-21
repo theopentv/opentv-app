@@ -1,4 +1,4 @@
-import { formatCount, isRtlLocale, resolveLocale, SUPPORTED } from './locale-resolve';
+import { formatCount, formatPagedCount, isRtlLocale, resolveLocale, SUPPORTED } from './locale-resolve';
 
 describe('resolveLocale', () => {
   it('prefers an explicit override over the device', () => {
@@ -67,5 +67,13 @@ describe('formatCount', () => {
   it('groups French with a narrow no-break space, not a plain space', () => {
     // U+202F, not U+0020 — visually similar but a real distinction Intl makes on its own.
     expect(formatCount(1234567, 'fr')).toBe('1 234 567');
+  });
+});
+
+describe('formatPagedCount', () => {
+  it('says "+" while another page exists, the exact count once none does', () => {
+    expect(formatPagedCount(25, true, 'en')).toBe('25+');
+    expect(formatPagedCount(41, false, 'en')).toBe('41');
+    expect(formatPagedCount(12345, true, 'es')).toBe('12.345+');
   });
 });

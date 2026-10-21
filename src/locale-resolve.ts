@@ -42,6 +42,15 @@ export function formatCount(n: number, locale: Locale): string {
 }
 
 /**
+ * A count of what has been LOADED, when more pages may exist: "25+" while the
+ * server still has a next page, the exact number once it has none. The thread
+ * API returns no total, so the loaded count alone read "OpenTV (25)" with 41.
+ */
+export function formatPagedCount(loaded: number, more: boolean, locale: Locale): string {
+  return formatCount(loaded, locale) + (more ? '+' : '');
+}
+
+/**
  * A Wrapped period as a person reads it: 'July 2026' for '2026-07', and the
  * bare year for '2026'. Month names come from Intl, so every shipped language is
  * covered without a key each.

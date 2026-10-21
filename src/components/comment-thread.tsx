@@ -67,7 +67,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { CONTENT_MAX_WIDTH } from '@/components/ui';
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
-import { formatCount } from '@/locale-resolve';
+import { formatCount, formatPagedCount } from '@/locale-resolve';
 import {
   COMMENT_BODY_MAX,
   REPORT_REASONS,
@@ -895,7 +895,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
             <Text style={[styles.tabText, tab === k && styles.tabTextOn]}>
               {k === 'opentv'
                 ? ownCount > 0
-                  ? `OpenTV (${ownCount})`
+                  ? `OpenTV (${formatPagedCount(ownCount, cursor != null, currentLocale())})`
                   : 'OpenTV'
                 : // facc's suggestion: the board's count, free from the first page's language counts.
                   shared.total
