@@ -123,7 +123,7 @@ export function cloudSyncDevices(): { dev: string; name: string | null; platform
   }
 }
 
-export type CloudSyncOn = 'ok' | 'icloud-off' | 'cancelled' | 'unauthorised' | 'no-play-services' | 'failed';
+export type CloudSyncOn = 'ok' | 'server-on' | 'icloud-off' | 'cancelled' | 'unauthorised' | 'no-play-services' | 'failed';
 
 /**
  * Turn it on — the one call that may show a sheet (Google's, for Drive).
@@ -134,6 +134,11 @@ export type CloudSyncOn = 'ok' | 'icloud-off' | 'cancelled' | 'unauthorised' | '
  * is already automatic on every iPhone.
  */
 export async function turnOnCloudSync(via: Via): Promise<CloudSyncOn> {
+  // ONE ROAD AT A TIME: with OpenTV sync on, the server wins — refuse here
+  // rather than only greying the switch, so no caller can start a second road.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { syncEnabled } = require('@/device-sync') as typeof import('@/device-sync');
+  if (syncEnabled()) return 'server-on';
   if (via === 'icloud') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { icloudAvailableAsync } = require('@/backup') as typeof import('@/backup');
