@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "AVALIE ESTE EPISÓDIO",
     "episodeInfoTitle": "Informações do episódio",
-    "noSynopsis": "Nenhuma sinopse disponível para este episódio."
+    "noSynopsis": "Nenhuma sinopse disponível para este episódio.",
+    "spoilersBody": "Você ainda não assistiu a este episódio. Tem certeza de que quer ler os comentários?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Lembrete diário",
     "remindSub": "Uma vez por dia neste horário, só se você ainda não jogou.",
     "public": "Puzzle no seu perfil público",
-    "publicSub": "Só dias, cores e estatísticas, nunca qual título."
+    "publicSub": "Só dias, cores e estatísticas, nunca qual título.",
+    "offerTitle": "Quer um lembrete para o novo desafio de cada dia?",
+    "offerBody": "Uma notificação por dia às {{time}}, só se você ainda não jogou. Dá para mudar nos Ajustes."
   },
   "puzzleFair": {
     "close": "Saga certa, parte errada!",

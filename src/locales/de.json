@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "BEWERTE DIESE FOLGE",
     "episodeInfoTitle": "Folgeninfo",
-    "noSynopsis": "Für diese Folge ist keine Inhaltsangabe verfügbar."
+    "noSynopsis": "Für diese Folge ist keine Inhaltsangabe verfügbar.",
+    "spoilersBody": "Du hast diese Folge noch nicht gesehen. Willst du die Kommentare wirklich lesen?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Tägliche Erinnerung",
     "remindSub": "Einmal am Tag zu dieser Uhrzeit, nur wenn du noch nicht gespielt hast.",
     "public": "Rätsel auf deinem öffentlichen Profil",
-    "publicSub": "Nur Tage, Farben und Statistiken, nie welcher Titel."
+    "publicSub": "Nur Tage, Farben und Statistiken, nie welcher Titel.",
+    "offerTitle": "Möchtest du an das neue Rätsel jedes Tages erinnert werden?",
+    "offerBody": "Eine Mitteilung am Tag um {{time}}, nur wenn du noch nicht gespielt hast. Änderbar in den Einstellungen."
   },
   "puzzleFair": {
     "close": "Richtige Reihe, falscher Teil!",

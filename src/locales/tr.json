@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "BU BÖLÜMÜ PUANLA",
     "episodeInfoTitle": "Bölüm bilgileri",
-    "noSynopsis": "Bu bölüm için özet yok."
+    "noSynopsis": "Bu bölüm için özet yok.",
+    "spoilersBody": "Bu bölümü izlemedin. Yorumları okumak istediğine emin misin?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Günlük hatırlatma",
     "remindSub": "Günde bir kez bu saatte, yalnızca henüz oynamadıysan.",
     "public": "Herkese açık profilinde bulmaca",
-    "publicSub": "Yalnızca günler, renkler ve istatistikler; hangi yapım olduğu asla."
+    "publicSub": "Yalnızca günler, renkler ve istatistikler; hangi yapım olduğu asla.",
+    "offerTitle": "Her günün yeni bulmacası için hatırlatıcı ister misin?",
+    "offerBody": "Günde bir bildirim (saat {{time}}), yalnızca henüz oynamadıysan. Ayarlar'dan değiştirebilirsin."
   },
   "puzzleFair": {
     "close": "Seri doğru, film yanlış!",

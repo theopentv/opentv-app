@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "VALUTA QUESTO EPISODIO",
     "episodeInfoTitle": "Info sull'episodio",
-    "noSynopsis": "Nessuna trama disponibile per questo episodio."
+    "noSynopsis": "Nessuna trama disponibile per questo episodio.",
+    "spoilersBody": "Non hai ancora visto questo episodio. Sei sicuro di voler leggere i commenti?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Promemoria quotidiano",
     "remindSub": "Una volta al giorno a quest'ora, solo se non hai ancora giocato.",
     "public": "Puzzle sul tuo profilo pubblico",
-    "publicSub": "Solo giorni, colori e statistiche, mai il titolo."
+    "publicSub": "Solo giorni, colori e statistiche, mai il titolo.",
+    "offerTitle": "Vuoi un promemoria per la nuova enigma di ogni giorno?",
+    "offerBody": "Una notifica al giorno alle {{time}}, solo se non hai ancora giocato. Puoi cambiarlo nelle Impostazioni."
   },
   "puzzleFair": {
     "close": "Saga giusta, capitolo sbagliato!",

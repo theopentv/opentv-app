@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "NOTE CET ÉPISODE",
     "episodeInfoTitle": "Infos sur l'épisode",
-    "noSynopsis": "Aucun synopsis disponible pour cet épisode."
+    "noSynopsis": "Aucun synopsis disponible pour cet épisode.",
+    "spoilersBody": "Tu n'as pas encore vu cet épisode. Es-tu sûr de vouloir lire les commentaires ?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Rappel quotidien",
     "remindSub": "Une fois par jour à cette heure, seulement si vous n'avez pas encore joué.",
     "public": "Puzzle sur votre profil public",
-    "publicSub": "Jours, couleurs et statistiques seulement, jamais le titre."
+    "publicSub": "Jours, couleurs et statistiques seulement, jamais le titre.",
+    "offerTitle": "Un rappel pour la nouvelle énigme de chaque jour ?",
+    "offerBody": "Une notification par jour à {{time}}, seulement si vous n'avez pas encore joué. Modifiable dans les Réglages."
   },
   "puzzleFair": {
     "close": "Bonne saga, mauvais volet !",

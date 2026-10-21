@@ -17,12 +17,15 @@
  * `components/comment-thread.tsx` and is used by both.
  */
 import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 
 import type { ThreadTarget } from '@/community-comments';
 import { CommentThread } from '@/components/comment-thread';
+import { isEpisodeWatched, SpoilerGate } from '@/components/side-thread';
 import { NavHeader, Screen } from '@/components/ui';
 import { boardTargetFor } from '@/pure';
+import { episodeGated, revealEpisode } from '@/spoiler-gate';
 import { t } from '@/i18n';
 
 /** A route param that must be a non-negative integer, or nothing at all. */
@@ -73,6 +76,15 @@ export default function ThreadScreen() {
    */
   const board = boardTargetFor(target, numberParam(tvdbMovie));
 
+  /*
+   * AN UNWATCHED EPISODE ASKS FIRST, here rather than on each door to this
+   * screen: the episode page, a live room, a profile's comment list and
+   * whatever links here next all arrive through this one route. A film is not
+   * asked again — its own pill already did.
+   */
+  const [shown, setShown] = useState<string | null>(null);
+  const gated = episodeGated(target, isEpisodeWatched, shown);
+
   return (
     <Screen>
       <NavHeader title={title || t('community.comments.title')} close />
@@ -84,7 +96,11 @@ export default function ThreadScreen() {
         // The header is already laid out above this, so the inset the keyboard
         // has to clear is only what sits below it.
         keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
-        <CommentThread target={target} board={board} />
+        {gated ? (
+          <SpoilerGate onShow={() => setShown(revealEpisode(target))} />
+        ) : (
+          <CommentThread target={target} board={board} />
+        )}
       </KeyboardAvoidingView>
     </Screen>
   );

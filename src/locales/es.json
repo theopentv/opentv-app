@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "VALORA ESTE EPISODIO",
     "episodeInfoTitle": "Información del episodio",
-    "noSynopsis": "No hay sinopsis disponible para este episodio."
+    "noSynopsis": "No hay sinopsis disponible para este episodio.",
+    "spoilersBody": "Todavía no has visto este episodio. ¿Seguro que quieres leer los comentarios?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Recordatorio diario",
     "remindSub": "Una vez al día a esta hora, solo si aún no has jugado.",
     "public": "Puzzle en tu perfil público",
-    "publicSub": "Solo días, colores y estadísticas, nunca el título."
+    "publicSub": "Solo días, colores y estadísticas, nunca el título.",
+    "offerTitle": "¿Quieres un recordatorio para el nuevo reto de cada día?",
+    "offerBody": "Una notificación al día a las {{time}}, solo si aún no has jugado. Puedes cambiarlo en Ajustes."
   },
   "puzzleFair": {
     "close": "¡Saga correcta, entrega equivocada!",

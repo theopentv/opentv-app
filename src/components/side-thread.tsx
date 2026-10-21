@@ -20,8 +20,10 @@ import { useJoined } from '@/community-session';
 import { CommentThread } from '@/components/comment-thread';
 import { Text } from '@/components/text';
 import { PillButton, useDetailWidth, useTopInset } from '@/components/ui';
+import { getWatch } from '@/db';
 import { t } from '@/i18n';
 import { boardTargetFor, commentsSplitLayout } from '@/pure';
+import { episodeGated, revealEpisode } from '@/spoiler-gate';
 import { colors, space } from '@/theme';
 
 /** The split, or null when the page has the screen to itself. */
@@ -51,6 +53,22 @@ export function SplitPage({ split, children }: { split: { pageW: number } | null
  *  `row` follows the layout direction: in Arabic the comments are on the left. */
 export const splitRow = { flexDirection: 'row' } as const;
 
+/** This phone's own answer to "have you seen it?" — see `episodeGated`. */
+export const isEpisodeWatched = (show: number, season: number, episode: number) =>
+  getWatch(show, season, episode) != null;
+
+/** "Spoilers ahead!" in place of the comments, for an unwatched film or episode.
+ *  The film's pill asks the same in an alert; this is the in-place form. */
+export function SpoilerGate({ film = false, onShow }: { film?: boolean; onShow: () => void }) {
+  return (
+    <View style={styles.gate}>
+      <Text style={styles.gateTitle}>{t('movie.spoilersTitle')}</Text>
+      <Text style={styles.gateBody}>{t(film ? 'movie.spoilersBody' : 'episode.spoilersBody')}</Text>
+      <PillButton label={t('movie.displayAnyway')} small variant="outline" onPress={onShow} />
+    </View>
+  );
+}
+
 export function SideThread({
   split,
   target,
@@ -63,11 +81,15 @@ export function SideThread({
   tvdbMovie?: number | null;
   /** False where the screen's root already sits below the status bar. */
   padTop?: boolean;
-  /** An unwatched film: the same "spoilers" question its Comments pill asks. */
+  /** An unwatched film: the same "spoilers" question its Comments pill asks.
+   *  An episode needs nothing passed: it is gated on its own watch state. */
   spoilerGate?: boolean;
 }) {
   const top = useTopInset();
-  const [shown, setShown] = useState(false);
+  // The key revealed here: "film" for a film, the episode's key otherwise, so
+  // swiping to the next unwatched episode asks again.
+  const [shown, setShown] = useState<string | null>(null);
+  const gated = spoilerGate ? shown == null : episodeGated(target, isEpisodeWatched, shown);
   if (!split) return null;
   return (
     <View style={[styles.pane, padTop && { paddingTop: top }]}>
@@ -76,12 +98,8 @@ export function SideThread({
           {t('community.comments.title')}
         </Text>
       </View>
-      {spoilerGate && !shown ? (
-        <View style={styles.gate}>
-          <Text style={styles.gateTitle}>{t('movie.spoilersTitle')}</Text>
-          <Text style={styles.gateBody}>{t('movie.spoilersBody')}</Text>
-          <PillButton label={t('movie.displayAnyway')} small variant="outline" onPress={() => setShown(true)} />
-        </View>
+      {gated ? (
+        <SpoilerGate film={spoilerGate} onShow={() => setShown(spoilerGate ? 'film' : revealEpisode(target))} />
       ) : (
         <KeyboardAvoidingView style={styles.fill} behavior="padding">
           {/* Keyed by the target: swiping to the next episode is a new thread,

@@ -1156,7 +1156,8 @@
     },
     "ratePollLabel": "RATE THIS EPISODE",
     "episodeInfoTitle": "Episode info",
-    "noSynopsis": "No synopsis available for this episode."
+    "noSynopsis": "No synopsis available for this episode.",
+    "spoilersBody": "You haven't watched this episode. Are you sure you want to read the comments?"
   },
   "shows": {
     "tabs": {
@@ -3541,7 +3542,9 @@
     "remind": "Daily reminder",
     "remindSub": "Once a day at this hour, only if you haven't played yet.",
     "public": "Puzzle on your public profile",
-    "publicSub": "Days, colours and stats only, never which title."
+    "publicSub": "Days, colours and stats only, never which title.",
+    "offerTitle": "Want a reminder for each day's new puzzle?",
+    "offerBody": "One notification a day at {{time}}, only if you haven't played yet. You can change it in Settings."
   },
   "puzzleFair": {
     "close": "Right series, wrong part!",

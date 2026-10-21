@@ -1226,7 +1226,8 @@
     },
     "ratePollLabel": "OCEŃ TEN ODCINEK",
     "episodeInfoTitle": "O odcinku",
-    "noSynopsis": "Brak opisu tego odcinka."
+    "noSynopsis": "Brak opisu tego odcinka.",
+    "spoilersBody": "Ten odcinek nie jest jeszcze obejrzany. Na pewno chcesz czytać komentarze?"
   },
   "shows": {
     "tabs": {
@@ -3817,7 +3818,9 @@
     "remind": "Codzienne przypomnienie",
     "remindSub": "Raz dziennie o tej godzinie, tylko jeśli zagadka jeszcze czeka.",
     "public": "Zagadka na profilu publicznym",
-    "publicSub": "Tylko dni, kolory i statystyki, nigdy tytuł."
+    "publicSub": "Tylko dni, kolory i statystyki, nigdy tytuł.",
+    "offerTitle": "Przypominać o nowej zagadce każdego dnia?",
+    "offerBody": "Jedno powiadomienie dziennie o {{time}}, tylko jeśli zagadka jeszcze czeka. Można to zmienić w Ustawieniach."
   },
   "puzzleFair": {
     "close": "Dobra seria, zła część!",
