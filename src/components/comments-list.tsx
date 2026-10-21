@@ -13,7 +13,7 @@
  * move with the list rather than being re-derived per screen, because a screen
  * that forgets them looks fine until someone with a real archive opens it.
  */
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CommentCard, type CommentCardProps } from '@/components/comment-card';
 import { CONTENT_MAX_WIDTH, ContentColumn } from '@/components/ui';
@@ -75,7 +75,13 @@ export function CommentsList({
         initialNumToRender={8}
         maxToRenderPerBatch={8}
         windowSize={7}
-        removeClippedSubviews
+        // NO CLIPPING ON ANDROID (21 Oct). FlatList clips off-screen children by
+        // default on Android only, and under Fabric a card that changes shape
+        // while it is detached (a comment's GIF arriving, a picture approved)
+        // crashes the app: "Unable to remove a view from a view that is not a
+        // ViewGroup" / ReactClippingViewManager IndexOutOfBounds (Crashlytics,
+        // 1.7.2, a member with 296 GIFs). iOS keeps its own default.
+        removeClippedSubviews={Platform.OS !== 'android'}
         onEndReachedThreshold={0.5}
         onEndReached={onEndReached}
         ListHeaderComponent={

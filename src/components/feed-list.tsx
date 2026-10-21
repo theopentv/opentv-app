@@ -13,7 +13,7 @@
  */
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, RefreshControl, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Platform, RefreshControl, View } from 'react-native';
 
 import { ApiError } from '@/api';
 import { track } from '@/analytics';
@@ -173,6 +173,13 @@ function JoinedFeed() {
     <ContentColumn style={{ flex: 1 }}>
       <FlatList
         data={feed.cards}
+        // NO CLIPPING ON ANDROID (21 Oct). FlatList clips off-screen children by
+        // default on Android only, and under Fabric a card that changes shape
+        // while it is detached (a comment's GIF arriving, a picture approved)
+        // crashes the app: "Unable to remove a view from a view that is not a
+        // ViewGroup" / ReactClippingViewManager IndexOutOfBounds (Crashlytics,
+        // 1.7.2, a member with 296 GIFs). iOS keeps its own default.
+        {...(Platform.OS === 'android' ? { removeClippedSubviews: false } : {})}
         keyExtractor={(c) => c.item.id}
         renderItem={renderItem}
         extraData={revealed}

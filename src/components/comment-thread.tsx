@@ -963,6 +963,13 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
   return (
     <View style={styles.fill}>
       <FlatList<Item>
+        // NO CLIPPING ON ANDROID (21 Oct). FlatList clips off-screen children by
+        // default on Android only, and under Fabric a card that changes shape
+        // while it is detached (a comment's GIF arriving, a picture approved)
+        // crashes the app: "Unable to remove a view from a view that is not a
+        // ViewGroup" / ReactClippingViewManager IndexOutOfBounds (Crashlytics,
+        // 1.7.2, a member with 296 GIFs). iOS keeps its own default.
+        {...(Platform.OS === 'android' ? { removeClippedSubviews: false } : {})}
         style={styles.capped}
         data={listItems}
         keyExtractor={(it) => (it.kind === 'own' ? it.row.comment.id : `cu:${it.c.id}`)}
