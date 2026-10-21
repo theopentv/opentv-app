@@ -176,7 +176,9 @@ export async function disableSync(): Promise<void> {
   setSyncEnabled(false);
   try {
     const token = await getToken();
-    if (token) await api('/v1/sync', { method: 'DELETE', token });
+    // THIS device's ops only — without the id the server deletes nothing,
+    // because the whole account's would take the other devices' changes too.
+    if (token) await api('/v1/sync', { method: 'DELETE', token, headers: { 'X-OpenTV-Device': deviceId() } });
   } catch {
     // Off locally is what the user asked for. A server that cannot be reached
     // keeps some messages for ninety days and then drops them itself.
