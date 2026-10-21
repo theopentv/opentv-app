@@ -56,6 +56,7 @@ import {
   type Pinned,
   type PuzzleId,
   type Clues,
+  puzzleBanner,
   puzzleStreak,
 } from '@/puzzle';
 
@@ -674,7 +675,7 @@ describe('the whole library goes round before anything repeats (14 Oct)', () => 
   });
 });
 
-describe('puzzle streak', () => {
+describe('puzzle streak and the profile banner', () => {
   const r = (d: string, won = true) => ({ d, id: 1, tries: won ? 2 : MAX_TRIES, won });
 
   it('counts consecutive days played, losses included', () => {
@@ -690,5 +691,17 @@ describe('puzzle streak', () => {
     expect(puzzleStreak([r('2026-10-20'), r('2026-10-21')], '2026-10-22')).toBe(2);
     expect(puzzleStreak([r('2026-10-19'), r('2026-10-20')], '2026-10-22')).toBe(0);
     expect(puzzleStreak([r('2026-10-18'), r('2026-10-20'), r('2026-10-21'), r('2026-10-22')], '2026-10-22')).toBe(3);
+  });
+
+  it('offers the banner only while today is unplayed, the game is on and it was not closed today', () => {
+    const h = [r('2026-10-20'), r('2026-10-21')];
+    const base = { on: true, today: '2026-10-22', history: h, closedOn: null };
+    expect(puzzleBanner(base)).toEqual({ streak: 2 });
+    expect(puzzleBanner({ ...base, history: [] })).toEqual({ streak: 0 });
+    expect(puzzleBanner({ ...base, on: false })).toBeNull();
+    expect(puzzleBanner({ ...base, history: [...h, r('2026-10-22', false)] })).toBeNull();
+    expect(puzzleBanner({ ...base, closedOn: '2026-10-22' })).toBeNull();
+    // Closed yesterday: back today.
+    expect(puzzleBanner({ ...base, closedOn: '2026-10-21' })).toEqual({ streak: 2 });
   });
 });

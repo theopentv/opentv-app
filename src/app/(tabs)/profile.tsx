@@ -58,6 +58,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
+import { closePuzzleBanner, puzzleBannerNow } from '@/puzzle-data';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
@@ -150,6 +151,9 @@ export default function ProfileScreen() {
   // reminders off — the third possible banner. Re-read on focus so it clears
   // as soon as they're switched on from Settings.
   const [notifOff, setNotifOff] = useState(false);
+  /** Today's puzzle, not played yet — state set on focus, so coming back
+   *  from playing it clears the bar (the React Compiler trap, CLAUDE.md). */
+  const [puzzleBanner, setPuzzleBanner] = useState<{ streak: number } | null>(null);
   // THE YEARLY GOAL, OFFERED ONCE. It lives in Settings and in the block
   // picker, and arranging blocks is Plus — so a free member never met it.
   // Gone for good on ✕, and gone by itself once a goal for this year exists.
@@ -387,6 +391,7 @@ export default function ProfileScreen() {
       setFriendState({ matches: lastFriendMatches(), seen: getMeta(RECONNECT_SEEN_KEY) });
       setTvdbFailed(tvdbKeyFailed() && !userTvdbKey() && getMeta('tvdbNudgeDismissed') !== '1');
       setNotifOff(!notificationsEnabled() && getMeta('notifyNudgeDismissed') !== '1');
+      setPuzzleBanner(puzzleBannerNow());
       setGoalOnPage(goalShownOnProfile());
       // Either year: a goal already set for next year has answered the question.
       setGoalOffer(
@@ -868,6 +873,15 @@ export default function ProfileScreen() {
     setMeta('tvdbNudgeDismissed', '1');
     setTvdbFailed(false);
   };
+  const dismissPuzzle = () => {
+    closePuzzleBanner();
+    setPuzzleBanner(null);
+  };
+  const puzzleText = puzzleBanner
+    ? puzzleBanner.streak > 0
+      ? t('puzzleStreak.bannerKeep', { count: puzzleBanner.streak })
+      : t('puzzleStreak.bannerNew')
+    : '';
   const banners = (
     <>
       {reconnectCount > 0 && (
@@ -1175,6 +1189,26 @@ export default function ProfileScreen() {
           <Ionicons name="key-outline" size={18} color={colors.onBrand} />
           <Text style={styles.cloudBannerText}>{t('profile.tvdbBannerText')}</Text>
           <Pressable hitSlop={10} onPress={dismissTvdbNudge} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/* TODAY'S PUZZLE (22 Oct). LAST, because it is the least that
+          ignoring it costs: a game, below every warning and invitation, and
+          it pushes none of them out. Gone once today is played; its ✕ hides
+          it for today only — tomorrow is a new puzzle. */}
+      {puzzleBanner && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissPuzzle)}
+          onPress={() => {
+            tapLight();
+            router.push('/puzzle');
+          }}>
+          <Ionicons name="extension-puzzle-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{puzzleText}</Text>
+          <Pressable hitSlop={10} onPress={dismissPuzzle} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
             <Ionicons name="close" size={17} color={colors.onBrand} />
           </Pressable>
         </Pressable>

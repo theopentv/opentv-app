@@ -47,6 +47,7 @@ import {
   nextPuzzleReminder,
   parseGame,
   parseHistory,
+  puzzleBanner,
   puzzleStreak,
   parsePinned,
   pickAnswer,
@@ -85,6 +86,8 @@ const K = {
   remindOffered: 'puzzle.remindOffered',
   remindHour: 'puzzle.remindHour',
   public: 'puzzle.public',
+  /** The day stamp the Profile banner's ✕ was pressed on: hidden for that day only. */
+  bannerClosed: 'puzzle.bannerClosed',
 } as const;
 
 export const today = (): string => localDayStamp(new Date());
@@ -636,6 +639,16 @@ export function currentStats(): Stats {
 /** Consecutive days played — the result screen's 🧩 line, nowhere else. */
 export function currentStreak(day = today()): number {
   return puzzleStreak(loadHistory(), day);
+}
+
+/** The Profile tab's "today's puzzle is ready" banner — `puzzleBanner`. */
+export function puzzleBannerNow(): { streak: number } | null {
+  const day = today();
+  return puzzleBanner({ on: puzzleOn(), today: day, history: loadHistory(), closedOn: getMeta(K.bannerClosed) });
+}
+
+export function closePuzzleBanner(): void {
+  setMeta(K.bannerClosed, today());
 }
 
 /** What the owner's own block draws: this month's squares and the stats.

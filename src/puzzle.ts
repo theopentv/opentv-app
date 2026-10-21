@@ -576,6 +576,22 @@ export function puzzleStreak(history: readonly Result[], today: string): number 
 }
 
 /**
+ * What the Profile tab's daily-puzzle banner says, or null for no banner.
+ * Off when the game is off, once today is played, and for the rest of the day
+ * once its ✕ was pressed (`closedOn` is the day stamp it was pressed on).
+ * `streak` is what tapping in keeps — 0 when there is nothing to keep.
+ */
+export function puzzleBanner(s: {
+  on: boolean;
+  today: string;
+  history: readonly Result[];
+  closedOn: string | null;
+}): { streak: number } | null {
+  if (!s.on || s.closedOn === s.today || s.history.some((r) => r.d === s.today)) return null;
+  return { streak: puzzleStreak(s.history, s.today) };
+}
+
+/**
  * What the profile block is drawn from, on either phone.
  *
  * COUNTS AND COLOURS ONLY: the three stats, and one level per day played this
