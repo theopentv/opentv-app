@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { AppState, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AppState, Pressable, RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedRef, useScrollViewOffset } from 'react-native-reanimated';
 
 import { track } from '@/analytics';
@@ -106,19 +106,26 @@ export default function ListsScreen() {
    * a profile, which they do not.
    */
   const [sharedLists, setSharedLists] = useState<SharedListRow[]>([]);
+  // PULL TO REFRESH (21 Oct): a list a friend shared or changed meanwhile had
+  // no way in short of leaving the screen.
+  const [refreshing, setRefreshing] = useState(false);
+  const fetchShared = useCallback(
+    (live: () => boolean) =>
+      fetchSharedLists()
+        .then((rows) => {
+          noteTogetherIndex(rows);
+          if (live()) setSharedLists(rows);
+        })
+        .catch(() => {
+          // Offline: the local lists are still the whole screen, as before.
+        }),
+    [],
+  );
   useFocusEffect(
     useCallback(() => {
       if (!joined) return;
       let live = true;
-      const load = () =>
-        void fetchSharedLists()
-          .then((rows) => {
-            noteTogetherIndex(rows);
-            if (live) setSharedLists(rows);
-          })
-          .catch(() => {
-            // Offline: the local lists are still the whole screen, as before.
-          });
+      const load = () => void fetchShared(() => live);
       load();
       // AND ON THE WAY BACK INTO THE APP. A focus does not fire for a screen
       // that was already open, so a list its owner deleted meanwhile stayed
@@ -130,7 +137,7 @@ export default function ListsScreen() {
         live = false;
         sub.remove();
       };
-    }, [joined]),
+    }, [joined, fetchShared]),
   );
 
   /**
@@ -198,7 +205,22 @@ export default function ListsScreen() {
           </Pressable>
         }
       />
-      <Animated.ScrollView ref={scrollRef} contentContainerStyle={{ paddingTop: 6 }}>
+      <Animated.ScrollView
+        ref={scrollRef}
+        contentContainerStyle={{ paddingTop: 6 }}
+        refreshControl={
+          // Not while dragging: a pull at the top would fight the drag.
+          joined && !reordering ? (
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => {
+                setRefreshing(true);
+                void fetchShared(() => true).finally(() => setRefreshing(false));
+              }}
+              tintColor={colors.dim}
+            />
+          ) : undefined
+        }>
         <View style={{ alignItems: 'center', marginBottom: 16, gap: 10 }}>
           <PillButton label={t('listsIndex.createNewList')} onPress={() => router.push('/lists/create')} />
         </View>
