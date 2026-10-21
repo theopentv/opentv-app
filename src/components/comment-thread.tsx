@@ -1274,7 +1274,7 @@ const styles = StyleSheet.create({
   translateFailed: { color: colors.dim, fontWeight: '600' },
   body: { color: colors.text, fontSize: 15, lineHeight: 21, marginTop: 10, textAlign: 'left' },
   picture: { width: '100%', borderRadius: radius.card, marginTop: 10, backgroundColor: colors.panel },
-  orphanReply: { color: colors.faint, fontSize: 12.5, marginTop: 8, fontStyle: 'italic' },
+  orphanReply: { color: colors.faint, fontSize: 12.5, marginTop: 8, fontStyle: 'italic', textAlign: 'left' },
   picturePlaceholder: { color: colors.dim, fontSize: 15, fontStyle: 'italic', marginTop: 10 },
 
   spoiler: {
