@@ -677,7 +677,13 @@ export default function ImportScreen() {
             </View>
           </View>
         ) : fromCloud ? null : !from ? (
-          <>
+          // SCROLLS (21 Oct): a plain View clipped the list — the last source
+          // was off-screen on a 17e, Serializd unreachable on a Pro Max.
+          // A short fixed list, so a ScrollView rather than a FlatList.
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ gap: 18, paddingBottom: insets.bottom + 24 }}
+            showsVerticalScrollIndicator={false}>
             <Text style={styles.fromTitle}>{t('import.from.title')}</Text>
             {FROM.map((f) => (
               <Pressable accessibilityRole="button"
@@ -702,7 +708,7 @@ export default function ImportScreen() {
                 <Text style={styles.link}>{t('import.alreadyOnDevice')}</Text>
               </Pressable>
             )}
-          </>
+          </ScrollView>
         ) : (
           <>
             {/* TWO STEPS ONCE AN APP IS CHOSEN (8 Oct): its own line says what the
