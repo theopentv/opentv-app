@@ -34,10 +34,10 @@ export function isRtlLocale(locale: Locale): boolean {
 
 /**
  * THE TAG TO HAND Intl, NOT THE APP'S LOCALE. Plain 'ar' resolves to Western
- * digits in current CLDR on iOS (Hermes) and to Arabic-Indic on Android ICU, so
- * the same screen read "390" on one phone and "٣٩٠" on the other. Ask for the
- * Arabic numbering system explicitly so both agree. Every toLocale*() and Intl
- * formatter goes through this; the i18n lookup keeps the bare 'ar'.
+ * digits on iOS (Hermes) and Arabic-Indic on Android's ICU, so the same screen
+ * read "390" on one phone and "٣٩٠" on the other. The app writes Western digits
+ * in Arabic (Mahmood, 21 Oct), so ask for them explicitly; arabic-digits-shim.ts
+ * covers an engine that ignores the request. The i18n lookup keeps bare 'ar'.
  */
 export function intlTag(locale: string): string {
   return locale === 'ar' ? AR_TAG : locale;

@@ -60,8 +60,8 @@ describe('formatCount', () => {
     expect(formatCount(1234567, 'pt-BR')).toBe('1.234.567');
   });
 
-  it('formats Arabic with Arabic-Indic digits on every platform (plain \'ar\' is latn in current CLDR)', () => {
-    expect(formatCount(1234567, 'ar')).toBe('١٬٢٣٤٬٥٦٧');
+  it('formats Arabic with Western digits on every platform', () => {
+    expect(formatCount(1234567, 'ar')).toBe('1,234,567');
   });
 
   it('groups French with a narrow no-break space, not a plain space', () => {

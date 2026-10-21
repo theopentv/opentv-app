@@ -113,10 +113,10 @@ describe('numbers in translated strings follow the locale (21 Oct: Western digit
   };
 
   it('formats {{count}} while plural selection still reads the raw number', () => {
-    const i18n = make('ar-u-nu-arab');
-    expect(i18n.t('yearlyGoal.behind', { count: 3 })).toBe('متأخّر بـ٣'); // few
+    const i18n = make('ar');
+    expect(i18n.t('yearlyGoal.behind', { count: 3 })).toBe('متأخّر بـ3'); // few
     expect(i18n.t('yearlyGoal.behind', { count: 2 })).toBe('متأخّر باثنين'); // two
-    expect(i18n.t('halfStars.value', { value: '٤٫٥', max: 5 })).toBe('٤٫٥ من ٥ نجوم');
+    expect(i18n.t('halfStars.value', { value: '4.5', max: 5 })).toBe('4.5 من 5 نجوم');
   });
 
   it('writes the decimal mark of the language, and never groups a year', () => {
