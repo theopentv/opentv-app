@@ -2872,8 +2872,14 @@
   },
   "backupPrompt": {
     "title": "Kitaplığını güvende tut",
-    "icloudBody": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda.",
-    "driveBody": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez.",
+    "icloudBody": {
+      "one": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda.",
+      "other": "{{count}} bölümün yalnızca bu telefonda duruyor. iCloud Drive'ı aç, OpenTV otomatik olarak oraya bir kopya tutsun — ücretsiz, kendi iCloud'unda."
+    },
+    "driveBody": {
+      "one": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez.",
+      "other": "{{count}} bölümün yalnızca bu telefonda duruyor. Kendi Google Drive'ında bir kopya olursa telefonu kaybetsen de onları kaybetmezsin — ücretsiz, hesap gerekmez."
+    },
     "later": "Şimdi değil",
     "openSettings": "Ayarlar'ı aç",
     "turnOnDrive": "Google Drive'a yedekle"

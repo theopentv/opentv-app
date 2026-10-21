@@ -3084,8 +3084,18 @@
   },
   "backupPrompt": {
     "title": "Zabezpiecz swoją bibliotekę",
-    "icloudBody": "Twoje odcinki ({{count}}) są tylko w tym telefonie. Włącz iCloud Drive, a OpenTV automatycznie zapisze tam kopię — za darmo, w twoim własnym iCloud.",
-    "driveBody": "Twoje odcinki ({{count}}) są tylko w tym telefonie. Kopia na twoim własnym Google Drive sprawia, że utrata telefonu nie oznacza ich utraty — za darmo, bez konta.",
+    "icloudBody": {
+      "one": "Twój {{count}} odcinek jest tylko w tym telefonie. Włącz iCloud Drive, a OpenTV automatycznie zapisze tam kopię — za darmo, w twoim własnym iCloud.",
+      "few": "Twoje {{count}} odcinki są tylko w tym telefonie. Włącz iCloud Drive, a OpenTV automatycznie zapisze tam kopię — za darmo, w twoim własnym iCloud.",
+      "many": "Twoich {{count}} odcinków jest tylko w tym telefonie. Włącz iCloud Drive, a OpenTV automatycznie zapisze tam kopię — za darmo, w twoim własnym iCloud.",
+      "other": "Twoje odcinki ({{count}}) są tylko w tym telefonie. Włącz iCloud Drive, a OpenTV automatycznie zapisze tam kopię — za darmo, w twoim własnym iCloud."
+    },
+    "driveBody": {
+      "one": "Twój {{count}} odcinek jest tylko w tym telefonie. Kopia na twoim własnym Google Drive sprawia, że utrata telefonu nie oznacza jego utraty — za darmo, bez konta.",
+      "few": "Twoje {{count}} odcinki są tylko w tym telefonie. Kopia na twoim własnym Google Drive sprawia, że utrata telefonu nie oznacza ich utraty — za darmo, bez konta.",
+      "many": "Twoich {{count}} odcinków jest tylko w tym telefonie. Kopia na twoim własnym Google Drive sprawia, że utrata telefonu nie oznacza ich utraty — za darmo, bez konta.",
+      "other": "Twoje odcinki ({{count}}) są tylko w tym telefonie. Kopia na twoim własnym Google Drive sprawia, że utrata telefonu nie oznacza ich utraty — za darmo, bez konta."
+    },
     "later": "Nie teraz",
     "openSettings": "Otwórz Ustawienia",
     "turnOnDrive": "Kopia na Google Drive"

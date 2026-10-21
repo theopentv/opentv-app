@@ -61,3 +61,17 @@ describe('Arabic plural selection at runtime', () => {
     );
   });
 });
+
+describe('backup prompt counts its episodes (21 Oct: "Your 1 episodes")', () => {
+  const i18n = new I18n({ en, ar });
+  i18n.pluralization.register('ar', useMakePlural({ pluralizer: arPluralRule }));
+
+  it('reads singular at 1 in English and Arabic', () => {
+    i18n.locale = 'en';
+    expect(i18n.t('backupPrompt.icloudBody', { count: 1 })).toMatch(/^Your 1 episode lives/);
+    expect(i18n.t('backupPrompt.driveBody', { count: 2 })).toMatch(/^Your 2 episodes live/);
+    i18n.locale = 'ar';
+    expect(i18n.t('backupPrompt.driveBody', { count: 1 })).toMatch(/^حلقتك الوحيدة/);
+    expect(i18n.t('backupPrompt.driveBody', { count: 2 })).toMatch(/^حلقتاك الاثنتان/);
+  });
+});

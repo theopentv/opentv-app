@@ -2872,8 +2872,14 @@
   },
   "backupPrompt": {
     "title": "Proteggi la tua libreria",
-    "icloudBody": "I tuoi {{count}} episodi sono solo su questo telefono. Attiva iCloud Drive e OpenTV ne tiene una copia automaticamente — gratis, nel tuo iCloud.",
-    "driveBody": "I tuoi {{count}} episodi sono solo su questo telefono. Una copia nel tuo Google Drive e perdere il telefono non li perde più — gratis, senza account.",
+    "icloudBody": {
+      "one": "Il tuo {{count}} episodio è solo su questo telefono. Attiva iCloud Drive e OpenTV ne tiene una copia automaticamente — gratis, nel tuo iCloud.",
+      "other": "I tuoi {{count}} episodi sono solo su questo telefono. Attiva iCloud Drive e OpenTV ne tiene una copia automaticamente — gratis, nel tuo iCloud."
+    },
+    "driveBody": {
+      "one": "Il tuo {{count}} episodio è solo su questo telefono. Una copia nel tuo Google Drive e perdere il telefono non lo perde più — gratis, senza account.",
+      "other": "I tuoi {{count}} episodi sono solo su questo telefono. Una copia nel tuo Google Drive e perdere il telefono non li perde più — gratis, senza account."
+    },
     "later": "Non ora",
     "openSettings": "Apri Impostazioni",
     "turnOnDrive": "Backup su Google Drive"
