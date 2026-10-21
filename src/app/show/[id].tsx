@@ -273,6 +273,8 @@ export default function ShowScreen() {
   // the "Continue tracking" carousel, so the jump-to-next-episode button can
   // scroll it back to where the user actually is
   const carouselRef = useRef<FlatList<CarItem>>(null);
+  // set by the first drag: from then on the carousel's position is the user's
+  const carouselTouched = useRef(false);
   const carouselNative = useMemo(() => Gesture.Native(), []);
   const pan = useMemo(
     () => gesture.withRef(panRef).simultaneousWithExternalGesture(carouselNative),
@@ -1714,6 +1716,23 @@ export default function ShowScreen() {
             decelerationRate="fast"
             initialScrollIndex={Math.min(carouselStart, Math.max(carousel.length - 1, 0))}
             getItemLayout={(_, i) => ({ length: CARD_W + 10, offset: (CARD_W + 10) * i, index: i })}
+            onScrollBeginDrag={() => {
+              carouselTouched.current = true;
+            }}
+            /*
+             * RTL: KEEP THE START IN VIEW AS THE CONTENT GROWS. In RTL the first
+             * card sits at the RIGHT end of the content, but iOS holds the
+             * scroll offset from the LEFT. Anything that widens the content after
+             * the first layout (cells rendering in, metadata landing) pushes
+             * S01E01 off the right edge, and the rail opened on E03/E04. Index 0
+             * also never scrolls at all (`initialScrollIndex` ignores 0), so
+             * nothing corrected it. Re-anchor on every size change until the
+             * user drags; `scrollToIndex` is RTL-aware. LTR anchors natively.
+             */
+            onContentSizeChange={() => {
+              if (!I18nManager.isRTL || carouselTouched.current || !carousel.length) return;
+              carouselRef.current?.scrollToIndex({ index: Math.min(carouselStart, carousel.length - 1), animated: false });
+            }}
             onScrollToIndexFailed={(info) => {
               // getItemLayout should prevent this, but guard: scroll by offset
               carouselRef.current?.scrollToOffset({ offset: (CARD_W + 10) * info.index, animated: true });
