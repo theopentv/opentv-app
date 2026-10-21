@@ -689,6 +689,8 @@
       "driveBackedUpBody": "Your library is safe in Google Drive.",
       "driveFailedTitle": "Couldn't connect to Google Drive",
       "driveFailedBody": "Nothing was backed up. Check your connection and try again.",
+      "driveRestoreFailedBody": "Nothing was restored. Check your connection and try again.",
+      "driveSyncFailedBody": "Sync wasn't turned on. Check your connection and try again.",
       "driveUnauthorised": "This copy of the app isn't authorised to sign in to Google. It needs its signing certificate registered before Drive backup can work — a store build will be.",
       "driveNoPlay": "Google Play services is missing or out of date on this phone, so Drive backup can't sign in.",
       "serverSection": "Server",

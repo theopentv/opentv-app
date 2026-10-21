@@ -689,6 +689,8 @@
       "driveBackedUpBody": "La tua libreria è al sicuro su Google Drive.",
       "driveFailedTitle": "Impossibile collegarsi a Google Drive",
       "driveFailedBody": "Non è stato salvato nulla. Controlla la connessione e riprova.",
+      "driveRestoreFailedBody": "Non è stato ripristinato nulla. Controlla la connessione e riprova.",
+      "driveSyncFailedBody": "La sincronizzazione non è stata attivata. Controlla la connessione e riprova.",
       "driveUnauthorised": "Questa copia dell'app non è autorizzata ad accedere a Google. Il suo certificato di firma deve essere registrato perché il backup su Drive funzioni — quello di una build dello store lo è.",
       "driveNoPlay": "Google Play Services manca o non è aggiornato su questo telefono, quindi il backup su Drive non può accedere.",
       "serverSection": "Server",

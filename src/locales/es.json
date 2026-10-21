@@ -689,6 +689,8 @@
       "driveBackedUpBody": "Tu biblioteca está a salvo en Google Drive.",
       "driveFailedTitle": "No se pudo conectar con Google Drive",
       "driveFailedBody": "No se guardó nada. Comprueba tu conexión e inténtalo de nuevo.",
+      "driveRestoreFailedBody": "No se restauró nada. Comprueba tu conexión e inténtalo de nuevo.",
+      "driveSyncFailedBody": "La sincronización no se activó. Comprueba tu conexión e inténtalo de nuevo.",
       "driveUnauthorised": "Esta copia de la app no está autorizada para iniciar sesión en Google. Su certificado de firma debe estar registrado para que funcione la copia en Drive — el de una versión de la tienda sí lo está.",
       "driveNoPlay": "Los servicios de Google Play faltan o están desactualizados en este teléfono, así que la copia en Drive no puede iniciar sesión.",
       "serverSection": "Servidor",

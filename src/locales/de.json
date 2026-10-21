@@ -689,6 +689,8 @@
       "driveBackedUpBody": "Deine Bibliothek ist sicher in Google Drive.",
       "driveFailedTitle": "Keine Verbindung zu Google Drive",
       "driveFailedBody": "Es wurde nichts gesichert. Prüf deine Verbindung und versuch es noch mal.",
+      "driveRestoreFailedBody": "Es wurde nichts wiederhergestellt. Prüf deine Verbindung und versuch es noch mal.",
+      "driveSyncFailedBody": "Die Synchronisierung wurde nicht eingeschaltet. Prüf deine Verbindung und versuch es noch mal.",
       "driveUnauthorised": "Diese Version der App darf sich nicht bei Google anmelden. Ihr Signaturzertifikat muss erst registriert werden, bevor das Drive-Backup funktioniert — bei einer Store-Version ist das der Fall.",
       "driveNoPlay": "Die Google Play-Dienste fehlen auf diesem Handy oder sind veraltet, deshalb kann sich das Drive-Backup nicht anmelden.",
       "serverSection": "Server",

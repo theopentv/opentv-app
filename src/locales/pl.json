@@ -707,6 +707,8 @@
       "driveBackedUpBody": "Twoja biblioteka jest bezpieczna na Google Drive.",
       "driveFailedTitle": "Nie udało się połączyć z Google Drive",
       "driveFailedBody": "Nie utworzono kopii. Sprawdź połączenie i spróbuj ponownie.",
+      "driveRestoreFailedBody": "Nic nie zostało przywrócone. Sprawdź połączenie i spróbuj ponownie.",
+      "driveSyncFailedBody": "Synchronizacja nie została włączona. Sprawdź połączenie i spróbuj ponownie.",
       "driveUnauthorised": "Ta kopia aplikacji nie ma uprawnień do logowania w Google. Zanim kopia na Drive zadziała, trzeba zarejestrować jej certyfikat podpisu — wersja ze sklepu będzie go mieć.",
       "driveNoPlay": "Na tym telefonie brakuje Usług Google Play lub są nieaktualne, więc kopia na Drive nie może się zalogować.",
       "serverSection": "Serwer",

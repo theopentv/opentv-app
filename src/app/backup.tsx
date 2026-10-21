@@ -185,7 +185,7 @@ export default function BackupScreen() {
             ? t('settings.data.driveUnauthorised')
             : r === 'no-play-services'
               ? t('settings.data.driveNoPlay')
-              : `${t('settings.data.driveFailedBody')}${lastDriveError() ? `\n\n${lastDriveError()}` : ''}`,
+              : `${t('settings.data.driveSyncFailedBody')}${lastDriveError() ? `\n\n${lastDriveError()}` : ''}`,
         );
       }
     } finally {

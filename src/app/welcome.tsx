@@ -54,7 +54,7 @@ export default function WelcomeScreen() {
       if (r !== 'ok') {
         Alert.alert(
           t('settings.data.driveFailedTitle'),
-          r === 'unauthorised' ? t('settings.data.driveUnauthorised') : r === 'no-play-services' ? t('settings.data.driveNoPlay') : t('settings.data.driveFailedBody'),
+          r === 'unauthorised' ? t('settings.data.driveUnauthorised') : r === 'no-play-services' ? t('settings.data.driveNoPlay') : t('settings.data.driveRestoreFailedBody'),
         );
         return;
       }

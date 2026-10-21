@@ -689,6 +689,8 @@
       "driveBackedUpBody": "Kitaplığın Google Drive'da güvende.",
       "driveFailedTitle": "Google Drive'a bağlanılamadı",
       "driveFailedBody": "Hiçbir şey yedeklenmedi. Bağlantını kontrol edip tekrar dene.",
+      "driveRestoreFailedBody": "Hiçbir şey geri yüklenmedi. Bağlantını kontrol edip tekrar dene.",
+      "driveSyncFailedBody": "Eşitleme açılmadı. Bağlantını kontrol edip tekrar dene.",
       "driveUnauthorised": "Uygulamanın bu kopyasının Google'a giriş yetkisi yok. Drive yedeklemesinin çalışması için imza sertifikasının kaydedilmesi gerekir — mağaza sürümünde bu yapılmış olur.",
       "driveNoPlay": "Bu telefonda Google Play hizmetleri eksik ya da güncel değil, bu yüzden Drive yedeklemesi giriş yapamıyor.",
       "serverSection": "Sunucu",
