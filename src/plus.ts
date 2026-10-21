@@ -22,8 +22,8 @@
  * re-renders every subscribed screen the moment it lands. Handlers can use
  * either.
  */
-import { router } from 'expo-router';
-import { useSyncExternalStore } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState, useSyncExternalStore } from 'react';
 
 import { track } from '@/analytics';
 import { setIcon } from '@/app-icon';
@@ -252,6 +252,36 @@ export function plusUiVisible(): boolean {
 export function usePlusUi(): boolean {
   const plus = usePlus();
   return PLUS_AVAILABLE || plus;
+}
+
+/**
+ * THE PAYWALL FROM INSIDE AN RN `<Modal>` (21 Oct).
+ *
+ * `requirePlus` pushes a route, and a route is drawn UNDER a Modal — the
+ * picture button in the full-screen comment composer opened the paywall
+ * behind it, where nobody could see or close it. So the Modal steps aside
+ * (`away` → `visible={... && !away}`), the paywall is pushed once it has gone
+ * (iOS cannot present while a dismissal is in flight, hence `onDismiss`;
+ * Android's dialog is gone at once), and it comes back when the screen is
+ * focused again. The draft lives in the screen's state, not the Modal's, so
+ * it is all still there.
+ */
+export function usePaywallOverModal() {
+  const [away, setAway] = useState<string | null>(null);
+  useFocusEffect(useCallback(() => setAway(null), []));
+  return {
+    away: away != null,
+    /** Call instead of `requirePlus(from)` from inside the Modal. */
+    open: (from: string) => {
+      if (!PLUS_AVAILABLE) return;
+      setAway(from);
+      if (process.env.EXPO_OS !== 'ios') requirePlus(from);
+    },
+    /** The Modal's `onDismiss`. */
+    onDismiss: () => {
+      if (away != null && process.env.EXPO_OS === 'ios') requirePlus(away);
+    },
+  };
 }
 
 /**

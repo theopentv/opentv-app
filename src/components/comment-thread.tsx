@@ -62,6 +62,7 @@ import {
 } from '@/community-comments';
 import { getHandle, getProfileId, useJoined } from '@/community-session';
 import { useCommentAttachment } from '@/components/comment-attachment';
+import { isPlus, usePaywallOverModal } from '@/plus';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { CONTENT_MAX_WIDTH } from '@/components/ui';
 import { tapLight, tapSelection } from '@/haptics';
@@ -447,6 +448,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
   const [spoiler, setSpoiler] = useState(false);
   const [sending, setSending] = useState(false);
   const attach = useCommentAttachment();
+  const paywall = usePaywallOverModal();
   const [replyTo, setReplyTo] = useState<Comment | null>(null);
   // THE PENCIL, as TV Time had it: the thread is the screen, and the box opens
   // when somebody means to write. It stays open while there is anything in it.
@@ -1028,9 +1030,10 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
         keyboard. Closing keeps what was typed for next time.
       */}
       <Modal
-        visible={joined && (writing || replyTo != null)}
+        visible={joined && (writing || replyTo != null) && !paywall.away}
         animationType="slide"
         presentationStyle="fullScreen"
+        onDismiss={paywall.onDismiss}
         onRequestClose={() => {
           setWriting(false);
           setReplyTo(null);
@@ -1091,7 +1094,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
           )}
           <View style={[styles.writeTools, { paddingBottom: Math.max(insets.bottom, 10) }]}>
             {attach.canAttach && (
-              <Pressable hitSlop={8} style={styles.attachBtn} onPress={attach.open} disabled={sending} accessibilityRole="button" accessibilityLabel={t('a11y.attachImage')}>
+              <Pressable hitSlop={8} style={styles.attachBtn} onPress={() => (isPlus() ? attach.open() : paywall.open('comment_image'))} disabled={sending} accessibilityRole="button" accessibilityLabel={t('a11y.attachImage')}>
                 <Ionicons
                   name={attach.attachment ? 'image' : 'image-outline'}
                   size={19}

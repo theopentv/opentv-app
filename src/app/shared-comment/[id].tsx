@@ -47,7 +47,7 @@ import { getMeta } from '@/db';
 import { CommentCard, formatCommentDate } from '@/components/comment-card';
 import { CommsuniAttribution, ConsentSheet, useReport } from '@/components/commsuni-board';
 import { GifSearch } from '@/components/gif-search';
-import { isPlus, requirePlus, usePlusUi } from '@/plus';
+import { isPlus, usePaywallOverModal, usePlusUi } from '@/plus';
 import { Image } from 'expo-image';
 import { NavHeader, Screen } from '@/components/ui';
 import { tapLight, tapSelection } from '@/haptics';
@@ -116,6 +116,7 @@ export default function SharedCommentScreen() {
   const [mine, setMine] = useState(myReplyIds);
   const [asking, setAsking] = useState(false);
   const [writing, setWriting] = useState(false);
+  const paywall = usePaywallOverModal();
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   // Which comment the writer answers: the root, or one of its replies.
@@ -338,7 +339,7 @@ export default function SharedCommentScreen() {
         }}
       />
 
-      <Modal visible={writing} animationType="slide" presentationStyle="fullScreen" onRequestClose={() => setWriting(false)}>
+      <Modal visible={writing && !paywall.away} animationType="slide" presentationStyle="fullScreen" onDismiss={paywall.onDismiss} onRequestClose={() => setWriting(false)}>
         <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <View style={styles.writeHead}>
             <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('community.comments.closeWriting')} onPress={() => setWriting(false)}>
@@ -383,7 +384,7 @@ export default function SharedCommentScreen() {
                 disabled={sending}
                 onPress={() => {
                   if (!isPlus()) {
-                    requirePlus('commsuni_reply_gif');
+                    paywall.open('commsuni_reply_gif');
                     return;
                   }
                   setGifOpen(true);
