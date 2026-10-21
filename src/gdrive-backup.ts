@@ -176,9 +176,16 @@ export async function connectDrive(withSync = false): Promise<DriveConnect> {
      * cancellation response. It is the shape of this SDK, not an accident here.
      */
     const current = await GoogleSignin.signInSilently().catch(() => null);
-    if (current?.type !== 'success') await GoogleSignin.signIn();
+    /*
+     * AND `signIn()` REPORTS A CANCEL THE SAME WAY (21 Oct): `{ type:
+     * 'cancelled' }`, not a throw. Backing out of the account picker went on
+     * to `addScopes` with nobody signed in and came back as 'failed' -- "Nothing
+     * was backed up" for somebody who had simply changed their mind.
+     */
+    if (current?.type !== 'success' && (await GoogleSignin.signIn()).type === 'cancelled') return 'cancelled';
     const scopes = withSync ? [DRIVE_SCOPE, DRIVE_APPDATA_SCOPE] : [DRIVE_SCOPE];
     const granted = await GoogleSignin.addScopes({ scopes });
+    if (granted?.type === 'cancelled') return 'cancelled';
     /*
      * GOOGLE LETS PEOPLE UNTICK A PERMISSION on the consent screen and still
      * press Continue. The sign-in then succeeds without the scope, and every
