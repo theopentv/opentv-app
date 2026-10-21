@@ -9,6 +9,7 @@ import * as SQLite from 'expo-sqlite';
 import records from '@/data/records.json';
 import type { Action as SyncAction } from '@/sync-ops';
 import { designSnapshot, isDesignKey } from '@/sync-ops';
+import { SEASONS_SQL } from '@/pure';
 import { interestKey, libraryOwnerFrom, parseInterest, disambiguatedMovieName, displayTitle, episodeKey, type MemoryEvent, mayFoldDuplicateShow, mergeCustomLists, movedListIndex, movieIdentityMatches, nextCharacterVote, renumberLists, resolveMovieRow, SHOW_NAME_MISSING_WHERE, slug, watchRuntimeSeconds, type ArchiveCounts } from '@/pure';
 import seed from '@/seed';
 import { COMMSUNI_ELIGIBLE_WHERE } from '@/commsuni-scope';
@@ -687,11 +688,7 @@ export type SeasonRow = { season: number; watched: number; lastWatchedAt: string
 
 /** Seasons of a show with real watched counts, from your import. */
 export function getSeasons(showId: number): SeasonRow[] {
-  return db.getAllSync<SeasonRow>(
-    `SELECT season, COUNT(DISTINCT episode) AS watched, MAX(watchedAt) AS lastWatchedAt
-     FROM watches WHERE showId = ? GROUP BY season ORDER BY season`,
-    [showId],
-  );
+  return db.getAllSync<SeasonRow>(SEASONS_SQL, [showId]);
 }
 
 export type EpisodeWatch = {

@@ -8467,6 +8467,18 @@ export function sortWatchList<T extends WatchListEntry>(
 }
 
 /**
+ * A show's seasons with their watched counts — `getSeasons` runs it; here so a
+ * test can run it against real SQLite.
+ *
+ * EPISODE 0 IS NOT COUNTED. TV Time exports carry the odd "S04E00" (Attack on
+ * Titan has one), which no catalogue lists and no episode row draws — so it
+ * made "31 of 30 watched" and could tick a season complete one episode early.
+ * The watch row itself is kept; it just isn't an episode of the season.
+ */
+export const SEASONS_SQL = `SELECT season, COUNT(DISTINCT CASE WHEN episode > 0 THEN episode END) AS watched, MAX(watchedAt) AS lastWatchedAt
+     FROM watches WHERE showId = ? GROUP BY season ORDER BY season`;
+
+/**
  * WHICH SHOW ROWS NEED A NAME, as SQL — `getShowsMissingName` runs it, and it
  * lives here so a test can run it against real SQLite (db.ts needs expo-sqlite).
  *
