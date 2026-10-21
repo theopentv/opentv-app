@@ -217,15 +217,27 @@ const META_CACHE_BATCH = 200;
  * drawing a part-watched bar over a finished show.
  */
 function showsNeedingStructure(): number[] {
-  return getAllShowIds().filter((id) => {
-    const m = showMeta(id);
-    if (!m || Object.keys(m.episodes ?? {}).length === 0) return true;
-    // structure that did not come from TheTVDB is a degraded state, not a
-    // cached result — a show left on TMDB numbering by a failed refresh HAS
-    // episodes, so a bare episode-count check would skip it forever and it
-    // would only heal if the user happened to open it.
-    return m.structureSource !== 'tvdb';
-  });
+  return getAllShowIds().filter(needsFetch);
+}
+
+function needsFetch(id: number): boolean {
+  const m = showMeta(id);
+  if (!m || Object.keys(m.episodes ?? {}).length === 0) return true;
+  // structure that did not come from TheTVDB is a degraded state, not a
+  // cached result — a show left on TMDB numbering by a failed refresh HAS
+  // episodes, so a bare episode-count check would skip it forever and it
+  // would only heal if the user happened to open it.
+  //
+  // And a plot in a language nobody asks for any more (Settings → Plot
+  // language, or the app's language). Without it the pass never looked: the
+  // library kept the old plots until each show happened to be opened.
+  return m.structureSource !== 'tvdb' || wrongPlotLang(m);
+}
+
+/** Cached in another language than the one plots are now wanted in. ABSENT
+ *  reads as `eng` — see `showMetaIsStale`. */
+function wrongPlotLang(m: ShowMeta): boolean {
+  return (m.plotLang ?? 'eng') !== plotTvdbCodes()[0];
 }
 
 /**
@@ -248,7 +260,7 @@ export async function cacheMissingShowMetadata(
     return { total: 0, ok: 0 };
   }
   await pool(need, (id) => fetchShowMeta(id).catch(() => null), 3, onProgress);
-  const ok = need.filter((id) => showMeta(id)?.structureSource === 'tvdb').length;
+  const ok = need.filter((id) => !needsFetch(id)).length;
   setMeta('metaCacheComplete', ok === need.length ? '1' : '');
   return { total: need.length, ok };
 }
@@ -273,7 +285,7 @@ export async function cacheAllShowMetadata(onProgress?: (done: number, total: nu
     // library done while shows on a dropped connection still had no structure,
     // and the background pass never looked at them again. Same honest measure
     // as cacheMissingShowMetadata: did the shows actually get what we came for?
-    const ok = batch.filter((id) => showMeta(id)?.structureSource === 'tvdb').length;
+    const ok = batch.filter((id) => !needsFetch(id)).length;
     setMeta('metaCacheComplete', ok === batch.length ? '1' : '');
   }
 }
@@ -653,7 +665,7 @@ export function showMetaIsStale(m: ShowMeta): boolean {
   // before this was English, so an English reader refetches nothing and only a
   // reader who actually wants another language pays one refetch per show —
   // through this same background pass, with the old text on screen meanwhile.
-  if ((m.plotLang ?? 'eng') !== plotTvdbCodes()[0]) return true;
+  if (wrongPlotLang(m)) return true;
   const ended = m.status === 'Ended' || m.status === 'Canceled';
   return Date.now() - (m.fetchedAt ?? 0) > (ended ? STALE_ENDED_MS : STALE_RUNNING_MS);
 }

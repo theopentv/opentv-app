@@ -215,6 +215,19 @@ export function registerShowMeta(tvdbId: number, m: ShowMeta): void {
   runtime[String(tvdbId)] = normalise(m);
   missing.delete(String(tvdbId));
   merged.delete(String(tvdbId));
+  metaListeners.forEach((fn) => fn(tvdbId));
+}
+
+/**
+ * Told whenever a show's metadata is replaced — a background pass refetching
+ * a plot in another language, say — so an open page can re-render. The page
+ * answers with STATE it sets (React Compiler: a counter beside a render-time
+ * read is compiled away; a state update is not).
+ */
+const metaListeners = new Set<(tvdbId: number) => void>();
+export function onShowMetaChange(fn: (tvdbId: number) => void): () => void {
+  metaListeners.add(fn);
+  return () => metaListeners.delete(fn);
 }
 
 // a runtime refresh is always newer than the bundle, so it wins — but the
