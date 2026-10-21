@@ -75,6 +75,21 @@ export type BackupSummary = {
 
 // ── what is turned on ────────────────────────────────────────────────────────
 
+/**
+ * WHERE THE COPY GOES CHANGED — for a screen already open (21 Oct). Profile
+ * re-checks its "isn't backed up" banner on focus, and "OpenTV Backup is on"
+ * arrives while it is focused, so the banner contradicted the alert above it.
+ */
+const destListeners = new Set<() => void>();
+export function onBackupDestination(fn: () => void): () => void {
+  destListeners.add(fn);
+  return () => destListeners.delete(fn);
+}
+function setDestination(v: BackupDestination | ''): void {
+  setMeta(DEST_KEY, v);
+  destListeners.forEach((fn) => fn());
+}
+
 export function backupDestination(): BackupDestination | null {
   const v = getMeta(DEST_KEY);
   return v === 'opentv' || v === 'webdav' ? v : null;
@@ -129,7 +144,7 @@ export type ConnectResult = 'ok' | 'unauthorised' | 'not-found' | 'failed';
  * than a vague failure.
  */
 export function chooseOpenTvCloud(): void {
-  setMeta(DEST_KEY, 'opentv');
+  setDestination('opentv');
   clearStamps();
 }
 
@@ -212,7 +227,7 @@ export async function connectWebdav(url: string, user: string, pass: string): Pr
     }
     await SecureStore.setItemAsync(DAV_CRED_KEY, JSON.stringify({ user, pass }));
     setMeta(DAV_URL_KEY, trimmed);
-    setMeta(DEST_KEY, 'webdav');
+    setDestination('webdav');
     return 'ok';
   }
 
@@ -236,7 +251,7 @@ export async function connectWebdav(url: string, user: string, pass: string): Pr
 
   await SecureStore.setItemAsync(DAV_CRED_KEY, JSON.stringify({ user, pass }));
   setMeta(DAV_URL_KEY, trimmed);
-  setMeta(DEST_KEY, 'webdav');
+  setDestination('webdav');
   stamp(zip);
   return 'ok';
 }
@@ -278,7 +293,7 @@ export async function disconnectServerBackup(): Promise<void> {
   } catch {
     // Already gone.
   }
-  setMeta(DEST_KEY, '');
+  setDestination('');
   setMeta(DAV_URL_KEY, '');
   clearStamps();
 }

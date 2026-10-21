@@ -23,8 +23,20 @@ function episodes(): number {
   return db.getFirstSync<{ n: number }>('SELECT COUNT(*) AS n FROM watches')?.n ?? 0;
 }
 
+/** OpenTV Backup or the user's own server already holds a copy (21 Oct): it
+ *  was asking "keep your library safe" right after "OpenTV Backup is on". */
+function copiedElsewhere(): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { backupDestination } = require('@/cloud-backup') as typeof import('@/cloud-backup');
+  return backupDestination() != null;
+}
+
 export async function offerBackupIfDue(): Promise<boolean> {
   if (getMeta(ASKED) === '1' || !hasLibrary()) return false;
+  if (copiedElsewhere()) {
+    setMeta(ASKED, '1');
+    return false;
+  }
   const count = episodes();
   // NOTHING WATCHED YET, NOTHING TO PROTECT (8 Oct): a library of added shows
   // and no episodes was told "your 0 episodes are only on this phone". The ask
@@ -33,7 +45,8 @@ export async function offerBackupIfDue(): Promise<boolean> {
 
   if (Platform.OS === 'ios') {
     if (!icloudSupported()) return false;
-    if (await icloudAvailableAsync().catch(() => true)) {
+    // Re-asked after the await: Plus can switch OpenTV Backup on meanwhile.
+    if ((await icloudAvailableAsync().catch(() => true)) || copiedElsewhere()) {
       setMeta(ASKED, '1');
       return false;
     }

@@ -239,6 +239,18 @@ export default function ProfileScreen() {
     () => onLayoutSaved(() => setArrangement(normalise(parseLayout(savedArrangement()), SHELF_KEYS))),
     [],
   );
+  /* "OpenTV Backup is on" lands while this tab is focused, so the focus
+     re-read below never sees it and "isn't backed up" stood under the alert. */
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const backup = require('@/cloud-backup') as typeof import('@/cloud-backup');
+    return backup.onBackupDestination(() => {
+      if (backup.backupDestination() == null) return;
+      setCloudOff(false);
+      setBackupOverdue(false);
+      setPlusBackup(null);
+    });
+  }, []);
   /* A screen you never leave never re-queries, and sync lands in SQLite
      without telling anybody. `setTick` is state React sets, which is the only
      kind of invalidation that survives the React Compiler here. */
