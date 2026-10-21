@@ -309,15 +309,25 @@ export async function publishPositions(): Promise<void> {
  * while the app was shut (an import, Siri, another app's sync).
  */
 export async function syncTogetherIfNeeded(): Promise<void> {
-  if (!active()) return;
+  /*
+   * A MEMBER NOT YET KNOWN TO BE IN ONE IS ASKED TOO, once a day (21 Oct).
+   * `active()` is set only by an index some screen fetched, so a second device
+   * of the same account showed no together strip on a show page until Lists
+   * was opened. The stamp is per account (cleared on sign-out), so a fresh
+   * sign-in asks on its first launch or foreground; one request a day after.
+   */
+  if (!isJoined()) return;
   const at = Number(getMeta(INDEX_AT_KEY) ?? '');
   if (!Number.isFinite(at) || Date.now() - at > DAY_MS) {
     try {
       noteTogetherIndex(await fetchSharedLists());
+      // `noteTogetherIndex` stamps only when there is a together to note.
+      setMeta(INDEX_AT_KEY, String(Date.now()));
     } catch {
       // Offline: the cached memberships still publish.
     }
   }
+  if (!active()) return;
   await publishPositions();
 }
 

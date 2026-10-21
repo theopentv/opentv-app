@@ -242,6 +242,10 @@ export function joinCommunity(): void {
   void (async () => {
     const token = await getToken();
     if (token) await api('/v1/me/join', { method: 'POST', token });
+    // And the togethers this account is already in — another device's — so
+    // the show page has its strip now, not after Lists is opened.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    await (require('@/community-together') as typeof import('@/community-together')).syncTogetherIfNeeded();
   })().catch(() => {});
 }
 
