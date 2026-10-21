@@ -10,12 +10,15 @@ import { offerBackupIfDue } from '@/backup-prompt';
 import { offerCommunityIfDue } from '@/community-prompt';
 import { tapSelection } from '@/haptics';
 import { isNotifyScreenOwed } from '@/session-store';
-import { t, useLocale } from '@/i18n';
+import { remountOnLocale, t, useLocale } from '@/i18n';
 import { colors } from '@/theme';
 import { WhatsNew } from '@/whats-new';
 
 /** TV Time's tab icons are about a third larger than the library's 24. */
 const TAB_ICON = 30;
+
+/** Every tab remounts on a language switch — see `remountOnLocale`. */
+const SCREEN_LAYOUT = remountOnLocale();
 
 export default function TabsLayout() {
   // THE TAB LABELS STAYED IN THE OLD LANGUAGE (15 Oct): this layout never
@@ -80,6 +83,7 @@ export default function TabsLayout() {
     <>
     <WhatsNew />
     <Tabs
+      screenLayout={SCREEN_LAYOUT}
       // The bottom bar is a row of tabs like any other, and ticks like them
       // (14 Oct): every tab row in the app goes through `tapSelection`.
       screenListeners={{ tabPress: () => tapSelection() }}
