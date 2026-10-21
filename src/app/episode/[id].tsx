@@ -35,7 +35,7 @@ import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
 import { absoluteEpisode, episodeMeta, seasonTotal, showMeta } from '@/metadata';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
-import { characterFace, characterPercents, emotionNames, emotionPercents, nextPage, orderPollCast, pollLabel, starPercents, swipeDirection, providerLines } from '@/pure';
+import { characterFace, characterPercents, emotionNames, emotionPercents, nextPage, orderPollCast, pollKeys, pollLabel, starPercents, swipeDirection, providerLines } from '@/pure';
 import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
@@ -923,7 +923,7 @@ function EpisodePage({
                 <Text style={styles.label} accessibilityRole="header">{t('media.whoWasFavoritePoll')}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
                   {sm?.characters?.length
-                    ? orderPollCast(sm.characters.slice(0, 20), charPct).map((c, i) => {
+                    ? orderPollCast(sm.characters.slice(0, 20), charPct).map((c, i, row) => {
                         const picked = favChar === c.name;
                         // Everyone else steps back once an answer exists — same
                         // rule as the film screen's poll.
@@ -939,7 +939,8 @@ function EpisodePage({
                             // showing its own grey. Pick then unpick and half the
                             // row goes blank. The name is already the identity:
                             // `favChar === c.name` is how picking works at all.
-                            key={c.name}
+                            // Repeated names get a suffix (`pollKeys`).
+                            key={pollKeys(row.map((x) => x.name))[i]}
                             style={[{ width: 96, alignItems: 'center' }, dimmed && styles.charDim]}
                             accessibilityRole="radio"
                             accessibilityLabel={charPct[c.name] != null ? `${c.name}, ${charPct[c.name]}%` : c.name}
@@ -960,7 +961,7 @@ function EpisodePage({
                           </Pressable>
                         );
                       })
-                    : orderPollCast(sm!.cast!.slice(0, 20), charPct).map((c, i) => {
+                    : orderPollCast(sm!.cast!.slice(0, 20), charPct).map((c, i, row) => {
                         const label = pollLabel(c);
                         // The CHARACTER's face, the performer's only as a
                         // fallback — this row asks who your favourite CHARACTER
@@ -973,7 +974,8 @@ function EpisodePage({
                           <Pressable
                             // Same reorder, same rule — the label is what a vote
                             // is recorded against, so it is the identity here.
-                            key={label || c.name}
+                            // "Correspondent" x12 (The Daily Show): `pollKeys`.
+                            key={pollKeys(row.map((x) => pollLabel(x) || (x.name ?? '')))[i]}
                             style={[{ width: 96, alignItems: 'center' }, dimmed && styles.charDim]}
                             accessibilityRole="radio"
                             accessibilityLabel={charPct[label] != null ? `${label}, ${charPct[label]}%` : label}

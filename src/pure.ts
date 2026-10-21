@@ -3185,6 +3185,23 @@ export function orderPollCast<T extends PollCastEntry>(cast: T[], percents: Reco
 }
 
 /**
+ * React keys for a poll row: the label, with `#2`, `#3`… on a repeat. The Daily
+ * Show has a dozen "Correspondent"s, and one key for all of them is a React
+ * warning and cards that swap faces. Taken AFTER `orderPollCast`: equal labels
+ * have equal votes and the sort is stable, so a repeat keeps its suffix when
+ * the row re-sorts, and a unique label is just itself.
+ */
+export function pollKeys(labels: readonly string[]): string[] {
+  const used = new Set<string>();
+  return labels.map((l) => {
+    let k = l;
+    for (let n = 2; used.has(k); n++) k = `${l}#${n}`;
+    used.add(k);
+    return k;
+  });
+}
+
+/**
  * The two cuts that turn a cast list into a poll about CHARACTERS.
  *
  * CREW. TheTVDB's `characters` array is not only characters: directors,

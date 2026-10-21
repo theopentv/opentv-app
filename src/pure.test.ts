@@ -28,6 +28,7 @@ import {
   validWatchRegion,
   watchOptions,
   sortWatchList,
+  pollKeys,
   validWatchListSort,
   type WatchListEntry,
   secondaryAccent,
@@ -3990,5 +3991,14 @@ describe('sortWatchList: newest first and random', () => {
     const items = 'ABCDEFGHIJ'.split('').map((n) => e(n));
     const orders = new Set([1, 2, 3, 4, 5].map((s) => sortWatchList(items, 'random', s).map((x) => x.name).join('')));
     expect(orders.size).toBeGreaterThan(1);
+  });
+});
+
+describe('pollKeys', () => {
+  it('suffixes repeated labels and leaves unique ones alone', () => {
+    expect(pollKeys(['Host', 'Correspondent', 'Correspondent', 'Correspondent'])).toEqual([
+      'Host', 'Correspondent', 'Correspondent#2', 'Correspondent#3',
+    ]);
+    expect(new Set(pollKeys(['a', 'a', 'a#2'])).size).toBe(3);
   });
 });
