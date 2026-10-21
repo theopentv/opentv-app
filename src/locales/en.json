@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Restore failed",
     "importFailedTitle": "Import failed",
     "failedBody": "Something went wrong: {{message}}",
+    "jsonBackup": "This is a raw JSON backup, and it can’t be imported. To move your library, use “Export my data” and import the ZIP file it makes.",
     "existingLibraryTitle": "You already have a library on this phone",
     "existingLibraryBody": "Add the import on top of it (nothing gets deleted), or erase this library first and import clean?",
     "mergeIntoLibrary": "Merge into my library",

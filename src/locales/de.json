@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Wiederherstellen fehlgeschlagen",
     "importFailedTitle": "Import fehlgeschlagen",
     "failedBody": "Etwas ist schiefgelaufen: {{message}}",
+    "jsonBackup": "Das ist ein reines JSON-Backup und kann nicht importiert werden. Um deine Mediathek umzuziehen, nutze „Meine Daten exportieren“ und importiere die ZIP-Datei, die dabei entsteht.",
     "existingLibraryTitle": "Auf diesem Handy gibt es schon eine Bibliothek",
     "existingLibraryBody": "Den Import oben drauf packen (es wird nichts gelöscht) oder diese Bibliothek erst löschen und sauber importieren?",
     "mergeIntoLibrary": "In meine Bibliothek übernehmen",

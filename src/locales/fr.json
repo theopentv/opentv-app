@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Échec de la restauration",
     "importFailedTitle": "Échec de l'import",
     "failedBody": "Quelque chose s'est mal passé : {{message}}",
+    "jsonBackup": "Ceci est une sauvegarde JSON brute, qui ne peut pas être importée. Pour transférer votre bibliothèque, utilisez « Exporter mes données » et importez le fichier ZIP obtenu.",
     "existingLibraryTitle": "Tu as déjà une bibliothèque sur ce téléphone",
     "existingLibraryBody": "Ajouter cet import par-dessus (rien n'est supprimé), ou effacer d'abord cette bibliothèque et importer proprement ?",
     "mergeIntoLibrary": "Fusionner avec ma bibliothèque",

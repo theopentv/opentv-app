@@ -172,7 +172,20 @@ export function foundCsvsMessage(fileKeys: string[]): string {
   const names = csvKeys.map((k) => k.split('/').pop()).slice(0, 12);
   return names.length
     ? `Files found: ${names.join(', ')}${csvKeys.length > 12 ? ', …' : ''}.`
-    : 'No CSV files were found inside the ZIP.';
+    : 'No CSV files were found in this file.';
+}
+
+/**
+ * Settings → Backup → "Backup as JSON" (`exportAll`): a raw table dump, `app`
+ * first. NOT an import format — it carries no comments, lists or votes, and its
+ * `meta` holds this device's sync identity and tokens, which must never land on
+ * another phone. Recognised so the importer can say so, instead of "no CSV".
+ * Only the head is read; Trakt and Simkl exports are JSON too and never start so.
+ */
+/** Thrown by the importer for it; `import.tsx` shows `import.jsonBackup`. */
+export const RAW_JSON_BACKUP = 'opentv:raw-json-backup';
+export function isRawJsonBackup(head: string): boolean {
+  return /^\s*\{\s*"app"\s*:\s*"OpenTV"\s*,\s*"format"\s*:/.test(head);
 }
 
 /**

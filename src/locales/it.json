@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Ripristino non riuscito",
     "importFailedTitle": "Importazione non riuscita",
     "failedBody": "Qualcosa è andato storto: {{message}}",
+    "jsonBackup": "Questo è un backup JSON grezzo e non può essere importato. Per spostare la tua libreria, usa «Esporta i miei dati» e importa il file ZIP che crea.",
     "existingLibraryTitle": "Hai già una libreria su questo telefono",
     "existingLibraryBody": "Aggiungere l'importazione a quella esistente (niente viene eliminato), oppure cancellare prima questa libreria e importare da zero?",
     "mergeIntoLibrary": "Unisci alla mia libreria",

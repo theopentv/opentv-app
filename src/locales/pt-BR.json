@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Falha ao restaurar",
     "importFailedTitle": "Falha ao importar",
     "failedBody": "Algo deu errado: {{message}}",
+    "jsonBackup": "Este é um backup JSON bruto e não pode ser importado. Para levar sua biblioteca, use “Exportar meus dados” e importe o arquivo ZIP gerado.",
     "existingLibraryTitle": "Você já tem uma biblioteca neste celular",
     "existingLibraryBody": "Adicionar a importação à que já existe (nada é apagado), ou apagar essa biblioteca antes e importar do zero?",
     "mergeIntoLibrary": "Juntar à minha biblioteca",

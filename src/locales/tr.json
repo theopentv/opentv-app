@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Geri yükleme başarısız",
     "importFailedTitle": "İçe aktarma başarısız",
     "failedBody": "Bir şeyler ters gitti: {{message}}",
+    "jsonBackup": "Bu ham bir JSON yedeği ve içe aktarılamaz. Kitaplığını taşımak için “Verilerimi dışa aktar”ı kullan ve oluşan ZIP dosyasını içe aktar.",
     "existingLibraryTitle": "Bu telefonda zaten bir kitaplığın var",
     "existingLibraryBody": "İçe aktarılanları mevcut kitaplığın üzerine mi ekleyelim (hiçbir şey silinmez), yoksa önce bu kitaplığı silip sıfırdan mı aktaralım?",
     "mergeIntoLibrary": "Kitaplığımla birleştir",

@@ -1116,6 +1116,7 @@
     "restoreFailedTitle": "Przywracanie nie powiodło się",
     "importFailedTitle": "Import nie powiódł się",
     "failedBody": "Coś poszło nie tak: {{message}}",
+    "jsonBackup": "To surowa kopia zapasowa JSON i nie da się jej zaimportować. Aby przenieść bibliotekę, użyj „Eksportuj moje dane” i zaimportuj utworzony plik ZIP.",
     "existingLibraryTitle": "Masz już bibliotekę na tym telefonie",
     "existingLibraryBody": "Dodać import do niej (nic nie zostanie usunięte) czy najpierw wymazać tę bibliotekę i zaimportować na czysto?",
     "mergeIntoLibrary": "Scal z moją biblioteką",

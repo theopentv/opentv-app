@@ -1060,6 +1060,7 @@
     "restoreFailedTitle": "Error al restaurar",
     "importFailedTitle": "Error al importar",
     "failedBody": "Algo salió mal: {{message}}",
+    "jsonBackup": "Esta es una copia de seguridad JSON sin procesar y no se puede importar. Para mover tu biblioteca, usa «Exportar mis datos» e importa el archivo ZIP que genera.",
     "existingLibraryTitle": "Ya tienes una biblioteca en este teléfono",
     "existingLibraryBody": "¿Añadir la importación a la que ya tienes (no se borra nada), o borrar antes esta biblioteca e importar desde cero?",
     "mergeIntoLibrary": "Fusionar con mi biblioteca",

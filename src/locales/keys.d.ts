@@ -918,6 +918,7 @@ export type LocaleKey =
   | "import.from.tvtime"
   | "import.gettingEpisodeData"
   | "import.importFailedTitle"
+  | "import.jsonBackup"
   | "import.keepOpenBody"
   | "import.mergeIntoLibrary"
   | "import.restoreFailedTitle"

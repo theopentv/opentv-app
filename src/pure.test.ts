@@ -112,6 +112,7 @@ import {
   canFoldMovie,
   clampToGrid,
   foundCsvsMessage,
+  isRawJsonBackup,
   hasValue,
   listPlaceholderName,
   mergeCustomLists,
@@ -219,7 +220,19 @@ describe('foundCsvsMessage (import-0 diagnostics)', () => {
     expect(msg).toBe('Files found: seen_episode.csv.');
   });
   it('reports when there are no csvs', () => {
-    expect(foundCsvsMessage(['a.txt', 'b.json'])).toBe('No CSV files were found inside the ZIP.');
+    // "inside the ZIP" was wrong for a single CSV or JSON file
+    expect(foundCsvsMessage(['a.txt', 'b.json'])).toBe('No CSV files were found in this file.');
+  });
+});
+
+describe('isRawJsonBackup', () => {
+  it('recognises the JSON backup by its head', () => {
+    expect(isRawJsonBackup('{"app":"OpenTV","format":1,"exportedAt":"2026-10-21"')).toBe(true);
+  });
+  it('leaves Trakt, Simkl and an OpenTV ZIP sidecar alone', () => {
+    expect(isRawJsonBackup('[{"watched_at":"2026"}]')).toBe(false);
+    expect(isRawJsonBackup('{"shows":[],"movies":[]}')).toBe(false);
+    expect(isRawJsonBackup('{"movies":[],"app":"OpenTV"}')).toBe(false);
   });
 });
 

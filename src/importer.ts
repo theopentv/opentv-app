@@ -39,7 +39,7 @@ import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, del
 import { withImportLock } from '@/import-lock';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
 import { notesFromSidecar } from '@/notes-pure';
-import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, listPlaceholderName, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
+import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
 import { tmdb, pool } from '@/tmdb';
 import { fetchToDocuments } from '@/fetch-to-documents';
 import { netIsOpen } from '@/net-circuit';
@@ -442,6 +442,10 @@ export async function pickAndImport(
   // prove the archive is readable BEFORE any wipe — a corrupt or wrong file
   // must never cost the user their library (unzipSync throws on garbage)
   if (isZip) unzipSync(bytes);
+  // Settings → Backup → "Backup as JSON" is not an import format: say so by
+  // name rather than "no CSV files" — and here, BEFORE a replace wipes the
+  // library for a file that was never going to import (see `isRawJsonBackup`).
+  else if (isRawJsonBackup(String.fromCharCode(...bytes.subarray(0, 64)))) throw new Error(RAW_JSON_BACKUP);
 
   // Stage the export on disk BEFORE importing, then run under the import lock so
   // a concurrent startup resume can't stomp the same staged file / flag.
