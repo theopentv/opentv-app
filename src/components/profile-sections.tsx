@@ -23,6 +23,7 @@ import { useContext } from 'react';
 import { CONTENT_MAX_WIDTH, GRID_GUTTER, gridMetrics } from '@/components/ui';
 import { Poster, posterSpeech } from '@/components/poster';
 import { currentLocale, t } from '@/i18n';
+import { formatCount } from '@/locale-resolve';
 import { mixHex, withoutEmoji } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 
@@ -180,7 +181,7 @@ export function ProfileShelf({
 export function ClockPart({ value, unit }: { value: number; unit: string }) {
   return (
     <View style={{ alignItems: 'center' }}>
-      <Text style={s.clockNum}>{value}</Text>
+      <Text style={s.clockNum}>{formatCount(value, currentLocale())}</Text>
       <Text style={s.clockUnit}>{unit}</Text>
     </View>
   );
@@ -450,14 +451,14 @@ export function StatsGrid({
                 adjustsFontSizeToFit
                 minimumFontScale={0.55}>
                 {shownClockParts(c.months, c.days, c.hours)
-                  .map((part) => `${part.v}${part.s}`)
+                  .map((part) => `${formatCount(part.v, currentLocale())}${part.s}`)
                   .join(' ')}
               </Text>
             ) : (
               <View style={s.gridClock}>
                 {shownClockParts(c.months, c.days, c.hours).map((part) => (
                   <View key={part.u} style={s.gridClockPart}>
-                    <Text style={s.gridBig}>{part.v}</Text>
+                    <Text style={s.gridBig}>{formatCount(part.v, currentLocale())}</Text>
                     <Text style={s.gridUnit}>{part.u}</Text>
                   </View>
                 ))}

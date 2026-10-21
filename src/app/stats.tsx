@@ -56,7 +56,7 @@ function ClockRow({ months, days, hours }: { months: number; days: number; hours
         ] as const
       ).map(([v, u]) => (
         <View key={u} style={{ alignItems: 'center' }}>
-          <Text style={styles.clockNum}>{v}</Text>
+          <Text style={styles.clockNum}>{formatCount(v, currentLocale())}</Text>
           <Text style={styles.clockUnit}>{u}</Text>
         </View>
       ))}
