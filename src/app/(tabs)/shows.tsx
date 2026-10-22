@@ -127,6 +127,7 @@ export default function ShowsScreen() {
   // at the top of every visit that cannot be put away reads as an ad (mike,
   // 12 Oct). Plus keeps it: it is their feature, not an offer.
   const [tonightClosed, setTonightClosed] = useState(() => getMeta('tonightRowClosed') === '1');
+  const [tonightH, setTonightH] = useState(0);
   const [tick, setTick] = useState(0);
   // Read once into state and written back on every change: the rows memo below
   // depends on it, which is how a new choice redraws the list (React Compiler —
@@ -385,6 +386,11 @@ export default function ShowsScreen() {
     contentH.current = h;
   };
 
+  // UX #5: hidden while there is nothing to watch — it was a fresh start's
+  // first tappable row, and for a free user it opened the paywall.
+  const showTonight = rows.length > 0 && (plus || !tonightClosed);
+  const tonightPad = showTonight ? tonightH : 0;
+
   return (
     <Screen>
       <TopTabs
@@ -403,36 +409,6 @@ export default function ShowsScreen() {
           setTab(nextTab);
         }}
       />
-
-      {/* THE ONE PLACE IT WILL BE FOUND. Lists shipped complete and reachable
-          from a single row on the profile, and the result was a full feature
-          nobody knew existed. This is the landing tab, so this is where the
-          question gets asked. */}
-      {/* UX #5: hidden while there is nothing to watch — it was a fresh start's
-          first tappable row, and for a free user it opened the paywall. */}
-      {rows.length > 0 && (plus || !tonightClosed) && (
-        <Pressable style={styles.tonightRow} onPress={() => router.push(plus ? '/tonight' : '/paywall')} accessibilityRole="button">
-          <Ionicons name="moon-outline" size={18} color={colors.yellow} />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.tonightTitle}>{t('tonight.entry')}</Text>
-            <Text style={styles.tonightSub}>{t('tonight.entrySub')}</Text>
-          </View>
-          {plus ? (
-            <Ionicons name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={colors.dim} />
-          ) : (
-            <Pressable
-              hitSlop={12}
-              accessibilityRole="button"
-              accessibilityLabel={t('whatsNew.close')}
-              onPress={() => {
-                setMeta('tonightRowClosed', '1');
-                setTonightClosed(true);
-              }}>
-              <Ionicons name="close" size={18} color={colors.dim} />
-            </Pressable>
-          )}
-        </Pressable>
-      )}
 
       {needsOriginal && (
         <Pressable style={styles.upgradeBanner} onPress={() => router.push('/import')} accessibilityRole="button">
@@ -474,6 +450,7 @@ export default function ShowsScreen() {
         </Pressable>
       )}
 
+      <View style={{ flex: 1 }}>
       {tab === 'Watch List' ? (
         <View style={{ flex: 1 }}>
         <FlatList
@@ -564,7 +541,7 @@ export default function ShowsScreen() {
               <View style={{ height: 6 }} />
             </View>
           }
-          contentContainerStyle={rows.length === 0 ? { paddingBottom: 24, flexGrow: 1 } : { paddingBottom: 24 }}
+          contentContainerStyle={rows.length === 0 ? { paddingBottom: 24, flexGrow: 1 } : { paddingBottom: 24, paddingTop: tonightPad }}
           ListEmptyComponent={
             <EmptyState
               title={t('shows.emptyTrackingTitle')}
@@ -752,18 +729,20 @@ export default function ShowsScreen() {
         />
         </View>
       ) : upcoming.length === 0 ? (
-        <EmptyState
-          title={t('shows.emptyUpcomingTitle')}
-          caption={t('shows.emptyUpcomingCaption')}
-          cta={t('shows.browseAllShows')}
-          onPress={() => router.push('/discover-more')}
-        />
+        <View style={{ flex: 1, paddingTop: tonightPad }}>
+          <EmptyState
+            title={t('shows.emptyUpcomingTitle')}
+            caption={t('shows.emptyUpcomingCaption')}
+            cta={t('shows.browseAllShows')}
+            onPress={() => router.push('/discover-more')}
+          />
+        </View>
       ) : (
         <FlatList
           style={{ backgroundColor: colors.panel }}
           data={upcoming}
           keyExtractor={(u) => `${u.showId}-${u.season}-${u.episode}`}
-          contentContainerStyle={{ paddingBottom: 90 }}
+          contentContainerStyle={{ paddingBottom: 90, paddingTop: tonightPad }}
           renderItem={({ item: u, index }) => {
             const first = index === 0 || upcoming[index - 1].air !== u.air;
             const d = new Date(`${u.air}T12:00:00`);
@@ -804,6 +783,41 @@ export default function ShowsScreen() {
           }}
         />
       )}
+      {/* THE ONE PLACE IT WILL BE FOUND. Lists shipped complete and reachable
+          from a single row on the profile, and the result was a full feature
+          nobody knew existed. This is the landing tab, so this is where the
+          question gets asked. */}
+      {/* FLOATS OVER THE LIST (22 Oct): it sat in a black band of its own
+          above the grey list. Now the list's grey runs up to the tabs and
+          rows slide under the card; the list's top padding is the card's
+          measured height, so at rest nothing is hidden. Rendered after the
+          lists so it paints on top on Android too. */}
+      {showTonight && (
+        <View style={styles.tonightFloat} pointerEvents="box-none" onLayout={(e) => setTonightH(e.nativeEvent.layout.height)}>
+          <Pressable style={styles.tonightRow} onPress={() => router.push(plus ? '/tonight' : '/paywall')} accessibilityRole="button">
+            <Ionicons name="moon-outline" size={18} color={colors.yellow} />
+            <View style={{ flex: 1 }}>
+              <Text style={styles.tonightTitle}>{t('tonight.entry')}</Text>
+              <Text style={styles.tonightSub}>{t('tonight.entrySub')}</Text>
+            </View>
+            {plus ? (
+              <Ionicons name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={colors.dim} />
+            ) : (
+              <Pressable
+                hitSlop={12}
+                accessibilityRole="button"
+                accessibilityLabel={t('whatsNew.close')}
+                onPress={() => {
+                  setMeta('tonightRowClosed', '1');
+                  setTonightClosed(true);
+                }}>
+                <Ionicons name="close" size={18} color={colors.dim} />
+              </Pressable>
+            )}
+          </Pressable>
+        </View>
+      )}
+      </View>
     </Screen>
   );
 }
@@ -814,6 +828,7 @@ const styles = StyleSheet.create({
      way round, which left it flush against the tabs above and floating above
      whatever came next. Padding is uniform for the same reason the banner's
      is: an asymmetric inset reads as a mistake at a glance, because it is. */
+  tonightFloat: { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 2 },
   tonightRow: {
     flexDirection: 'row',
     alignItems: 'center',
