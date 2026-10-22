@@ -168,7 +168,7 @@ Deploy the server first, in this order: D1 migrations 0055, 0056, 0059 and 0061,
 
 ### Guess the title (the puzzle after 14 Oct)
 - [ ] The Explore card says "Guess the title". Some days the answer is a film, with "Released in", "Directed by" and "Starring" clues and "Open the film".
-- [ ] No streak anywhere. Explore and the game show Played, Win % and Avg. tries. "Try 1 of 6" sits under the squares.
+- [ ] Explore and the game show Played, Win % and Avg. tries. "Try 1 of 6" sits under the squares. The puzzle streak (22 Oct) shows ONLY on the result screen: "🧩 Day 1 — come back tomorrow…" after the first game, "🧩 N-day puzzle streak" after; never in the share text or the profile stats.
 - [ ] A film from the right series but the wrong part gives "Right series, wrong part!".
 - [ ] Share your result: "Share as image" and "Share as text". Neither names the title.
 - [ ] Archive (Plus to replay a past day; today is always free). The "Daily reminder" fires only if today is unplayed.
@@ -176,6 +176,25 @@ Deploy the server first, in this order: D1 migrations 0055, 0056, 0059 and 0061,
 ### The 2.0.0 cherry-picks
 - [ ] A film's series: tapping a film you don't have opens it as a preview, the way a search result does. A film you have opens your own page.
 - [ ] Attack on Titan S4 (has an episode 0): tapping E13 opens E13, with the right header and page. A season with no episode 0 still opens the episode you tap.
+
+### Added 21–22 Oct (the last round before submitting)
+- [ ] Device sync: a show ADDED on one phone appears on the other with its name and poster (never a number); turning sync off on one phone doesn't lose the other's changes.
+- [ ] Import → "From another app": the list scrolls to the end; OpenTV and Serializd reachable on a small phone.
+- [ ] Picking the raw "Backup as JSON" file: a clear "use Export my data (ZIP)" message, and Replace doesn't wipe the library first.
+- [ ] OpenTV Backup on → no "isn't backed up" banner or "Keep your library safe" alert.
+- [ ] Watch together strip shows on a second device without opening Lists.
+- [ ] Episode comments of an UNWATCHED episode: the film's alert — Display anyway / I've watched this episode (marks it, then opens) / Cancel (leaves).
+- [ ] TV Time replies: open the app, wait ~2 min (archive re-sent once, seed rev 10); a thread with imported replies shows them under their original, or under "↩ Reply — the original comment isn't on OpenTV".
+- [ ] Manifest S4E20: tab reads "OpenTV (25+)", then "(28)" after scrolling down.
+- [ ] Comment header "@handle · … · From TV Time · OpenTV only" wraps, nothing cut.
+- [ ] Daily puzzle: first open offers the reminder once; Settings → Notifications has the daily puzzle switch.
+- [ ] Profile: "🧩 Today's puzzle is ready" yellow notice while today is unplayed; tap → the game; ✕ → gone until tomorrow; gone once played.
+- [ ] Profile Lists: a list with fewer posters than the band (or a shared list with none) sits centred, name and 👥 mark too.
+- [ ] Explore feed and Discover: titles in the app language / English, never Japanese or Chinese script.
+- [ ] Arabic: numbers are Western digits (390) everywhere, on iPhone and Android alike.
+- [ ] Android: profile blocks don't overlap after sign-in; the picture paywall opens ABOVE the comment box and the draft comes back; the keyboard doesn't cover the comment toolbar; on 3-button phones nothing sits under the system buttons.
+- [ ] Android: a list with many GIF/picture comments scrolls fast with no freeze or crash (Pratik's case).
+- [ ] iPhone Duo (if anyone has one): open = page and comments side by side; close = normal phone layout.
 
 ### Before release day
 - [ ] `PUZZLE_EPOCH` in `src/puzzle.ts` (now 2026-11-01) set to the release day. It must never move after release.
