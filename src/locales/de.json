@@ -3486,7 +3486,12 @@
     "rowWith": "Gemeinsam mit {{names}}",
     "addToMyShows": "Zu meinen Serien hinzufügen",
     "cantRead": "Dein Fortschritt in dieser Serie ist auf diesem Handy nicht lesbar.",
-    "privacy": "Wenn du eine Serie mit jemandem zusammen schaust, wird die weiteste Folge, die du davon gesehen hast, mit den Leuten geteilt, die du einlädst – sonst nichts."
+    "privacy": "Wenn du eine Serie mit jemandem zusammen schaust, wird die weiteste Folge, die du davon gesehen hast, mit den Leuten geteilt, die du einlädst – sonst nichts.",
+    "profileMembers": {
+      "one": "{{count}} Mitglied",
+      "other": "{{count}} Mitglieder"
+    },
+    "profileSwitchSub": "Besucher sehen nie, mit wem du schaust."
   },
   "sharedLists": {
     "inviteTitle": "Lade zuerst jemanden ein",

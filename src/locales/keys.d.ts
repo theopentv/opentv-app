@@ -2694,6 +2694,8 @@ export type LocaleKey =
   | "together.pickStart"
   | "together.pickStartPlus"
   | "together.privacy"
+  | "together.profileMembers"
+  | "together.profileSwitchSub"
   | "together.rowWith"
   | "together.start"
   | "together.startPlus"

@@ -17,7 +17,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { I18nManager, Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 
 import { gridMetrics } from '@/components/ui';
@@ -29,6 +29,7 @@ import {
   emotionTotal,
   episodesInYear,
   finishedShowCount,
+  furthestWatched,
   firstWatch,
   firstWatchDay,
   longestBinge,
@@ -51,6 +52,9 @@ import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
 import { publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile, streakInfo } from '@/puzzle-data';
 import { monthOf, todayISO } from '@/components/heatmap';
+import { cachedTogether, profileTogethers, togetherHiddenOnProfile } from '@/community-together';
+import { positionText, togetherSummaryText } from '@/components/together-strip';
+import { publishedTogether } from '@/together-pure';
 import { dominantEmotion, emotionColor, isSafeLinkUrl, parseProfileLinks, shiftMonth, type LinkService } from '@/pure';
 import { router } from 'expo-router';
 import { colors, radius, space, ls } from '@/theme';
@@ -70,6 +74,7 @@ export function WidgetBox({
   children,
   bare = false,
   hug = false,
+  onLabelPress,
 }: {
   label: string;
   span: WidgetSpan;
@@ -81,11 +86,21 @@ export function WidgetBox({
    *  2x2 box drew a card that was two-thirds empty, which is not what will
    *  land on anybody's profile. */
   hug?: boolean;
+  /** The label becomes a header with a › that goes somewhere. */
+  onLabelPress?: () => void;
 }) {
   const { height } = gridMetrics(useWindowDimensions().width);
   return (
     <View style={[s.box, bare && { padding: 0 }, !hug && { height: height(span === '2x2' ? 2 : 1) }]}>
-      {!bare && (
+      {!bare && onLabelPress && (
+        <Pressable style={s.labelRow} hitSlop={8} accessibilityRole="button" accessibilityLabel={label} onPress={onLabelPress}>
+          <Text style={[s.label, { flex: 1 }]} numberOfLines={1}>
+            {label}
+          </Text>
+          <Ionicons name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size={12} color={colors.faint} />
+        </Pressable>
+      )}
+      {!bare && !onLabelPress && (
         <Text style={s.label} numberOfLines={1}>
           {label}
         </Text>
@@ -305,6 +320,75 @@ export function renderWidget(
         onPress={() => router.push(puzzleEntryRoute())}>
         {block}
       </Pressable>
+    );
+  }
+
+  /*
+   * WATCHING TOGETHER (22 Oct). The owner's rows carry a poster and the status
+   * line the show page's strip says; a visitor's carry the show and how many
+   * are in it, because the other members are other people. Collapses with no
+   * together, and when the owner switched it off in Edit profile.
+   */
+  if (id === 'together') {
+    type Row = { key: string; title: string; poster: string | null; line: string; open?: () => void };
+    let rows: Row[];
+    if (isVisitor) {
+      const shows = (pub?.shows as { title?: unknown; members?: unknown }[] | undefined) ?? [];
+      rows = shows
+        .filter((x) => typeof x?.title === 'string')
+        .slice(0, 3)
+        .map((x, i) => ({
+          key: String(i),
+          title: String(x.title),
+          poster: null,
+          line: t('together.profileMembers', { count: Number(x.members) || 1 }),
+        }));
+    } else {
+      if (togetherHiddenOnProfile()) return null;
+      rows = profileTogethers().map((c) => {
+        const d = cachedTogether(c.listId);
+        return {
+          key: c.listId,
+          title: c.title ?? '',
+          poster: c.poster,
+          line: d ? togetherSummaryText(d) : positionText(furthestWatched(c.tvdbId)),
+          open: () => router.push(`/shared/${encodeURIComponent(c.listId)}`),
+        };
+      });
+    }
+    if (rows.length === 0) return null;
+    return (
+      <WidgetBox
+        label={t('together.title')}
+        span={span}
+        onLabelPress={isVisitor || slots?.editing ? undefined : () => router.push('/lists')}>
+        <View style={s.togetherList}>
+          {rows.map((r) => (
+            <Pressable
+              key={r.key}
+              style={s.togetherRow}
+              disabled={!r.open || slots?.editing}
+              onPress={r.open}
+              accessibilityRole={r.open ? 'button' : undefined}
+              accessibilityLabel={`${r.title}, ${r.line}`}>
+              {!isVisitor &&
+                (r.poster ? (
+                  <Image source={{ uri: r.poster }} style={s.togetherPoster} contentFit="cover" />
+                ) : (
+                  <View style={[s.togetherPoster, s.posterBlank]} />
+                ))}
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={s.togetherName} numberOfLines={1}>
+                  {r.title}
+                </Text>
+                <Text style={s.togetherLine} numberOfLines={1}>
+                  {r.line}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+      </WidgetBox>
     );
   }
 
@@ -778,6 +862,9 @@ export function widgetValue(id: string, span: WidgetSpan, data?: string): unknow
     }
     case 'goal':
       return goalWidgetValue();
+    case 'together':
+      // Titles and member counts, never names; nothing while switched off.
+      return togetherHiddenOnProfile() ? null : publishedTogether(profileTogethers());
     default:
       return null;
   }
@@ -883,6 +970,12 @@ const s = StyleSheet.create({
     padding: 12,
     overflow: 'hidden',
   },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  togetherList: { flex: 1, gap: 6, minHeight: 0, marginTop: 6 },
+  togetherRow: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 0, maxHeight: 64 },
+  togetherPoster: { height: '100%', aspectRatio: 2 / 3, borderRadius: 4, backgroundColor: colors.card },
+  togetherName: { color: colors.text, fontSize: 13.5, fontWeight: '700' },
+  togetherLine: { color: colors.dim, fontSize: 11.5, marginTop: 1 },
   label: { color: colors.faint, fontSize: 9.5, fontWeight: '800', letterSpacing: ls(0.9), textTransform: 'uppercase' },
   body: { flex: 1, justifyContent: 'center', gap: 4 },
   big: { color: colors.text, fontSize: 34, fontWeight: '900', letterSpacing: ls(-1), lineHeight: 36 },

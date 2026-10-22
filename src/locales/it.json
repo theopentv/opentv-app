@@ -3486,7 +3486,12 @@
     "rowWith": "Guardi insieme a {{names}}",
     "addToMyShows": "Aggiungi alle mie serie",
     "cantRead": "Impossibile leggere i tuoi progressi in questa serie su questo telefono.",
-    "privacy": "Se guardi una serie insieme a qualcuno, l'episodio più avanzato che hai visto di quella serie viene condiviso con le persone che inviti — nient'altro."
+    "privacy": "Se guardi una serie insieme a qualcuno, l'episodio più avanzato che hai visto di quella serie viene condiviso con le persone che inviti — nient'altro.",
+    "profileMembers": {
+      "one": "{{count}} membro",
+      "other": "{{count}} membri"
+    },
+    "profileSwitchSub": "Chi visita il profilo non vede mai con chi guardi."
   },
   "sharedLists": {
     "inviteTitle": "Prima invita qualcuno",

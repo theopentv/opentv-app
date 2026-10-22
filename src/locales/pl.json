@@ -3756,7 +3756,14 @@
     "rowWith": "Oglądasz razem z: {{names}}",
     "addToMyShows": "Dodaj do moich seriali",
     "cantRead": "Nie można odczytać twoich postępów w tym serialu na tym telefonie.",
-    "privacy": "Jeśli oglądasz serial z kimś razem, osoby, które zaprosisz, widzą najdalszy obejrzany przez ciebie odcinek tego serialu — nic więcej."
+    "privacy": "Jeśli oglądasz serial z kimś razem, osoby, które zaprosisz, widzą najdalszy obejrzany przez ciebie odcinek tego serialu — nic więcej.",
+    "profileMembers": {
+      "one": "{{count}} osoba",
+      "few": "{{count}} osoby",
+      "many": "{{count}} osób",
+      "other": "{{count}} osoby"
+    },
+    "profileSwitchSub": "Odwiedzający nigdy nie widzą, z kim oglądasz."
   },
   "sharedLists": {
     "inviteTitle": "Najpierw kogoś zaproś",

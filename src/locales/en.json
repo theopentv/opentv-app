@@ -3486,7 +3486,12 @@
     "rowWith": "Watching together with {{names}}",
     "addToMyShows": "Add to my shows",
     "cantRead": "Can't read your progress in this show on this phone.",
-    "privacy": "If you watch a show together with someone, the furthest episode you have watched of that show is shared with the people you invite — nothing else."
+    "privacy": "If you watch a show together with someone, the furthest episode you have watched of that show is shared with the people you invite — nothing else.",
+    "profileMembers": {
+      "one": "{{count}} member",
+      "other": "{{count}} members"
+    },
+    "profileSwitchSub": "Visitors never see who you are watching with."
   },
   "sharedLists": {
     "inviteTitle": "Invite someone first",

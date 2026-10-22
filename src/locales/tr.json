@@ -3486,7 +3486,12 @@
     "rowWith": "Birlikte izleniyor: {{names}}",
     "addToMyShows": "Dizilerime ekle",
     "cantRead": "Bu dizideki ilerlemen bu telefonda okunamıyor.",
-    "privacy": "Bir diziyi biriyle birlikte izlersen, o dizide izlediğin en ileri bölüm davet ettiğin kişilerle paylaşılır. Başka hiçbir şey paylaşılmaz."
+    "privacy": "Bir diziyi biriyle birlikte izlersen, o dizide izlediğin en ileri bölüm davet ettiğin kişilerle paylaşılır. Başka hiçbir şey paylaşılmaz.",
+    "profileMembers": {
+      "one": "{{count}} kişi",
+      "other": "{{count}} kişi"
+    },
+    "profileSwitchSub": "Ziyaretçiler kiminle izlediğini asla görmez."
   },
   "sharedLists": {
     "inviteTitle": "Önce birini davet et",

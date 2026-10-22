@@ -35,7 +35,9 @@ import {
   defaultLayout,
   withGoalBlock,
   withPuzzleBlock,
+  withTogetherBlock,
 } from '@/profile-layout';
+import { profileTogetherSnapshot } from '@/community-together';
 import { widgetValue } from '@/components/profile-widgets';
 import { pushWidgets } from '@/community-profiles';
 
@@ -165,6 +167,14 @@ export default function ProfileScreen() {
   const [goalOnPage, setGoalOnPage] = useState(false);
   const [puzzleOnPage, setPuzzleOnPage] = useState(false);
   const [puzzleSnap, setPuzzleSnap] = useState('');
+  // Watching together (22 Oct): the block's snapshot ('' = not on the page),
+  // and whether a Plus owner took it off their arrangement.
+  const [togetherSnap, setTogetherSnap] = useState('');
+  const [togetherRemoved, setTogetherRemoved] = useState(false);
+  const readTogetherRemoved = () => {
+    const saved = parseLayout(savedArrangement());
+    return saved != null && saved.known.includes('together') && !saved.items.some((p) => p.id === 'together');
+  };
   // The backup warning can be put away for a week, never for good: losing a
   // library is the one thing this app must keep saying out loud (8 Oct).
   const [backupSnoozed, setBackupSnoozed] = useState(false);
@@ -259,7 +269,11 @@ export default function ProfileScreen() {
    * focus re-read stays: it covers everything that is not the sheet.
    */
   useEffect(
-    () => onLayoutSaved(() => setArrangement(normalise(parseLayout(savedArrangement()), SHELF_KEYS))),
+    () =>
+      onLayoutSaved(() => {
+        setArrangement(normalise(parseLayout(savedArrangement()), SHELF_KEYS));
+        setTogetherRemoved(readTogetherRemoved());
+      }),
     [],
   );
   /* "OpenTV Backup is on" lands while this tab is focused, so the focus
@@ -405,6 +419,8 @@ export default function ProfileScreen() {
       // reads meta inside renderWidget, and the compiler keeps that read until
       // one of its arguments changes — this string is that argument.
       setPuzzleSnap(`${JSON.stringify(puzzleBlockValue())}|${JSON.stringify(streakInfo())}|${JSON.stringify(todaysArt())}`);
+      setTogetherSnap(profileTogetherSnapshot());
+      setTogetherRemoved(readTogetherRemoved());
       // Either year: a goal already set for next year has answered the question.
       setGoalOffer(
         getMeta(GOAL_BANNER_CLOSED) !== '1' &&
@@ -1260,6 +1276,18 @@ export default function ProfileScreen() {
    * The layout is not written here any more, which is the only way the promise
    * "their profile looks exactly like mine" survives the next change to either.
    */
+  // The arrangement as drawn — see the notes on the `arrangement` prop below.
+  const drawnArrangement = (() => {
+    const base = plus ? arrangement : undefined;
+    const puzzled = puzzleOnPage ? withPuzzleBlock(base ?? defaultLayout(SHELF_KEYS)) : base;
+    const together = togetherSnap
+      ? withTogetherBlock(puzzled ?? defaultLayout(SHELF_KEYS), base && togetherRemoved ? ['together'] : [])
+      : puzzled;
+    const out = goalOnPage ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
+    return out?.map((p) =>
+      p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p.id === 'together' ? { ...p, data: togetherSnap } : p,
+    );
+  })();
   return (
     <ProfileTemplate
       /* The owner's arrangement, re-read on focus with everything else on this
@@ -1292,19 +1320,19 @@ export default function ProfileScreen() {
       // The puzzle streak (22 Oct): whoever said "show my streak" gets the
       // block after Stats — free or Plus. A Plus arrangement that already
       // placed it is left exactly as it is (`withPuzzleBlock` never moves one).
-      arrangement={(() => {
-        const base = plus ? arrangement : undefined;
-        const drawn = puzzleOnPage ? withPuzzleBlock(base ?? defaultLayout(SHELF_KEYS)) : base;
-        const out = goalOnPage ? withGoalBlock(drawn ?? defaultLayout(SHELF_KEYS)) : drawn;
-        return out?.map((p) => (p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p));
-      })()}
+      // Watching together (22 Oct) the same way, after Stats (and the puzzle),
+      // for anybody in one — unless switched off, or removed while arranging.
+      arrangement={drawnArrangement}
       onArrange={(next: Placed[]) => {
         setArrangement(next);
         // ALIASED ON IMPORT: this screen already has a `setProfileLayout`, and
         // it means the theme (classic / cards / poster). Two different things
         // called the same name in one file is a bug waiting for a tired evening.
         try {
-          saveArrangement(serialise(next, savedArrangement()));
+          // Everything that was DRAWN counts as known, so an auto-placed block
+          // (Watching together) removed in the first arrange stays removed.
+          saveArrangement(serialise(next, savedArrangement(), drawnArrangement?.map((p) => p.id)));
+          setTogetherRemoved(readTogetherRemoved());
         } catch (e) {
           // A full phone: say so rather than crash mid-arrangement (see `isStorageFull`).
           Alert.alert(
