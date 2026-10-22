@@ -2745,6 +2745,7 @@ export type LocaleKey =
   | "watchListSort.recent"
   | "watchListSort.releaseDate"
   | "watchListSort.releaseDateNewest"
+  | "watchListSort.reset"
   | "welcome.continueAs"
   | "welcome.continueWith"
   | "welcome.continueWithoutBackup"

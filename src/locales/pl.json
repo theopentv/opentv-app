@@ -3945,7 +3945,8 @@
     "releaseDateNewest": "Data premiery, od najnowszych",
     "mostBehind": "Najwięcej zaległości",
     "random": "Losowo",
-    "a11y": "Sortuj listę do obejrzenia. Teraz: {{sort}}"
+    "a11y": "Sortuj listę do obejrzenia. Teraz: {{sort}}",
+    "reset": "Przywróć sortowanie «Ostatnie»"
   },
   "watchKind": {
     "flatrate": "Abonament",

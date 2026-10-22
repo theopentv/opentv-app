@@ -694,6 +694,19 @@ export default function ShowsScreen() {
             the sort sits beside it and turns yellow while it is not the default */}
         {/* below the floating Tonight card, not under it */}
         <View style={[styles.gridToggle, { top: 16 + tonightPad }]}>
+          {/* ONE TAP BACK TO "RECENT" (22 Oct), only while another sort is on */}
+          {sort !== 'recent' && (
+            <Pressable
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={t('watchListSort.reset')}
+              onPress={() => {
+                setSort('recent');
+                setMeta('watchListSort', 'recent');
+              }}>
+              <Ionicons name="close-circle" size={20} color={colors.yellow} />
+            </Pressable>
+          )}
           <Pressable
             hitSlop={10}
             accessibilityRole="button"

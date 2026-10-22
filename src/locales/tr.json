@@ -3663,7 +3663,8 @@
     "releaseDateNewest": "Yayın tarihi, en yeni önce",
     "mostBehind": "En çok geride kalan",
     "random": "Rastgele",
-    "a11y": "İzleme listesini sırala. Şu an: {{sort}}"
+    "a11y": "İzleme listesini sırala. Şu an: {{sort}}",
+    "reset": "Sıralamayı «En son» olarak sıfırla"
   },
   "watchKind": {
     "flatrate": "Abonelik",

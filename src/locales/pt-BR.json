@@ -3663,7 +3663,8 @@
     "releaseDateNewest": "Data de lançamento, mais recentes primeiro",
     "mostBehind": "Mais atrasadas",
     "random": "Aleatório",
-    "a11y": "Ordenar a lista. Agora: {{sort}}"
+    "a11y": "Ordenar a lista. Agora: {{sort}}",
+    "reset": "Voltar à ordem «Recentes»"
   },
   "watchKind": {
     "flatrate": "Assinatura",

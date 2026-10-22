@@ -3663,7 +3663,8 @@
     "releaseDateNewest": "Release date, newest first",
     "mostBehind": "Most behind",
     "random": "Random",
-    "a11y": "Sort the watch list. Now: {{sort}}"
+    "a11y": "Sort the watch list. Now: {{sort}}",
+    "reset": "Reset the sort to Recent"
   },
   "watchKind": {
     "flatrate": "Subscription",

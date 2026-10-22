@@ -3663,7 +3663,8 @@
     "releaseDateNewest": "Erscheinungsdatum, neueste zuerst",
     "mostBehind": "Größter Rückstand",
     "random": "Zufällig",
-    "a11y": "Watchlist sortieren. Aktuell: {{sort}}"
+    "a11y": "Watchlist sortieren. Aktuell: {{sort}}",
+    "reset": "Sortierung auf «Zuletzt» zurücksetzen"
   },
   "watchKind": {
     "flatrate": "Abo",

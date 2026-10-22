@@ -3663,7 +3663,8 @@
     "releaseDateNewest": "Fecha de estreno, más reciente primero",
     "mostBehind": "Más atrasadas",
     "random": "Aleatorio",
-    "a11y": "Ordenar la lista. Ahora: {{sort}}"
+    "a11y": "Ordenar la lista. Ahora: {{sort}}",
+    "reset": "Volver al orden «Recientes»"
   },
   "watchKind": {
     "flatrate": "Suscripción",
