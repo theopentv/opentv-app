@@ -493,9 +493,14 @@ function EpisodePage({
   // The favourite is asked per episode and counted per SHOW, so one rollup
   // serves every episode of the series. {} until somebody with a NAMED vote has
   // been counted — archive votes carry no name and cannot be.
+  //
+  // ONLY FOR THE PAGE ON SCREEN. The pager keeps its neighbours mounted
+  // (windowSize 5), and this endpoint has no list form, so opening an episode
+  // was five requests for one visible poll. A neighbour asks once it is
+  // swiped to; the five-minute cache makes swiping back free.
   const charVotes = useCharacterVotes(
     'tvdb',
-    show ? String(show.tvdbId) : null,
+    show && !offscreen ? String(show.tvdbId) : null,
     // THE EPISODE'S OWN VOTES. Asking for the show's gave the same two faces
     // and the same two percentages under every episode of a series, which is
     // what was reported — twice.
