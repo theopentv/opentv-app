@@ -30,7 +30,7 @@ import { StatsRow } from '@/components/puzzle-block';
 import { Squares } from '@/components/puzzle-share-card';
 import { t } from '@/i18n';
 import { MAX_TRIES, isOver, puzzleNumber, type Game, type PuzzleArt, type Stats } from '@/puzzle';
-import { currentStats, loadGame, puzzleEntryRoute, puzzleOn, today, todaysArt } from '@/puzzle-data';
+import { currentStats, firstPlayedDay, loadGame, puzzleEntryRoute, puzzleOn, today, todaysArt } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 
 type Seen = { on: boolean; number: number; game: Game | null; stats: Stats | null; art: PuzzleArt | null };
@@ -44,7 +44,7 @@ export function PuzzleCard() {
       const game = loadGame(day);
       setSeen({
         on: puzzleOn(),
-        number: puzzleNumber(day),
+        number: puzzleNumber(day, firstPlayedDay()),
         game,
         // Only after today's game: before it, the numbers are yesterday's news.
         stats: game != null && isOver(game) ? currentStats() : null,

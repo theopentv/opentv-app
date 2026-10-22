@@ -59,9 +59,9 @@ export default function PuzzleArchiveScreen() {
       const history = loadHistory();
       const results = resultsByDay();
       const first = history[0]?.d ?? null;
-      const past = archiveDays(now, first).map((d) => ({ d, n: puzzleNumber(d), r: results.get(d) ?? null }));
+      const past = archiveDays(now, first).map((d) => ({ d, n: puzzleNumber(d, first), r: results.get(d) ?? null }));
       const done = results.get(now);
-      const list = done ? [{ d: now, n: puzzleNumber(now), r: done }, ...past] : past;
+      const list = done ? [{ d: now, n: puzzleNumber(now, first ?? now), r: done }, ...past] : past;
       setDay(now);
       setRows(list);
       setNames(puzzleTitles(list.flatMap((row) => (row.r ? [row.r.id] : []))));

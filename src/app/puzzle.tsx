@@ -88,6 +88,7 @@ import {
   streakInfo,
   today,
   type Answer,
+  firstPlayedDay,
 } from '@/puzzle-data';
 import { withLink } from '@/share-link';
 import { colors, radius, space, ls } from '@/theme';
@@ -113,7 +114,7 @@ export default function PuzzleScreen() {
   });
   /** Read-only: a played day's result, nothing saved, no stats. */
   const view = past != null;
-  const number = puzzleNumber(day);
+  const number = puzzleNumber(day, firstPlayedDay());
   /*
    * LAZY INITIALISERS, NOT AN EFFECT, for the synchronous reads: the screen is
    * pushed fresh every time, `useState(fn)` runs once, and the React Compiler

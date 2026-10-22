@@ -12,7 +12,6 @@ import {
   HISTORY_MAX,
   MIN_LIBRARY_POOL,
   REPEAT_DAYS,
-  PUZZLE_EPOCH,
   SKIP,
   blurFor,
   archiveDays,
@@ -80,9 +79,11 @@ describe('days', () => {
   });
 
   it('numbers puzzles from the epoch, and never below 1', () => {
-    expect(puzzleNumber(PUZZLE_EPOCH)).toBe(1);
-    expect(puzzleNumber(shiftDay(PUZZLE_EPOCH, 11))).toBe(12);
-    expect(puzzleNumber('2020-01-01')).toBe(1);
+    // each player's own count, from their first day
+    expect(puzzleNumber('2026-11-01', '2026-11-01')).toBe(1);
+    expect(puzzleNumber(shiftDay('2026-11-01', 11), '2026-11-01')).toBe(12);
+    expect(puzzleNumber('2020-01-01', '2026-11-01')).toBe(1);
+    expect(puzzleNumber('2026-11-05', null)).toBe(1);
   });
 });
 
@@ -547,11 +548,10 @@ describe('a returning title, a different picture', () => {
 });
 
 describe('the archive', () => {
-  it('runs from the later of the epoch and the first play to yesterday, newest first', () => {
+  it('runs from the first play to yesterday, newest first', () => {
     expect(archiveDays('2026-11-05', null)).toEqual([]);
     expect(archiveDays('2026-11-05', '2026-11-02')).toEqual(['2026-11-04', '2026-11-03', '2026-11-02']);
-    // Played before the epoch (a test build): the archive still starts at #1.
-    expect(archiveDays('2026-11-03', '2026-10-20')).toEqual(['2026-11-02', PUZZLE_EPOCH]);
+    expect(archiveDays('2026-11-03', '2026-10-31')).toEqual(['2026-11-02', '2026-11-01', '2026-10-31']);
     expect(archiveDays('2026-11-02', '2026-11-02')).toEqual([]);
   });
 });

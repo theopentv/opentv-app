@@ -32,14 +32,11 @@ import type { LocaleKey } from '@/locales/keys';
 export const MAX_TRIES = 6;
 
 /**
- * Puzzle #1 is this day; the number in the share text counts up from it.
- *
- * FIXED, AND NEVER MOVED AFTER RELEASE: "#12" has to mean the same day on
- * every phone, or two friends comparing grids are talking about different
- * shows. Days before it clamp to 1 rather than going negative on a phone whose
- * clock is wrong.
+ * EACH PLAYER'S OWN #1 (22 Oct, Mahmood): the number counts from the day THIS
+ * person first played, not from a shared launch day. The puzzle is drawn from
+ * your own library, so two friends never had the same "#12" to compare anyway;
+ * a personal count reads as "my 12th day". Days before the first clamp to 1.
  */
-export const PUZZLE_EPOCH = '2026-11-01';
 
 /**
  * How blurred the still is before each miss, as `expo-image`'s `blurRadius`.
@@ -119,8 +116,8 @@ export function shiftDay(day: string, n: number): string {
   return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}`;
 }
 
-export function puzzleNumber(day: string): number {
-  return Math.max(1, daysBetween(PUZZLE_EPOCH, day) + 1);
+export function puzzleNumber(day: string, firstPlayed: string | null): number {
+  return firstPlayed ? Math.max(1, daysBetween(firstPlayed, day) + 1) : 1;
 }
 
 // ── which show today ────────────────────────────────────────────────────────
@@ -355,15 +352,14 @@ export function usedPictures(pinned: readonly Pinned[], id: PuzzleId, day: strin
 // ── the archive ─────────────────────────────────────────────────────────────
 
 /**
- * The days the archive lists, newest first: from the epoch or the first day
- * this person played, whichever is later, up to yesterday. Nothing before
+ * The days the archive lists, newest first: from the first day this person
+ * played up to yesterday. Nothing before
  * the first play — an archive of a year nobody here was playing is a wall,
  * not a collection — and nothing at all for somebody who has not played yet.
  */
 export function archiveDays(today: string, firstPlayed: string | null): string[] {
   if (!firstPlayed) return [];
-  const start = firstPlayed > PUZZLE_EPOCH ? firstPlayed : PUZZLE_EPOCH;
-  const n = daysBetween(start, today);
+  const n = daysBetween(firstPlayed, today);
   return Array.from({ length: Math.max(0, n) }, (_, i) => shiftDay(today, -(i + 1)));
 }
 
