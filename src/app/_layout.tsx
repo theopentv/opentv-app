@@ -809,6 +809,7 @@ export default function RootLayout() {
         <Stack.Screen name="memories" />
         {/* The daily "Guess the show", and its own corner of Settings. */}
         <Stack.Screen name="puzzle" />
+        <Stack.Screen name="puzzle-intro" />
         <Stack.Screen name="puzzle-settings" />
         <Stack.Screen name="puzzle-archive" />
         {/* Plex: episodes watched on a server this app cannot see. */}

@@ -3532,6 +3532,15 @@
       "other": "Bugünün bulmacası hazır — {{count}} günlük serini sürdür"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Her gün izlediklerinden seçilen bir başlık.",
+    "howTries": "Altı deneme. Her yanlış bir ipucu açar.",
+    "howSafe": "Hiçbir şeyi spoiler'lamaz: yalnızca daha önce izlediğin başlıklar.",
+    "streak": "Bulmaca serimi profilimde göster",
+    "streakSub": "Herkese ücretsiz. Seriyi yalnızca sen görürsün.",
+    "remind": "Her gün hatırlat",
+    "start": "Oynamaya başla"
+  },
   "puzzlePolish": {
     "played": "Oynanan",
     "win": "Kazanma %",

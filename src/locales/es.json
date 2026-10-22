@@ -3532,6 +3532,15 @@
       "other": "El puzzle de hoy está listo — mantén tu racha de {{count}} días"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Un título al día, elegido entre lo que has visto.",
+    "howTries": "Seis intentos. Cada fallo desbloquea una pista.",
+    "howSafe": "No puede destriparte nada: solo títulos que ya has visto.",
+    "streak": "Mostrar mi racha del puzle en mi perfil",
+    "streakSub": "Gratis para todos. Solo tú ves la racha.",
+    "remind": "Recordármelo cada día",
+    "start": "Empezar a jugar"
+  },
   "puzzlePolish": {
     "played": "Jugadas",
     "win": "% ganadas",

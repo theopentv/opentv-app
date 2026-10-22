@@ -31,6 +31,8 @@ import {
   setPuzzleOn,
   setPuzzlePublicOn,
   setPuzzleReminderHour,
+  setPuzzleStreakOnProfile,
+  puzzleStreakOptedIn,
 } from '@/puzzle-data';
 import { colors, space } from '@/theme';
 
@@ -39,6 +41,7 @@ export default function PuzzleSettingsScreen() {
   const [remind, setRemind] = useState(puzzleReminderOn);
   const [hour, setHour] = useState(puzzleReminderHour);
   const [pub, setPub] = useState(puzzlePublicOn);
+  const [streak, setStreak] = useState(puzzleStreakOptedIn);
 
   const toggleRemind = (v: boolean) => {
     void setPuzzleReminder(v).then((ok) => {
@@ -93,6 +96,22 @@ export default function PuzzleSettingsScreen() {
                 right={<Text style={styles.hour}>{`${String(hour).padStart(2, '0')}:00`}</Text>}
               />
             )}
+            {/* The intro's first switch, here so it can be undone. */}
+            <MenuRow
+              trackId="puzzle.settings.streak"
+              title={t('puzzleIntro.streak')}
+              sub={t('puzzleIntro.streakSub')}
+              right={
+                <Switch
+                  value={streak}
+                  onValueChange={(v) => {
+                    setStreak(v);
+                    setPuzzleStreakOnProfile(v);
+                  }}
+                  trackColor={{ true: colors.green }}
+                />
+              }
+            />
             <MenuRow
               trackId="puzzle.settings.public"
               title={t('puzzlePolish.public')}

@@ -3532,6 +3532,15 @@
       "other": "O puzzle de hoje está pronto — mantenha sua sequência de {{count}} dias"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Um título por dia, escolhido entre o que você assistiu.",
+    "howTries": "Seis tentativas. Cada erro libera uma dica.",
+    "howSafe": "Não tem como dar spoiler: só títulos que você já viu.",
+    "streak": "Mostrar minha sequência do quebra-cabeça no perfil",
+    "streakSub": "Grátis para todos. Só você vê a sequência.",
+    "remind": "Me lembrar todo dia",
+    "start": "Começar a jogar"
+  },
   "puzzlePolish": {
     "played": "Jogos",
     "win": "% de vitórias",

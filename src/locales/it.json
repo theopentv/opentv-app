@@ -3532,6 +3532,15 @@
       "other": "Il puzzle di oggi è pronto — non perdere la serie di {{count}} giorni"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Un titolo al giorno, scelto tra ciò che hai guardato.",
+    "howTries": "Sei tentativi. Ogni errore sblocca un indizio.",
+    "howSafe": "Non può rovinarti niente: solo titoli che hai già visto.",
+    "streak": "Mostra la mia serie di puzzle sul profilo",
+    "streakSub": "Gratis per tutti. La serie la vedi solo tu.",
+    "remind": "Ricordamelo ogni giorno",
+    "start": "Inizia a giocare"
+  },
   "puzzlePolish": {
     "played": "Partite",
     "win": "% vinte",

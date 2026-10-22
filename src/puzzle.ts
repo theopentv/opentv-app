@@ -9,8 +9,9 @@
  * on 14 Oct because the profile already shows a WATCHING streak, and two
  * streaks on one page read as one confused number. It came back on 22 Oct
  * (`puzzleStreak`) ONLY on the puzzle's own result screen, labelled 🧩 and
- * "puzzle streak" — never on the profile, never in the block, never in the
- * share text or anything else that leaves the phone. The edge nobody else has is WHERE THE SHOW COMES FROM — a
+ * "puzzle streak" — and, since the same day, on the owner's own profile when
+ * they opt in (`puzzleStreakShown`), but never in the share text, the
+ * published block or anything else that leaves the phone. The edge nobody else has is WHERE THE SHOW COMES FROM — a
  * still from a show the player has actually watched, which `puzzle-data.ts`
  * picks from the library. Framed and Moviedle cannot do that; they do not have
  * your history.
@@ -589,6 +590,25 @@ export function puzzleBanner(s: {
 }): { streak: number } | null {
   if (!s.on || s.closedOn === s.today || s.history.some((r) => r.d === s.today)) return null;
   return { streak: puzzleStreak(s.history, s.today) };
+}
+
+/**
+ * THE FIRST OPEN GOES THROUGH THE INTRO (22 Oct): what the game is, and the
+ * two opt-ins (streak on the profile, daily reminder), asked once. Stamped by
+ * the intro's one button (`remindOffered`, the key the old first-open alert
+ * used, so anybody who already answered that is not asked again).
+ */
+export function puzzleIntroDue(s: { on: boolean; offered: boolean }): boolean {
+  return s.on && !s.offered;
+}
+
+/**
+ * The puzzle streak on the owner's OWN profile — opted into on the intro
+ * screen or in Settings, and gone with the game when it is switched off.
+ * It never travels: `publicPuzzle` carries no streak.
+ */
+export function puzzleStreakShown(s: { on: boolean; optIn: boolean }): boolean {
+  return s.on && s.optIn;
 }
 
 /**

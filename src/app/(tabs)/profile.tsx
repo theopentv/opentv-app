@@ -58,7 +58,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
-import { closePuzzleBanner, puzzleBannerNow } from '@/puzzle-data';
+import { closePuzzleBanner, puzzleBannerNow, puzzleEntryRoute } from '@/puzzle-data';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
@@ -1204,7 +1204,7 @@ export default function ProfileScreen() {
           {...a11yAction('dismiss', t('ui.dismiss'), dismissPuzzle)}
           onPress={() => {
             tapLight();
-            router.push('/puzzle');
+            router.push(puzzleEntryRoute());
           }}>
           <Ionicons name="extension-puzzle-outline" size={18} color={colors.onBrand} />
           <Text style={styles.cloudBannerText}>{puzzleText}</Text>

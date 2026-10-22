@@ -3532,6 +3532,15 @@
       "other": "Today's puzzle is ready — keep your {{count}}-day streak"
     }
   },
+  "puzzleIntro": {
+    "howOne": "One title a day, picked from what you've watched.",
+    "howTries": "Six tries. Every miss unlocks a clue.",
+    "howSafe": "It can't spoil anything: only titles you've already seen.",
+    "streak": "Show my puzzle streak on my profile",
+    "streakSub": "Free for everyone. Only you see the streak.",
+    "remind": "Remind me each day",
+    "start": "Start playing"
+  },
   "puzzlePolish": {
     "played": "Played",
     "win": "Win %",

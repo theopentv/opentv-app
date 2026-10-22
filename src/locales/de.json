@@ -3532,6 +3532,15 @@
       "other": "Das heutige Rätsel ist bereit — halte deine Serie von {{count}} Tagen"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Ein Titel pro Tag, ausgewählt aus dem, was du gesehen hast.",
+    "howTries": "Sechs Versuche. Jeder Fehlversuch schaltet einen Hinweis frei.",
+    "howSafe": "Nichts wird gespoilert: nur Titel, die du schon gesehen hast.",
+    "streak": "Meine Rätselserie im Profil zeigen",
+    "streakSub": "Kostenlos für alle. Nur du siehst die Serie.",
+    "remind": "Jeden Tag erinnern",
+    "start": "Los geht's"
+  },
   "puzzlePolish": {
     "played": "Gespielt",
     "win": "Siege %",

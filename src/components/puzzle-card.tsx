@@ -24,7 +24,7 @@ import { StatsRow } from '@/components/puzzle-block';
 import { Squares } from '@/components/puzzle-share-card';
 import { t } from '@/i18n';
 import { MAX_TRIES, isOver, puzzleNumber, type Game, type Stats } from '@/puzzle';
-import { currentStats, loadGame, puzzleOn, today } from '@/puzzle-data';
+import { currentStats, loadGame, puzzleEntryRoute, puzzleOn, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 
 type Seen = { on: boolean; number: number; game: Game | null; stats: Stats | null };
@@ -61,7 +61,7 @@ export function PuzzleCard() {
   return (
     <Pressable
       style={s.card}
-      onPress={() => router.push('/puzzle')}
+      onPress={() => router.push(puzzleEntryRoute())}
       accessibilityRole="button"
       accessibilityLabel={`${t('puzzle.title')} #${number}. ${sub}`}>
       <View style={s.icon}>

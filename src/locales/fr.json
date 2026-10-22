@@ -3532,6 +3532,15 @@
       "other": "Le puzzle du jour est prêt — gardez votre série de {{count}} jours"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Un titre par jour, choisi parmi ce que vous avez regardé.",
+    "howTries": "Six essais. Chaque erreur débloque un indice.",
+    "howSafe": "Aucun risque de spoiler : uniquement des titres déjà vus.",
+    "streak": "Afficher ma série de puzzles sur mon profil",
+    "streakSub": "Gratuit pour tous. Vous seul voyez la série.",
+    "remind": "Me le rappeler chaque jour",
+    "start": "Commencer à jouer"
+  },
   "puzzlePolish": {
     "played": "Parties",
     "win": "% gagnées",

@@ -41,7 +41,7 @@ import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { addShow, puzzleMemory } from '@/db';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
-import { setPuzzleReminder, syncEpisodeNotifications } from '@/notifications';
+import { syncEpisodeNotifications } from '@/notifications';
 import { isPlus } from '@/plus';
 import { movieRoute } from '@/pure';
 import {
@@ -73,10 +73,7 @@ import {
   finishGame,
   gameFor,
   loadGame,
-  markPuzzleReminderOffered,
   pictureFor,
-  puzzleReminderHour,
-  puzzleReminderOfferDue,
   saveGame,
   sameSeries,
   sameSeriesNow,
@@ -139,27 +136,8 @@ export default function PuzzleScreen() {
     if (hasQuery) liftAnswerBox();
   }, [hasQuery]);
 
-  /*
-   * ASKED ONCE, the first time the puzzle opens (2.0.0): the reminder stays
-   * off by default, but nobody found it three screens deep in Settings.
-   * Stamped before the answer, so closing the alert any way is an answer.
-   */
-  useEffect(() => {
-    if (archive || !puzzleReminderOfferDue()) return;
-    markPuzzleReminderOffered();
-    const time = `${String(puzzleReminderHour()).padStart(2, '0')}:00`;
-    Alert.alert(t('puzzlePolish.offerTitle'), t('puzzlePolish.offerBody', { time }), [
-      { text: t('notifyOptin.notNow'), style: 'cancel' },
-      {
-        text: t('markPrevPrompt.yes'),
-        onPress: () => {
-          void setPuzzleReminder(true).then((ok) => {
-            if (!ok) Alert.alert(t('settings.app.notificationsOffTitle'), t('settings.app.notificationsOffBody'));
-          });
-        },
-      },
-    ]);
-  }, [archive]);
+  // The first-open reminder offer moved to its own screen (22 Oct): see
+  // `puzzle-intro.tsx`, which every entry point routes through once.
 
   useEffect(() => {
     let cancelled = false;

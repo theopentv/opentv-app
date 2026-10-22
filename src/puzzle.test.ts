@@ -57,6 +57,8 @@ import {
   type PuzzleId,
   type Clues,
   puzzleBanner,
+  puzzleIntroDue,
+  puzzleStreakShown,
   puzzleStreak,
 } from '@/puzzle';
 
@@ -691,6 +693,18 @@ describe('puzzle streak and the profile banner', () => {
     expect(puzzleStreak([r('2026-10-20'), r('2026-10-21')], '2026-10-22')).toBe(2);
     expect(puzzleStreak([r('2026-10-19'), r('2026-10-20')], '2026-10-22')).toBe(0);
     expect(puzzleStreak([r('2026-10-18'), r('2026-10-20'), r('2026-10-21'), r('2026-10-22')], '2026-10-22')).toBe(3);
+  });
+
+  it('shows the intro once, and only while the game is on', () => {
+    expect(puzzleIntroDue({ on: true, offered: false })).toBe(true);
+    expect(puzzleIntroDue({ on: true, offered: true })).toBe(false);
+    expect(puzzleIntroDue({ on: false, offered: false })).toBe(false);
+  });
+
+  it('puts the streak on the profile only when opted in and the game is on', () => {
+    expect(puzzleStreakShown({ on: true, optIn: true })).toBe(true);
+    expect(puzzleStreakShown({ on: true, optIn: false })).toBe(false);
+    expect(puzzleStreakShown({ on: false, optIn: true })).toBe(false);
   });
 
   it('offers the banner only while today is unplayed, the game is on and it was not closed today', () => {

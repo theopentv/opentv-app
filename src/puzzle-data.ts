@@ -48,6 +48,8 @@ import {
   parseGame,
   parseHistory,
   puzzleBanner,
+  puzzleIntroDue,
+  puzzleStreakShown,
   puzzleStreak,
   parsePinned,
   pickAnswer,
@@ -86,6 +88,8 @@ const K = {
   remindOffered: 'puzzle.remindOffered',
   remindHour: 'puzzle.remindHour',
   public: 'puzzle.public',
+  /** '1' once the owner opted into the puzzle streak on their own profile. */
+  profileStreak: 'puzzle.profileStreak',
   /** The day stamp the Profile banner's ✕ was pressed on: hidden for that day only. */
   bannerClosed: 'puzzle.bannerClosed',
 } as const;
@@ -110,12 +114,27 @@ export function setPuzzleReminderOn(on: boolean): void {
   setMeta(K.remind, on ? '1' : '');
 }
 
-/** The one-time offer on the puzzle screen: due until asked, and moot once on. */
-export function puzzleReminderOfferDue(): boolean {
-  return puzzleOn() && !puzzleReminderOn() && getMeta(K.remindOffered) !== '1';
+/** The first-open intro (`puzzleIntroDue`), stamped by its Start button. */
+export function puzzleIntroDueNow(): boolean {
+  return puzzleIntroDue({ on: puzzleOn(), offered: getMeta(K.remindOffered) === '1' });
 }
 export function markPuzzleReminderOffered(): void {
   setMeta(K.remindOffered, '1');
+}
+/** Where a tap on the banner, the Explore card or the profile block goes. */
+export function puzzleEntryRoute(): '/puzzle-intro' | '/puzzle' {
+  return puzzleIntroDueNow() ? '/puzzle-intro' : '/puzzle';
+}
+
+/** OFF until chosen: the intro's switch defaults on, but silence is not a yes. */
+export function puzzleStreakOnProfile(): boolean {
+  return puzzleStreakShown({ on: puzzleOn(), optIn: getMeta(K.profileStreak) === '1' });
+}
+export function puzzleStreakOptedIn(): boolean {
+  return getMeta(K.profileStreak) === '1';
+}
+export function setPuzzleStreakOnProfile(on: boolean): void {
+  setMeta(K.profileStreak, on ? '1' : '');
 }
 
 /** Same default and same parsing as the episode reminders' hour. */

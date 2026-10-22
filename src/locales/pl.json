@@ -3812,6 +3812,15 @@
       "other": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dnia"
     }
   },
+  "puzzleIntro": {
+    "howOne": "Jeden tytuł dziennie, wybrany z tego, co obejrzałeś.",
+    "howTries": "Sześć prób. Każda pomyłka odkrywa wskazówkę.",
+    "howSafe": "Niczego nie zaspoileruje: tylko tytuły, które już widziałeś.",
+    "streak": "Pokazuj moją serię zagadek na profilu",
+    "streakSub": "Za darmo dla wszystkich. Serię widzisz tylko ty.",
+    "remind": "Przypominaj mi codziennie",
+    "start": "Zacznij grać"
+  },
   "puzzlePolish": {
     "played": "Rozegrane",
     "win": "% wygranych",
