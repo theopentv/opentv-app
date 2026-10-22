@@ -27,7 +27,9 @@ import { SortablePosterGrid } from '@/components/sortable-poster-grid';
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { t } from '@/i18n';
 import { movieRoute, commentErrorKey } from '@/pure';
+import { showMeta } from '@/metadata';
 import { showPosterById } from '@/show-meta-fetch';
+import { pool } from '@/tmdb';
 import { colors, space } from '@/theme';
 
 type State =
@@ -54,16 +56,29 @@ export default function CommunityListScreen() {
          */
         const missing = list.items.filter((it) => !it.poster && it.target_source === 'tvdb' && Number(it.target_key) > 0);
         if (!missing.length) return;
-        const art = new Map<string, string>();
-        for (const it of missing) {
-          const img = await showPosterById(Number(it.target_key));
-          if (img) art.set(it.target_key, img);
-        }
-        if (cancelled || !art.size) return;
-        setState({
-          phase: 'ready',
-          list: { ...list, items: list.items.map((it) => (it.poster ? it : { ...it, poster: art.get(it.target_key) ?? it.poster })) },
-        });
+        // The metadata cache first (free), then TheTVDB four at a time, each
+        // poster drawn as it lands. One after another, with nothing shown until
+        // the last, a forty-show list sat as name cards for half a minute.
+        const keys = [...new Set(missing.map((it) => it.target_key))];
+        await pool(
+          keys,
+          async (key) => {
+            const img = showMeta(Number(key))?.poster || (await showPosterById(Number(key)));
+            if (cancelled || !img) return;
+            setState((s) =>
+              s.phase !== 'ready'
+                ? s
+                : {
+                    phase: 'ready',
+                    list: {
+                      ...s.list,
+                      items: s.list.items.map((it) => (!it.poster && it.target_key === key ? { ...it, poster: img } : it)),
+                    },
+                  },
+            );
+          },
+          4,
+        );
       })
       .catch((e: unknown) => {
         if (cancelled) return;
