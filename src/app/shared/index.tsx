@@ -20,7 +20,7 @@ import { Text } from '@/components/text';
 
 import { NavHeader, Screen } from '@/components/ui';
 import { communityErrorText } from '@/community-error-text';
-import { inviteCodeFrom } from '@/pure';
+import { inviteCodeFrom, splitShared } from '@/pure';
 import { isJoined, useJoined } from '@/community-session';
 import { getMeta, setMeta } from '@/db';
 import { fetchSharedLists, joinSharedList, type SharedListRow } from '@/community-shared-lists';
@@ -66,7 +66,8 @@ export default function SharedListsScreen() {
       const next = await fetchSharedLists();
       // Every together in it, for the position publisher — no request of its own.
       noteTogetherIndex(next);
-      setRows(next);
+      // Togethers have their own screen (/together, 22 Oct); lists only here.
+      setRows(splitShared(next).lists);
       setError(null);
     } catch (e) {
       // A shared list that fails quietly looks like a list your friends never

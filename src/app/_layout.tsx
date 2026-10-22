@@ -847,6 +847,8 @@ export default function RootLayout() {
         <Stack.Screen name="shared/index" />
         <Stack.Screen name="shared/[id]" />
         <Stack.Screen name="shared/create" />
+        {/* Watching together: its own screen, togethers only (22 Oct). */}
+        <Stack.Screen name="together/index" />
         <Stack.Screen name="timeline" />
         <Stack.Screen name="wrapped" />
         <Stack.Screen name="appearance" />

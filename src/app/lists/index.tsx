@@ -162,15 +162,15 @@ export default function ListsScreen() {
   // one shape for both so the cap arithmetic below has a single answer.
   const cutRows = lists.map((l) => ({ hidden: (l as { hidden?: boolean }).hidden === true }));
   const publishable = cutRows.filter((l) => !l.hidden).length;
+  // Togethers have their own screen (/together, 22 Oct); only lists here.
   const shared = splitShared(sharedLists);
   const sharedRow = (sl: SharedListRow) => (
     <View key={sl.id} style={{ marginTop: 12 }}>
       <ListCollage
         list={{
-          name: sl.kind === 'together' ? (sl.show?.title ?? sl.name) : sl.name,
+          name: sl.name,
           items: (sl.posters ?? []).map((poster) => ({ name: '', poster })),
           shared: true,
-          together: sl.kind === 'together',
           memberCount: sl.members,
         }}
         cols={COLS}
@@ -294,12 +294,6 @@ export default function ListsScreen() {
             <Text accessibilityRole="header" style={sharedStyles.heading}>
               {t('sharedLists.sectionTitle')}
             </Text>
-            {/* TWO KINDS, TWO GROUPS (22 Oct). A together started from a show
-                page landed under "Start a shared list / Join" and read as a
-                list; each now sits under its own name with its own doors. */}
-            <Text accessibilityRole="header" style={sharedStyles.group}>
-              {t('shared.title')}
-            </Text>
             <View style={sharedStyles.doors}>
               <PillButton
                 small
@@ -312,29 +306,6 @@ export default function ListsScreen() {
           </View>
         )}
         {shared.lists.map(sharedRow)}
-        {!seedLib && (
-          <View style={[sharedStyles.section, { marginTop: 22 }]}>
-            <Text accessibilityRole="header" style={sharedStyles.group}>
-              {t('together.title')}
-            </Text>
-            {shared.togethers.length === 0 && <Text style={sharedStyles.blurb}>{t('together.emptyBlurb')}</Text>}
-            <View style={sharedStyles.doors}>
-              <PillButton
-                small
-                label={plus ? t('together.pickStart') : t('together.pickStartPlus')}
-                trackId="together_start"
-                onPress={() => {
-                  if (!joined) router.push('/shared');
-                  // The same gate `startTogether` applies, asked BEFORE the
-                  // picker so nobody chooses a show only to meet a paywall.
-                  else if (requirePlus('together')) router.push('/lists/add-remove?together=1');
-                }}
-              />
-              <PillButton small variant="outline" label={t('listsIndex.joinWithCode')} trackId="together_join" onPress={() => router.push('/shared')} />
-            </View>
-          </View>
-        )}
-        {shared.togethers.map(sharedRow)}
         {/* QUIET, AND NOT A WALL. Nothing here is blocked: every list on this
             screen exists, opens and can be edited. What the row says is that
             the PROFILE shows ten of them — an offer, in the same faint grey as
@@ -359,7 +330,7 @@ export default function ListsScreen() {
             a column of shared lists, contradicting them (21 Oct). */}
         {lists.length > 0 ? (
           !isSeedLibrary() && !overCap && <Text style={styles.note}>{t('listsIndex.importedNote')}</Text>
-        ) : sharedLists.length === 0 ? (
+        ) : shared.lists.length === 0 ? (
           <Text style={styles.note}>{t('listsIndex.emptyNote')}</Text>
         ) : null}
       </Animated.ScrollView>
@@ -405,7 +376,5 @@ const styles = StyleSheet.create({
 const sharedStyles = StyleSheet.create({
   section: { marginTop: 26, paddingHorizontal: 14, gap: 10 },
   heading: { color: colors.text, fontSize: 18, fontWeight: '800' },
-  group: { color: colors.dim, fontSize: 15, fontWeight: '700' },
-  blurb: { color: colors.faint, fontSize: 13, lineHeight: 18 },
   doors: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

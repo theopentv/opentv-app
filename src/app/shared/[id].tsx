@@ -237,7 +237,10 @@ export default function SharedListScreen() {
             try {
               await leaveOrDeleteSharedList(String(id));
               forgetTogether(String(id));
-              router.back();
+              // A together lands on its own screen, wherever it was opened
+              // from (22 Oct); dismissTo pops back to it, or replaces.
+              if (together) router.dismissTo('/together');
+              else router.back();
             } catch (e) {
               Alert.alert(t('shared.title'), communityErrorText(e));
             }

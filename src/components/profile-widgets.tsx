@@ -361,7 +361,7 @@ export function renderWidget(
       <WidgetBox
         label={t('together.title')}
         span={span}
-        onLabelPress={isVisitor || slots?.editing ? undefined : () => router.push('/lists')}>
+        onLabelPress={isVisitor || slots?.editing ? undefined : () => router.push('/together')}>
         <View style={s.togetherList}>
           {rows.map((r) => (
             <Pressable
