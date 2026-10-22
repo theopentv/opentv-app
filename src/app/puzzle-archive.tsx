@@ -36,7 +36,7 @@ import { NavHeader, Screen } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
 import { MAX_TRIES, archiveDays, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
-import { loadHistory, puzzleTitles, resultsByDay, today } from '@/puzzle-data';
+import { firstPlayedDay, loadHistory, puzzleTitles, resultsByDay, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
@@ -58,7 +58,7 @@ export default function PuzzleArchiveScreen() {
       const now = today();
       const history = loadHistory();
       const results = resultsByDay();
-      const first = history[0]?.d ?? null;
+      const first = firstPlayedDay();
       const past = archiveDays(now, first).map((d) => ({ d, n: puzzleNumber(d, first), r: results.get(d) ?? null }));
       const done = results.get(now);
       const list = done ? [{ d: now, n: puzzleNumber(now, first ?? now), r: done }, ...past] : past;

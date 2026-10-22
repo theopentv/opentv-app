@@ -93,6 +93,8 @@ const K = {
   remind: 'puzzle.remind',
   /** Stamped once the first-open "want a reminder?" has been asked, either answer. */
   remindOffered: 'puzzle.remindOffered',
+  /** The day the player accepted the game in the intro: their #1 (22 Oct). */
+  startDay: 'puzzle.startDay',
   remindHour: 'puzzle.remindHour',
   public: 'puzzle.public',
   /** '1' once the owner opted into the puzzle streak on their own profile. */
@@ -127,6 +129,9 @@ export function puzzleIntroDueNow(): boolean {
 }
 export function markPuzzleReminderOffered(): void {
   setMeta(K.remindOffered, '1');
+  // ACCEPTING IS DAY #1 (22 Oct, Mahmood) — not opening the app, not the
+  // first game. Stamped once; a later intro (after a reset) keeps the first.
+  if (!getMeta(K.startDay)) setMeta(K.startDay, today());
 }
 /** Where a tap on the banner, the Explore card or the profile block goes. */
 export function puzzleEntryRoute(): '/puzzle-intro' | '/puzzle' {
@@ -774,8 +779,13 @@ export function puzzleTitles(ids: readonly PuzzleId[]): Map<PuzzleId, string> {
 }
 
 /** The first day played on the day it was the puzzle, or null. */
+/** The player's day #1: the day they accepted the game, or — for someone who
+ *  played before the intro existed — their first game, whichever is earlier. */
 export function firstPlayedDay(): string | null {
-  return loadHistory()[0]?.d ?? null;
+  const accepted = getMeta(K.startDay) || null;
+  const played = loadHistory()[0]?.d ?? null;
+  if (accepted && played) return accepted < played ? accepted : played;
+  return accepted ?? played;
 }
 
 /**
