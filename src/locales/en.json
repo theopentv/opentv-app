@@ -3493,7 +3493,9 @@
     },
     "profileSwitchSub": "Visitors never see who you are watching with.",
     "askBody": "Start one and invite a friend, or join with the code a friend sent you.",
-    "haveCode": "I have a code"
+    "haveCode": "Join a friend's",
+    "askStart": "Start and invite friends",
+    "askStartPlus": "Start and invite friends · Plus"
   },
   "sharedLists": {
     "inviteTitle": "Invite someone first",

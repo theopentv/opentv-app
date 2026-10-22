@@ -3493,7 +3493,9 @@
     },
     "profileSwitchSub": "Besucher sehen nie, mit wem du schaust.",
     "askBody": "Starte eins und lade jemanden ein, oder tritt mit dem Code bei, den du bekommen hast.",
-    "haveCode": "Ich habe einen Code"
+    "haveCode": "Bei Freunden mitmachen",
+    "askStart": "Starten und Freunde einladen",
+    "askStartPlus": "Starten und Freunde einladen · Plus"
   },
   "sharedLists": {
     "inviteTitle": "Lade zuerst jemanden ein",

@@ -2684,6 +2684,8 @@ export type LocaleKey =
   | "together.ahead"
   | "together.alone"
   | "together.askBody"
+  | "together.askStart"
+  | "together.askStartPlus"
   | "together.behind"
   | "together.cantRead"
   | "together.emptyBlurb"

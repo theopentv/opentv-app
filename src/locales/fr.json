@@ -3493,7 +3493,9 @@
     },
     "profileSwitchSub": "Les visiteurs ne voient jamais avec qui vous regardez.",
     "askBody": "Lancez-en une et invitez un ami, ou rejoignez avec le code qu’un ami vous a envoyé.",
-    "haveCode": "J’ai un code"
+    "haveCode": "Rejoindre un ami",
+    "askStart": "Lancer et inviter des amis",
+    "askStartPlus": "Lancer et inviter des amis · Plus"
   },
   "sharedLists": {
     "inviteTitle": "Invitez quelqu'un d'abord",

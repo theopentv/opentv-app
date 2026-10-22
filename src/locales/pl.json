@@ -3765,7 +3765,9 @@
     },
     "profileSwitchSub": "Odwiedzający nigdy nie widzą, z kim oglądasz.",
     "askBody": "Zacznij i zaproś znajomego albo dołącz kodem od znajomego.",
-    "haveCode": "Mam kod"
+    "haveCode": "Dołącz do znajomego",
+    "askStart": "Zacznij i zaproś znajomych",
+    "askStartPlus": "Zacznij i zaproś znajomych · Plus"
   },
   "sharedLists": {
     "inviteTitle": "Najpierw kogoś zaproś",

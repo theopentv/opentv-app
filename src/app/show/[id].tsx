@@ -821,7 +821,7 @@ export default function ShowScreen() {
                               })
                               .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)));
                           Alert.alert(t('together.title'), t('together.askBody'), [
-                            { text: isPlus() ? t('together.start') : t('together.startPlus'), onPress: go },
+                            { text: isPlus() ? t('together.askStart') : t('together.askStartPlus'), onPress: go },
                             { text: t('together.haveCode'), onPress: () => router.push('/together?join=1') },
                             { text: t('common.cancel'), style: 'cancel' },
                           ]);

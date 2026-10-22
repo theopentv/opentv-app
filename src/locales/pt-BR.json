@@ -3493,7 +3493,9 @@
     },
     "profileSwitchSub": "Quem visita nunca vê com quem você está assistindo.",
     "askBody": "Comece uma e convide um amigo, ou entre com o código que um amigo te enviou.",
-    "haveCode": "Tenho um código"
+    "haveCode": "Entrar com um amigo",
+    "askStart": "Começar e convidar amigos",
+    "askStartPlus": "Começar e convidar amigos · Plus"
   },
   "sharedLists": {
     "inviteTitle": "Convide alguém primeiro",
