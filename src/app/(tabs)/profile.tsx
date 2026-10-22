@@ -59,7 +59,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
-import { closePuzzleBanner, puzzleBannerNow, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
+import { closePuzzleBanner, currentStreak, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
@@ -161,6 +161,7 @@ export default function ProfileScreen() {
   const [goalOffer, setGoalOffer] = useState(false);
   const [goalOnPage, setGoalOnPage] = useState(false);
   const [puzzleOnPage, setPuzzleOnPage] = useState(false);
+  const [puzzleSnap, setPuzzleSnap] = useState('');
   // The backup warning can be put away for a week, never for good: losing a
   // library is the one thing this app must keep saying out loud (8 Oct).
   const [backupSnoozed, setBackupSnoozed] = useState(false);
@@ -396,6 +397,10 @@ export default function ProfileScreen() {
       setPuzzleBanner(puzzleBannerNow());
       setGoalOnPage(goalShownOnProfile());
       setPuzzleOnPage(puzzleStreakOnProfile());
+      // A SNAPSHOT, so the block redraws when you come back from a game: it
+      // reads meta inside renderWidget, and the compiler keeps that read until
+      // one of its arguments changes — this string is that argument.
+      setPuzzleSnap(`${JSON.stringify(puzzleBlockValue())}|${currentStreak()}`);
       // Either year: a goal already set for next year has answered the question.
       setGoalOffer(
         getMeta(GOAL_BANNER_CLOSED) !== '1' &&
@@ -1262,7 +1267,8 @@ export default function ProfileScreen() {
       arrangement={(() => {
         const base = plus ? arrangement : undefined;
         const drawn = puzzleOnPage ? withPuzzleBlock(base ?? defaultLayout(SHELF_KEYS)) : base;
-        return goalOnPage ? withGoalBlock(drawn ?? defaultLayout(SHELF_KEYS)) : drawn;
+        const out = goalOnPage ? withGoalBlock(drawn ?? defaultLayout(SHELF_KEYS)) : drawn;
+        return out?.map((p) => (p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p));
       })()}
       onArrange={(next: Placed[]) => {
         setArrangement(next);
