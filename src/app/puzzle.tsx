@@ -511,6 +511,11 @@ export default function PuzzleScreen() {
                     <Text style={s.streakSub}>{t('puzzleHistory.started', { date: puzzleDay(info.start) })}</Text>
                   )}
                   {info.longest > 1 && <Text style={s.streakSub}>{t('puzzleHistory.longest', { count: info.longest })}</Text>}
+                  {/* Every day played and what it was — the archive screen's
+                      history, the last week free and the rest Plus. */}
+                  <Pressable style={s.historyLink} onPress={() => router.push('/puzzle-archive')} accessibilityRole="link" hitSlop={8}>
+                    <Text style={s.historyText}>{t('puzzleHistory.title')}</Text>
+                  </Pressable>
                 </View>
               )}
 
@@ -548,6 +553,8 @@ const s = StyleSheet.create({
   archiveNote: { color: colors.dim, fontSize: 12.5, textAlign: 'center', marginHorizontal: space.lg, marginTop: 12 },
   statsFrame: { marginHorizontal: space.lg, marginTop: 20 },
   streak: { color: colors.text, fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 12 },
+  historyLink: { alignSelf: 'center', marginTop: 12, paddingHorizontal: 12, paddingVertical: 4 },
+  historyText: { color: colors.blue, fontSize: 14, fontWeight: '700' },
   streakSub: { color: colors.dim, fontSize: 13.5, textAlign: 'center', marginTop: 4 },
   empty: { color: colors.dim, fontSize: 15, textAlign: 'center', padding: 40 },
   frame: {

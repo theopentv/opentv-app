@@ -3791,6 +3791,9 @@
       "one": "🧩 {{count}}h left — play before midnight",
       "other": "🧩 {{count}}h left — play before midnight"
     },
-    "blockSince": "🧩 since {{date}} · best {{best}}"
+    "blockSince": "🧩 since {{date}} · best {{best}}",
+    "title": "Your history",
+    "firstDay": "First played {{date}}",
+    "locked": "Titles from more than a week ago are part of Plus."
   }
 }

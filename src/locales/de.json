@@ -3791,6 +3791,9 @@
       "one": "🧩 Noch {{count}} Std. — spiel vor Mitternacht",
       "other": "🧩 Noch {{count}} Std. — spiel vor Mitternacht"
     },
-    "blockSince": "🧩 seit {{date}} · Rekord {{best}}"
+    "blockSince": "🧩 seit {{date}} · Rekord {{best}}",
+    "title": "Dein Verlauf",
+    "firstDay": "Zuerst gespielt am {{date}}",
+    "locked": "Titel, die älter als eine Woche sind, gehören zu Plus."
   }
 }

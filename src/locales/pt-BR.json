@@ -3791,6 +3791,9 @@
       "one": "🧩 Falta {{count}} h — jogue antes da meia-noite",
       "other": "🧩 Faltam {{count}} h — jogue antes da meia-noite"
     },
-    "blockSince": "🧩 desde {{date}} · recorde {{best}}"
+    "blockSince": "🧩 desde {{date}} · recorde {{best}}",
+    "title": "Seu histórico",
+    "firstDay": "Primeiro jogo em {{date}}",
+    "locked": "Títulos de mais de uma semana atrás fazem parte do Plus."
   }
 }

@@ -4089,6 +4089,9 @@
       "many": "🧩 Zostało {{count}} godz. — zagraj przed północą",
       "other": "🧩 Zostało {{count}} godz. — zagraj przed północą"
     },
-    "blockSince": "🧩 od {{date}} · rekord {{best}}"
+    "blockSince": "🧩 od {{date}} · rekord {{best}}",
+    "title": "Twoja historia",
+    "firstDay": "Pierwsza gra: {{date}}",
+    "locked": "Tytuły sprzed ponad tygodnia są w Plus."
   }
 }

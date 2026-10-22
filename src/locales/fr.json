@@ -3791,6 +3791,9 @@
       "one": "🧩 Encore {{count}} h — jouez avant minuit",
       "other": "🧩 Encore {{count}} h — jouez avant minuit"
     },
-    "blockSince": "🧩 depuis le {{date}} · record {{best}}"
+    "blockSince": "🧩 depuis le {{date}} · record {{best}}",
+    "title": "Votre historique",
+    "firstDay": "Première partie le {{date}}",
+    "locked": "Les titres de plus d'une semaine font partie de Plus."
   }
 }

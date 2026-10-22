@@ -3791,6 +3791,9 @@
       "one": "🧩 {{count}} saat kaldı — gece yarısından önce oyna",
       "other": "🧩 {{count}} saat kaldı — gece yarısından önce oyna"
     },
-    "blockSince": "🧩 başlangıç {{date}} · rekor {{best}}"
+    "blockSince": "🧩 başlangıç {{date}} · rekor {{best}}",
+    "title": "Geçmişin",
+    "firstDay": "İlk oyun: {{date}}",
+    "locked": "Bir haftadan eski başlıklar Plus'a dahil."
   }
 }

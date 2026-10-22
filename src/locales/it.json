@@ -3791,6 +3791,9 @@
       "one": "🧩 Manca {{count}} h — gioca prima di mezzanotte",
       "other": "🧩 Mancano {{count}} h — gioca prima di mezzanotte"
     },
-    "blockSince": "🧩 dal {{date}} · record {{best}}"
+    "blockSince": "🧩 dal {{date}} · record {{best}}",
+    "title": "La tua cronologia",
+    "firstDay": "Prima partita il {{date}}",
+    "locked": "I titoli di più di una settimana fa fanno parte di Plus."
   }
 }

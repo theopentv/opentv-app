@@ -3791,6 +3791,9 @@
       "one": "🧩 Queda {{count}} h — juega antes de medianoche",
       "other": "🧩 Quedan {{count}} h — juega antes de medianoche"
     },
-    "blockSince": "🧩 desde el {{date}} · récord {{best}}"
+    "blockSince": "🧩 desde el {{date}} · récord {{best}}",
+    "title": "Tu historial",
+    "firstDay": "Primera partida el {{date}}",
+    "locked": "Los títulos de hace más de una semana son parte de Plus."
   }
 }

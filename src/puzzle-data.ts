@@ -32,7 +32,7 @@
  * for a film, the film page's own `/movie/{id}` with its credits, cached under
  * `puzzle.film:<tmdbId>`. One answer a day, each asked once.
  */
-import { getMeta, getProfileLayout, getWatchedSet, puzzleFilms, puzzleShows, puzzleTopCharacter, setMeta } from '@/db';
+import { getMeta, getProfileLayout, getShowBrief, getWatchedSet, puzzleFilms, puzzleShows, puzzleTopCharacter, setMeta } from '@/db';
 import metadata, { showMeta, type ShowMeta } from '@/metadata';
 import { movieMeta } from '@/movie-metadata';
 import { reminderHourOf } from '@/notification-plan';
@@ -41,6 +41,7 @@ import { parseLayout, publishableWidgets } from '@/profile-layout';
 import { displayTitle, localDayStamp, parseAltTitles } from '@/pure';
 import {
   filmId,
+  isFilmId,
   isOver,
   libraryCandidates,
   newGame,
@@ -681,6 +682,12 @@ export function streakInfo(day = today()): StreakInfo {
   };
 }
 
+/** Today's game is in the history. */
+export function puzzlePlayedToday(): boolean {
+  const day = today();
+  return loadHistory().some((r) => r.d === day);
+}
+
 /** The Profile tab's "today's puzzle is ready" banner — `puzzleBanner`. */
 export function puzzleBannerNow(): { streak: number } | null {
   const day = today();
@@ -714,6 +721,25 @@ export function publishedPuzzleValue(): PublicPuzzle | null {
  *  archive list draws both, and only today's ever count. */
 export function resultsByDay(): Map<string, Result> {
   return new Map([...loadArchive(), ...loadHistory()].map((r) => [r.d, r]));
+}
+
+/**
+ * The names of past answers, for the owner's own history list (22 Oct) — a
+ * day already played, so its answer is no secret any more. ON THIS PHONE
+ * ONLY: nothing here is published, and `publicPuzzle` still carries no id.
+ * One indexed read per show; one scan of `movies` only when a film is asked.
+ * An id the phone no longer knows is simply left out.
+ */
+export function puzzleTitles(ids: readonly PuzzleId[]): Map<PuzzleId, string> {
+  const films = new Map<PuzzleId, string>();
+  if (ids.some(isFilmId)) for (const f of puzzleFilms()) films.set(filmId(f.tmdbId, f.name), displayTitle(f.name, f.altTitles));
+  const out = new Map<PuzzleId, string>();
+  for (const id of ids) {
+    const name =
+      typeof id === 'number' ? getShowBrief(id)?.name || showMeta(id)?.name : (films.get(id) ?? (id.startsWith('m:n:') ? id.slice(4) : null));
+    if (name) out.set(id, name);
+  }
+  return out;
 }
 
 /** The first day played on the day it was the puzzle, or null. */
