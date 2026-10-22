@@ -571,9 +571,16 @@ export async function fillMissingShowPosters(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { tvdbSeries, tvdbSeriesBackground } = require('@/tvdb') as typeof import('@/tvdb');
     for (const s of missing) {
+      // TheTVDB ANSWERED, with no poster: asked again on every launch for ever
+      // (two requests a show, one after another) until this marker. Only an
+      // answer is remembered — `tvdbSeries` is null on a failed request, and
+      // a failure must be asked again.
+      const missKey = `tvdbShowPosterMiss:${s.tvdbId}`;
+      if (getMeta(missKey)) continue;
       const hit = await tvdbSeries(s.tvdbId);
       const img = hit?.image;
       if (img && !img.includes('/images/missing/')) setShowPoster(s.tvdbId, img);
+      else if (hit) setMeta(missKey, '1');
       // a landscape background for the detail banner, if TheTVDB has one (many
       // obscure titles only have a poster — the banner falls back to that)
       if (!getMeta(`backdropOverride:${s.tvdbId}`)) {
