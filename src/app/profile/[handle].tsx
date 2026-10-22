@@ -29,7 +29,7 @@
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
@@ -144,6 +144,15 @@ function openByKey(titles: readonly PublishedTitle[], key: string, kind: 'show' 
   if (hit) openTitle(hit, kind);
 }
 
+/**
+ * THE LAST COPY OF EACH PROFILE THIS SESSION, drawn on the first frame of the
+ * next visit while the focus fetches below replace it. Opening somebody you
+ * looked at a minute ago used to be a spinner and four requests again. Written
+ * from every state change, follow taps included, so it is never older than
+ * the screen that left it. Memory only, a handful deep.
+ */
+type Snapshot = { state: State; pub: PublishedProfile; list: ProfileListSpec | null };
+const seen = new Map<string, Snapshot>();
 
 export default function PublicProfileScreen() {
   const { handle: raw } = useLocalSearchParams<{ handle?: string }>();
@@ -151,9 +160,18 @@ export default function PublicProfileScreen() {
   const joined = useJoined();
   const myId = getProfileId();
 
-  const [state, setState] = useState<State>({ phase: 'loading' });
-  const [list, setList] = useState<ProfileListSpec | null>(null);
-  const [pub, setPub] = useState<PublishedProfile>({ stats: null, shows: [], movies: [] });
+  const [state, setState] = useState<State>(() => seen.get(handle)?.state ?? { phase: 'loading' });
+  const [list, setList] = useState<ProfileListSpec | null>(() => seen.get(handle)?.list ?? null);
+  const [pub, setPub] = useState<PublishedProfile>(() => seen.get(handle)?.pub ?? { stats: null, shows: [], movies: [] });
+  useEffect(() => {
+    if (state.phase !== 'ready') {
+      seen.delete(handle);
+      return;
+    }
+    seen.delete(handle); // re-insert = most recent last
+    seen.set(handle, { state, pub, list });
+    if (seen.size > 12) seen.delete(seen.keys().next().value as string);
+  }, [handle, state, pub, list]);
   const [menu, setMenu] = useState(false);
   const [busy, setBusy] = useState(false);
 
