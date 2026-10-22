@@ -4092,3 +4092,21 @@ describe('pickTmdbMovieResult', () => {
     expect(pickTmdbMovieResult([{ ...hope2026, release_date: '2025-12-30' }], 'Hope', '2026')?.id).toBe(9000001);
   });
 });
+
+describe('inviteCodeFrom', () => {
+  it('takes a bare code, trimmed and uppercased', () => {
+    expect(inviteCodeFrom('  gpr2cu733v ')).toBe('GPR2CU733V');
+  });
+  it('takes the code from the whole share message', () => {
+    expect(inviteCodeFrom('Join my shared list "Bakeoff" on OpenTV. Code: NRVG58Y2JS')).toBe('NRVG58Y2JS');
+  });
+  it('takes the code from a together join link, past a handle that looks like one', () => {
+    expect(inviteCodeFrom('https://theopentv.com/together/GPR2CU733V?from=watchparty')).toBe('GPR2CU733V');
+    expect(
+      inviteCodeFrom("Let's watch X together on OpenTV. Code: GPR2CU733V\n\nhttps://theopentv.com/together/GPR2CU733V?from=watchparty"),
+    ).toBe('GPR2CU733V');
+  });
+  it('takes the code from the app link', () => {
+    expect(inviteCodeFrom('opentv://shared?join=gpr2cu733v')).toBe('GPR2CU733V');
+  });
+});

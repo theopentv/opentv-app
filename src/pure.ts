@@ -7105,6 +7105,11 @@ export function serialiseProfileLinks(links: readonly ProfileLink[]): string {
 const INVITE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export function inviteCodeFrom(pasted: string): string {
   const text = pasted.trim().toUpperCase();
+  // A JOIN LINK NAMES ITS CODE (22 Oct): theopentv.com/together/<code>?from=…
+  // or opentv://shared?join=<code>. Taken first, because what follows it — a
+  // handle in `from` like "watchparty" — can itself pass for a code.
+  const linked = text.match(new RegExp(`(?:/TOGETHER/|[?&]JOIN=)([${INVITE_ALPHABET}]{10})(?![A-Z0-9])`));
+  if (linked) return linked[1];
   const runs = text.match(new RegExp(`[${INVITE_ALPHABET}]{10}`, 'g')) ?? [];
   const boundaried = runs.filter((r) => {
     const at = text.lastIndexOf(r);

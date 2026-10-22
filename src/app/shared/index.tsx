@@ -13,15 +13,16 @@
  */
 import { ApiError } from '@/api';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, AppState, FlatList, Pressable, RefreshControl, StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { NavHeader, Screen } from '@/components/ui';
 import { communityErrorText } from '@/community-error-text';
 import { inviteCodeFrom } from '@/pure';
-import { useJoined } from '@/community-session';
+import { isJoined, useJoined } from '@/community-session';
+import { getMeta, setMeta } from '@/db';
 import { fetchSharedLists, joinSharedList, type SharedListRow } from '@/community-shared-lists';
 import { cachedTogether, noteTogetherIndex, noteTogetherJoined, publishPositions } from '@/community-together';
 import { memberName } from '@/components/shared-members';
@@ -30,7 +31,25 @@ import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { colors, radius, space, ls } from '@/theme';
 
+/**
+ * A code from a join link that arrived before its reader had an account: kept
+ * through the sign-in, used once. Not cleared with the account — it belongs to
+ * whoever opens the link next, which is the person signing in.
+ */
+const PENDING_JOIN_KEY = 'communityTogetherPendingJoin';
+
+/** Take the pending code, clearing it first so a second caller finds nothing. */
+function takePendingJoin(): string | null {
+  const c = getMeta(PENDING_JOIN_KEY);
+  if (!c) return null;
+  setMeta(PENDING_JOIN_KEY, '');
+  return c;
+}
+
 export default function SharedListsScreen() {
+  // `opentv://shared?join=<code>` — the "Open in OpenTV" button on
+  // theopentv.com/together/<code> (22 Oct).
+  const { join: joinParam } = useLocalSearchParams<{ join?: string }>();
   const joined = useJoined();
   const [rows, setRows] = useState<SharedListRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,27 +75,17 @@ export default function SharedListsScreen() {
     }
   }, [joined]);
 
-  useFocusEffect(
-    useCallback(() => {
-      void load();
-      // And on the way back into the app: a focus does not fire for a screen
-      // already open, so a list its owner deleted meanwhile stayed (21 Oct).
-      const sub = AppState.addEventListener('change', (s) => {
-        if (s === 'active') void load();
-      });
-      return () => sub.remove();
-    }, [load]),
-  );
-
   const onRefresh = async () => {
     setRefreshing(true);
     await load();
     setRefreshing(false);
   };
 
-  const submitCode = async () => {
-    // Whatever was pasted — a bare code or the whole share message.
-    const trimmed = inviteCodeFrom(code);
+  const submitCode = () => joinWith(code);
+
+  const joinWith = async (raw: string) => {
+    // Whatever was pasted — a bare code, the whole share message, or a link.
+    const trimmed = inviteCodeFrom(raw);
     if (trimmed.length === 0 || joining) return;
     setJoining(true);
     try {
@@ -99,6 +108,40 @@ export default function SharedListsScreen() {
       setJoining(false);
     }
   };
+
+  /*
+   * A JOIN LINK. Signed in: join now. Not: the code waits in meta while they
+   * join the community, and the focus below — this screen, back on top once
+   * `afterJoin` pops the join flow — finishes it.
+   */
+  useEffect(() => {
+    const c = joinParam ? inviteCodeFrom(String(joinParam)) : '';
+    if (c.length !== 10) return;
+    setMeta(PENDING_JOIN_KEY, c);
+    if (!isJoined()) router.push('/join');
+    else {
+      const pending = takePendingJoin();
+      if (pending) void joinWith(pending);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per link
+  }, [joinParam]);
+
+  useFocusEffect(
+    useCallback(() => {
+      void load();
+      if (isJoined()) {
+        const pending = takePendingJoin();
+        if (pending) void joinWith(pending);
+      }
+      // And on the way back into the app: a focus does not fire for a screen
+      // already open, so a list its owner deleted meanwhile stayed (21 Oct).
+      const sub = AppState.addEventListener('change', (s) => {
+        if (s === 'active') void load();
+      });
+      return () => sub.remove();
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- joinWith reads only this render's state
+    }, [load]),
+  );
 
   return (
     <Screen>
