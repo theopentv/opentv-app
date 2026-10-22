@@ -76,5 +76,10 @@
     "i18n:types": "node scripts/gen-locale-types.mjs",
     "test": "jest"
   },
-  "private": true
+  "private": true,
+  "reanimated": {
+    "staticFeatureFlags": {
+      "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": false
+    }
+  }
 }
