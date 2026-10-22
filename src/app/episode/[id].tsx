@@ -3,7 +3,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Alert, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -34,6 +34,7 @@ import {
 } from '@/community-ratings';
 import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
+import { revealEpisode } from '@/spoiler-gate';
 import { absoluteEpisode, episodeMeta, seasonTotal, showMeta } from '@/metadata';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { characterFace, characterPercents, emotionNames, emotionPercents, nextPage, orderPollCast, pollKeys, pollLabel, starPercents, swipeDirection, providerLines } from '@/pure';
@@ -579,6 +580,37 @@ function EpisodePage({
    */
   const openComments = () => {
     if (joined) {
+      // ASK FIRST, THEN OPEN (22 Oct, Mahmood): the question used to be asked
+      // by the thread screen after it had already slid in. Asked here it is
+      // the film's alert on the film's terms — before anything moves.
+      if (!watched && tvdbId) {
+        const target = { source: 'tvdb' as const, key: String(tvdbId), season, episode: ep };
+        Alert.alert(t('movie.spoilersTitle'), t('episode.spoilersBody'), [
+          {
+            text: t('movie.displayAnyway'),
+            onPress: () => {
+              revealEpisode(target);
+              openCommunityThread();
+            },
+          },
+          {
+            text: t('episode.watchedThisEpisode'),
+            onPress: () => {
+              const into = ensureShow();
+              if (!into) return;
+              markWatchedWithPrompt(into.tvdbId, season, ep, () => {
+                const w = getWatch(into.tvdbId, season, ep);
+                setWatched(w != null);
+                setWatchedAt(w?.watchedAt ?? null);
+                // Cancel in the previous-episodes prompt undoes the mark: stay.
+                if (w) openCommunityThread();
+              });
+            },
+          },
+          { text: t('common.cancel'), style: 'cancel' },
+        ]);
+        return;
+      }
       openCommunityThread();
       return;
     }
