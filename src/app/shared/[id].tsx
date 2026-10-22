@@ -54,6 +54,7 @@ import {
 import { tapLight, tapSelection } from '@/haptics';
 import { t } from '@/i18n';
 import { colors, radius, space, ls } from '@/theme';
+import { getHandle } from '@/community-session';
 import { withLink } from '@/share-link';
 import { oneAtATime } from '@/one-at-a-time';
 
@@ -178,7 +179,14 @@ export default function SharedListScreen() {
     const message = together
       ? t('together.inviteMessage', { show: list.items[0]?.title ?? list.name, code: list.invite_code })
       : t('shared.inviteMessage', { name: list.name, code: list.invite_code });
-    await Share.share({ message: withLink(message) });
+    // A together's link is a JOIN page (theopentv.com/together/<code>): it
+    // opens the app on the code, or the store for a friend without it. `from`
+    // only names who sent it on that page.
+    const handle = getHandle();
+    const path = together
+      ? `/together/${list.invite_code}${handle ? `?from=${encodeURIComponent(handle)}` : ''}`
+      : undefined;
+    await Share.share({ message: withLink(message, path) });
   };
 
   const addToMyShows = () => {
