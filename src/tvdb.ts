@@ -113,12 +113,40 @@ async function loginOnce(signal: AbortSignal): Promise<string> {
   if (!t) throw new Error('TheTVDB login: no token');
   token = t;
   setMeta('tvdbKeyFailed', ''); // a good login clears any stale failure flag
+  setMeta(TOKEN_KEY, JSON.stringify({ t, at: Date.now(), k: keyTag(activeTvdbKey()) } satisfies StoredToken));
   return t;
+}
+
+/*
+ * THE TOKEN OUTLIVES THE PROCESS. TheTVDB's lasts about a month, and holding it
+ * in memory only meant every cold start paid a login round trip in front of
+ * its first lookup — the show page, search, the feed. Reused for 25 days and
+ * only under the key that earned it; a 401 still re-logs in (see `get`).
+ */
+const TOKEN_KEY = 'tvdbToken';
+const TOKEN_MAX_AGE_MS = 25 * 86400000;
+type StoredToken = { t: string; at: number; k: string };
+/** Enough of the key to tell two apart, never the key itself. */
+const keyTag = (key: string): string => `${key.length}:${key.slice(-4)}`;
+
+/** The stored token, if it is young enough and was issued to this key. */
+export function usableStoredToken(raw: string | null, key: string, now: number): string | null {
+  if (!raw) return null;
+  try {
+    const s = JSON.parse(raw) as Partial<StoredToken>;
+    if (typeof s.t !== 'string' || !s.t || typeof s.at !== 'number') return null;
+    if (s.k !== keyTag(key) || now - s.at > TOKEN_MAX_AGE_MS || now < s.at) return null;
+    return s.t;
+  } catch {
+    return null;
+  }
 }
 
 async function ensureToken(): Promise<string> {
   if (token) return token;
   if (authFailed) throw new Error('TheTVDB key rejected this session');
+  token = usableStoredToken(getMeta(TOKEN_KEY), activeTvdbKey(), Date.now());
+  if (token) return token;
   // collapse concurrent first-time logins into one request
   loginInFlight ??= login().finally(() => {
     loginInFlight = null;
@@ -157,6 +185,7 @@ async function get<T>(path: string): Promise<T> {
     let res = await fetch(`${BASE}${path}`, { headers: { Authorization: `Bearer ${t}` }, signal: ctrl.signal });
     if (res.status === 401) {
       token = null;
+      setMeta(TOKEN_KEY, ''); // or ensureToken would hand the dead one straight back
       t = await ensureToken();
       res = await fetch(`${BASE}${path}`, { headers: { Authorization: `Bearer ${t}` }, signal: ctrl.signal });
     }
