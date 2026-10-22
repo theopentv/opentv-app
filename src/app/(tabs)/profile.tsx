@@ -1256,11 +1256,12 @@ export default function ProfileScreen() {
        */
       // The goal joins whichever arrangement is drawn while its switch is on —
       // the free classic page included, which otherwise has no way to hold it.
-      // The puzzle streak (22 Oct) joins the FREE page only: Plus places the
-      // puzzle block where it likes, and nothing of theirs is moved.
+      // The puzzle streak (22 Oct): whoever said "show my streak" gets the
+      // block after Stats — free or Plus. A Plus arrangement that already
+      // placed it is left exactly as it is (`withPuzzleBlock` never moves one).
       arrangement={(() => {
-        const free = !plus && puzzleOnPage ? withPuzzleBlock(defaultLayout(SHELF_KEYS)) : undefined;
-        const drawn = plus ? arrangement : free;
+        const base = plus ? arrangement : undefined;
+        const drawn = puzzleOnPage ? withPuzzleBlock(base ?? defaultLayout(SHELF_KEYS)) : base;
         return goalOnPage ? withGoalBlock(drawn ?? defaultLayout(SHELF_KEYS)) : drawn;
       })()}
       onArrange={(next: Placed[]) => {
