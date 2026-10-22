@@ -120,3 +120,26 @@ describe('ownedTogetherFor', () => {
     expect(ownedTogetherFor([row('A', '100')], (k) => k === 100 || k === 200)?.id).toBe('A');
   });
 });
+
+describe('togetherCards / publishedTogether', () => {
+  const { togetherCards, publishedTogether } = require('./together-pure') as typeof import('./together-pure');
+  const entries = [
+    { listId: 'a', tvdbId: 1, title: 'Index A', poster: 'pa', members: 2 },
+    { listId: 'b', tvdbId: 2 },
+    { listId: 'c', tvdbId: 3, title: 'C', members: 4 },
+    { listId: 'd', tvdbId: 4, title: 'D', members: 2 },
+  ];
+  const details = { b: { members: [{}, {}, {}], items: [{ title: 'Detail B', poster: 'pb' }] } };
+  it('takes three, preferring the cached detail over the index row', () => {
+    expect(togetherCards(entries, details)).toEqual([
+      { listId: 'a', tvdbId: 1, title: 'Index A', poster: 'pa', members: 2 },
+      { listId: 'b', tvdbId: 2, title: 'Detail B', poster: 'pb', members: 3 },
+      { listId: 'c', tvdbId: 3, title: 'C', poster: null, members: 4 },
+    ]);
+  });
+  it('publishes titles and counts only, and nothing without a title', () => {
+    const cards = togetherCards([{ listId: 'x', tvdbId: 9 }, ...entries], details);
+    expect(publishedTogether(cards)).toEqual({ shows: [{ title: 'Index A', members: 2 }, { title: 'Detail B', members: 3 }] });
+    expect(publishedTogether(togetherCards([{ listId: 'x', tvdbId: 9 }], {}))).toBeNull();
+  });
+});

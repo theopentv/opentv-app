@@ -30,7 +30,7 @@ import { getProfileId, getToken, isJoined } from '@/community-session';
 import { fetchSharedList, fetchSharedLists, type SharedListDetail, type SharedListRow } from '@/community-shared-lists';
 import { furthestWatched, getMeta, getShowBrief, onLocalChange, onRemoteChange, setMeta, showWatchCount } from '@/db';
 import { PLUS_AVAILABLE, requirePlus } from '@/plus';
-import { ownedTogetherFor, positionStamp, resolveTogetherShow, type ShowResolution } from '@/together-pure';
+import { ownedTogetherFor, positionStamp, resolveTogetherShow, togetherCards, type ShowResolution, type TogetherCard } from '@/together-pure';
 
 const ACTIVE_KEY = 'communityTogetherActive';
 /** `[{ listId, tvdbId, itemId? }]` — which togethers this account is in. */
@@ -46,7 +46,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** The sync idiom's debounce (`device-sync.ts`): a season ticked off in one go is one send. */
 const PUSH_AFTER_MS = 1200;
 
-type Entry = { listId: string; tvdbId: number; itemId?: string };
+/** `title`/`poster`/`members` come from the index row, for the Profile block. */
+type Entry = { listId: string; tvdbId: number; itemId?: string; title?: string | null; poster?: string | null; members?: number };
 
 function readJson<T>(key: string, fallback: T): T {
   try {
@@ -119,6 +120,44 @@ export function cachedTogether(listId: string): SharedListDetail | null {
   return readDetails()[listId] ?? null;
 }
 
+/**
+ * The Profile's "Watching together" block (22 Oct): up to three, from the
+ * cache only — no request. A show the index named without a title takes the
+ * library's name and poster.
+ */
+export function profileTogethers(): TogetherCard[] {
+  return togetherCards(readShows(), readDetails()).map((c) => {
+    if (c.title && c.poster) return c;
+    const local = getShowBrief(c.tvdbId);
+    return { ...c, title: c.title ?? local?.name ?? null, poster: c.poster ?? local?.poster ?? null };
+  });
+}
+
+/**
+ * Everything the block draws from, as one string — the Profile tab passes it
+ * as the block's `data` so the React Compiler redraws it when any of it moves
+ * (the `setPuzzleSnap` pattern). Empty when the block has nothing to show.
+ */
+export function profileTogetherSnapshot(): string {
+  if (togetherHiddenOnProfile()) return '';
+  const cards = profileTogethers();
+  if (cards.length === 0) return '';
+  const details = readDetails();
+  return JSON.stringify(cards.map((c) => [c, details[c.listId]?.items[0]?.positions ?? furthestWatched(c.tvdbId)]));
+}
+
+/**
+ * The owner's "show it on my profile" switch, ON THIS PHONE (22 Oct). Not in
+ * `hidden_sections`: the server answers 400 to a section id it does not know,
+ * and one unknown id there would fail every other switch's save with it. When
+ * the Worker learns 'together', this can move there.
+ */
+export const TOGETHER_HIDDEN_KEY = 'profileTogetherHidden';
+export const togetherHiddenOnProfile = (): boolean => getMeta(TOGETHER_HIDDEN_KEY) === '1';
+export function setTogetherHiddenOnProfile(hidden: boolean): void {
+  setMeta(TOGETHER_HIDDEN_KEY, hidden ? '1' : '0');
+}
+
 // ── keeping the memberships current ─────────────────────────────────────────
 
 /** Every together in an index the screens already fetched — costs no request of its own. */
@@ -132,6 +171,9 @@ export function noteTogetherIndex(rows: readonly SharedListRow[]): void {
       listId: r.id,
       tvdbId: Number(r.show?.target_key),
       itemId: old.find((e) => e.listId === r.id)?.itemId,
+      title: r.show?.title ?? null,
+      poster: r.show?.poster ?? null,
+      members: r.members,
     })),
   );
   // A together that left the index (deleted by its owner, or left elsewhere) leaves the cache.
@@ -152,8 +194,12 @@ export function noteTogetherDetail(d: SharedListDetail): void {
   const details = readDetails();
   details[d.id] = d;
   writeDetails(details);
-  const shows = readShows().filter((e) => e.listId !== d.id);
-  shows.push({ listId: d.id, tvdbId: Number(item.target_key), itemId: item.id });
+  const all = readShows();
+  const prev = all.find((e) => e.listId === d.id);
+  const shows = all.filter((e) => e.listId !== d.id);
+  // In its old place: the Profile block lists them in the index's order.
+  const at = prev ? all.indexOf(prev) : shows.length;
+  shows.splice(at, 0, { ...prev, listId: d.id, tvdbId: Number(item.target_key), itemId: item.id });
   writeShows(shows);
   emit();
   schedulePublish();
@@ -212,7 +258,10 @@ export async function startTogether(show: {
       },
     });
     setMeta(ACTIVE_KEY, '1');
-    writeShows([...readShows().filter((e) => e.listId !== r.id), { listId: r.id, tvdbId: show.tvdbId }]);
+    writeShows([
+      ...readShows().filter((e) => e.listId !== r.id),
+      { listId: r.id, tvdbId: show.tvdbId, title: show.title, poster: show.poster, members: 1 },
+    ]);
     track('together_create');
     // The creator may be halfway through already: publish without waiting for a tick.
     schedulePublish();

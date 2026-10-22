@@ -136,3 +136,38 @@ export function ownedTogetherFor<R extends { id: string; kind?: string; is_owner
 ): R | null {
   return rows.find((r) => r.kind === 'together' && r.is_owner && r.show != null && sameShow(Number(r.show.target_key))) ?? null;
 }
+
+export type TogetherCard = { listId: string; tvdbId: number; title: string | null; poster: string | null; members: number };
+
+/**
+ * The Profile's "Watching together" rows (22 Oct): at most `max`, in the
+ * index's order. The cached detail's show and member list when there is one
+ * (it is fresher — fetched on the last open), else what the index row said.
+ */
+export function togetherCards(
+  entries: readonly { listId: string; tvdbId: number; title?: string | null; poster?: string | null; members?: number }[],
+  details: Readonly<Record<string, { members: readonly unknown[]; items: readonly { title: string | null; poster: string | null }[] } | undefined>>,
+  max = 3,
+): TogetherCard[] {
+  return entries.slice(0, max).map((e) => {
+    const d = details[e.listId];
+    const item = d?.items[0];
+    return {
+      listId: e.listId,
+      tvdbId: e.tvdbId,
+      title: item?.title ?? e.title ?? null,
+      poster: item?.poster ?? e.poster ?? null,
+      members: d ? d.members.length : (e.members ?? 0),
+    };
+  });
+}
+
+/**
+ * What a VISITOR may see of them: the show and how many are in it. Never who —
+ * the other members are other people — and never where anybody is. Null when
+ * there is nothing with a name to show, so the block is not published.
+ */
+export function publishedTogether(cards: readonly TogetherCard[]): { shows: { title: string; members: number }[] } | null {
+  const shows = cards.filter((c) => c.title).map((c) => ({ title: c.title!, members: c.members }));
+  return shows.length > 0 ? { shows } : null;
+}

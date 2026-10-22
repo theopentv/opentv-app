@@ -45,7 +45,7 @@ it('fetches the index for a member never seen in a together, and finds theirs', 
   await syncTogetherIfNeeded();
   expect(fetches).toBe(1);
   expect(meta.communityTogetherActive).toBe('1');
-  expect(JSON.parse(meta.communityTogetherShows)).toEqual([{ listId: 'L1', tvdbId: 81189 }]);
+  expect(JSON.parse(meta.communityTogetherShows)).toMatchObject([{ listId: 'L1', tvdbId: 81189 }]);
   expect(cachedTogethersFor(81189)).toEqual([]); // details arrive with the show page's own fetch
 });
 
