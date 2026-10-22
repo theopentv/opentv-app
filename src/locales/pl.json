@@ -4074,5 +4074,21 @@
     "channel": "Nowości w streamingu",
     "lapsedTitle": "Moje serwisy są częścią Plus",
     "lapsedBody": "Twoje serwisy są zachowane. Dopóki Plus nie wróci, nie ma powiadomień ani filtra."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Seria od {{date}}",
+    "longest": {
+      "one": "🧩 Najdłuższa seria zagadek: {{count}} dzień",
+      "few": "🧩 Najdłuższa seria zagadek: {{count}} dni",
+      "many": "🧩 Najdłuższa seria zagadek: {{count}} dni",
+      "other": "🧩 Najdłuższa seria zagadek: {{count}} dnia"
+    },
+    "hoursLeft": {
+      "one": "🧩 Została {{count}} godz. — zagraj przed północą",
+      "few": "🧩 Zostały {{count}} godz. — zagraj przed północą",
+      "many": "🧩 Zostało {{count}} godz. — zagraj przed północą",
+      "other": "🧩 Zostało {{count}} godz. — zagraj przed północą"
+    },
+    "blockSince": "🧩 od {{date}} · rekord {{best}}"
   }
 }

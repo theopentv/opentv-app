@@ -3780,5 +3780,17 @@
     "channel": "Arrivées en streaming",
     "lapsedTitle": "Mes services font partie de Plus",
     "lapsedBody": "Vos services sont conservés. En attendant le retour de Plus, ni alertes ni filtre."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Série commencée le {{date}}",
+    "longest": {
+      "one": "🧩 Plus longue série de puzzles : {{count}} jour",
+      "other": "🧩 Plus longue série de puzzles : {{count}} jours"
+    },
+    "hoursLeft": {
+      "one": "🧩 Encore {{count}} h — jouez avant minuit",
+      "other": "🧩 Encore {{count}} h — jouez avant minuit"
+    },
+    "blockSince": "🧩 depuis le {{date}} · record {{best}}"
   }
 }

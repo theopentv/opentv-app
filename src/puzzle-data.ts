@@ -51,6 +51,9 @@ import {
   puzzleIntroDue,
   puzzleStreakShown,
   puzzleStreak,
+  hoursLeftToday,
+  longestStreak,
+  streakStart,
   parsePinned,
   pickAnswer,
   pickPicture,
@@ -658,6 +661,24 @@ export function currentStats(): Stats {
 /** Consecutive days played — the result screen's 🧩 line, nowhere else. */
 export function currentStreak(day = today()): number {
   return puzzleStreak(loadHistory(), day);
+}
+
+/**
+ * The streak's three companions (22 Oct): the day it started, the longest
+ * ever, and — while `day` is today and still unplayed — the hours left before
+ * midnight. Today's games only, like the streak; the 🧩 lines, nowhere else.
+ */
+export type StreakInfo = { streak: number; start: string | null; longest: number; hoursLeft: number | null };
+
+export function streakInfo(day = today()): StreakInfo {
+  const h = loadHistory();
+  const open = day === today() && !h.some((r) => r.d === day);
+  return {
+    streak: puzzleStreak(h, day),
+    start: streakStart(h, day),
+    longest: longestStreak(h),
+    hoursLeft: open ? hoursLeftToday(new Date()) : null,
+  };
 }
 
 /** The Profile tab's "today's puzzle is ready" banner — `puzzleBanner`. */

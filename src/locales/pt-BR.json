@@ -3780,5 +3780,17 @@
     "channel": "Novidades no streaming",
     "lapsedTitle": "Meus serviços fazem parte do Plus",
     "lapsedBody": "Seus serviços ficam salvos. Até o Plus voltar, não há avisos nem filtro."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Sequência iniciada em {{date}}",
+    "longest": {
+      "one": "🧩 Maior sequência de puzzles: {{count}} dia",
+      "other": "🧩 Maior sequência de puzzles: {{count}} dias"
+    },
+    "hoursLeft": {
+      "one": "🧩 Falta {{count}} h — jogue antes da meia-noite",
+      "other": "🧩 Faltam {{count}} h — jogue antes da meia-noite"
+    },
+    "blockSince": "🧩 desde {{date}} · recorde {{best}}"
   }
 }

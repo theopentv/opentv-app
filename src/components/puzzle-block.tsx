@@ -29,7 +29,8 @@ import { Text } from '@/components/text';
 
 import { todayISO } from '@/components/heatmap';
 import { CLOSE_SQUARE } from '@/components/puzzle-share-card';
-import { fmtDecimal, t } from '@/i18n';
+import { currentLocale, fmtDecimal, t } from '@/i18n';
+import { intlTag } from '@/locale-resolve';
 import type { WidgetSpan } from '@/profile-layout';
 import { MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
 import { calendarMonth, mixHex } from '@/pure';
@@ -47,6 +48,17 @@ export function levelColor(level: number): string {
   if (level < 0) return CLOSE_SQUARE;
   if (level <= 0) return colors.danger;
   return mixHex(colors.green, ACCENTS.orange, (MAX_TRIES - Math.min(level, MAX_TRIES)) / (MAX_TRIES - 1));
+}
+
+/** "18 Oct" in the reader's language (Western digits in Arabic, via
+ *  `intlTag`), with the year only when it is not this one. */
+export function puzzleDay(d: string): string {
+  const sameYear = d.slice(0, 4) === String(new Date().getFullYear());
+  return new Date(`${d}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), {
+    day: 'numeric',
+    month: 'short',
+    ...(sameYear ? {} : { year: 'numeric' }),
+  });
 }
 
 /** "3.4", or a dash before the first win — never "0" tries. */
@@ -82,7 +94,21 @@ export function StatsRow({ stats, big = false }: { stats: Stats; big?: boolean }
  * `streak` is the OWNER's alone (22 Oct, opt-in): drawn on their own phone
  * from `meta`, never from a published value — `publicPuzzle` has none.
  */
-export function PuzzleBlock({ value, span, streak = 0 }: { value: PublicPuzzle; span: WidgetSpan; streak?: number }) {
+export function PuzzleBlock({
+  value,
+  span,
+  streak = 0,
+  since = null,
+  hoursLeft = null,
+}: {
+  value: PublicPuzzle;
+  span: WidgetSpan;
+  streak?: number;
+  /** The owner's alone, like `streak`: the day it started and the longest ever. */
+  since?: { date: string; best: number } | null;
+  /** The owner's alone: hours to midnight while today is unplayed. */
+  hoursLeft?: number | null;
+}) {
   const [box, setBox] = useState({ w: 0, h: 0 });
   const today = todayISO();
   const weeks = calendarMonth(today.slice(0, 7));
@@ -91,6 +117,8 @@ export function PuzzleBlock({ value, span, streak = 0 }: { value: PublicPuzzle; 
   // Wide and one row tall: the calendar on one side, the stats on the other.
   // Anything else is tall enough to stack them.
   const side = span === '2x1';
+  // A 1x1 block has room for the calendar and the numbers, not for sentences.
+  const extras = span !== '1x1' && (since != null || hoursLeft != null);
 
   const onLayout = (e: LayoutChangeEvent) => {
     const { width, height } = e.nativeEvent.layout;
@@ -142,12 +170,22 @@ export function PuzzleBlock({ value, span, streak = 0 }: { value: PublicPuzzle; 
   return (
     <View style={[{ flex: 1, gap: 10 }, side && { flexDirection: 'row', alignItems: 'stretch' }]}>
       {calendar}
-      {value.stats || streak > 0 ? (
+      {value.stats || streak > 0 || extras ? (
         <View style={[side ? s.statsSide : null, { gap: 6 }]}>
           {value.stats ? <StatsRow stats={value.stats} /> : null}
           {streak > 0 ? (
             <Text style={s.streak} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
               {t('puzzleStreak.days', { count: streak })}
+            </Text>
+          ) : null}
+          {extras && since ? (
+            <Text style={s.extra} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {t('puzzleHistory.blockSince', { date: puzzleDay(since.date), best: since.best })}
+            </Text>
+          ) : null}
+          {extras && hoursLeft != null ? (
+            <Text style={s.extra} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {t('puzzleHistory.hoursLeft', { count: hoursLeft })}
             </Text>
           ) : null}
         </View>
@@ -167,6 +205,7 @@ const s = StyleSheet.create({
   today: { borderWidth: 1.5, borderColor: colors.text },
   stats: { flexDirection: 'row', gap: 6 },
   streak: { color: colors.text, fontSize: 12.5, fontWeight: '700', textAlign: 'center' },
+  extra: { color: colors.dim, fontSize: 11.5, fontWeight: '600', textAlign: 'center' },
   stat: { flex: 1, alignItems: 'center', gap: 1, minWidth: 0 },
   value: { color: colors.text, fontSize: 17, fontWeight: '900', letterSpacing: ls(-0.3) },
   valueBig: { fontSize: 26 },

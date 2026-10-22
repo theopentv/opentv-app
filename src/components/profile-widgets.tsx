@@ -49,7 +49,7 @@ import { formatCount, intlTag } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
 import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
-import { currentStreak, publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
+import { publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile, streakInfo } from '@/puzzle-data';
 import { monthOf, todayISO } from '@/components/heatmap';
 import { dominantEmotion, emotionColor, isSafeLinkUrl, parseProfileLinks, shiftMonth, type LinkService } from '@/pure';
 import { router } from 'expo-router';
@@ -276,11 +276,18 @@ export function renderWidget(
   if (id === 'puzzle') {
     const v = isVisitor ? parsePublicPuzzle(pub) : puzzleBlockValue();
     if (!v) return null;
-    // The owner's opt-in streak (22 Oct) — read here, on their phone only.
-    const streak = !isVisitor && puzzleStreakOnProfile() ? currentStreak() : 0;
+    // The owner's opt-in streak (22 Oct) and its companions — when it began,
+    // the longest, the hours left today — read here, on their phone only.
+    const info = !isVisitor && puzzleStreakOnProfile() ? streakInfo() : null;
     const block = (
       <WidgetBox label={t('puzzle.blockName')} span={span}>
-        <PuzzleBlock value={v} span={span} streak={streak} />
+        <PuzzleBlock
+          value={v}
+          span={span}
+          streak={info?.streak ?? 0}
+          since={info?.start ? { date: info.start, best: info.longest } : null}
+          hoursLeft={info?.hoursLeft ?? null}
+        />
       </WidgetBox>
     );
     // The owner's block opens the game; a visitor's is somebody else's month.

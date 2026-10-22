@@ -59,7 +59,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
-import { closePuzzleBanner, currentStreak, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
+import { closePuzzleBanner, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile, streakInfo } from '@/puzzle-data';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
@@ -400,7 +400,7 @@ export default function ProfileScreen() {
       // A SNAPSHOT, so the block redraws when you come back from a game: it
       // reads meta inside renderWidget, and the compiler keeps that read until
       // one of its arguments changes — this string is that argument.
-      setPuzzleSnap(`${JSON.stringify(puzzleBlockValue())}|${currentStreak()}`);
+      setPuzzleSnap(`${JSON.stringify(puzzleBlockValue())}|${JSON.stringify(streakInfo())}`);
       // Either year: a goal already set for next year has answered the question.
       setGoalOffer(
         getMeta(GOAL_BANNER_CLOSED) !== '1' &&

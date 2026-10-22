@@ -3780,5 +3780,17 @@
     "channel": "Neu im Streaming",
     "lapsedTitle": "Meine Dienste gehören zu Plus",
     "lapsedBody": "Deine Dienste bleiben gespeichert. Bis Plus zurück ist, gibt es keine Hinweise und keinen Filter."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Serie begonnen am {{date}}",
+    "longest": {
+      "one": "🧩 Längste Rätselserie: {{count}} Tag",
+      "other": "🧩 Längste Rätselserie: {{count}} Tage"
+    },
+    "hoursLeft": {
+      "one": "🧩 Noch {{count}} Std. — spiel vor Mitternacht",
+      "other": "🧩 Noch {{count}} Std. — spiel vor Mitternacht"
+    },
+    "blockSince": "🧩 seit {{date}} · Rekord {{best}}"
   }
 }

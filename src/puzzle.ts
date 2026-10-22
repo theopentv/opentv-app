@@ -576,6 +576,42 @@ export function puzzleStreak(history: readonly Result[], today: string): number 
   return n;
 }
 
+/** The longest run of consecutive days ever played — same rules as
+ *  `puzzleStreak` (today's games only, a loss counts), but anywhere in the
+ *  history. Never less than the current streak. */
+export function longestStreak(history: readonly Result[]): number {
+  const days = [...new Set(history.map((r) => r.d))].sort();
+  let best = 0;
+  let run = 0;
+  for (let i = 0; i < days.length; i++) {
+    run = i > 0 && daysBetween(days[i - 1], days[i]) === 1 ? run + 1 : 1;
+    best = Math.max(best, run);
+  }
+  return best;
+}
+
+/** The first day of the current streak, or null when there is none. */
+export function streakStart(history: readonly Result[], today: string): string | null {
+  const n = puzzleStreak(history, today);
+  if (!n) return null;
+  const end = history.some((r) => r.d === today) ? today : shiftDay(today, -1);
+  return shiftDay(end, -(n - 1));
+}
+
+/** Whole hours, rounded UP, until the phone's own midnight — "1h left" at
+ *  23:30, never "0h". The Date constructor carries the DST change. */
+export function hoursLeftToday(now: Date): number {
+  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
+  return Math.max(1, Math.ceil((midnight - now.getTime()) / 3_600_000));
+}
+
+/** A free player sees the titles of the last week of history; the rest is Plus. */
+export const FREE_HISTORY_DAYS = 7;
+
+export function historyUnlocked(day: string, today: string, plus: boolean): boolean {
+  return plus || daysBetween(day, today) < FREE_HISTORY_DAYS;
+}
+
 /**
  * What the Profile tab's daily-puzzle banner says, or null for no banner.
  * Off when the game is off, once today is played, and for the rest of the day
