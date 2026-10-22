@@ -18,6 +18,9 @@ const ITEMS = [
   // icon on the Following screen. Reachable here because "where are my friends"
   // is a question asked from the profile.
   { name: 'Find people', icon: 'person-add-outline', labelKey: 'profileMenu.findPeople' as const, to: '/find-people' },
+  // WATCHING TOGETHER, AND ITS JOIN (22 Oct): a friend sends a code, and the
+  // profile's menu is where people look for "join". Opens with the box focused.
+  { name: 'Watch together', icon: 'people-outline', labelKey: 'together.title' as const, to: '/together?join=1' },
   /*
    * MEMORIES BELONGS HERE, NOT UNDER STATS. Stats is the library measured —
    * hours, counts, charts — and it is the screen whose sections a profile

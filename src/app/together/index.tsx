@@ -6,7 +6,7 @@
  * Both doors sit at the top and stay there when the screen is empty: almost
  * everybody arriving has none yet, and half of them were sent a code.
  */
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, AppState, FlatList, Pressable, RefreshControl, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 
@@ -29,6 +29,8 @@ const tileCols = (w: number) => (w >= TABLET_MIN_W ? 8 : 4);
 const tileWidth = (w: number) => (w - 2 * 12 - (tileCols(w) - 1) * 2) / tileCols(w);
 
 export default function TogetherScreen() {
+  // `?join=1` (from the profile ••• menu): the code box is the reason they came.
+  const { join: focusJoin } = useLocalSearchParams<{ join?: string }>();
   const { width } = useWindowDimensions();
   const joined = useJoined();
   const plus = usePlus();
@@ -113,6 +115,7 @@ export default function TogetherScreen() {
           placeholderTextColor={colors.faint}
           autoCapitalize="characters"
           autoCorrect={false}
+          autoFocus={focusJoin === '1'}
           style={styles.codeInput}
           onSubmitEditing={() => void join()}
           returnKeyType="go"
