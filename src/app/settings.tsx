@@ -398,6 +398,17 @@ export default function SettingsScreen() {
               value={account ? (lastAccount().email ?? t('common.on')) : t('common.off')}
               onPress={account ? undefined : () => router.push('/sign-in')}
             />
+            {/* NEXT TO THE ACCOUNT (22 Oct, Mahmood): devices belong to the
+                account, and the only door was four screens deep inside
+                OpenTV Backup, where nobody would look. */}
+            {account && (
+              <MenuRow
+                trackId="settings.account.devices"
+                title={t('devices.title')}
+                sub={t('devices.entrySub')}
+                onPress={() => router.push('/devices')}
+              />
+            )}
             {/* EVERY ACCOUNT CAN BE DELETED, member or not — Apple 5.1.1(v),
                 and it is simply right. It used to sit inside the community
                 branch, so an account made on /sign-in without joining could
