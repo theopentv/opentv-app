@@ -16,6 +16,7 @@ import { episodeMeta, showMeta } from '@/metadata';
 import { hasOriginalZip } from '@/migrations';
 import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
+import { pool } from '@/tmdb';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
@@ -129,6 +130,11 @@ export default function ShowsScreen() {
   const [tonightClosed, setTonightClosed] = useState(() => getMeta('tonightRowClosed') === '1');
   const [tonightH, setTonightH] = useState(0);
   const [tick, setTick] = useState(0);
+  // Which focus this is — the metadata pass below runs once per focus, NOT on
+  // `tick`: a landed batch bumps `tick` to redraw, and when that also started
+  // the next batch the tab walked the whole stale library twelve shows at a
+  // time, every one of them at once, on every visit.
+  const [focusPass, setFocusPass] = useState(0);
   // Read once into state and written back on every change: the rows memo below
   // depends on it, which is how a new choice redraws the list (React Compiler —
   // a render-time getMeta would be memoised past the change).
@@ -142,6 +148,7 @@ export default function ShowsScreen() {
   useFocusEffect(
     useCallback(() => {
       setTick((t) => t + 1);
+      setFocusPass((p) => p + 1);
     }, []),
   );
 
@@ -302,7 +309,10 @@ export default function ShowsScreen() {
       .slice(0, 12);
     if (wanted.length === 0) return;
     for (const s of wanted) metaTried.current.add(s.tvdbId);
-    void Promise.allSettled(wanted.map((s) => fetchShowMeta(s.tvdbId))).then((results) => {
+    // Three at a time, like every other metadata pass: each fetchShowMeta is
+    // itself several requests, and twelve at once queued the tab's own
+    // artwork behind them.
+    void pool(wanted, (s) => fetchShowMeta(s.tvdbId), 3).then((results) => {
       /*
        * A FETCH THAT FAILED IS NOT A FETCH THAT HAPPENED.
        *
@@ -315,19 +325,19 @@ export default function ShowsScreen() {
        *
        * Failures are forgotten so a later pass can try again. NO TICK when
        * nothing arrived, which is what keeps this from spinning: the effect
-       * re-runs on `tick`, so a batch that failed entirely simply waits for
+       * runs once per focus, so a batch that failed entirely simply waits for
        * the next focus rather than retrying immediately, for ever.
        */
       let landed = 0;
       results.forEach((r, i) => {
         const id = wanted[i]!.tvdbId;
-        if (r.status === 'fulfilled' && showMeta(id) != null) landed++;
+        if (r != null && showMeta(id) != null) landed++;
         else metaTried.current.delete(id);
       });
       if (landed > 0) setTick((t) => t + 1);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick]);
+  }, [focusPass]);
 
   // WATCHED HISTORY lives above WATCH NEXT: the list opens anchored at
   // WATCH NEXT and scrolling up reveals older and older watches — all the
