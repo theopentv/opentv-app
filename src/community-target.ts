@@ -8,7 +8,7 @@
  * screen and "#82716" on another is two answers to one question.
  */
 import type { Comment } from '@/community-comments';
-import { getMovies, getShowNames } from '@/db';
+import { getMeta, getMovies, getShowNames, setMeta } from '@/db';
 import { t } from '@/i18n';
 import { episodeMeta, showMeta } from '@/metadata';
 import { slug } from '@/pure';
@@ -36,7 +36,7 @@ export function targetLabel(c: Pick<Comment, 'target_source' | 'target_key' | 's
      *
      * `resolveUnknownTargets` fills in what neither knows.
      */
-    const cached = showMeta(Number(c.target_key))?.name;
+    const cached = showMeta(Number(c.target_key))?.name ?? targetName(Number(c.target_key));
     /**
      * NO ID ON SCREEN WHILE THE NAME IS ON ITS WAY.
      *
@@ -91,21 +91,44 @@ export async function resolveUnknownTargets(
       comments
         .filter((c) => c.target_source === 'tvdb' && !known.has(c.target_key))
         .map((c) => Number(c.target_key))
-        .filter((id) => Number.isFinite(id) && id > 0 && !showMeta(id)),
+        .filter((id) => Number.isFinite(id) && id > 0 && !asked.has(id) && !showMeta(id) && !targetName(id)),
     ),
   ];
   if (missing.length === 0) return false;
+  for (const id of missing) asked.add(id);
 
-  const { fetchShowMeta } = await import('@/show-meta-fetch');
-  // A comments screen holds a few dozen rows; a handful of lookups at a time
-  // keeps a cold list from opening thirty connections at once.
+  /*
+   * A NAME, NOT A SHOW. This used to be `fetchShowMeta` — TheTVDB's extended
+   * record, every episode page and TMDB's /find + /tv — one show after another,
+   * up to 24 in a row, to print a title on a card. The English translation is a
+   * few hundred bytes; the base record is the fallback for a show with none.
+   * Four at a time, so a cold list fills in a second rather than in a minute.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { tvdbSeries, tvdbTranslation } = require('@/tvdb') as typeof import('@/tvdb');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { pool } = require('@/tmdb') as typeof import('@/tmdb');
   let filled = false;
-  for (const id of missing.slice(0, 24)) {
-    try {
-      if (await fetchShowMeta(id)) filled = true;
-    } catch {
-      // `#id` stands. See above.
-    }
-  }
+  await pool(
+    missing.slice(0, 24),
+    async (id) => {
+      const name = (await tvdbTranslation(id, 'eng'))?.name?.trim() || (await tvdbSeries(id))?.name?.trim();
+      if (!name || name === String(id)) return;
+      names.set(id, name);
+      setMeta(`targetName:${id}`, name);
+      filled = true;
+    },
+    4,
+  );
   return filled;
+}
+
+/** Ids asked about this session — a miss is not asked again until next launch. */
+const asked = new Set<number>();
+/** `targetName:{id}` in meta, read once per id: `targetLabel` runs during render. */
+const names = new Map<number, string | null>();
+
+function targetName(id: number): string | null {
+  if (!names.has(id)) names.set(id, getMeta(`targetName:${id}`) || null);
+  return names.get(id) ?? null;
 }
