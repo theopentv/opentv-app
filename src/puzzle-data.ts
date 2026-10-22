@@ -741,6 +741,9 @@ export function devFreshGame(day: string, pool: readonly Answer[], not: PuzzleId
   const ids = (library.length ? library : classics).filter((id) => id !== not);
   if (!ids.length) return null;
   setMeta(K.history, JSON.stringify(loadHistory().filter((r) => r.d !== day)));
+  // and the first-day flow with it: the reminder offer and the Profile banner
+  setMeta(K.remindOffered, '');
+  setMeta(K.bannerClosed, '');
   const g = newGame(day, ids[Math.floor(Math.random() * ids.length)]!);
   saveGame(g);
   savePin({ d: day, id: g.id, pic: null });

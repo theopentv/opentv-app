@@ -411,6 +411,9 @@ export default function ShowsScreen() {
       {/* UX #5: hidden while there is nothing to watch — it was a fresh start's
           first tappable row, and for a free user it opened the paywall. */}
       {rows.length > 0 && (plus || !tonightClosed) && (
+        // ON THE LIST'S OWN GROUND (22 Oct): it sat on the screen's black in a
+        // band of its own above the grey list, and read as a hole.
+        <View style={styles.tonightWrap}>
         <Pressable style={styles.tonightRow} onPress={() => router.push(plus ? '/tonight' : '/paywall')} accessibilityRole="button">
           <Ionicons name="moon-outline" size={18} color={colors.yellow} />
           <View style={{ flex: 1 }}>
@@ -432,6 +435,7 @@ export default function ShowsScreen() {
             </Pressable>
           )}
         </Pressable>
+        </View>
       )}
 
       {needsOriginal && (
@@ -814,6 +818,7 @@ const styles = StyleSheet.create({
      way round, which left it flush against the tabs above and floating above
      whatever came next. Padding is uniform for the same reason the banner's
      is: an asymmetric inset reads as a mistake at a glance, because it is. */
+  tonightWrap: { backgroundColor: colors.panel },
   tonightRow: {
     flexDirection: 'row',
     alignItems: 'center',
