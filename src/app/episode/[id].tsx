@@ -660,7 +660,7 @@ function EpisodePage({
 
   return (
     <View style={{ width: W, flex: 1 }} {...a11yHidden(!!offscreen)}>
-      <ScrollView
+      <ScrollView keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: watched ? 96 : 30 }}
         showsVerticalScrollIndicator={false}
         simultaneousHandlers={simRef}
@@ -798,7 +798,7 @@ function EpisodePage({
         {watched && (
           <View style={styles.card}>
             <Text style={styles.label} accessibilityRole="header">{t('media.whereDidYouWatchPoll')}</Text>
-            <ScrollView
+            <ScrollView keyboardShouldPersistTaps="handled"
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ gap: 10, flexGrow: 1, justifyContent: 'center' }}>
@@ -963,7 +963,7 @@ function EpisodePage({
               <>
                 <View style={styles.hair} />
                 <Text style={styles.label} accessibilityRole="header">{t('media.whoWasFavoritePoll')}</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
+                <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10 }}>
                   {sm?.characters?.length
                     ? orderPollCast(sm.characters.slice(0, 20), charPct).map((c, i, row) => {
                         const picked = favChar === c.name;
@@ -1329,7 +1329,7 @@ export default function EpisodePagerScreen() {
 
         {/* swipe left/right = previous/next episode; grey page surface like the real app */}
         {!I18nManager.isRTL && (
-          <FlatList
+          <FlatList keyboardShouldPersistTaps="handled"
             ref={listRef}
             style={{ backgroundColor: colors.bg }}
             horizontal

@@ -1010,7 +1010,7 @@ export default function ShowScreen() {
       />
 
       {tab === 'About' ? (
-        <ScrollView
+        <ScrollView keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 24, paddingTop: 12 }}
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
@@ -1162,7 +1162,7 @@ export default function ShowScreen() {
             <>
               <View style={[styles.divider, { marginTop: 18 }]} />
               <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]} accessibilityRole="header">{t('media.castTitle')}</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.lg, gap: 10 }}>
+              <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.lg, gap: 10 }}>
                 {meta.cast.map((c, i) => (
                   // Pressable ONLY when there is an id to follow. Cast cached
                   // before `personId` existed has none, and a card that
@@ -1218,7 +1218,7 @@ export default function ShowScreen() {
             <>
               <View style={[styles.divider, { marginTop: 18 }]} />
               <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]} accessibilityRole="header">{t('show.peopleAlsoWatched')}</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.lg, gap: 10 }}>
+              <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: space.lg, gap: 10 }}>
                 {meta.similar.map((sim) => {
                   const tracked = isSimilarTracked(sim);
                   const busy = busySimilar === sim.tmdbId;
@@ -1294,7 +1294,7 @@ export default function ShowScreen() {
                   </>
                 );
               })()}
-              <ScrollView
+              <ScrollView keyboardShouldPersistTaps="handled"
                 horizontal
                 pagingEnabled
                 showsHorizontalScrollIndicator={false}
@@ -1677,7 +1677,7 @@ export default function ShowScreen() {
           </>)}
         </ScrollView>
       ) : (
-        <ScrollView
+        <ScrollView keyboardShouldPersistTaps="handled"
           style={{ backgroundColor: colors.panel }}
           contentContainerStyle={{ paddingBottom: 24 }}
           simultaneousHandlers={panRef}
@@ -1717,7 +1717,7 @@ export default function ShowScreen() {
             </Text>
           )}
           <GestureDetector gesture={carouselNative}>
-          <FlatList
+          <FlatList keyboardShouldPersistTaps="handled"
             ref={carouselRef}
             style={{ width: '100%' }}
             horizontal

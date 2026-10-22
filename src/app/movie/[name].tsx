@@ -1052,7 +1052,7 @@ export default function MovieScreen() {
         />
 
         <View style={{ flex: 1 }}>
-          <ScrollView
+          <ScrollView keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingBottom: (tab === 'More' ? 96 : 30) + (inDb ? 0 : 80), paddingTop: 12 }}
             simultaneousHandlers={panRef}
             onScroll={onScroll}
@@ -1071,7 +1071,7 @@ export default function MovieScreen() {
                         {t('franchise.progress', progress(franRows))}
                       </Text>
                     </View>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}
+                    <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false}
                       contentContainerStyle={{ gap: 10, paddingHorizontal: space.lg, paddingTop: 10, paddingBottom: 4 }}>
                       {franRows.map((r) => (
                         <Pressable
@@ -1223,7 +1223,7 @@ export default function MovieScreen() {
                   <>
                     <View style={styles.divider} />
                     <Text style={[styles.h2, { paddingHorizontal: space.lg, marginBottom: 12 }]} accessibilityRole="header">{t('media.castTitle')}</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: space.lg }}>
+                    <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: space.lg }}>
                       {mm.cast.map((c, i) => (
                         // one stop per actor, "Margot Robbie, Barbie", as on the show screen
                         <View key={`${c.name}-${i}`} style={{ width: 96 }} accessible accessibilityLabel={[c.name, c.character].filter(Boolean).join(', ')}>
@@ -1364,7 +1364,7 @@ export default function MovieScreen() {
                   <>
                     <View style={styles.divider} />
                     <Text style={styles.pollLabel} accessibilityRole="header">{t('media.whoWasFavoritePoll')}</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: space.lg }}>
+                    <ScrollView keyboardShouldPersistTaps="handled" horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: space.lg }}>
                       {orderPollCast(pollCast, charPct).map((c, i) => {
                         const label = pollLabel(c);
                         // The character as they appear IN THE FILM, falling
