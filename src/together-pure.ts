@@ -122,3 +122,17 @@ export function resolveTogetherShow(
   }
   return { kind: 'unreadable' };
 }
+
+/**
+ * The together I already OWN for this show, if any — so "Watch together" on a
+ * show opens that one instead of starting a duplicate (22 Oct). Several
+ * togethers stay allowed, one per show. `sameShow` answers for a re-keyed id
+ * (the row carries the key it was started with). Rows are the index the
+ * server sends, which holds only live (undeleted) lists.
+ */
+export function ownedTogetherFor<R extends { id: string; kind?: string; is_owner: boolean; show?: { target_key: string } | null }>(
+  rows: readonly R[],
+  sameShow: (key: number) => boolean,
+): R | null {
+  return rows.find((r) => r.kind === 'together' && r.is_owner && r.show != null && sameShow(Number(r.show.target_key))) ?? null;
+}

@@ -1,6 +1,7 @@
 import {
   aheadBy,
   comparePositions,
+  ownedTogetherFor,
   positionLabel,
   positionStamp,
   resolveTogetherShow,
@@ -99,5 +100,23 @@ describe('resolveTogetherShow', () => {
   it('is unreadable when the breadcrumb leads nowhere, and survives a loop', () => {
     expect(resolveTogetherShow(100, known, (id) => (id === 100 ? 150 : null))).toEqual({ kind: 'unreadable' });
     expect(resolveTogetherShow(1, known, (id) => (id === 1 ? 2 : 1))).toEqual({ kind: 'unreadable' });
+  });
+});
+
+describe('ownedTogetherFor', () => {
+  const row = (id: string, key: string, is_owner = true, kind = 'together') => ({ id, kind, is_owner, show: { target_key: key } });
+  const is = (want: number) => (k: number) => k === want;
+
+  it('finds the together I own for this show', () => {
+    expect(ownedTogetherFor([row('A', '1'), row('B', '2')], is(2))?.id).toBe('B');
+  });
+  it('ignores one I was only invited to, and ordinary lists', () => {
+    expect(ownedTogetherFor([row('A', '2', false), { id: 'L', kind: 'list', is_owner: true, show: null }], is(2))).toBeNull();
+  });
+  it('another show is no duplicate — several togethers are allowed', () => {
+    expect(ownedTogetherFor([row('A', '1')], is(2))).toBeNull();
+  });
+  it('matches through a re-keyed id', () => {
+    expect(ownedTogetherFor([row('A', '100')], (k) => k === 100 || k === 200)?.id).toBe('A');
   });
 });

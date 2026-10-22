@@ -30,7 +30,7 @@ import { getProfileId, getToken, isJoined } from '@/community-session';
 import { fetchSharedList, fetchSharedLists, type SharedListDetail, type SharedListRow } from '@/community-shared-lists';
 import { furthestWatched, getMeta, getShowBrief, onLocalChange, onRemoteChange, setMeta, showWatchCount } from '@/db';
 import { PLUS_AVAILABLE, requirePlus } from '@/plus';
-import { positionStamp, resolveTogetherShow, type ShowResolution } from '@/together-pure';
+import { ownedTogetherFor, positionStamp, resolveTogetherShow, type ShowResolution } from '@/together-pure';
 
 const ACTIVE_KEY = 'communityTogetherActive';
 /** `[{ listId, tvdbId, itemId? }]` — which togethers this account is in. */
@@ -177,13 +177,28 @@ export function noteTogetherJoined(): void {
 /**
  * Start one. PLUS, always — no free first one (D11). `requirePlus` is the
  * phone's half of the gate; a `plus_required` from the server is the paywall
- * too, the `shared/create` pattern. Null when it did not happen.
+ * too, the `shared/create` pattern. Null when it did not happen. Resolves to
+ * the existing one when I already own a together for this show.
  */
 export async function startTogether(show: {
   tvdbId: number;
   title: string;
   poster: string | null;
-}): Promise<{ id: string; invite_code: string } | null> {
+}): Promise<{ id: string } | null> {
+  /*
+   * ONE PER SHOW (22 Oct). Tapping "Watch together" again on a show I already
+   * started one for opens that one rather than a duplicate. Asked of the
+   * server's index, not the cache, and BEFORE the Plus gate: a lapsed Plus
+   * owner can still open the one they have.
+   */
+  const rows = await fetchSharedLists();
+  noteTogetherIndex(rows);
+  const mine = ownedTogetherFor(rows, (key) => {
+    if (key === show.tvdbId) return true;
+    const r = resolve(key);
+    return r.kind === 'local' && r.id === show.tvdbId;
+  });
+  if (mine) return { id: mine.id };
   if (!requirePlus('together')) return null;
   const token = await getToken();
   if (!token) throw new ApiError('unauthenticated', 401, 'Not signed in.');
