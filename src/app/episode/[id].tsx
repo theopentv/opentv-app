@@ -479,8 +479,13 @@ function EpisodePage({
    * So: hold the number back on the first vote of each half, and after that
    * leave it up and let it change in place.
    */
-  const [hadScore] = useState(() => vote.stars != null);
-  const [hadEmotions] = useState(() => vote.emotions.length > 0);
+  // "Had" means SETTLED ONCE ON THIS VISIT too, not only on arrival (22 Oct):
+  // a first rating and then a change on the same visit blanked the figures
+  // again, because the flag was frozen at mount.
+  const [hadScore, setHadScore] = useState(() => vote.stars != null);
+  const [hadEmotions, setHadEmotions] = useState(() => vote.emotions.length > 0);
+  if (!hadScore && stars != null && !settling.score) setHadScore(true);
+  if (!hadEmotions && emotions.size > 0 && !settling.emotions) setHadEmotions(true);
   const starPct = settling.score && !hadScore ? null : percents.stars;
   const emoPct = settling.emotions && !hadEmotions ? ({} as Record<string, number>) : percents.emotions;
 

@@ -550,8 +550,11 @@ export default function MovieScreen() {
   const settling = useVoteSettling('title', communityKey);
   // PER HALF, and only on the FIRST vote of each half — see the episode
   // screen. A later change leaves the number up and lets it change in place.
-  const [hadScore] = useState(() => dbMovie?.stars != null);
-  const [hadEmotions] = useState(() => (dbMovie ? getMovieEmotions(dbMovie.name).length > 0 : false));
+  const [hadScore, setHadScore] = useState(() => dbMovie?.stars != null);
+  const [hadEmotions, setHadEmotions] = useState(() => (dbMovie ? getMovieEmotions(dbMovie.name).length > 0 : false));
+  // Settled once on this visit counts too — see the episode screen.
+  if (!hadScore && stars != null && !settling.score) setHadScore(true);
+  if (!hadEmotions && emotions.size > 0 && !settling.emotions) setHadEmotions(true);
   const holdStars = settling.score && !hadScore;
   const holdEmotions = settling.emotions && !hadEmotions;
   const starPct =
