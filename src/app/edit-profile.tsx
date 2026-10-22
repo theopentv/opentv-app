@@ -15,8 +15,10 @@ import { LayoutPicker } from '@/components/layout-picker';
 import { ContentColumn, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import seed from '@/seed';
-import { getMeta, setMeta } from '@/db';
-import { pushDisplayName, pushHiddenSections } from '@/community-profiles';
+import { getMeta, getProfileLayout, setMeta } from '@/db';
+import { pushDisplayName, pushHiddenSections, pushWidgets } from '@/community-profiles';
+import { profileTogethers, setTogetherHiddenOnProfile, togetherHiddenOnProfile } from '@/community-together';
+import { widgetValue } from '@/components/profile-widgets';
 import {
   HIDDEN_SECTIONS_KEY,
   PROFILE_SECTIONS,
@@ -26,8 +28,8 @@ import {
   type ProfileSection,
 } from '@/pure';
 import { isSeedLibrary, profileImageUri, visibleCoverUri } from '@/library';
-import { requestArrange } from '@/profile-layout';
-import { requirePlus, usePlus } from '@/plus';
+import { parseLayout, publishableWidgets, requestArrange } from '@/profile-layout';
+import { isPlus, requirePlus, usePlus } from '@/plus';
 import { availableSeasons, currentDecoration } from '@/season';
 import { colors, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
@@ -116,6 +118,26 @@ export default function EditProfileScreen() {
       })
       .finally(() => setSectionBusy(false));
   };
+  /*
+   * WATCHING TOGETHER ON MY PROFILE (22 Oct). Offered only to somebody in one,
+   * free at every tier — it is other people's shows too. Kept on this phone,
+   * not in `hidden_sections`: see `TOGETHER_HIDDEN_KEY`.
+   */
+  const [inTogether, setInTogether] = useState(() => profileTogethers().length > 0);
+  const [togetherShown, setTogetherShown] = useState(() => !togetherHiddenOnProfile());
+  const toggleTogether = (show: boolean) => {
+    tapLight();
+    setTogetherHiddenOnProfile(!show);
+    setTogetherShown(show);
+    // A Plus arrangement already on the server carries the block's titles:
+    // hiding must take them back off, not merely stop sending them.
+    if (isPlus()) {
+      const items = parseLayout(getProfileLayout())?.items ?? [];
+      if (items.some((p) => p.id === 'together')) {
+        void pushWidgets(JSON.stringify(publishableWidgets(items, (id, span, data) => widgetValue(id, span, data)))).catch(() => {});
+      }
+    }
+  };
   // re-read meta when returning from the cover picker
   // State, re-read on focus: coming back from /handle must show the new name.
   const [handle, setHandleShown] = useState(getHandle);
@@ -126,6 +148,8 @@ export default function EditProfileScreen() {
       setTick((t) => t + 1);
       setHandleShown(getHandle());
       setHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)));
+      setInTogether(profileTogethers().length > 0);
+      setTogetherShown(!togetherHiddenOnProfile());
       setDeco(currentDecoration(plus));
     }, [plus]),
   );
@@ -404,6 +428,20 @@ export default function EditProfileScreen() {
                   />
                 </View>
               ))}
+              {inTogether && (
+                <View style={styles.switchRow}>
+                  <View style={styles.switchText}>
+                    <Text style={styles.fieldLabel}>{t('together.title')}</Text>
+                    <Text style={styles.switchSub}>{t('together.profileSwitchSub')}</Text>
+                  </View>
+                  <Switch
+                    value={togetherShown}
+                    onValueChange={toggleTogether}
+                    accessibilityLabel={t('together.title')}
+                    trackColor={{ true: colors.green }}
+                  />
+                </View>
+              )}
             </>
           )}
         </ContentColumn>
