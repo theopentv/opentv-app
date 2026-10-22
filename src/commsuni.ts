@@ -231,12 +231,17 @@ export async function primeArchiveImages(): Promise<boolean> {
 
 async function get<T>(path: string): Promise<T | null> {
   if (!isJoined()) return null;
+  // A ceiling, like every other request in the app: with none, a stalled
+  // socket left the board's spinner up until the OS gave up, minutes later.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12000);
   try {
     const token = await getToken();
     if (!token) return null;
     lastToken = token;
     const res = await fetch(`${serverUrl()}/v1/commsuni${path}`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: ctrl.signal,
     });
     // 429 IS AN EXPECTED TUESDAY, not an incident: the key is metered and set
     // by hand, currently low. It is the same `null` as a dead network, because
@@ -245,6 +250,8 @@ async function get<T>(path: string): Promise<T | null> {
     return (await res.json()) as T;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
