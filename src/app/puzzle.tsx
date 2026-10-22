@@ -22,6 +22,12 @@
  * is tapped AND here, so a stale link from a lapsed subscriber opens today's
  * instead. An archive game is kept apart and never counts for the stats.
  *
+ * `?view=` (22 Oct) is a PLAYED day's result, read-only — what a tap on a
+ * played row of Your history opens. The player's own finished game, so it is
+ * free, and shareable like today's; the grid comes from the history row
+ * (`pastGame`), the still only if one was pinned that day, and like an
+ * archive game it shows no stats.
+ *
  * ANALYTICS: "played" on the first guess and "finished" with the try count —
  * shape, never the title, as `analytics.ts` requires.
  */
@@ -52,6 +58,7 @@ import {
   cluesShown,
   guess as applyGuess,
   guessedId,
+  historyUnlocked,
   isClose,
   isOver,
   markClose,
@@ -72,7 +79,9 @@ import {
   finishGame,
   gameFor,
   loadGame,
+  pastGame,
   pictureFor,
+  pinnedPicture,
   saveGame,
   sameSeries,
   sameSeriesNow,
@@ -90,13 +99,20 @@ const SUGGESTIONS = 8;
 export default function PuzzleScreen() {
   /* The day is fixed when the screen opens: a game that straddles midnight
      finishes as the day it started, which is the day its answer belongs to. */
-  const params = useLocalSearchParams<{ day?: string }>();
+  const params = useLocalSearchParams<{ day?: string; view?: string }>();
   const insets = useSafeAreaInsets();
-  const [{ day, archive }] = useState(() => {
+  const [{ day, archive, past }] = useState(() => {
     const now = today();
-    const asked = typeof params.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(params.day) ? params.day : null;
-    return asked && asked < now && isPlus() ? { day: asked, archive: true } : { day: now, archive: false };
+    const stamp = (v?: string) => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null);
+    // Past results are free, but a title the history keeps behind Plus stays there.
+    const seen = stamp(params.view);
+    const done = seen && seen <= now && historyUnlocked(seen, now, isPlus()) ? pastGame(seen) : null;
+    if (seen && done) return { day: seen, archive: false, past: done };
+    const asked = stamp(params.day);
+    return asked && asked < now && isPlus() ? { day: asked, archive: true, past: null } : { day: now, archive: false, past: null };
   });
+  /** Read-only: a played day's result, nothing saved, no stats. */
+  const view = past != null;
   const number = puzzleNumber(day);
   /*
    * LAZY INITIALISERS, NOT AN EFFECT, for the synchronous reads: the screen is
@@ -105,7 +121,7 @@ export default function PuzzleScreen() {
    * picture, which may need the network, is resolved in an effect.
    */
   const [pool] = useState<Answer[]>(answerPool);
-  const [game, setGame] = useState<Game | null>(() => gameFor(day, pool, archive));
+  const [game, setGame] = useState<Game | null>(() => past ?? gameFor(day, pool, archive));
   const answer = useMemo(() => (game ? (pool.find((a) => a.id === game.id) ?? null) : null), [pool, game]);
   /* Set again once the picture has resolved: for a film that is also when its
      details arrive (`pictureFor` → `fetchFilmDetail`), and the director and
@@ -146,15 +162,15 @@ export default function PuzzleScreen() {
       setPicture(uri);
       if (answer) setClues(cluesFor(answer));
     };
-    if (!answer) {
-      Promise.resolve().then(() => settle(null));
+    if (!answer || view) {
+      Promise.resolve().then(() => settle(answer ? pinnedPicture(day, answer.id) : null));
     } else {
       pictureFor(answer, day).then(settle, () => settle(null));
     }
     return () => {
       cancelled = true;
     };
-  }, [answer, day]);
+  }, [answer, day, view]);
 
   const guessed = useMemo(() => new Set<PuzzleId>((game?.guesses ?? []).map(guessedId)), [game]);
   const suggestions = useMemo(
@@ -297,7 +313,7 @@ export default function PuzzleScreen() {
             <Text style={s.number}>#{number}</Text>
             {/* The archive's door, on every visit to today's puzzle: before
                 playing, a way to warm up; after, somewhere to go next. */}
-            {!archive && (
+            {!archive && !view && (
               <Pressable
                 onPress={() => router.push('/puzzle-archive')}
                 hitSlop={10}
@@ -318,7 +334,7 @@ export default function PuzzleScreen() {
         <ContentColumn>
           {/* DEV ONLY: start today over — the first-day offer, the Profile
               banner and the streak line can be seen again. Absent from release. */}
-          {__DEV__ && (
+          {__DEV__ && !view && (
             <Pressable
               accessibilityRole="button"
               style={{ alignSelf: 'center', backgroundColor: colors.yellow, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6, marginBottom: 10 }}
@@ -495,7 +511,7 @@ export default function PuzzleScreen() {
 
               {/* Played, win %, average tries — today's games only, so an
                   archive game does not show them as if it had moved them. */}
-              {!archive && (
+              {!archive && !view && (
                 <View style={s.statsFrame}>
                   <StatsRow stats={stats} big />
                   {/* THE PUZZLE'S OWN STREAK (22 Oct), back after a week away —
@@ -521,7 +537,7 @@ export default function PuzzleScreen() {
 
               {/* The card is what the image share captures — see `puzzle-share-card.tsx`. */}
               <View style={s.cardFrame}>
-                <PuzzleShareCard number={number} day={day} game={game} stats={archive ? null : stats} cardRef={cardRef} picture={picture} />
+                <PuzzleShareCard number={number} day={day} game={game} stats={archive || view ? null : stats} cardRef={cardRef} picture={picture} />
               </View>
               <View style={s.actions}>
                 <Pressable style={s.shareBtn} onPress={() => setSharing(true)} accessibilityRole="button" accessibilityLabel={t('puzzle.share')}>

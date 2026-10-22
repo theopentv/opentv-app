@@ -11,8 +11,10 @@
  * year of empty days before they ever opened the game is a wall.
  *
  * A PLAYED DAY IS NOT REPLAYED. Its result is final, live or from the
- * archive, so the row shows the square and does nothing — the answer is
- * already known, and a second go would only be a second, easier game.
+ * archive — the answer is already known, and a second go would only be a
+ * second, easier game. Since 22 Oct its row opens that day's RESULT,
+ * read-only and shareable (`/puzzle?view=`), free: it is the player's own
+ * finished game. Today's row opens the puzzle screen, which shows it.
  *
  * READ ON FOCUS, so a day played from here is coloured when you come back.
  *
@@ -106,17 +108,21 @@ export default function PuzzleArchiveScreen() {
         renderItem={({ item }) => {
           const played = item.r != null;
           const unlocked = historyUnlocked(item.d, day, plus);
-          // A played day does nothing — unless its title is still behind Plus.
+          // A played day opens its result — unless its title is still behind Plus.
           const locked = played && !unlocked;
           const name = played && unlocked ? names.get(item.r!.id) : undefined;
           const line = name ? `${name} · ${status(item.r)}` : status(item.r);
           return (
             <Pressable
-              style={({ pressed }) => [s.row, pressed && (!played || locked) && { backgroundColor: colors.lift }]}
-              disabled={played && !locked}
-              onPress={() => (locked ? requirePlus('puzzle.history') : open(item.d))}
+              style={({ pressed }) => [s.row, pressed && { backgroundColor: colors.lift }]}
+              onPress={() =>
+                locked
+                  ? requirePlus('puzzle.history')
+                  : !played
+                    ? open(item.d)
+                    : router.push(item.d === day ? '/puzzle' : `/puzzle?view=${item.d}`)
+              }
               accessibilityRole="button"
-              accessibilityState={{ disabled: played && !locked }}
               accessibilityLabel={`#${item.n}, ${longDay(item.d)}, ${line}`}
               accessibilityHint={(!played || locked) && !plus ? t('puzzlePolish.needsPlus') : undefined}>
               <View style={[s.square, item.r ? { backgroundColor: levelColor(winLevel(item.r)) } : s.squareEmpty]} />
@@ -128,15 +134,14 @@ export default function PuzzleArchiveScreen() {
                   {line}
                 </Text>
               </View>
-              {(!played || locked) &&
-                (plus ? (
-                  <Ionicons name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={colors.faint} />
-                ) : (
-                  <View style={s.plus}>
-                    <Ionicons name="lock-closed" size={11} color={colors.onYellow} />
-                    <Text style={s.plusText}>{t('plus.badge')}</Text>
-                  </View>
-                ))}
+              {(played && !locked) || plus ? (
+                <Ionicons name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={colors.faint} />
+              ) : (
+                <View style={s.plus}>
+                  <Ionicons name="lock-closed" size={11} color={colors.onYellow} />
+                  <Text style={s.plusText}>{t('plus.badge')}</Text>
+                </View>
+              )}
             </Pressable>
           );
         }}

@@ -491,8 +491,39 @@ export function shareText(number: number, g: Game): string {
 // ── history: the month of squares ───────────────────────────────────────────
 
 /** `close`: how many tries were the right series (🟨). Absent on every row
- *  written before 14 Oct and on any day without one. */
-export type Result = { d: string; id: PuzzleId; tries: number; won: boolean; close?: number };
+ *  written before 14 Oct and on any day without one. `sq` (22 Oct): the grid
+ *  itself, one letter per try (`gridCode`), so a past day's result can be
+ *  shared square for square; absent on every row written before. */
+export type Result = { d: string; id: PuzzleId; tries: number; won: boolean; close?: number; sq?: string };
+
+/** g right, y right series, k skipped, r wrong — `squares` as letters. */
+export function gridCode(g: Game): string {
+  return g.guesses.map((id) => (id === g.id ? 'g' : id === SKIP ? 'k' : isClose(id) ? 'y' : 'r')).join('');
+}
+
+/** Stands in for a wrong guess whose title was never stored: neither SKIP nor
+ *  any real id (TheTVDB ids are positive, films are strings). */
+const WRONG = -1;
+
+/**
+ * A finished day's game rebuilt from its history row, for the result screen's
+ * read-only view of a past day (22 Oct). The guesses themselves were never
+ * kept — only the grid matters there, and the share text never names a title.
+ * With `sq` the grid is exact; without it (rows before 22 Oct), the misses
+ * are wrong squares with the `close` ones last, then the solve — a lost game
+ * is all misses.
+ */
+export function gameOfResult(r: Result): Game {
+  const tries = Math.min(MAX_TRIES, Math.max(r.won ? 1 : 0, r.tries));
+  let code = r.sq;
+  if (!code || code.length !== tries || code.indexOf('g') !== (r.won ? tries - 1 : -1)) {
+    const missed = r.won ? tries - 1 : tries;
+    const close = Math.min(r.close ?? 0, missed);
+    code = 'r'.repeat(missed - close) + 'y'.repeat(close) + (r.won ? 'g' : '');
+  }
+  const guesses = [...code].map((c): PuzzleId => (c === 'g' ? r.id : c === 'k' ? SKIP : c === 'y' ? `${CLOSE}m:?` : WRONG));
+  return { day: r.d, id: r.id, guesses, won: r.won };
+}
 
 /**
  * Ten years of days, about 50 bytes each.
@@ -506,7 +537,7 @@ export const HISTORY_MAX = 3650;
 
 export function resultOf(g: Game): Result {
   const close = g.guesses.filter(isClose).length;
-  return { d: g.day, id: g.id, tries: g.guesses.length, won: g.won, ...(close ? { close } : {}) };
+  return { d: g.day, id: g.id, tries: g.guesses.length, won: g.won, ...(close ? { close } : {}), sq: gridCode(g) };
 }
 
 /** One row per day, newest last. A day replayed (it cannot be, but a bad
@@ -734,7 +765,8 @@ export function parseHistory(v: unknown): Result[] {
     const id = parseId(o.id);
     if (typeof o.d !== 'string' || id == null) continue;
     const close = typeof o.close === 'number' && o.close > 0 ? Math.floor(o.close) : 0;
-    out.push({ d: o.d, id, tries: typeof o.tries === 'number' ? o.tries : 0, won: o.won === true, ...(close ? { close } : {}) });
+    const sq = typeof o.sq === 'string' && /^[gykr]{1,6}$/.test(o.sq) ? o.sq : null;
+    out.push({ d: o.d, id, tries: typeof o.tries === 'number' ? o.tries : 0, won: o.won === true, ...(close ? { close } : {}), ...(sq ? { sq } : {}) });
   }
   return out;
 }

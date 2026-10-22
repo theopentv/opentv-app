@@ -41,6 +41,7 @@ import { parseLayout, publishableWidgets } from '@/profile-layout';
 import { displayTitle, localDayStamp, parseAltTitles } from '@/pure';
 import {
   filmId,
+  gameOfResult,
   isFilmId,
   isOver,
   libraryCandidates,
@@ -733,6 +734,24 @@ export function publishedPuzzleValue(): PublicPuzzle | null {
  *  archive list draws both, and only today's ever count. */
 export function resultsByDay(): Map<string, Result> {
   return new Map([...loadArchive(), ...loadHistory()].map((r) => [r.d, r]));
+}
+
+/**
+ * A played day's finished game, for the result screen's read-only view
+ * (22 Oct): the saved game when it is still the one kept (today's, or the
+ * last archive game), else rebuilt from its history row — `gameOfResult`.
+ * Null for a day never played.
+ */
+export function pastGame(day: string): Game | null {
+  const r = resultsByDay().get(day);
+  if (!r) return null;
+  const saved = [loadGame(day), loadGame(day, true)].find((g) => g != null && g.id === r.id && isOver(g));
+  return saved ?? gameOfResult(r);
+}
+
+/** The still pinned for that day's answer, or null — never picks a new one. */
+export function pinnedPicture(day: string, id: PuzzleId): string | null {
+  return parsePinned(parse<unknown>(K.answers)).find((p) => p.d === day && p.id === id)?.pic ?? null;
 }
 
 /**

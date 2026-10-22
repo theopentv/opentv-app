@@ -4,6 +4,8 @@
  * posted by a thousand people.
  */
 import {
+  gameOfResult,
+  gridCode,
   BLUR,
   CLUES,
   MAX_TRIES,
@@ -635,7 +637,7 @@ describe('right series, wrong part', () => {
     let g = newGame('2026-11-02', answer);
     for (const id of [81189, part1, answer]) g = guess(g, id, id === part1);
     expect(shareText(2, g)).toBe('OpenTV #2 · 3/6\n🟥🟨🟩');
-    expect(resultOf(g)).toEqual({ d: '2026-11-02', id: answer, tries: 3, won: true, close: 1 });
+    expect(resultOf(g)).toEqual({ d: '2026-11-02', id: answer, tries: 3, won: true, close: 1, sq: 'ryg' });
     expect(puzzleStats([resultOf(g)]).avg).toBe(3);
     // A loss with a close guess is the yellow day; without one, the red.
     let lost = newGame('2026-11-03', answer);
@@ -762,5 +764,38 @@ describe('puzzle streak and the profile banner', () => {
     expect(puzzleArt('', false, null)).toBeNull();
     expect(puzzleArt('u', false, 'Lost')).toEqual({ uri: 'u', blur: BLUR[0], title: null });
     expect(puzzleArt('u', true, 'Lost')).toEqual({ uri: 'u', blur: 0, title: 'Lost' });
+  });
+});
+
+describe('a past day rebuilt from its history row (22 Oct)', () => {
+  const id = 81189;
+  const play = (...tries: (number | string)[]) => {
+    let g = newGame('2026-11-04', id);
+    for (const x of tries) g = guess(g, x, x === 'm:2');
+    return g;
+  };
+
+  it('stores the grid as letters and round-trips it exactly', () => {
+    const g = play(SKIP, 5, 'm:2', id);
+    expect(gridCode(g)).toBe('kryg');
+    const [row] = parseHistory(JSON.parse(JSON.stringify([resultOf(g)])));
+    expect(row.sq).toBe('kryg');
+    const back = gameOfResult(row);
+    expect(squares(back)).toBe(squares(g));
+    expect(shareText(4, back)).toBe(shareText(4, g));
+    expect(isOver(back)).toBe(true);
+  });
+
+  it('an old row without the grid: misses, the close ones last, then the solve', () => {
+    expect(squares(gameOfResult({ d: '2026-11-01', id, tries: 4, won: true, close: 1 }))).toBe('🟥🟥🟨🟩');
+    expect(squares(gameOfResult({ d: '2026-11-01', id, tries: 1, won: true }))).toBe('🟩');
+    const lost = gameOfResult({ d: '2026-11-01', id, tries: 6, won: false });
+    expect(squares(lost)).toBe('🟥🟥🟥🟥🟥🟥');
+    expect(shareText(1, lost)).toBe('OpenTV #1 · X/6\n🟥🟥🟥🟥🟥🟥');
+  });
+
+  it('a grid that disagrees with its row is ignored, and junk is dropped on read', () => {
+    expect(squares(gameOfResult({ d: '2026-11-01', id, tries: 3, won: true, sq: 'rgr' }))).toBe('🟥🟥🟩');
+    expect(parseHistory([{ d: '2026-11-01', id, tries: 2, won: true, sq: 'x<' }])[0].sq).toBeUndefined();
   });
 });
