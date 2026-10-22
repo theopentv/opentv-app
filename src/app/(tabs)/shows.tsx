@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: colors.card,
+    // no box of its own (22 Oct): it lies on the list's grey like the rest
     borderRadius: radius.card,
     padding: 12,
     marginHorizontal: space.lg,

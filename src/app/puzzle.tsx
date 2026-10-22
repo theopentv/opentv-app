@@ -338,6 +338,24 @@ export default function PuzzleScreen() {
         // Clear of the system navigation bar: edge-to-edge Android draws under it.
         contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
         <ContentColumn>
+          {/* DEV ONLY: start today over — the first-day offer, the Profile
+              banner and the streak line can be seen again. Absent from release. */}
+          {__DEV__ && (
+            <Pressable
+              accessibilityRole="button"
+              style={{ alignSelf: 'center', backgroundColor: colors.yellow, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6, marginBottom: 10 }}
+              onPress={() => {
+                const g = devFreshGame(day, pool, game?.id ?? null);
+                if (!g) return;
+                setPicture(undefined);
+                setQuery('');
+                setStats(currentStats());
+                setStreak(currentStreak(day));
+                setGame(g);
+              }}>
+              <Text style={{ color: '#000', fontWeight: '800', fontSize: 13 }}>DEV: reset today's puzzle</Text>
+            </Pressable>
+          )}
           {/* THE STILL. Blur is `expo-image`'s own, lowered per miss — on the
               phone, free, and nothing is uploaded anywhere. */}
           <View style={s.frame} accessible accessibilityLabel={t('puzzle.title')}>
@@ -522,21 +540,6 @@ export default function PuzzleScreen() {
                   <Text style={s.shareText}>{t('puzzle.share')}</Text>
                 </Pressable>
                 <Text style={s.tomorrow}>{t('puzzle.tomorrow')}</Text>
-                {__DEV__ && (
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => {
-                      const g = devFreshGame(day, pool, game?.id ?? null);
-                      if (!g) return;
-                      setPicture(undefined);
-                      setQuery('');
-                      setStats(currentStats());
-                      setStreak(currentStreak(day));
-                      setGame(g);
-                    }}>
-                    <Text style={s.tomorrow}>Dev: play another</Text>
-                  </Pressable>
-                )}
               </View>
             </>
           )}
