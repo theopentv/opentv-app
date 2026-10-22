@@ -1050,15 +1050,21 @@ const TMDB_GAP_KEYS: (keyof ShowMeta)[] = ['rating', 'votes', 'similar', 'provid
  */
 async function doFetch(tvdbId: number, tmdbIdHint?: number | null): Promise<ShowMeta | null> {
   try {
+    // BOTH SOURCES AT ONCE. They are independent — TMDB is found by the tvdbId
+    // or the stored hint, never by anything TheTVDB answers — and run one after
+    // the other they made a cold show page wait for TheTVDB's pages AND THEN
+    // TMDB's /find and /tv. `fetchTmdbGapFields` never rejects, so starting it
+    // early cannot leave an unhandled rejection behind.
+    const gapsP = fetchTmdbGapFields(tvdbId, tmdbIdHint);
     const tvdbRecord = await fetchTvdbStructure(tvdbId);
 
     // TheTVDB unreachable (revoked key, offline, unknown id) — degrade to a
     // read-only TMDB render rather than corrupting stored numbering
-    if (!tvdbRecord) return fetchTmdbFallbackStructure(tvdbId, tmdbIdHint);
+    if (!tvdbRecord) return fetchTmdbFallbackStructure(tvdbId, gapsP);
 
     // TMDB is optional now: only providers, similar shows and the rating come
     // from it, so a failure here costs three fields, not a usable screen
-    const gaps = await fetchTmdbGapFields(tvdbId, tmdbIdHint);
+    const gaps = await gapsP;
     const m: ShowMeta = gaps
       ? {
           ...tvdbRecord,
@@ -1100,12 +1106,16 @@ async function doFetch(tvdbId: number, tmdbIdHint?: number | null): Promise<Show
  * numbered S1–S34, so they read as unwatched. That is accepted: visible,
  * recoverable and self-healing, unlike rewriting their database.
  */
-async function fetchTmdbFallbackStructure(tvdbId: number, tmdbIdHint?: number | null): Promise<ShowMeta | null> {
+async function fetchTmdbFallbackStructure(
+  tvdbId: number,
+  gapsP: Promise<Partial<ShowMeta> | null>,
+): Promise<ShowMeta | null> {
   const existing = showMeta(tvdbId);
   // a TheTVDB-sourced record already on the device always wins over this
   if (existing?.structureSource === 'tvdb') return existing;
 
-  const gaps = await fetchTmdbGapFields(tvdbId, tmdbIdHint);
+  // already in the air since doFetch began — reused, never asked twice
+  const gaps = await gapsP;
   if (!gaps?.tmdbId) return existing ?? null;
 
   const episodes: Record<string, EpisodeMeta> = {};
