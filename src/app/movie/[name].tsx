@@ -120,6 +120,34 @@ function countLabel(n: number): string {
 
 type RemoteMeta = MovieMeta & { poster: string | null };
 
+type FilmPage = {
+  runtime?: number;
+  genres?: { name: string }[];
+  release_date?: string;
+  overview?: string;
+  vote_average?: number;
+  vote_count?: number;
+  backdrop_path?: string;
+  poster_path?: string;
+  belongs_to_collection?: { id?: number } | null;
+  credits?: { cast?: { name?: string; character?: string; profile_path?: string }[] };
+  'watch/providers'?: { results?: Record<string, Partial<Record<WatchKind, { provider_name?: string; logo_path?: string | null }[]>>> };
+  videos?: { results?: { site?: string; type?: string; key?: string; official?: boolean }[] };
+};
+/** Per session and per region (the providers are one country's). A failure
+ *  is forgotten, so the next open asks again. */
+const filmPages = new Map<string, Promise<FilmPage>>();
+function filmPage(tmdbId: number): Promise<FilmPage> {
+  const key = `${tmdbId}|${watchRegion()}`;
+  let p = filmPages.get(key);
+  if (!p) {
+    p = tmdb<FilmPage>(`/movie/${tmdbId}?append_to_response=credits,watch/providers,videos`);
+    p.catch(() => filmPages.delete(key));
+    filmPages.set(key, p);
+  }
+  return p;
+}
+
 export default function MovieScreen() {
   const insets = useSafeAreaInsets();
   const { width: winW } = useWindowDimensions();
@@ -339,17 +367,8 @@ export default function MovieScreen() {
    * against the library, which is the half of "watch order" that is a fact
    * rather than an editorial opinion.
    */
+  // Asked by the film effect below, from the same `/movie/{id}` answer.
   const [fran, setFran] = useState<Franchise | null>(() => cachedFranchise(tmdbId));
-  useEffect(() => {
-    if (!tmdbId) return;
-    let live = true;
-    void fetchFranchise(tmdbId).then((f) => {
-      if (live) setFran(f);
-    });
-    return () => {
-      live = false;
-    };
-  }, [tmdbId]);
 
   const franRows: Row[] = useMemo(() => {
     if (!fran) return [];
@@ -362,19 +381,17 @@ export default function MovieScreen() {
 
   useEffect(() => {
     if (!tmdbId) return;
-    if (!bundled) {
-      tmdb<{
-        runtime?: number;
-        genres?: { name: string }[];
-        release_date?: string;
-        overview?: string;
-        vote_average?: number;
-        vote_count?: number;
-        backdrop_path?: string;
-        poster_path?: string;
-        credits?: { cast?: { name?: string; character?: string; profile_path?: string }[] };
-      }>(`/movie/${tmdbId}?append_to_response=credits`)
-        .then((d) =>
+    let live = true;
+    /*
+     * ONE REQUEST FOR THE FILM, where there were four: the detail with its
+     * credits, the providers, the videos, and the franchise's own `/movie/{id}`
+     * to read one field of the same record. TMDB appends all of it to a
+     * single answer. Kept for the session, so reopening a film costs nothing.
+     */
+    void filmPage(tmdbId)
+      .then((d) => {
+        if (!live) return;
+        if (!bundled)
           setRemote({
             runtime: d.runtime ?? null,
             genres: (d.genres ?? []).map((g) => g.name).slice(0, 4),
@@ -394,29 +411,28 @@ export default function MovieScreen() {
               charPhoto: null,
             })),
             providers: [],
-          }),
-        )
-        .catch(() => {});
-    }
+          });
+        setLiveProviders(watchOptions(d['watch/providers']?.results?.[watchRegion()]));
+        const vids = (d.videos?.results ?? []).filter((x) => x.site === 'YouTube' && x.key);
+        const pick = vids.find((x) => x.type === 'Trailer' && x.official) ?? vids.find((x) => x.type === 'Trailer') ?? vids[0];
+        if (pick?.key) setTrailer(pick.key);
+        return fetchFranchise(tmdbId, d.belongs_to_collection ?? null);
+      })
+      // the film request failed: the franchise may still be cached or askable
+      .catch(() => fetchFranchise(tmdbId))
+      .then((f) => {
+        if (live && f !== undefined) setFran(f);
+      });
     // read here, in the effect, not in render: React Compiler (see CLAUDE.md)
     const plotLang = plotTmdbCode();
     if (plotLang) {
       tmdb<{ overview?: string }>(`/movie/${tmdbId}?language=${plotLang}`)
-        .then((d) => setLocalPlot(firstPlot(d.overview)))
+        .then((d) => live && setLocalPlot(firstPlot(d.overview)))
         .catch(() => {});
     }
-    tmdb<{ results?: Record<string, Partial<Record<WatchKind, { provider_name?: string; logo_path?: string | null }[]>>> }>(
-      `/movie/${tmdbId}/watch/providers`,
-    )
-      .then((d) => setLiveProviders(watchOptions(d.results?.[watchRegion()])))
-      .catch(() => {});
-    tmdb<{ results?: { site?: string; type?: string; key?: string; official?: boolean }[] }>(`/movie/${tmdbId}/videos`)
-      .then((v) => {
-        const vids = (v.results ?? []).filter((x) => x.site === 'YouTube' && x.key);
-        const pick = vids.find((x) => x.type === 'Trailer' && x.official) ?? vids.find((x) => x.type === 'Trailer') ?? vids[0];
-        if (pick?.key) setTrailer(pick.key);
-      })
-      .catch(() => {});
+    return () => {
+      live = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tmdbId]);
 

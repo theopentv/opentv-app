@@ -40,13 +40,24 @@ export function cachedFranchise(tmdbId: number | null | undefined): Franchise | 
   return read(tmdbId)?.f ?? null;
 }
 
-export async function fetchFranchise(tmdbId: number): Promise<Franchise | null> {
+/**
+ * `known` is `belongs_to_collection` from a `/movie/{id}` the caller already
+ * has — the film page asks for the film anyway, so asking again here was the
+ * same request twice. Undefined = not known, ask.
+ */
+export async function fetchFranchise(
+  tmdbId: number,
+  known?: { id?: number } | null,
+): Promise<Franchise | null> {
   const have = read(tmdbId);
   if (have && Date.now() - have.at < MONTH) return have.f;
 
   try {
-    const d = await tmdb<{ belongs_to_collection?: { id?: number } | null }>(`/movie/${tmdbId}`);
-    const id = d.belongs_to_collection?.id;
+    const collection =
+      known !== undefined
+        ? known
+        : (await tmdb<{ belongs_to_collection?: { id?: number } | null }>(`/movie/${tmdbId}`)).belongs_to_collection;
+    const id = collection?.id;
     if (!id) {
       setMeta(keyFor(tmdbId), JSON.stringify({ at: Date.now(), f: null } satisfies Cached));
       return null;
