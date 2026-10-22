@@ -356,6 +356,17 @@ export default function RootLayout() {
         // pre-cache every show's full metadata so the library is fully browsable
         // offline (episode names, dates, seasons) — no-op once all are stored
         void cacheAllShowMetadata();
+        // FIRST OF THE COMMUNITY WORK, because everything after it assumes the
+        // session is real. `requireAuth` does no I/O, so a profile deleted by
+        // moderation — or by hand in the database — leaves every token working
+        // until it expires; this is the one call that asks. A dead session ends
+        // here and the app falls back to the Join prompt, instead of showing a
+        // community that quietly answers nothing.
+        // AHEAD OF THE CHARACTER-NAME BACKFILL (22 Oct): that one is a TheTVDB
+        // call per nameless vote and can run long on a big library, and this
+        // one is what applies a dashboard Plus grant. Behind it, a gifted
+        // account sat without Plus for the whole backfill.
+        await refreshSession().catch(() => {});
         // TV Time's export identifies a favourite character by TheTVDB id and
         // nothing else, so those votes imported nameless and the seeder — which
         // cannot send a vote with no name — silently dropped every one of them.
@@ -366,7 +377,7 @@ export default function RootLayout() {
         // fingerprint (see archiveCounts), so the sync immediately below is the
         // run that carries the recovered names to the server. Run it after, and
         // they would wait a whole launch.
-        await backfillCharacterNames();
+        await backfillCharacterNames().catch(() => {});
         // the archive heals itself. A DONE flag can only record that a row was
         // sent, never that it was sent in the shape the server now stores — so
         // a contract revision plus a cheap local fingerprint decide, on every
@@ -378,13 +389,6 @@ export default function RootLayout() {
         // they are about to read already contain their own vote. It never
         // throws and it is already behind runAfterInteractions, so waiting for
         // it blocks nothing the user can see.
-        // FIRST OF THE COMMUNITY WORK, because everything after it assumes the
-        // session is real. `requireAuth` does no I/O, so a profile deleted by
-        // moderation — or by hand in the database — leaves every token working
-        // until it expires; this is the one call that asks. A dead session ends
-        // here and the app falls back to the Join prompt, instead of showing a
-        // community that quietly answers nothing.
-        await refreshSession();
     // The cold-start half of the Siri drain; the foreground listener below
     // covers the app that was merely backgrounded.
     void applySiriQueue();
