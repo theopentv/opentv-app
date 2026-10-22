@@ -3664,7 +3664,8 @@
     "mostBehind": "Più indietro",
     "random": "Casuale",
     "a11y": "Ordina la lista. Ora: {{sort}}",
-    "reset": "Torna all’ordine «Recenti»"
+    "reset": "Torna all’ordine «Recenti»",
+    "resetShort": "Ripristina"
   },
   "watchKind": {
     "flatrate": "Abbonamento",

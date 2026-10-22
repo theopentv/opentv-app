@@ -3664,7 +3664,8 @@
     "mostBehind": "Größter Rückstand",
     "random": "Zufällig",
     "a11y": "Watchlist sortieren. Aktuell: {{sort}}",
-    "reset": "Sortierung auf «Zuletzt» zurücksetzen"
+    "reset": "Sortierung auf «Zuletzt» zurücksetzen",
+    "resetShort": "Zurücksetzen"
   },
   "watchKind": {
     "flatrate": "Abo",

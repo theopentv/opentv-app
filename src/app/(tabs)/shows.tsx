@@ -717,21 +717,21 @@ export default function ShowsScreen() {
           visible={sortOpen}
           title={t('filters.sortByTitle')}
           onClose={() => setSortOpen(false)}
-          actions={[
-            // BACK TO "RECENT" IN ONE TAP, at the top of the sheet (22 Oct),
-            // only while another sort is on
-            ...(sort !== 'recent'
-              ? [
-                  {
-                    text: t('watchListSort.reset'),
-                    icon: 'close-circle-outline' as const,
-                    onPress: () => {
-                      setSort('recent');
-                      setMeta('watchListSort', 'recent');
-                    },
+          // BACK TO "RECENT" IN ONE TAP: a small button on the title line,
+          // only while another sort is on (22 Oct)
+          titleAction={
+            sort !== 'recent'
+              ? {
+                  label: t('watchListSort.resetShort'),
+                  a11y: t('watchListSort.reset'),
+                  onPress: () => {
+                    setSort('recent');
+                    setMeta('watchListSort', 'recent');
                   },
-                ]
-              : []),
+                }
+              : undefined
+          }
+          actions={[
             ...WATCH_LIST_SORTS.map((s) => ({
             text: t(`watchListSort.${s}`),
             icon: SORT_ICON[s],

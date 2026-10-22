@@ -7,7 +7,7 @@
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useRef, type ReactNode } from 'react';
-import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { t } from '@/i18n';
@@ -27,12 +27,15 @@ export type SheetAction = {
 export function ActionSheet({
   visible,
   title,
+  titleAction,
   actions,
   onClose,
   children,
 }: {
   visible: boolean;
   title?: string;
+  /** A small button at the end of the title line (e.g. "Reset"). */
+  titleAction?: { label: string; a11y?: string; onPress: () => void };
   actions: SheetAction[];
   onClose: () => void;
   /** Content in place of (or after) the rows — the rating breakdown is a
@@ -78,9 +81,24 @@ export function ActionSheet({
           },
         ]}>
         {title != null && (
-          <Text style={styles.title} numberOfLines={1} accessibilityRole="header">
-            {title}
-          </Text>
+          <View>
+            <Text style={styles.title} numberOfLines={1} accessibilityRole="header">
+              {title}
+            </Text>
+            {titleAction && (
+              <Pressable
+                style={styles.titleAction}
+                hitSlop={8}
+                accessibilityRole="button"
+                accessibilityLabel={titleAction.a11y ?? titleAction.label}
+                onPress={() => {
+                  titleAction.onPress();
+                  onClose();
+                }}>
+                <Text style={styles.titleActionText}>{titleAction.label}</Text>
+              </Pressable>
+            )}
+          </View>
         )}
         <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
         {actions.map((a, i) => (
@@ -129,6 +147,17 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: space.lg,
   },
+  titleAction: {
+    position: 'absolute',
+    end: space.lg,
+    top: 7,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.yellow,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  titleActionText: { color: colors.yellow, fontSize: 12, fontWeight: '700' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, paddingHorizontal: space.lg },
   rowLine: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
   /*

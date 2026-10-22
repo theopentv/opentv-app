@@ -3664,7 +3664,8 @@
     "mostBehind": "En çok geride kalan",
     "random": "Rastgele",
     "a11y": "İzleme listesini sırala. Şu an: {{sort}}",
-    "reset": "Sıralamayı «En son» olarak sıfırla"
+    "reset": "Sıralamayı «En son» olarak sıfırla",
+    "resetShort": "Sıfırla"
   },
   "watchKind": {
     "flatrate": "Abonelik",

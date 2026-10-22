@@ -3664,7 +3664,8 @@
     "mostBehind": "Le plus de retard",
     "random": "Aléatoire",
     "a11y": "Trier la liste. Actuellement : {{sort}}",
-    "reset": "Revenir au tri «Récents»"
+    "reset": "Revenir au tri «Récents»",
+    "resetShort": "Réinitialiser"
   },
   "watchKind": {
     "flatrate": "Abonnement",

@@ -3946,7 +3946,8 @@
     "mostBehind": "Najwięcej zaległości",
     "random": "Losowo",
     "a11y": "Sortuj listę do obejrzenia. Teraz: {{sort}}",
-    "reset": "Przywróć sortowanie «Ostatnie»"
+    "reset": "Przywróć sortowanie «Ostatnie»",
+    "resetShort": "Resetuj"
   },
   "watchKind": {
     "flatrate": "Abonament",
