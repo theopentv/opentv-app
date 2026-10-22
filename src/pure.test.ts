@@ -120,6 +120,7 @@ import {
   mergeCustomLists,
   mergeEnrichment,
   inviteCodeFrom,
+  splitShared,
   mergeSearchFallback,
   publicCutIndex,
   mergeTvdbRowIds,
@@ -4108,5 +4109,14 @@ describe('inviteCodeFrom', () => {
   });
   it('takes the code from the app link', () => {
     expect(inviteCodeFrom('opentv://shared?join=gpr2cu733v')).toBe('GPR2CU733V');
+  });
+});
+
+describe('splitShared', () => {
+  it('puts togethers in their own group, keeping order, and a kindless row is a list', () => {
+    const rows = [{ id: 'a', kind: 'list' as const }, { id: 'b', kind: 'together' as const }, { id: 'c' }, { id: 'd', kind: 'together' as const }];
+    const { lists, togethers } = splitShared(rows);
+    expect(lists.map((r) => r.id)).toEqual(['a', 'c']);
+    expect(togethers.map((r) => r.id)).toEqual(['b', 'd']);
   });
 });

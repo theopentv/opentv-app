@@ -2,10 +2,12 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { listsChanged } from '@/community-publish';
+import { communityErrorText } from '@/community-error-text';
+import { startTogether } from '@/community-together';
 import db, {
   addToList,
   getCustomLists,
@@ -48,7 +50,12 @@ export default function AddRemoveScreen() {
    * so every tap did nothing and the only way to add a favourite was to open
    * the show and find the heart.
    */
-  const { name, fav } = useLocalSearchParams<{ name?: string; fav?: string }>();
+  const { name, fav, together } = useLocalSearchParams<{ name?: string; fav?: string; together?: string }>();
+  // THIRD SHELF: `together=1` picks ONE show to watch together with (22 Oct,
+  // Lists → Watch together). A tap starts it — or reopens the one I already
+  // own for that show — and goes straight to it.
+  const picking = together === '1';
+  const [starting, setStarting] = useState(false);
   const listName = decodeURIComponent(name ?? '');
   const favKind: 'shows' | 'movies' | null = fav === 'shows' ? 'shows' : fav === 'movies' ? 'movies' : null;
   const [query, setQuery] = useState('');
@@ -59,7 +66,7 @@ export default function AddRemoveScreen() {
   // The picker offers the whole library; a favourites shelf only takes its own
   // kind, so the other one is filtered out rather than offered and refused.
   const rows = searchLibrary(query.trim()).filter(
-    (r) => favKind == null || (favKind === 'shows' ? r.kind === 'show' : r.kind === 'movie'),
+    (r) => (picking ? r.kind === 'show' : favKind == null || (favKind === 'shows' ? r.kind === 'show' : r.kind === 'movie')),
   );
   const list = getCustomLists().find((l) => l.name === listName);
 
@@ -75,6 +82,17 @@ export default function AddRemoveScreen() {
     favKind ? favSet.has(keyOf(r)) : !!list?.items.some((it) => it.kind === r.kind && it.name === r.name);
 
   const toggle = (r: Row) => {
+    if (picking) {
+      if (starting || r.tvdbId == null) return;
+      setStarting(true);
+      startTogether({ tvdbId: r.tvdbId, title: r.name, poster: r.poster })
+        .then((res) => {
+          if (res) router.replace(`/shared/${encodeURIComponent(res.id)}`);
+        })
+        .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)))
+        .finally(() => setStarting(false));
+      return;
+    }
     if (favKind) {
       const on = inList(r);
       if (r.kind === 'show' && r.tvdbId != null) setShowFavorited(r.tvdbId, !on);
@@ -93,7 +111,9 @@ export default function AddRemoveScreen() {
     <Screen>
       <NavHeader
         title={
-          favKind === 'shows'
+          picking
+            ? t('together.pickStart')
+            : favKind === 'shows'
             ? t('profile.sectionFavoriteShows')
             : favKind === 'movies'
               ? t('profile.sectionFavoriteMovies')
@@ -124,9 +144,13 @@ export default function AddRemoveScreen() {
         keyExtractor={(r, i) => `${r.kind}-${r.name}-${i}`}
         keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => {
-          const on = inList(item);
+          const on = !picking && inList(item);
           return (
-            <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: on }} style={styles.row} onPress={() => toggle(item)}>
+            <Pressable
+              accessibilityRole={picking ? 'button' : 'checkbox'}
+              accessibilityState={picking ? { disabled: starting } : { checked: on }}
+              style={[styles.row, picking && starting && { opacity: 0.5 }]}
+              onPress={() => toggle(item)}>
               {item.poster ? (
                 <Image source={{ uri: item.poster }} style={styles.thumb} contentFit="cover" cachePolicy="disk" />
               ) : (
@@ -140,15 +164,19 @@ export default function AddRemoveScreen() {
                 </Text>
                 <Text style={styles.sub}>{item.kind === 'show' ? t('listAddRemove.kindSeries') : t('listAddRemove.kindMovie')}</Text>
               </View>
-              <View style={[styles.badge, on && styles.badgeOn]}>
-                <Ionicons name={on ? 'checkmark' : 'add'} size={18} color={on ? colors.onYellow : colors.text} />
-              </View>
+              {picking ? (
+                <Ionicons name="chevron-forward" size={16} color={colors.faint} />
+              ) : (
+                <View style={[styles.badge, on && styles.badgeOn]}>
+                  <Ionicons name={on ? 'checkmark' : 'add'} size={18} color={on ? colors.onYellow : colors.text} />
+                </View>
+              )}
             </Pressable>
           );
         }}
         ListEmptyComponent={
           <Text style={styles.empty}>
-            {query ? t('listAddRemove.emptyNoMatches') : t('listAddRemove.emptySearchToAdd')}
+            {query || picking ? t('listAddRemove.emptyNoMatches') : t('listAddRemove.emptySearchToAdd')}
           </Text>
         }
       />

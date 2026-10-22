@@ -7122,6 +7122,15 @@ export function inviteCodeFrom(pasted: string): string {
 }
 
 /**
+ * The "Shared with friends" shelf, split by kind (22 Oct): a together listed
+ * under "Shared lists" read as if it were a list. A row with no `kind` (older
+ * server) is a list, which is all an older server had.
+ */
+export function splitShared<T extends { kind?: 'list' | 'together' }>(rows: T[]): { lists: T[]; togethers: T[] } {
+  return { lists: rows.filter((r) => r.kind !== 'together'), togethers: rows.filter((r) => r.kind === 'together') };
+}
+
+/**
  * WHERE THE "not on your profile" LINE ACTUALLY BELONGS.
  *
  * The line was drawn at row `cap` — row ten — which is only right when every
