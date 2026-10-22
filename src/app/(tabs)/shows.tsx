@@ -694,19 +694,6 @@ export default function ShowsScreen() {
             the sort sits beside it and turns yellow while it is not the default */}
         {/* below the floating Tonight card, not under it */}
         <View style={[styles.gridToggle, { top: 16 + tonightPad }]}>
-          {/* ONE TAP BACK TO "RECENT" (22 Oct), only while another sort is on */}
-          {sort !== 'recent' && (
-            <Pressable
-              hitSlop={10}
-              accessibilityRole="button"
-              accessibilityLabel={t('watchListSort.reset')}
-              onPress={() => {
-                setSort('recent');
-                setMeta('watchListSort', 'recent');
-              }}>
-              <Ionicons name="close-circle" size={20} color={colors.yellow} />
-            </Pressable>
-          )}
           <Pressable
             hitSlop={10}
             accessibilityRole="button"
@@ -730,7 +717,22 @@ export default function ShowsScreen() {
           visible={sortOpen}
           title={t('filters.sortByTitle')}
           onClose={() => setSortOpen(false)}
-          actions={WATCH_LIST_SORTS.map((s) => ({
+          actions={[
+            // BACK TO "RECENT" IN ONE TAP, at the top of the sheet (22 Oct),
+            // only while another sort is on
+            ...(sort !== 'recent'
+              ? [
+                  {
+                    text: t('watchListSort.reset'),
+                    icon: 'close-circle-outline' as const,
+                    onPress: () => {
+                      setSort('recent');
+                      setMeta('watchListSort', 'recent');
+                    },
+                  },
+                ]
+              : []),
+            ...WATCH_LIST_SORTS.map((s) => ({
             text: t(`watchListSort.${s}`),
             icon: SORT_ICON[s],
             selected: s === sort,
@@ -739,7 +741,8 @@ export default function ShowsScreen() {
               setSort(s);
               setMeta('watchListSort', s);
             },
-          }))}
+          })),
+          ]}
         />
         </View>
       ) : upcoming.length === 0 ? (
