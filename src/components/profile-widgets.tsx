@@ -49,7 +49,7 @@ import { formatCount, intlTag } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
 import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
-import { publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzlePlayedToday, puzzleStreakOnProfile, streakInfo } from '@/puzzle-data';
+import { publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile, streakInfo } from '@/puzzle-data';
 import { monthOf, todayISO } from '@/components/heatmap';
 import { dominantEmotion, emotionColor, isSafeLinkUrl, parseProfileLinks, shiftMonth, type LinkService } from '@/pure';
 import { router } from 'expo-router';
@@ -300,9 +300,9 @@ export function renderWidget(
         style={{ flex: 1 }}
         accessibilityRole="button"
         disabled={slots?.editing}
-        // Today played: the history (22 Oct), where today's result now sits
-        // on top. Not yet: the game.
-        onPress={() => router.push(puzzlePlayedToday() ? '/puzzle-archive' : puzzleEntryRoute())}>
+        // The game, or today's result once played — as the Explore card does
+        // (22 Oct, Mahmood). The history is one link away from the result.
+        onPress={() => router.push(puzzleEntryRoute())}>
         {block}
       </Pressable>
     );
