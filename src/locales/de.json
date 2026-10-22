@@ -3435,8 +3435,8 @@
     "noFollowsTitle": "Folge Leuten, um zu sehen, was sie denken",
     "noFollowsCaption": "Ihre Bewertungen, Gefühle und Kommentare erscheinen hier, die neuesten zuerst.",
     "unfollow": "Nicht mehr folgen",
-    "optOut": "Meine Reaktionen Followern zeigen",
-    "optOutSub": "Deine Bewertungen, Gefühle, Kommentare und Lieblingsfiguren erscheinen im Feed der Leute, die dir folgen."
+    "optOut": "Meine Aktivität Followern zeigen",
+    "optOutSub": "Deine Bewertungen, Gefühle, Kommentare und Lieblingsfiguren erscheinen in der Aktivität der Leute, die dir folgen."
   },
   "room": {
     "pill": {

@@ -3435,8 +3435,8 @@
     "noFollowsTitle": "Segui qualcuno per vedere cosa ne pensa",
     "noFollowsCaption": "I loro voti, emozioni e commenti appaiono qui, dal più recente.",
     "unfollow": "Smetti di seguire",
-    "optOut": "Mostra le mie reazioni ai follower",
-    "optOutSub": "I tuoi voti, emozioni, commenti e personaggi preferiti appaiono nel feed di chi ti segue."
+    "optOut": "Mostra la mia attività ai follower",
+    "optOutSub": "I tuoi voti, emozioni, commenti e personaggi preferiti appaiono nell’Attività di chi ti segue."
   },
   "room": {
     "pill": {

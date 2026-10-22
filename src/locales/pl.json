@@ -3697,8 +3697,8 @@
     "noFollowsTitle": "Obserwuj ludzi, by wiedzieć, co myślą",
     "noFollowsCaption": "Ich oceny, emocje i komentarze pojawią się tutaj, od najnowszych.",
     "unfollow": "Przestań obserwować",
-    "optOut": "Pokazuj moje reakcje obserwującym",
-    "optOutSub": "Twoje oceny, emocje, komentarze i ulubione postacie pojawiają się w feedzie osób, które cię obserwują."
+    "optOut": "Pokazuj moją aktywność obserwującym",
+    "optOutSub": "Twoje oceny, emocje, komentarze i ulubione postacie pojawiają się w Aktywności osób, które cię obserwują."
   },
   "room": {
     "pill": {
