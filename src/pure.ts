@@ -8213,6 +8213,24 @@ export function tvdbHitName(
   return tr[lang] || tr[TVDB_NEAR[lang] ?? ''] || tr.eng || hit.name || '';
 }
 
+/**
+ * TheTVDB's `nameTranslations` (from `meta=translations`) as the
+ * language → name record `tvdbHitName` reads: the first non-alias name per
+ * language. Trending hands back the ORIGINAL title — 薬屋のひとりごと, not
+ * The Apothecary Diaries — so the feed asks for these and names a card the way
+ * search already does (22 Oct).
+ */
+export function tvdbNameRecord(
+  list: readonly { language?: string | null; name?: string | null; isAlias?: boolean | null }[] | null | undefined,
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const x of list ?? []) {
+    if (x.isAlias || !x.language || !x.name || out[x.language]) continue;
+    out[x.language] = x.name;
+  }
+  return out;
+}
+
 export function rankByQuery<T>(items: T[], query: string, nameOf: (t: T) => string): T[] {
   const q = query.trim().toLowerCase();
   const score = (t: T): number => {

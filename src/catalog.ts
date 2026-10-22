@@ -14,10 +14,12 @@
 import { runtimeLabel } from '@/duration';
 import { genreText, plotTvdbCodes } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
-import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, translatedOverview, tvdbHitName } from '@/pure';
+import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, translatedOverview, tvdbHitName, tvdbNameRecord } from '@/pure';
 import { pool, tmdb } from '@/tmdb';
 
 const TMDB_IMG = 'https://image.tmdb.org/t/p';
+/** Scripts none of the app's nine languages is written in: kana, CJK, Hangul, Thai, Cyrillic. */
+const FOREIGN_SCRIPT = /[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\u0e00-\u0e7f\u0400-\u04ff]/;
 
 export type CatalogItem = {
   key: string;
@@ -49,6 +51,9 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
 
   const plotLangs = plotTvdbCodes();
   const localPlots = plotLangs[0] !== 'eng';
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { currentLocale } = require('@/i18n') as typeof import('@/i18n');
+  const nameLang = TVDB_LANG[currentLocale().slice(0, 2)] ?? 'eng';
 
   // interleave shows and films so the feed isn't all one kind up top
   const picks: { kind: 'tv' | 'movie'; raw: import('@/tvdb').TvdbTrendingItem }[] = [];
@@ -66,7 +71,9 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
       // translated overview (`meta=translations`), so the blurb follows
       // Settings → Plot language for no extra request; English mode asks
       // exactly what it always did.
-      const ext = kind === 'tv' ? await t.tvdbSeriesExtended(raw.id, localPlots) : await t.tvdbMovieExtended(raw.id, localPlots);
+      // Translations always now: they also carry the NAMES, and trending
+      // names a show in its original language (薬屋のひとりごと).
+      const ext = kind === 'tv' ? await t.tvdbSeriesExtended(raw.id, true) : await t.tvdbMovieExtended(raw.id, true);
       const backdrop = t.bestArtwork(ext?.artworks, t.TVDB_ART_BACKGROUND);
       // no landscape art = no card worth showing, same rule as the TMDB feed
       if (!backdrop) return null;
@@ -88,7 +95,7 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
         kind,
         tvdbId: raw.id,
         tmdbId: null,
-        title: raw.name ?? '',
+        title: tvdbHitName({ name: raw.name ?? '', translations: tvdbNameRecord(ext?.translations?.nameTranslations) }, nameLang),
         backdrop,
         poster: artworkUrl(raw.image ?? ext?.image),
         overview: (localPlots && translatedOverview(ext?.translations?.overviewTranslations, plotLangs)) || raw.overview || '',
@@ -256,10 +263,24 @@ export async function trendingByKind(): Promise<{ shows: CatalogItem[]; movies: 
         sub: raw.year ?? '',
         votes: raw.score ?? 0,
       });
-      return {
-        shows: trending.series.map((r) => map(r, 'tv')),
-        movies: trending.movies.map((r) => map(r, 'movie')),
-      };
+      const shows = trending.series.map((r) => map(r, 'tv'));
+      const movies = trending.movies.map((r) => map(r, 'movie'));
+      // ORIGINAL-SCRIPT TITLES ONLY (22 Oct): no per-card request in general,
+      // but a card named 时光代理人 is unreadable for every user of the app, so
+      // those few — and only those — fetch their translated name.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { currentLocale } = require('@/i18n') as typeof import('@/i18n');
+      const nameLang = TVDB_LANG[currentLocale().slice(0, 2)] ?? 'eng';
+      const foreign = [...shows, ...movies].filter((it) => FOREIGN_SCRIPT.test(it.title));
+      await pool(
+        foreign,
+        async (it) => {
+          const ext = it.kind === 'tv' ? await t.tvdbSeriesExtended(it.tvdbId as number, true) : await t.tvdbMovieExtended(it.tvdbId as number, true);
+          it.title = tvdbHitName({ name: it.title, translations: tvdbNameRecord(ext?.translations?.nameTranslations) }, nameLang);
+        },
+        5,
+      );
+      return { shows, movies };
     }
   } catch {
     // fall through

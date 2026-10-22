@@ -297,7 +297,10 @@ export type TvdbMovieExtended = {
  * Only Explore asks for it (see catalog.ts); the structure fetch keeps its
  * targeted `/translations/{lang}` calls.
  */
-export type TvdbTranslations = { overviewTranslations?: { language?: string | null; overview?: string | null }[] };
+export type TvdbTranslations = {
+  overviewTranslations?: { language?: string | null; overview?: string | null }[];
+  nameTranslations?: { language?: string | null; name?: string | null; isAlias?: boolean | null }[];
+};
 
 export async function tvdbMovieExtended(id: number, withTranslations = false): Promise<TvdbMovieExtended | null> {
   try {
