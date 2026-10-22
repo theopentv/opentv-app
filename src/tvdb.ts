@@ -172,8 +172,24 @@ export class TvdbHttpError extends Error {
   }
 }
 
+/**
+ * IDENTICAL REQUESTS IN THE AIR AT ONCE SHARE ONE. Two components asking for
+ * the same record on the same frame — the poster picker's two artwork calls
+ * on a film are the same `/extended` URL — went out twice. Only while it is in
+ * flight: this is not a cache, and the answer is shared read-only (nothing in
+ * this file mutates a response).
+ */
+const gets = new Map<string, Promise<unknown>>();
+function get<T>(path: string): Promise<T> {
+  const running = gets.get(path);
+  if (running) return running as Promise<T>;
+  const p = getOnce<T>(path).finally(() => gets.delete(path));
+  gets.set(path, p);
+  return p;
+}
+
 /** GET a v4 path and return its `data`. Re-logs in once on a 401. */
-async function get<T>(path: string): Promise<T> {
+async function getOnce<T>(path: string): Promise<T> {
   // Same breaker as the TMDB client. The importer's metadata pass falls back
   // to TheTVDB for every show TMDB could not match, so an unreachable network
   // costs the library TWICE over without it -- see `net-circuit.ts`.
