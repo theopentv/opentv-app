@@ -809,14 +809,23 @@ export default function ShowScreen() {
                       {
                         icon: 'people-outline' as const,
                         text: isPlus() ? t('together.start') : t('together.startPlus'),
-                        onPress: () =>
-                          void startTogether({ tvdbId: show.tvdbId, title: show.name, poster: meta?.poster ?? null })
-                            // Opens the together; its "Invite a friend" button is
-                            // where the share sheet lives (22 Oct), not here.
-                            .then((r) => {
-                              if (r) router.push(`/shared/${encodeURIComponent(r.id)}`);
-                            })
-                            .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e))),
+                        // ASK FIRST (22 Oct): start one, or join the friend's
+                        // code — so two people never end up in two separate
+                        // togethers for the same show. Already in one for this
+                        // show (owned or joined): startTogether just opens it.
+                        onPress: () => {
+                          const go = () =>
+                            void startTogether({ tvdbId: show.tvdbId, title: show.name, poster: meta?.poster ?? null })
+                              .then((r) => {
+                                if (r) router.push(`/shared/${encodeURIComponent(r.id)}`);
+                              })
+                              .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)));
+                          Alert.alert(t('together.title'), t('together.askBody'), [
+                            { text: isPlus() ? t('together.start') : t('together.startPlus'), onPress: go },
+                            { text: t('together.haveCode'), onPress: () => router.push('/together?join=1') },
+                            { text: t('common.cancel'), style: 'cancel' },
+                          ]);
+                        },
                       },
                     ]
                   : []),

@@ -110,8 +110,12 @@ describe('ownedTogetherFor', () => {
   it('finds the together I own for this show', () => {
     expect(ownedTogetherFor([row('A', '1'), row('B', '2')], is(2))?.id).toBe('B');
   });
-  it('ignores one I was only invited to, and ordinary lists', () => {
-    expect(ownedTogetherFor([row('A', '2', false), { id: 'L', kind: 'list', is_owner: true, show: null }], is(2))).toBeNull();
+  it('opens one I joined for this show too, and ignores ordinary lists', () => {
+    expect(ownedTogetherFor([row('A', '2', false), { id: 'L', kind: 'list', is_owner: true, show: null }], is(2))?.id).toBe('A');
+    expect(ownedTogetherFor([{ id: 'L', kind: 'list', is_owner: true, show: null }], is(2))).toBeNull();
+  });
+  it('prefers the one I own over one I joined', () => {
+    expect(ownedTogetherFor([row('J', '2', false), row('O', '2')], is(2))?.id).toBe('O');
   });
   it('another show is no duplicate — several togethers are allowed', () => {
     expect(ownedTogetherFor([row('A', '1')], is(2))).toBeNull();

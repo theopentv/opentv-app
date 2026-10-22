@@ -3491,7 +3491,9 @@
       "one": "{{count}} kişi",
       "other": "{{count}} kişi"
     },
-    "profileSwitchSub": "Ziyaretçiler kiminle izlediğini asla görmez."
+    "profileSwitchSub": "Ziyaretçiler kiminle izlediğini asla görmez.",
+    "askBody": "Bir tane başlat ve bir arkadaşını davet et ya da arkadaşının gönderdiği kodla katıl.",
+    "haveCode": "Kodum var"
   },
   "sharedLists": {
     "inviteTitle": "Önce birini davet et",

@@ -3763,7 +3763,9 @@
       "many": "{{count}} osób",
       "other": "{{count}} osoby"
     },
-    "profileSwitchSub": "Odwiedzający nigdy nie widzą, z kim oglądasz."
+    "profileSwitchSub": "Odwiedzający nigdy nie widzą, z kim oglądasz.",
+    "askBody": "Zacznij i zaproś znajomego albo dołącz kodem od znajomego.",
+    "haveCode": "Mam kod"
   },
   "sharedLists": {
     "inviteTitle": "Najpierw kogoś zaproś",

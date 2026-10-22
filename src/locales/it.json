@@ -3491,7 +3491,9 @@
       "one": "{{count}} membro",
       "other": "{{count}} membri"
     },
-    "profileSwitchSub": "Chi visita il profilo non vede mai con chi guardi."
+    "profileSwitchSub": "Chi visita il profilo non vede mai con chi guardi.",
+    "askBody": "Avviane una e invita un amico, oppure entra con il codice che ti ha mandato un amico.",
+    "haveCode": "Ho un codice"
   },
   "sharedLists": {
     "inviteTitle": "Prima invita qualcuno",

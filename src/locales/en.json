@@ -3491,7 +3491,9 @@
       "one": "{{count}} member",
       "other": "{{count}} members"
     },
-    "profileSwitchSub": "Visitors never see who you are watching with."
+    "profileSwitchSub": "Visitors never see who you are watching with.",
+    "askBody": "Start one and invite a friend, or join with the code a friend sent you.",
+    "haveCode": "I have a code"
   },
   "sharedLists": {
     "inviteTitle": "Invite someone first",

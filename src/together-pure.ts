@@ -134,7 +134,14 @@ export function ownedTogetherFor<R extends { id: string; kind?: string; is_owner
   rows: readonly R[],
   sameShow: (key: number) => boolean,
 ): R | null {
-  return rows.find((r) => r.kind === 'together' && r.is_owner && r.show != null && sameShow(Number(r.show.target_key))) ?? null;
+  // Owned OR joined (22 Oct): being in a friend's together for this show is
+  // also "already watching it together" — opening that beats starting a
+  // second, separate one for the same show.
+  return (
+    rows.find((r) => r.kind === 'together' && r.is_owner && r.show != null && sameShow(Number(r.show.target_key))) ??
+    rows.find((r) => r.kind === 'together' && r.show != null && sameShow(Number(r.show.target_key))) ??
+    null
+  );
 }
 
 export type TogetherCard = { listId: string; tvdbId: number; title: string | null; poster: string | null; members: number };

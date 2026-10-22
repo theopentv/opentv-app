@@ -3491,7 +3491,9 @@
       "one": "{{count}} Mitglied",
       "other": "{{count}} Mitglieder"
     },
-    "profileSwitchSub": "Besucher sehen nie, mit wem du schaust."
+    "profileSwitchSub": "Besucher sehen nie, mit wem du schaust.",
+    "askBody": "Starte eins und lade jemanden ein, oder tritt mit dem Code bei, den du bekommen hast.",
+    "haveCode": "Ich habe einen Code"
   },
   "sharedLists": {
     "inviteTitle": "Lade zuerst jemanden ein",
