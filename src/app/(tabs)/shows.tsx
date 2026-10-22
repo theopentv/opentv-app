@@ -336,7 +336,6 @@ export default function ShowsScreen() {
       });
       if (landed > 0) setTick((t) => t + 1);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusPass]);
 
   // WATCHED HISTORY lives above WATCH NEXT: the list opens anchored at
