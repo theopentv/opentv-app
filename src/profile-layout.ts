@@ -115,6 +115,11 @@ export const WIDGETS: Record<string, WidgetSpec> = {
   /** The daily puzzle's month of squares (10 Oct). Any size: a month is five
    *  or six rows of seven whatever the box, so the cells simply scale. */
   puzzle: { spans: ['1x1', '2x1', '2x2'], span: '2x1', sized: true },
+  /** Watching together (22 Oct): up to three togethers, a row each. Placed by
+   *  itself once there is one (`withTogetherBlock`); hidden by the owner's
+   *  switch in Edit profile. Visitors get show titles and member counts only —
+   *  the other members are other people, and their names never publish. */
+  together: { spans: ['2x1', '2x2'], span: '2x1', sized: true, single: true },
   topRated: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
   nowWatching: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
   /**
@@ -195,9 +200,9 @@ const asLook = (v: unknown): BlockLook | undefined => (v === 'classic' || v === 
 export type Saved = { items: Placed[]; known: string[] };
 
 /** Serialise an arrangement, carrying forward everything it has ever held. */
-export function serialise(items: readonly Placed[], prevRaw: string | null): string {
+export function serialise(items: readonly Placed[], prevRaw: string | null, alsoKnown: readonly string[] = []): string {
   const prev = parseLayout(prevRaw);
-  const known = new Set<string>([...(prev?.known ?? []), ...items.map((p) => p.id)]);
+  const known = new Set<string>([...(prev?.known ?? []), ...items.map((p) => p.id), ...alsoKnown]);
   return JSON.stringify({ items, known: [...known] });
 }
 
@@ -267,6 +272,7 @@ const CATALOGUE = (shelfKeys: readonly string[]): string[] => [
   'emotions',
   'emotionCalendar',
   'puzzle',
+  'together',
   'topRated',
   'nowWatching',
   'artwork',
@@ -482,6 +488,7 @@ export const WIDGET_NAME: Record<string, string> = {
   emotions: 'profile.widgetEmotions',
   emotionCalendar: 'profile.widgetEmotionCalendar',
   puzzle: 'puzzle.blockName',
+  together: 'together.title',
   topRated: 'profile.widgetTopRated',
   nowWatching: 'profile.widgetNowWatching',
   artwork: 'profile.widgetPhoto',
@@ -642,5 +649,26 @@ export function withPuzzleBlock(items: readonly Placed[]): Placed[] {
   const extra = out.findIndex((p) => p.id === 'extra');
   const at = stats >= 0 ? stats + 1 : lists >= 0 ? lists : extra >= 0 ? extra : out.length;
   out.splice(at, 0, puzzle);
+  return out;
+}
+
+/**
+ * WATCHING TOGETHER PLACES ITSELF (22 Oct). Anybody in a together — started
+ * (Plus) or joined (free) — gets the block without arranging anything: right
+ * after Stats, or after the puzzle when that sits right after Stats; on a page
+ * without Stats, just before Lists, or at the end of the blocks. A together
+ * block already on the page is left where it is, and one the owner REMOVED
+ * (in `known` but not placed — see `normalise`) stays removed.
+ */
+export function withTogetherBlock(items: readonly Placed[], known: readonly string[] = []): Placed[] {
+  if (items.some((p) => p.id === 'together') || known.includes('together')) return [...items];
+  const block: Placed = { uid: 'together-auto', id: 'together', span: '2x1' };
+  const out = [...items];
+  const stats = out.findIndex((p) => p.id === 'stats');
+  const lists = out.findIndex((p) => p.id === 'lists');
+  const extra = out.findIndex((p) => p.id === 'extra');
+  const at =
+    stats >= 0 ? stats + (out[stats + 1]?.id === 'puzzle' ? 2 : 1) : lists >= 0 ? lists : extra >= 0 ? extra : out.length;
+  out.splice(at, 0, block);
   return out;
 }

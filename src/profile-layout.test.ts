@@ -34,3 +34,31 @@ describe('withPuzzleBlock', () => {
     expect(withPuzzleBlock(mine)).toEqual(mine);
   });
 });
+
+describe('withTogetherBlock', () => {
+  const { withTogetherBlock, withPuzzleBlock, defaultLayout, serialise, parseLayout } = require('./profile-layout') as typeof import('./profile-layout');
+  const c = (id: string) => ({ uid: id, id, span: '2x1' as const });
+  it('goes right after Stats, once', () => {
+    const out = withTogetherBlock(defaultLayout(['shows']));
+    const i = out.findIndex((p) => p.id === 'stats');
+    expect(out[i + 1]).toMatchObject({ id: 'together', span: '2x1' });
+    expect(withTogetherBlock(out).filter((p) => p.id === 'together')).toHaveLength(1);
+  });
+  it('sits after the puzzle when the puzzle is right after Stats', () => {
+    const ids = withTogetherBlock(withPuzzleBlock(defaultLayout([]))).map((p) => p.id);
+    expect(ids.slice(ids.indexOf('stats'), ids.indexOf('lists') + 1)).toEqual(['stats', 'puzzle', 'together', 'lists']);
+  });
+  it('falls back to before Lists, then the end, and leaves a placed one alone', () => {
+    expect(withTogetherBlock([c('counts'), c('lists')]).map((p) => p.id)).toEqual(['counts', 'together', 'lists']);
+    expect(withTogetherBlock([c('counts')]).map((p) => p.id)).toEqual(['counts', 'together']);
+    const mine = [c('together'), c('counts')];
+    expect(withTogetherBlock(mine)).toEqual(mine);
+  });
+  it('stays off a profile whose owner removed it', () => {
+    // Drawn with the auto block, then removed in the first arrange: the save
+    // remembers it was there, so it is not put back.
+    const raw = serialise([c('stats')], null, ['stats', 'together']);
+    const saved = parseLayout(raw)!;
+    expect(withTogetherBlock(saved.items, saved.known).map((p) => p.id)).toEqual(['stats']);
+  });
+});
