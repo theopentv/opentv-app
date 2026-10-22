@@ -11,14 +11,15 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'reac
 import { Text } from '@/components/text';
 
 import { ContentColumn, NavHeader, Screen, TopTabs } from '@/components/ui';
-import { addMovieToWatchlist, addShow, inLibrary } from '@/db';
+import { addMovieToWatchlist, addShow, getMeta, inLibrary, setMeta } from '@/db';
+import { dayCacheState, parseDayCache } from '@/feed-cache';
 import { trendingByKind, tvdbIdFor, type CatalogItem } from '@/catalog';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
-import { movieRoute } from '@/pure';
+import { localDayStamp, movieRoute } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 // `tr` because the trending rows below are mapped as `t`, which shadows the
 // translator exactly where a screen-reader label needs it.
-import { t, t as tr } from '@/i18n';
+import { currentLocale, t, t as tr } from '@/i18n';
 import { a11yAction } from '@/a11y';
 import { oneAtATime } from '@/one-at-a-time';
 
@@ -26,11 +27,27 @@ const TABS = ['Shows', 'Movies'] as const;
 
 type Trend = CatalogItem;
 
+/*
+ * ONE FETCH A DAY (22 Oct). This screen is pushed, so it mounted fresh and asked
+ * TheTVDB for trending -- plus one extended record per original-script title --
+ * on every visit, behind a spinner. The lists sit in `meta` for the local day
+ * now, keyed by language because the translated names are baked in; anything
+ * older than a few hours is refreshed for next time.
+ */
+const TRENDS_CACHE = 'discoverTrendsCache';
+const cachedTrends = () => {
+  const entry = parseDayCache<Trend>(getMeta(TRENDS_CACHE));
+  const state = dayCacheState(entry, new Date(), currentLocale(), 4 * 3600_000);
+  return { state, items: state === 'miss' ? null : entry!.items };
+};
+
 export default function DiscoverMoreScreen() {
   const { type } = useLocalSearchParams<{ type?: string }>();
   const [tab, setTab] = useState<(typeof TABS)[number]>(type === 'movies' ? 'Movies' : 'Shows');
-  const [shows, setShows] = useState<Trend[] | null>(null);
-  const [movies, setMovies] = useState<Trend[] | null>(null);
+  // Today's lists straight from `meta` when there are any — see `cachedTrends`.
+  const [cached] = useState(cachedTrends);
+  const [shows, setShows] = useState<Trend[] | null>(() => cached.items?.filter((x) => x.kind === 'tv') ?? null);
+  const [movies, setMovies] = useState<Trend[] | null>(() => cached.items?.filter((x) => x.kind === 'movie') ?? null);
   // Tapped during THIS visit. What is already yours is a separate question,
   // answered against the database by `inLib` below — the set alone said "not
   // added" about everything on every mount, which is what was reported.
@@ -54,15 +71,20 @@ export default function DiscoverMoreScreen() {
     });
 
   useEffect(() => {
+    if (cached.state === 'fresh') return;
     let alive = true;
     void (async () => {
       try {
         const { shows: sh, movies: mv } = await trendingByKind();
-        if (!alive) return;
+        if (sh.length || mv.length) {
+          setMeta(TRENDS_CACHE, JSON.stringify({ day: localDayStamp(new Date()), at: Date.now(), key: currentLocale(), items: [...sh, ...mv] }));
+        }
+        // a stale copy is already on screen: refreshed for next time, not swapped
+        if (!alive || cached.state === 'stale') return;
         setShows(sh);
         setMovies(mv);
       } catch {
-        if (alive) {
+        if (alive && cached.state === 'miss') {
           setShows([]);
           setMovies([]);
         }
@@ -71,7 +93,7 @@ export default function DiscoverMoreScreen() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [cached]);
 
   const openShow = async (t: Trend) => {
     const tvdbId = await tvdbIdFor(t);
