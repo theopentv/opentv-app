@@ -3780,5 +3780,20 @@
     "channel": "Yayına gelenler",
     "lapsedTitle": "Hizmetlerim Plus'ın parçası",
     "lapsedBody": "Hizmetlerin saklanıyor. Plus geri gelene kadar uyarı ve filtre yok."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Seri başlangıcı: {{date}}",
+    "longest": {
+      "one": "🧩 En uzun bulmaca serisi: {{count}} gün",
+      "other": "🧩 En uzun bulmaca serisi: {{count}} gün"
+    },
+    "hoursLeft": {
+      "one": "🧩 {{count}} saat kaldı — gece yarısından önce oyna",
+      "other": "🧩 {{count}} saat kaldı — gece yarısından önce oyna"
+    },
+    "blockSince": "🧩 başlangıç {{date}} · rekor {{best}}",
+    "title": "Geçmişin",
+    "firstDay": "İlk oyun: {{date}}",
+    "locked": "Bir haftadan eski başlıklar Plus'a dahil."
   }
 }

@@ -15,22 +15,31 @@
  * already known, and a second go would only be a second, easier game.
  *
  * READ ON FOCUS, so a day played from here is coloured when you come back.
+ *
+ * AND YOUR HISTORY (22 Oct). Above the list, the all-time numbers — played,
+ * win %, average tries, the longest puzzle streak, the first day played —
+ * and today's result on top once it is in. Every played row names the title
+ * it was: the player's own past answer, no secret once played, and never
+ * sent anywhere (`puzzleTitles` reads the library on this phone). The last
+ * `FREE_HISTORY_DAYS` are everybody's; an older title is Plus, and tapping
+ * its row is where the paywall comes in, exactly as replaying does.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { levelColor } from '@/components/puzzle-block';
+import { StatsRow, levelColor, puzzleDay } from '@/components/puzzle-block';
 import { NavHeader, Screen } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
-import { MAX_TRIES, archiveDays, puzzleNumber, winLevel, type Result } from '@/puzzle';
-import { firstPlayedDay, resultsByDay, today } from '@/puzzle-data';
+import { MAX_TRIES, archiveDays, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
+import { loadHistory, puzzleTitles, resultsByDay, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
 type Row = { d: string; n: number; r: Result | null };
+type Summary = { stats: Stats; longest: number; first: string | null };
 
 const longDay = (d: string): string =>
   new Date(`${d}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -38,11 +47,23 @@ const longDay = (d: string): string =>
 export default function PuzzleArchiveScreen() {
   const plus = usePlus();
   const [rows, setRows] = useState<Row[]>([]);
+  const [names, setNames] = useState<Map<PuzzleId, string>>(new Map());
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [day, setDay] = useState(today);
 
   useFocusEffect(
     useCallback(() => {
+      const now = today();
+      const history = loadHistory();
       const results = resultsByDay();
-      setRows(archiveDays(today(), firstPlayedDay()).map((d) => ({ d, n: puzzleNumber(d), r: results.get(d) ?? null })));
+      const first = history[0]?.d ?? null;
+      const past = archiveDays(now, first).map((d) => ({ d, n: puzzleNumber(d), r: results.get(d) ?? null }));
+      const done = results.get(now);
+      const list = done ? [{ d: now, n: puzzleNumber(now), r: done }, ...past] : past;
+      setDay(now);
+      setRows(list);
+      setNames(puzzleTitles(list.flatMap((row) => (row.r ? [row.r.id] : []))));
+      setSummary(history.length ? { stats: puzzleStats(history), longest: longestStreak(history), first } : null);
     }, []),
   );
 
@@ -58,6 +79,21 @@ export default function PuzzleArchiveScreen() {
     router.push(`/puzzle?day=${d}`);
   };
 
+  const header = (
+    <>
+      {summary && (
+        <View style={s.history}>
+          <Text style={s.heading}>{t('puzzleHistory.title')}</Text>
+          <StatsRow stats={summary.stats} big />
+          {summary.longest > 0 && <Text style={s.line}>{t('puzzleHistory.longest', { count: summary.longest })}</Text>}
+          {summary.first && <Text style={s.line}>{t('puzzleHistory.firstDay', { date: puzzleDay(summary.first) })}</Text>}
+          {!plus && <Text style={s.lockLine}>{t('puzzleHistory.locked')}</Text>}
+        </View>
+      )}
+      <Text style={s.sub}>{t('puzzlePolish.archiveSub')}</Text>
+    </>
+  );
+
   return (
     <Screen>
       <NavHeader title={t('puzzlePolish.archiveTitle')} />
@@ -65,29 +101,34 @@ export default function PuzzleArchiveScreen() {
         data={rows}
         keyExtractor={(row) => row.d}
         contentContainerStyle={{ paddingBottom: space.xl }}
-        ListHeaderComponent={<Text style={s.sub}>{t('puzzlePolish.archiveSub')}</Text>}
+        ListHeaderComponent={header}
         ListEmptyComponent={<Text style={s.empty}>{t('puzzlePolish.archiveEmpty')}</Text>}
         renderItem={({ item }) => {
           const played = item.r != null;
+          const unlocked = historyUnlocked(item.d, day, plus);
+          // A played day does nothing — unless its title is still behind Plus.
+          const locked = played && !unlocked;
+          const name = played && unlocked ? names.get(item.r!.id) : undefined;
+          const line = name ? `${name} · ${status(item.r)}` : status(item.r);
           return (
             <Pressable
-              style={({ pressed }) => [s.row, pressed && !played && { backgroundColor: colors.lift }]}
-              disabled={played}
-              onPress={() => open(item.d)}
+              style={({ pressed }) => [s.row, pressed && (!played || locked) && { backgroundColor: colors.lift }]}
+              disabled={played && !locked}
+              onPress={() => (locked ? requirePlus('puzzle.history') : open(item.d))}
               accessibilityRole="button"
-              accessibilityState={{ disabled: played }}
-              accessibilityLabel={`#${item.n}, ${longDay(item.d)}, ${status(item.r)}`}
-              accessibilityHint={!played && !plus ? t('puzzlePolish.needsPlus') : undefined}>
+              accessibilityState={{ disabled: played && !locked }}
+              accessibilityLabel={`#${item.n}, ${longDay(item.d)}, ${line}`}
+              accessibilityHint={(!played || locked) && !plus ? t('puzzlePolish.needsPlus') : undefined}>
               <View style={[s.square, item.r ? { backgroundColor: levelColor(winLevel(item.r)) } : s.squareEmpty]} />
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={s.title} numberOfLines={1}>
                   #{item.n} <Text style={s.date}>· {longDay(item.d)}</Text>
                 </Text>
                 <Text style={s.status} numberOfLines={1}>
-                  {status(item.r)}
+                  {line}
                 </Text>
               </View>
-              {!played &&
+              {(!played || locked) &&
                 (plus ? (
                   <Ionicons name={I18nManager.isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={colors.faint} />
                 ) : (
@@ -105,6 +146,10 @@ export default function PuzzleArchiveScreen() {
 }
 
 const s = StyleSheet.create({
+  history: { paddingHorizontal: space.lg, paddingBottom: 18, gap: 8 },
+  heading: { color: colors.text, fontSize: 18, fontWeight: '800', marginBottom: 4 },
+  line: { color: colors.dim, fontSize: 13.5, textAlign: 'center' },
+  lockLine: { color: colors.faint, fontSize: 12.5, textAlign: 'center' },
   sub: { color: colors.dim, fontSize: 13.5, lineHeight: 19, paddingHorizontal: space.lg, paddingBottom: 12 },
   empty: { color: colors.dim, fontSize: 15, textAlign: 'center', padding: 40 },
   row: {

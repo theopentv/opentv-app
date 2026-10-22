@@ -3780,5 +3780,20 @@
     "channel": "Novedades en streaming",
     "lapsedTitle": "Mis servicios son parte de Plus",
     "lapsedBody": "Tus servicios se guardan. Hasta que vuelva Plus, no hay avisos ni filtro."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Racha iniciada el {{date}}",
+    "longest": {
+      "one": "🧩 Racha de puzzles más larga: {{count}} día",
+      "other": "🧩 Racha de puzzles más larga: {{count}} días"
+    },
+    "hoursLeft": {
+      "one": "🧩 Queda {{count}} h — juega antes de medianoche",
+      "other": "🧩 Quedan {{count}} h — juega antes de medianoche"
+    },
+    "blockSince": "🧩 desde el {{date}} · récord {{best}}",
+    "title": "Tu historial",
+    "firstDay": "Primera partida el {{date}}",
+    "locked": "Los títulos de hace más de una semana son parte de Plus."
   }
 }

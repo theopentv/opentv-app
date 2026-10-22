@@ -60,6 +60,12 @@ import {
   puzzleIntroDue,
   puzzleStreakShown,
   puzzleStreak,
+  longestStreak,
+  streakStart,
+  hoursLeftToday,
+  historyUnlocked,
+  FREE_HISTORY_DAYS,
+  puzzleArt,
 } from '@/puzzle';
 
 describe('days', () => {
@@ -717,5 +723,44 @@ describe('puzzle streak and the profile banner', () => {
     expect(puzzleBanner({ ...base, closedOn: '2026-10-22' })).toBeNull();
     // Closed yesterday: back today.
     expect(puzzleBanner({ ...base, closedOn: '2026-10-21' })).toEqual({ streak: 2 });
+  });
+
+  it('finds the longest run anywhere, and never counts a day twice', () => {
+    expect(longestStreak([])).toBe(0);
+    expect(longestStreak([r('2026-10-01')])).toBe(1);
+    const h = [r('2026-10-01'), r('2026-10-02'), r('2026-10-03', false), r('2026-10-05'), r('2026-10-06')];
+    expect(longestStreak(h)).toBe(3);
+    // Unsorted and doubled, across a month end.
+    expect(longestStreak([r('2026-11-01'), r('2026-10-31'), r('2026-10-31'), r('2026-10-30')])).toBe(3);
+  });
+
+  it('dates the current streak from its first day', () => {
+    expect(streakStart([], '2026-10-22')).toBeNull();
+    expect(streakStart([r('2026-10-19'), r('2026-10-20')], '2026-10-22')).toBeNull();
+    expect(streakStart([r('2026-10-20'), r('2026-10-21'), r('2026-10-22')], '2026-10-22')).toBe('2026-10-20');
+    // Today not played yet: yesterday's run still started where it started.
+    expect(streakStart([r('2026-10-18'), r('2026-10-20'), r('2026-10-21')], '2026-10-22')).toBe('2026-10-20');
+  });
+
+  it('counts the hours left until local midnight, rounded up, never zero', () => {
+    expect(hoursLeftToday(new Date(2026, 9, 22, 19, 0))).toBe(5);
+    expect(hoursLeftToday(new Date(2026, 9, 22, 18, 30))).toBe(6);
+    expect(hoursLeftToday(new Date(2026, 9, 22, 23, 59, 30))).toBe(1);
+    expect(hoursLeftToday(new Date(2026, 9, 22, 0, 0))).toBe(24);
+  });
+
+  it('opens the last week of history to everybody and the rest to Plus', () => {
+    expect(historyUnlocked('2026-10-22', '2026-10-22', false)).toBe(true);
+    expect(historyUnlocked('2026-10-16', '2026-10-22', false)).toBe(true);
+    expect(historyUnlocked('2026-10-15', '2026-10-22', false)).toBe(false);
+    expect(historyUnlocked('2026-10-15', '2026-10-22', true)).toBe(true);
+    expect(FREE_HISTORY_DAYS).toBe(7);
+  });
+
+  it('shows today’s picture blurred and nameless until played, then sharp with its title', () => {
+    expect(puzzleArt(null, true, 'Lost')).toBeNull();
+    expect(puzzleArt('', false, null)).toBeNull();
+    expect(puzzleArt('u', false, 'Lost')).toEqual({ uri: 'u', blur: BLUR[0], title: null });
+    expect(puzzleArt('u', true, 'Lost')).toEqual({ uri: 'u', blur: 0, title: 'Lost' });
   });
 });

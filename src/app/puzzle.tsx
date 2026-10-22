@@ -35,7 +35,7 @@ import { Text } from '@/components/text';
 
 import { track } from '@/analytics';
 import { ActionSheet } from '@/components/action-sheet';
-import { StatsRow } from '@/components/puzzle-block';
+import { StatsRow, puzzleDay } from '@/components/puzzle-block';
 import { CLOSE_SQUARE, PuzzleShareCard, Squares } from '@/components/puzzle-share-card';
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { addShow, puzzleMemory } from '@/db';
@@ -68,7 +68,6 @@ import {
   answerPool,
   cluesFor,
   currentStats,
-  currentStreak,
   devFreshGame,
   finishGame,
   gameFor,
@@ -77,6 +76,7 @@ import {
   saveGame,
   sameSeries,
   sameSeriesNow,
+  streakInfo,
   today,
   type Answer,
 } from '@/puzzle-data';
@@ -114,7 +114,7 @@ export default function PuzzleScreen() {
   /** undefined while it is being resolved; null when the phone has nothing. */
   const [picture, setPicture] = useState<string | null | undefined>(undefined);
   const [stats, setStats] = useState(currentStats);
-  const [streak, setStreak] = useState(() => currentStreak(day));
+  const [info, setInfo] = useState(() => streakInfo(day));
   const [sharing, setSharing] = useState(false);
   const [query, setQuery] = useState('');
   const [added, setAdded] = useState(false);
@@ -205,7 +205,7 @@ export default function PuzzleScreen() {
     track('puzzle_finished', { won: next.won ? 1 : 0, tries: next.guesses.length, archive: archive ? 1 : 0 });
     if (archive) return;
     setStats(currentStats());
-    setStreak(currentStreak(day));
+    setInfo(streakInfo(day));
     // Today's "you haven't played" is now moot: re-plan so it is dropped.
     void syncEpisodeNotifications(true);
   };
@@ -328,7 +328,7 @@ export default function PuzzleScreen() {
                 setPicture(undefined);
                 setQuery('');
                 setStats(currentStats());
-                setStreak(currentStreak(day));
+                setInfo(streakInfo(day));
                 setGame(g);
               }}>
               <Text style={{ color: '#000', fontWeight: '800', fontSize: 13 }}>DEV: reset today's puzzle</Text>
@@ -502,9 +502,20 @@ export default function PuzzleScreen() {
                       here only, beside the stats it belongs to, and spelled
                       "🧩 … puzzle streak" so it is never read as the
                       profile's watching streak. Never on the share card. */}
-                  {streak > 0 && (
-                    <Text style={s.streak}>{streak === 1 ? t('puzzleStreak.start') : t('puzzleStreak.days', { count: streak })}</Text>
+                  {info.streak > 0 && (
+                    <Text style={s.streak}>{info.streak === 1 ? t('puzzleStreak.start') : t('puzzleStreak.days', { count: info.streak })}</Text>
                   )}
+                  {/* When it began and the best ever (22 Oct) — the same 🧩,
+                      so neither is read as the watching streak. */}
+                  {info.streak > 1 && info.start && (
+                    <Text style={s.streakSub}>{t('puzzleHistory.started', { date: puzzleDay(info.start) })}</Text>
+                  )}
+                  {info.longest > 1 && <Text style={s.streakSub}>{t('puzzleHistory.longest', { count: info.longest })}</Text>}
+                  {/* Every day played and what it was — the archive screen's
+                      history, the last week free and the rest Plus. */}
+                  <Pressable style={s.historyLink} onPress={() => router.push('/puzzle-archive')} accessibilityRole="link" hitSlop={8}>
+                    <Text style={s.historyText}>{t('puzzleHistory.title')}</Text>
+                  </Pressable>
                 </View>
               )}
 
@@ -542,6 +553,9 @@ const s = StyleSheet.create({
   archiveNote: { color: colors.dim, fontSize: 12.5, textAlign: 'center', marginHorizontal: space.lg, marginTop: 12 },
   statsFrame: { marginHorizontal: space.lg, marginTop: 20 },
   streak: { color: colors.text, fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 12 },
+  historyLink: { alignSelf: 'center', marginTop: 12, paddingHorizontal: 12, paddingVertical: 4 },
+  historyText: { color: colors.blue, fontSize: 14, fontWeight: '700' },
+  streakSub: { color: colors.dim, fontSize: 13.5, textAlign: 'center', marginTop: 4 },
   empty: { color: colors.dim, fontSize: 15, textAlign: 'center', padding: 40 },
   frame: {
     marginHorizontal: space.lg,

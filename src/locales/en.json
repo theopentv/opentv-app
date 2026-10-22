@@ -3780,5 +3780,20 @@
     "channel": "Streaming arrivals",
     "lapsedTitle": "My services are part of Plus",
     "lapsedBody": "Your services are kept. Until Plus is back, there are no arrival alerts and no filter."
+  },
+  "puzzleHistory": {
+    "started": "🧩 Streak started {{date}}",
+    "longest": {
+      "one": "🧩 Longest puzzle streak: {{count}} day",
+      "other": "🧩 Longest puzzle streak: {{count}} days"
+    },
+    "hoursLeft": {
+      "one": "🧩 {{count}}h left — play before midnight",
+      "other": "🧩 {{count}}h left — play before midnight"
+    },
+    "blockSince": "🧩 since {{date}} · best {{best}}",
+    "title": "Your history",
+    "firstDay": "First played {{date}}",
+    "locked": "Titles from more than a week ago are part of Plus."
   }
 }

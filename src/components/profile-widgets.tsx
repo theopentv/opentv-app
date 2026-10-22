@@ -49,7 +49,7 @@ import { formatCount, intlTag } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
 import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
-import { currentStreak, publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
+import { publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzlePlayedToday, puzzleStreakOnProfile, streakInfo, todaysArt } from '@/puzzle-data';
 import { monthOf, todayISO } from '@/components/heatmap';
 import { dominantEmotion, emotionColor, isSafeLinkUrl, parseProfileLinks, shiftMonth, type LinkService } from '@/pure';
 import { router } from 'expo-router';
@@ -276,11 +276,21 @@ export function renderWidget(
   if (id === 'puzzle') {
     const v = isVisitor ? parsePublicPuzzle(pub) : puzzleBlockValue();
     if (!v) return null;
-    // The owner's opt-in streak (22 Oct) — read here, on their phone only.
-    const streak = !isVisitor && puzzleStreakOnProfile() ? currentStreak() : 0;
+    // The owner's opt-in streak (22 Oct) and its companions — when it began,
+    // the longest, the hours left today — read here, on their phone only.
+    const info = !isVisitor && puzzleStreakOnProfile() ? streakInfo() : null;
+    // Today's picture behind the owner's block (22 Oct) — blurred until played,
+    // then sharp and named in the label. Never a visitor's: it is not published.
+    const art = isVisitor ? null : todaysArt();
     const block = (
-      <WidgetBox label={t('puzzle.blockName')} span={span}>
-        <PuzzleBlock value={v} span={span} streak={streak} />
+      <WidgetBox label={art?.title ? `${t('puzzle.blockName')} · ${art.title}` : t('puzzle.blockName')} span={span}>
+        <PuzzleBlock
+          value={v}
+          span={span}
+          streak={info?.streak ?? 0}
+          since={info?.start ? { date: info.start, best: info.longest } : null}
+          hoursLeft={info?.hoursLeft ?? null}
+        />
       </WidgetBox>
     );
     // The owner's block opens the game; a visitor's is somebody else's month.
@@ -291,8 +301,20 @@ export function renderWidget(
         style={{ flex: 1 }}
         accessibilityRole="button"
         disabled={slots?.editing}
-        onPress={() => router.push(puzzleEntryRoute())}>
-        {block}
+        // Today played: the history (22 Oct), where today's result now sits
+        // on top. Not yet: the game.
+        onPress={() => router.push(puzzlePlayedToday() ? '/puzzle-archive' : puzzleEntryRoute())}>
+        {art ? (
+          // Behind the box, which is translucent: nothing in it moves. The
+          // scrim is the page colour, so the squares read in either theme.
+          <View style={s.puzzleArt}>
+            <Image source={{ uri: art.uri }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" blurRadius={art.blur} />
+            <View style={[StyleSheet.absoluteFill, s.puzzleScrim]} />
+            {block}
+          </View>
+        ) : (
+          block
+        )}
       </Pressable>
     );
   }
@@ -872,6 +894,8 @@ const s = StyleSheet.create({
     padding: 12,
     overflow: 'hidden',
   },
+  puzzleArt: { flex: 1, borderRadius: radius.card, overflow: 'hidden' },
+  puzzleScrim: { backgroundColor: colors.bg, opacity: 0.72 },
   label: { color: colors.faint, fontSize: 9.5, fontWeight: '800', letterSpacing: ls(0.9), textTransform: 'uppercase' },
   body: { flex: 1, justifyContent: 'center', gap: 4 },
   big: { color: colors.text, fontSize: 34, fontWeight: '900', letterSpacing: ls(-1), lineHeight: 36 },
