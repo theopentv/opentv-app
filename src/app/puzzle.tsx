@@ -521,7 +521,7 @@ export default function PuzzleScreen() {
 
               {/* The card is what the image share captures — see `puzzle-share-card.tsx`. */}
               <View style={s.cardFrame}>
-                <PuzzleShareCard number={number} day={day} game={game} stats={archive ? null : stats} cardRef={cardRef} />
+                <PuzzleShareCard number={number} day={day} game={game} stats={archive ? null : stats} cardRef={cardRef} picture={picture} />
               </View>
               <View style={s.actions}>
                 <Pressable style={s.shareBtn} onPress={() => setSharing(true)} accessibilityRole="button" accessibilityLabel={t('puzzle.share')}>

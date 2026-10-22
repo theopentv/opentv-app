@@ -24,7 +24,11 @@
  * reader's language, and ends with the dare: "Can you beat me?" The one
  * colour that may change is the accent, which is the profile's theme colour
  * for Plus, exactly as Wrapped paints its cards, and OpenTV's yellow
- * otherwise. Still no title, no picture, and not even whether it was a film.
+ * otherwise. Still no title, and not even whether it was a film.
+ *
+ * THE PICTURE, AT FULL BLUR (22 Oct, Mahmood): the still the game opened
+ * with, as blurred as its first try — a hint a friend can play against, never
+ * the answer. Left out when there is none.
  */
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -38,7 +42,7 @@ import { getMeta } from '@/db';
 import { currentLocale, fmtDecimal, t } from '@/i18n';
 import { profileImageUri } from '@/library';
 import { isPlus } from '@/plus';
-import { MAX_TRIES, SKIP, isClose, type Game, type Stats } from '@/puzzle';
+import { BLUR, MAX_TRIES, SKIP, isClose, type Game, type Stats } from '@/puzzle';
 import { SITE } from '@/share-link';
 import { ACCENTS, DEFAULT_ACCENT, ls, onAccent } from '@/theme';
 import { intlTag } from '@/locale-resolve';
@@ -119,6 +123,7 @@ export function PuzzleShareCard({
   game,
   stats,
   cardRef,
+  picture,
 }: {
   number: number;
   /** The puzzle's own day, printed in the reader's language. */
@@ -128,6 +133,8 @@ export function PuzzleShareCard({
   stats: Stats | null;
   /** Where `captureRef` points. The card is what it photographs. */
   cardRef?: React.RefObject<View | null>;
+  /** Today's still; drawn at the game's first, heaviest blur. */
+  picture?: string | null;
 }) {
   const score = game.won ? `${game.guesses.length}/${MAX_TRIES}` : `X/${MAX_TRIES}`;
   const verdict = game.won ? t('puzzle.wonTitle', { count: game.guesses.length }) : t('puzzle.lostTitle');
@@ -167,6 +174,12 @@ export function PuzzleShareCard({
         </Text>
       </View>
       <View style={s.plot}>
+        {picture ? (
+          <View style={s.still}>
+            <Image source={{ uri: picture }} style={StyleSheet.absoluteFill} contentFit="cover" blurRadius={BLUR[0]} />
+            <Text style={s.stillMark}>?</Text>
+          </View>
+        ) : null}
         <Squares game={game} size={40} gap={9} />
         <Text style={s.score}>{score}</Text>
         <Text style={s.verdict} numberOfLines={1}>
@@ -224,6 +237,17 @@ const s = StyleSheet.create({
   date: { color: DIM, fontSize: 11.5, fontWeight: '700' },
   number: { color: TEXT, fontSize: 20, fontWeight: '900' },
   plot: { alignItems: 'center', paddingTop: 22, paddingBottom: 20, gap: 4 },
+  still: {
+    width: '84%',
+    aspectRatio: 16 / 9,
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginBottom: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1C1C1E',
+  },
+  stillMark: { color: TEXT, fontSize: 44, fontWeight: '900', opacity: 0.85 },
   score: { color: TEXT, fontSize: 44, fontWeight: '900', letterSpacing: ls(-1), marginTop: 14 },
   verdict: { color: DIM, fontSize: 14, fontWeight: '700' },
   stats: {
