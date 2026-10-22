@@ -15,6 +15,7 @@ import { runtimeLabel } from '@/duration';
 import { genreText, plotTvdbCodes } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
 import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, translatedOverview, tvdbHitName, tvdbNameRecord } from '@/pure';
+import { readyPrefix } from '@/feed-cache';
 import { pool, tmdb } from '@/tmdb';
 
 const TMDB_IMG = 'https://image.tmdb.org/t/p';
@@ -43,7 +44,17 @@ export type CatalogItem = {
 
 // ---- TheTVDB ---------------------------------------------------------------
 
-async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
+/** What the feed is asked for. `keep` is the caller's filter (Explore drops
+ *  what you already track) — applied BEFORE a card's request where the trending
+ *  row already answers it, so a show in your library costs nothing at all. */
+export type FeedOptions = {
+  target: number;
+  keep?: (it: CatalogItem) => boolean;
+  /** called with the cards drawable so far, in feed order, as they land */
+  onProgress?: (ready: CatalogItem[]) => void;
+};
+
+async function tvdbFeed({ target, keep, onProgress }: FeedOptions): Promise<CatalogItem[] | null> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const t = require('@/tvdb') as typeof import('@/tvdb');
   const trending = await t.tvdbTrending();
@@ -57,57 +68,101 @@ async function tvdbFeed(limit: number): Promise<CatalogItem[] | null> {
 
   // interleave shows and films so the feed isn't all one kind up top
   const picks: { kind: 'tv' | 'movie'; raw: import('@/tvdb').TvdbTrendingItem }[] = [];
-  const half = Math.ceil(limit / 2);
-  for (let i = 0; i < half; i++) {
+  for (let i = 0; i < Math.max(trending.series.length, trending.movies.length); i++) {
     if (trending.series[i]) picks.push({ kind: 'tv', raw: trending.series[i] });
     if (trending.movies[i]) picks.push({ kind: 'movie', raw: trending.movies[i] });
   }
+  // CANDIDATES, NOT REQUESTS (22 Oct). This used to fetch 36 extended records
+  // up front and draw nothing until all 36 were in. Now it walks the list and
+  // stops as soon as `target` usable cards exist; twice the target is only the
+  // ceiling, for a library heavy enough to filter most of trending away.
+  const candidates = picks.slice(0, target * 2);
 
-  const items = await pool(
-    picks.slice(0, limit),
-    async ({ kind, raw }): Promise<CatalogItem | null> => {
-      // the card wants landscape art, which the trending list doesn't carry.
-      // In a non-English plot language the same request also brings every
-      // translated overview (`meta=translations`), so the blurb follows
-      // Settings → Plot language for no extra request; English mode asks
-      // exactly what it always did.
-      // Translations always now: they also carry the NAMES, and trending
-      // names a show in its original language (薬屋のひとりごと).
-      const ext = kind === 'tv' ? await t.tvdbSeriesExtended(raw.id, true) : await t.tvdbMovieExtended(raw.id, true);
-      const backdrop = t.bestArtwork(ext?.artworks, t.TVDB_ART_BACKGROUND);
-      // no landscape art = no card worth showing, same rule as the TMDB feed
-      if (!backdrop) return null;
+  const shell = (kind: 'tv' | 'movie', raw: import('@/tvdb').TvdbTrendingItem): CatalogItem => ({
+    key: `${kind}-tvdb-${raw.id}`,
+    kind,
+    tvdbId: raw.id,
+    tmdbId: null,
+    title: raw.name ?? '',
+    backdrop: null,
+    poster: artworkUrl(raw.image),
+    overview: raw.overview ?? '',
+    sub: raw.year ?? '',
+    votes: raw.score ?? 0,
+  });
 
-      let sub: string;
-      if (kind === 'tv') {
-        const series = ext as import('@/tvdb').TvdbSeriesExtended | null;
-        const network = series?.originalNetwork?.name ?? null;
-        const genres = (series?.genres ?? []).map((g) => genreText(g.name ?? '')).filter(Boolean).slice(0, 2).join(', ');
-        sub = [genres || null, network].filter(Boolean).join(' • ');
-      } else {
-        const movie = ext as import('@/tvdb').TvdbMovieExtended | null;
-        const genres = (movie?.genres ?? []).map((g) => genreText(g.name ?? '')).filter(Boolean).slice(0, 2).join(', ');
-        sub = [runtimeLabel(movie?.runtime ?? raw.runtime ?? null), genres || null].filter(Boolean).join(' • ');
+  // TheTVDB answered something real: a card with art, or one the library filtered
+  let answered = false;
+  const build = async ({ kind, raw }: (typeof picks)[number]): Promise<CatalogItem | null> => {
+    // Already tracked by id (or by its trending name) — skip the request.
+    if (keep && !keep(shell(kind, raw))) {
+      answered = true;
+      return null;
+    }
+    // the card wants landscape art, which the trending list doesn't carry.
+    // `meta=translations` brings every translated name and overview in the
+    // same request: trending names a show in its original language
+    // (薬屋のひとりごと), and the blurb follows Settings → Plot language.
+    //
+    // `short=true` WAS CHECKED (22 Oct) and is no good here: it halves the
+    // bytes (26 KB against 57 KB) by dropping exactly the artworks the card
+    // needs, and the round trip is the same ~0.6 s. Films ignore it entirely.
+    const ext = kind === 'tv' ? await t.tvdbSeriesExtended(raw.id, true) : await t.tvdbMovieExtended(raw.id, true);
+    const backdrop = t.bestArtwork(ext?.artworks, t.TVDB_ART_BACKGROUND);
+    // no landscape art = no card worth showing, same rule as the TMDB feed
+    if (!backdrop) return null;
+    answered = true;
+
+    let sub: string;
+    if (kind === 'tv') {
+      const series = ext as import('@/tvdb').TvdbSeriesExtended | null;
+      const network = series?.originalNetwork?.name ?? null;
+      const genres = (series?.genres ?? []).map((g) => genreText(g.name ?? '')).filter(Boolean).slice(0, 2).join(', ');
+      sub = [genres || null, network].filter(Boolean).join(' • ');
+    } else {
+      const movie = ext as import('@/tvdb').TvdbMovieExtended | null;
+      const genres = (movie?.genres ?? []).map((g) => genreText(g.name ?? '')).filter(Boolean).slice(0, 2).join(', ');
+      sub = [runtimeLabel(movie?.runtime ?? raw.runtime ?? null), genres || null].filter(Boolean).join(' • ');
+    }
+
+    const item: CatalogItem = {
+      ...shell(kind, raw),
+      title: tvdbHitName({ name: raw.name ?? '', translations: tvdbNameRecord(ext?.translations?.nameTranslations) }, nameLang),
+      backdrop,
+      poster: artworkUrl(raw.image ?? ext?.image),
+      overview: (localPlots && translatedOverview(ext?.translations?.overviewTranslations, plotLangs)) || raw.overview || '',
+      sub: sub || (raw.year ?? ''),
+    };
+    // and again with the translated title, which is what a film is matched on
+    return keep && !keep(item) ? null : item;
+  };
+
+  // `pool`, but able to stop early and to report each card as it lands
+  const results: (CatalogItem | null)[] = candidates.map(() => null);
+  const settled = candidates.map(() => false);
+  let next = 0;
+  let shown = 0;
+  const run = async () => {
+    while (next < candidates.length && readyPrefix(results, settled, target).length < target) {
+      const i = next++;
+      try {
+        results[i] = await build(candidates[i]);
+      } catch {
+        results[i] = null;
       }
-
-      return {
-        key: `${kind}-tvdb-${raw.id}`,
-        kind,
-        tvdbId: raw.id,
-        tmdbId: null,
-        title: tvdbHitName({ name: raw.name ?? '', translations: tvdbNameRecord(ext?.translations?.nameTranslations) }, nameLang),
-        backdrop,
-        poster: artworkUrl(raw.image ?? ext?.image),
-        overview: (localPlots && translatedOverview(ext?.translations?.overviewTranslations, plotLangs)) || raw.overview || '',
-        sub: sub || (raw.year ?? ''),
-        votes: raw.score ?? 0,
-      };
-    },
-    5,
-  );
-  const out = items.filter((x): x is CatalogItem => x != null);
-  // an empty result is a failure, not an empty catalogue — let TMDB try
-  return out.length > 0 ? out : null;
+      settled[i] = true;
+      const ready = readyPrefix(results, settled, target);
+      if (onProgress && ready.length > shown) {
+        shown = ready.length;
+        onProgress(ready);
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(5, candidates.length) }, run));
+  // No art on ANY card is a failure, not an empty catalogue — let TMDB try.
+  // Everything filtered away by the library is an honest short feed.
+  if (!answered) return null;
+  return readyPrefix(results, settled, target);
 }
 
 async function tvdbSearch(query: string): Promise<CatalogItem[] | null> {
@@ -229,14 +284,15 @@ async function tmdbSearch(query: string): Promise<CatalogItem[]> {
 // ---- public ----------------------------------------------------------------
 
 /** This week's trending shows and films. TheTVDB, falling back to TMDB. */
-export async function trendingFeed(limit = 12): Promise<CatalogItem[]> {
+export async function trendingFeed(opts: FeedOptions): Promise<CatalogItem[]> {
   try {
-    const viaTvdb = await tvdbFeed(limit);
+    const viaTvdb = await tvdbFeed(opts);
     if (viaTvdb) return viaTvdb;
   } catch {
     // fall through — a dead TheTVDB key must not blank the Discover tab
   }
-  return tmdbFeed(limit);
+  const { target, keep } = opts;
+  return (await tmdbFeed(target * 2)).filter((it) => !keep || keep(it)).slice(0, target);
 }
 
 /**

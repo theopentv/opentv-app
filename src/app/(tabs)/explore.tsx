@@ -9,14 +9,15 @@ import { tabA11y } from '@/a11y';
 import { FeedList } from '@/components/feed-list';
 import { PuzzleCard } from '@/components/puzzle-card';
 import { ContentColumn, EmptyState, Screen } from '@/components/ui';
-import db, { addMovieToWatchlist, addShow, deleteMovie, deleteShow, getMovie, inLibrary, showWatchCount, trackedShowIds } from '@/db';
+import db, { addMovieToWatchlist, addShow, deleteMovie, deleteShow, getMeta, getMovie, inLibrary, setMeta, showWatchCount, trackedShowIds } from '@/db';
+import { dayCacheState, parseDayCache } from '@/feed-cache';
 import { trendingFeed, tvdbIdFor, type CatalogItem } from '@/catalog';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
-import { movieRoute } from '@/pure';
+import { localDayStamp, movieRoute } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 import { tapSelection } from '@/haptics';
 import { compactCount } from '@/compact-count';
-import { currentLocale, t } from '@/i18n';
+import { currentLocale, plotTvdbCodes, t } from '@/i18n';
 
 type FeedItem = CatalogItem;
 
@@ -31,27 +32,45 @@ const countLabel = (n: number): string => compactCount(n, currentLocale());
  * exactly that: "shows already added or currently watching shouldn't be shown
  * again -- it should show new shows instead of the same again and again."
  *
- * FETCHED DEEPER, THEN FILTERED, rather than filtered and left short. Trending
- * is only so long, and a heavy library could remove most of it: asking for
- * three times the target means the page stays full for the people whose
- * libraries caused the problem in the first place. If it still comes up short,
+ * FILTERED AS IT IS FETCHED, rather than filtered and left short. Trending is
+ * only so long, and a heavy library could remove most of it, so the feed keeps
+ * walking trending (up to twice the target, see `tvdbFeed`) until the page is
+ * full for the people whose libraries caused the problem in the first place --
+ * and stops there, instead of always fetching 36. If it still comes up short,
  * short is the honest answer -- padding it back out with things they watch
  * would be the bug again.
  */
 const FEED_TARGET = 12;
-const loadFeed = async (): Promise<FeedItem[]> => {
-  const all = await trendingFeed(FEED_TARGET * 3);
-  const fresh = all.filter(
-    (it) =>
-      !inLibrary({
-        kind: it.kind === 'movie' ? 'movie' : 'show',
-        name: it.title,
-        tvdbId: it.tvdbId,
-        tmdbId: it.tmdbId,
-        year: it.sub,
-      }),
-  );
-  return fresh.slice(0, FEED_TARGET);
+const notInLibrary = (it: FeedItem): boolean =>
+  !inLibrary({
+    kind: it.kind === 'movie' ? 'movie' : 'show',
+    name: it.title,
+    tvdbId: it.tvdbId,
+    tmdbId: it.tmdbId,
+    year: it.sub,
+  });
+
+/*
+ * TODAY'S FEED IS BUILT ONCE (22 Oct). It cost one TheTVDB request per card and
+ * showed a spinner until the last landed, on every launch. Now the built cards
+ * sit in `meta` for the local day: opening the tab again draws them at once, and
+ * a build more than a few hours old is redone quietly for the next launch rather
+ * than swapped under somebody's thumb. Keyed by language, because titles and
+ * plots are translated into the cards. The library filter runs again on every
+ * serve — that is the part that changes between opens.
+ */
+const FEED_CACHE = 'exploreFeedCache';
+const FEED_REFRESH_MS = 4 * 3600_000;
+const feedCacheKey = () => `${currentLocale()}|${plotTvdbCodes().join(',')}`;
+const cachedFeed = () => {
+  const entry = parseDayCache<FeedItem>(getMeta(FEED_CACHE));
+  return { entry, state: dayCacheState(entry, new Date(), feedCacheKey(), FEED_REFRESH_MS) };
+};
+const buildFeed = async (onProgress?: (ready: FeedItem[]) => void): Promise<FeedItem[]> => {
+  const key = feedCacheKey();
+  const items = await trendingFeed({ target: FEED_TARGET, keep: notInLibrary, onProgress });
+  if (items.length) setMeta(FEED_CACHE, JSON.stringify({ day: localDayStamp(new Date()), at: Date.now(), key, items }));
+  return items;
 };
 
 const PILLS = ['Feed', 'Discover', 'Groups', 'Activity'] as const;
@@ -289,13 +308,29 @@ export default function ExploreScreen() {
     setSeenWanted(wanted);
     if (wanted === 'Activity') setPill('Activity');
   }
-  const [feed, setFeed] = useState<FeedItem[] | null>(null);
+  // Today's cards straight from `meta` when there are any — no spinner at all.
+  const [feed, setFeed] = useState<FeedItem[] | null>(() => {
+    const { entry, state } = cachedFeed();
+    return state === 'miss' ? null : entry!.items.filter(notInLibrary);
+  });
   const [feedError, setFeedError] = useState(false);
 
   useEffect(() => {
-    loadFeed()
-      .then(setFeed)
-      .catch(() => setFeedError(true));
+    const { state } = cachedFeed();
+    if (state === 'fresh') return;
+    if (state === 'stale') {
+      // for next time; what is on screen stays put
+      buildFeed().catch(() => {});
+      return;
+    }
+    let alive = true;
+    // Cards appear as they land instead of after the last of them.
+    buildFeed((ready) => alive && setFeed(ready))
+      .then((items) => alive && setFeed(items))
+      .catch(() => alive && setFeedError(true));
+    return () => {
+      alive = false;
+    };
   }, []);
 
   return (
