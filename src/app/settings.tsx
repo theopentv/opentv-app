@@ -7,10 +7,10 @@ import { deleteCommunityAccount, leaveCommunity } from '@/community-account';
 import { hasAnythingToSeed, seedingDone } from '@/community-seed';
 import { getHandle, hasAccount, lastAccount, useHasPassword, useJoined } from '@/community-session';
 import { communityErrorText } from '@/community-error-text';
-import { fetchFollowRequests, fetchProfile, pushPrivate } from '@/community-profiles';
+import { fetchFollowRequests, fetchProfile, pushHiddenSections, pushPrivate } from '@/community-profiles';
 import { pushDevPlus } from '@/community-plus-dev';
 import { appLinks } from '@/links';
-import { HIDE_UNSEEN_KEY, isSafeLinkUrl, PRIVATE_PROFILE_KEY } from '@/pure';
+import { HIDDEN_SECTIONS_KEY, HIDE_UNSEEN_KEY, isSafeLinkUrl, parseHiddenSections, PRIVATE_PROFILE_KEY, sectionHidden, withSectionHidden } from '@/pure';
 import { backupNow, icloudSupported } from '@/backup';
 import { crashReportsOn, setCrashReports } from '@/crash';
 import { calendarSupported, calendarSyncOn } from '@/calendar-sync';
@@ -152,6 +152,20 @@ export default function SettingsScreen() {
   const [scheme, setScheme] = useState<SchemeChoice>(chosenScheme);
   const [themeSheet, setThemeSheet] = useState(false);
   const [priv, setPriv] = useState(() => getMeta(PRIVATE_PROFILE_KEY) === '1');
+  // WHETHER MY REACTIONS REACH MY FOLLOWERS' ACTIVITY (22 Oct): the same
+  // switch as Edit profile and the Activity intro, here where settings live.
+  const [feedShown, setFeedShown] = useState(() => !sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'feed'));
+  const toggleFeed = async (on: boolean) => {
+    const next = withSectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'feed', !on);
+    setFeedShown(on);
+    try {
+      await pushHiddenSections(next);
+      setMeta(HIDDEN_SECTIONS_KEY, JSON.stringify(next));
+    } catch (e) {
+      setFeedShown(!on);
+      Alert.alert(t('editProfile.visibility.failedTitle'), communityErrorText(e));
+    }
+  };
   const [cuShare, setCuShare] = useState(() => commsuniDecision() === 'share');
   const [privBusy, setPrivBusy] = useState(false);
   const [requests, setRequests] = useState(0);
@@ -475,6 +489,11 @@ export default function SettingsScreen() {
                       trackColor={{ true: colors.green }}
                     />
                   }
+                />
+                <MenuRow trackId="settings.account.feedShown"
+                  title={t('feed.optOut')}
+                  sub={t('feed.optOutSub')}
+                  right={<Switch value={feedShown} onValueChange={(on) => void toggleFeed(on)} trackColor={{ true: colors.green }} />}
                 />
                 {/* THE COMMSUNI ANSWER, changeable — the consent sheet promises
                     "You can change this in Settings". Turning it on asks which
