@@ -3821,6 +3821,16 @@
     "remind": "Przypominaj mi codziennie",
     "start": "Zacznij grać"
   },
+  "activityIntro": {
+    "banner": "Nowość: Aktywność — zobacz, co oceniają i czują osoby, które obserwujesz",
+    "title": "Aktywność",
+    "howFriends": "Gwiazdki, emocje i komentarze znajomych, od najnowszych.",
+    "howLocked": "Odcinki, których nie widziałeś, pozostają zablokowane, więc nic nie zostanie zdradzone.",
+    "howYours": "Twoje oceny i emocje też mogą pojawiać się u Twoich obserwujących.",
+    "share": "Pokazuj moje oceny i emocje osobom, które mnie obserwują",
+    "see": "Zobacz Aktywność",
+    "done": "Gotowe"
+  },
   "puzzlePolish": {
     "played": "Rozegrane",
     "win": "% wygranych",

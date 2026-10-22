@@ -810,6 +810,8 @@ export default function RootLayout() {
         {/* The daily "Guess the show", and its own corner of Settings. */}
         <Stack.Screen name="puzzle" />
         <Stack.Screen name="puzzle-intro" />
+        {/* "New: Activity" (2.0.0), from the Profile banner. */}
+        <Stack.Screen name="activity-intro" />
         <Stack.Screen name="puzzle-settings" />
         <Stack.Screen name="puzzle-archive" />
         {/* Plex: episodes watched on a server this app cannot see. */}

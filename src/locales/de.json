@@ -3541,6 +3541,16 @@
     "remind": "Jeden Tag erinnern",
     "start": "Los geht's"
   },
+  "activityIntro": {
+    "banner": "Neu: Aktivität — sieh, was die Leute, denen du folgst, bewerten und fühlen",
+    "title": "Aktivität",
+    "howFriends": "Die Sterne, Gefühle und Kommentare deiner Freunde, die neuesten zuerst.",
+    "howLocked": "Folgen, die du nicht gesehen hast, bleiben gesperrt – nichts wird gespoilert.",
+    "howYours": "Auch deine eigenen Bewertungen und Gefühle können deinen Followern erscheinen.",
+    "share": "Meine Bewertungen und Gefühle Leuten zeigen, die mir folgen",
+    "see": "Aktivität ansehen",
+    "done": "Fertig"
+  },
   "puzzlePolish": {
     "played": "Gespielt",
     "win": "Siege %",

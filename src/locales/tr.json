@@ -3541,6 +3541,16 @@
     "remind": "Her gün hatırlat",
     "start": "Oynamaya başla"
   },
+  "activityIntro": {
+    "banner": "Yeni: Etkinlik — takip ettiğin kişilerin neyi puanladığını ve ne hissettiğini gör",
+    "title": "Etkinlik",
+    "howFriends": "Arkadaşlarının yıldızları, duyguları ve yorumları, en yenisi önce.",
+    "howLocked": "İzlemediğin bölümler kilitli kalır, böylece hiçbir şey spoiler olmaz.",
+    "howYours": "Kendi puanların ve duyguların da takipçilerine görünebilir.",
+    "share": "Puanlarımı ve duygularımı beni takip edenlere göster",
+    "see": "Etkinliği gör",
+    "done": "Tamam"
+  },
   "puzzlePolish": {
     "played": "Oynanan",
     "win": "Kazanma %",

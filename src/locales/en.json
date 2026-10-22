@@ -3541,6 +3541,16 @@
     "remind": "Remind me each day",
     "start": "Start playing"
   },
+  "activityIntro": {
+    "banner": "New: Activity — see what the people you follow rate and feel",
+    "title": "Activity",
+    "howFriends": "Your friends' stars, feelings and comments, newest first.",
+    "howLocked": "Episodes you haven't watched stay locked, so nothing is spoiled.",
+    "howYours": "Your own ratings and feelings can show up for your followers too.",
+    "share": "Show my ratings and feelings to people who follow me",
+    "see": "See Activity",
+    "done": "Done"
+  },
   "puzzlePolish": {
     "played": "Played",
     "win": "Win %",

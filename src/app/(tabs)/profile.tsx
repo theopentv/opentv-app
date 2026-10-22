@@ -59,6 +59,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
+import { ACTIVITY_BANNER_CLOSED, ACTIVITY_INTRO_ANSWERED, activityBannerShown } from '@/activity-intro';
 import { closePuzzleBanner, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile, streakInfo, todaysArt } from '@/puzzle-data';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
@@ -159,6 +160,8 @@ export default function ProfileScreen() {
   // picker, and arranging blocks is Plus — so a free member never met it.
   // Gone for good on ✕, and gone by itself once a goal for this year exists.
   const [goalOffer, setGoalOffer] = useState(false);
+  // "New: Activity" — closed or answered, read on focus (Compiler trap).
+  const [activityNews, setActivityNews] = useState({ closed: true, answered: true });
   const [goalOnPage, setGoalOnPage] = useState(false);
   const [puzzleOnPage, setPuzzleOnPage] = useState(false);
   const [puzzleSnap, setPuzzleSnap] = useState('');
@@ -395,6 +398,7 @@ export default function ProfileScreen() {
       setTvdbFailed(tvdbKeyFailed() && !userTvdbKey() && getMeta('tvdbNudgeDismissed') !== '1');
       setNotifOff(!notificationsEnabled() && getMeta('notifyNudgeDismissed') !== '1');
       setPuzzleBanner(puzzleBannerNow());
+      setActivityNews({ closed: getMeta(ACTIVITY_BANNER_CLOSED) === '1', answered: getMeta(ACTIVITY_INTRO_ANSWERED) === '1' });
       setGoalOnPage(goalShownOnProfile());
       setPuzzleOnPage(puzzleStreakOnProfile());
       // A SNAPSHOT, so the block redraws when you come back from a game: it
@@ -881,6 +885,10 @@ export default function ProfileScreen() {
     setMeta('tvdbNudgeDismissed', '1');
     setTvdbFailed(false);
   };
+  const dismissActivityNews = () => {
+    setMeta(ACTIVITY_BANNER_CLOSED, '1');
+    setActivityNews((s) => ({ ...s, closed: true }));
+  };
   const dismissPuzzle = () => {
     closePuzzleBanner();
     setPuzzleBanner(null);
@@ -1197,6 +1205,26 @@ export default function ProfileScreen() {
           <Ionicons name="key-outline" size={18} color={colors.onBrand} />
           <Text style={styles.cloudBannerText}>{t('profile.tvdbBannerText')}</Text>
           <Pressable hitSlop={10} onPress={dismissTvdbNudge} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/* NEW: ACTIVITY (2.0.0). Members only — it is a friends feed. Near
+          the end with the puzzle: news, not a warning, so it pushes none of
+          the notices above out. Gone for good on ✕ or once the intro is
+          answered (`activityBannerShown`). */}
+      {activityBannerShown({ member: joinedCommunity, ...activityNews }) && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissActivityNews)}
+          onPress={() => {
+            tapLight();
+            router.push('/activity-intro');
+          }}>
+          <Ionicons name="chatbubbles-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{t('activityIntro.banner')}</Text>
+          <Pressable hitSlop={10} onPress={dismissActivityNews} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
             <Ionicons name="close" size={17} color={colors.onBrand} />
           </Pressable>
         </Pressable>

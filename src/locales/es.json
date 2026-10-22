@@ -3541,6 +3541,16 @@
     "remind": "Recordármelo cada día",
     "start": "Empezar a jugar"
   },
+  "activityIntro": {
+    "banner": "Nuevo: Actividad — mira qué valoran y sienten las personas que sigues",
+    "title": "Actividad",
+    "howFriends": "Las estrellas, emociones y comentarios de tus amigos, lo más reciente primero.",
+    "howLocked": "Los episodios que no has visto siguen bloqueados, así que nada se destripa.",
+    "howYours": "Tus propias valoraciones y emociones también pueden aparecer a tus seguidores.",
+    "share": "Mostrar mis valoraciones y emociones a quienes me siguen",
+    "see": "Ver Actividad",
+    "done": "Listo"
+  },
   "puzzlePolish": {
     "played": "Jugadas",
     "win": "% ganadas",

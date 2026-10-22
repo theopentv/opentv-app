@@ -3541,6 +3541,16 @@
     "remind": "Me le rappeler chaque jour",
     "start": "Commencer à jouer"
   },
+  "activityIntro": {
+    "banner": "Nouveau : Activité — voyez ce que notent et ressentent les personnes que vous suivez",
+    "title": "Activité",
+    "howFriends": "Les étoiles, émotions et commentaires de vos amis, les plus récents d'abord.",
+    "howLocked": "Les épisodes que vous n'avez pas vus restent verrouillés : rien n'est divulgâché.",
+    "howYours": "Vos propres notes et émotions peuvent aussi apparaître chez vos abonnés.",
+    "share": "Montrer mes notes et émotions aux personnes qui me suivent",
+    "see": "Voir l'activité",
+    "done": "OK"
+  },
   "puzzlePolish": {
     "played": "Parties",
     "win": "% gagnées",

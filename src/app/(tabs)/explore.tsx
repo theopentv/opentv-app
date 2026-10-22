@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -279,7 +279,16 @@ function FeedCard({ item }: { item: FeedItem }) {
 }
 
 export default function ExploreScreen() {
-  const [pill, setPill] = useState<Pill>('Feed');
+  // `?pill=Activity` from the Activity intro. This tab is never unmounted, so
+  // the initial state alone would miss it: follow the param when it changes
+  // (React's "adjust state on a changed prop" pattern, no effect).
+  const { pill: wanted } = useLocalSearchParams<{ pill?: string }>();
+  const [pill, setPill] = useState<Pill>(wanted === 'Activity' ? 'Activity' : 'Feed');
+  const [seenWanted, setSeenWanted] = useState(wanted);
+  if (wanted !== seenWanted) {
+    setSeenWanted(wanted);
+    if (wanted === 'Activity') setPill('Activity');
+  }
   const [feed, setFeed] = useState<FeedItem[] | null>(null);
   const [feedError, setFeedError] = useState(false);
 
