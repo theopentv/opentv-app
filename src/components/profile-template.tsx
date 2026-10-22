@@ -936,6 +936,15 @@ export function ProfileTemplate({
    */
   const [editing, setEditing] = useState(false);
   /**
+   * Bumped when arranging ENDS, and part of every block's key, so each block
+   * comes back as a fresh view. While arranging, a block is moved by
+   * Reanimated, and Reanimated keeps the last slot it settled on and lays it
+   * over React's for the rest of the view's life — so a block added, removed
+   * or re-measured after an arranging session left the others drawn at their
+   * old slots, over each other. A new view has no such memory.
+   */
+  const [arrangeRun, setArrangeRun] = useState(0);
+  /**
    * Called from a worklet, so it has to be a plain function.
    *
    * THE PLUS GATE IS HERE, ON ARRANGING, AND NOWHERE ELSE — which is the whole
@@ -1402,7 +1411,7 @@ export function ProfileTemplate({
               {laid.map((b) =>
                 canArrange ? (
                   <ArrangeableBlock
-                    key={b.uid}
+                    key={`${b.uid}#${arrangeRun}`}
                     index={b.at}
                     editing={editing}
                     canRemove={b.id !== LOCKED}
@@ -1516,6 +1525,7 @@ export function ProfileTemplate({
           onDone={() => {
             tapLight();
             setEditing(false);
+            setArrangeRun((n) => n + 1);
           }}
         />
       )}
