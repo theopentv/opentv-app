@@ -65,6 +65,7 @@ import {
   hoursLeftToday,
   historyUnlocked,
   FREE_HISTORY_DAYS,
+  puzzleArt,
 } from '@/puzzle';
 
 describe('days', () => {
@@ -754,5 +755,12 @@ describe('puzzle streak and the profile banner', () => {
     expect(historyUnlocked('2026-10-15', '2026-10-22', false)).toBe(false);
     expect(historyUnlocked('2026-10-15', '2026-10-22', true)).toBe(true);
     expect(FREE_HISTORY_DAYS).toBe(7);
+  });
+
+  it('shows today’s picture blurred and nameless until played, then sharp with its title', () => {
+    expect(puzzleArt(null, true, 'Lost')).toBeNull();
+    expect(puzzleArt('', false, null)).toBeNull();
+    expect(puzzleArt('u', false, 'Lost')).toEqual({ uri: 'u', blur: BLUR[0], title: null });
+    expect(puzzleArt('u', true, 'Lost')).toEqual({ uri: 'u', blur: 0, title: 'Lost' });
   });
 });

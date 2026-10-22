@@ -58,6 +58,7 @@ import {
   parsePinned,
   pickAnswer,
   pickPicture,
+  puzzleArt,
   publicPuzzle,
   puzzleStats,
   resultOf,
@@ -68,6 +69,7 @@ import {
   type Game,
   type Pinned,
   type PublicPuzzle,
+  type PuzzleArt,
   type PuzzleId,
   type Result,
   type Stats,
@@ -680,6 +682,16 @@ export function streakInfo(day = today()): StreakInfo {
     longest: longestStreak(h),
     hoursLeft: open ? hoursLeftToday(new Date()) : null,
   };
+}
+
+/** What the Explore card and the profile block draw of today — `puzzleArt`.
+ *  The picture is the one the game pinned; the title only once played. */
+export function todaysArt(day = today()): PuzzleArt | null {
+  const pin = parsePinned(parse<unknown>(K.answers)).find((p) => p.d === day);
+  if (!pin?.pic) return null;
+  const g = loadGame(day);
+  const played = (g != null && g.id === pin.id && isOver(g)) || loadHistory().some((r) => r.d === day);
+  return puzzleArt(pin.pic, played, played ? (puzzleTitles([pin.id]).get(pin.id) ?? null) : null);
 }
 
 /** Today's game is in the history. */

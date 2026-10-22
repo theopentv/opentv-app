@@ -11,11 +11,17 @@
  * not this card's. Once today's game is over the card also shows Played /
  * Win % / Avg. tries — the game screen's `StatsRow`, not a copy of it.
  *
+ * TODAY'S PICTURE IN THE ICON'S PLACE (22 Oct), same 46pt square: the frame
+ * the game pinned, at the game's first blur until today is played, then
+ * sharp with the title beside the result (`todaysArt`). No picture pinned —
+ * the game not opened yet today — and it is the 🎬 as before.
+ *
  * READ ON FOCUS, NOT IN RENDER, for the reason `memory-card.tsx` gives: the
  * React Compiler memoises a render-time read, and this card is the one that
  * has to change the moment somebody comes back from playing.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -23,11 +29,11 @@ import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatsRow } from '@/components/puzzle-block';
 import { Squares } from '@/components/puzzle-share-card';
 import { t } from '@/i18n';
-import { MAX_TRIES, isOver, puzzleNumber, type Game, type Stats } from '@/puzzle';
-import { currentStats, loadGame, puzzleEntryRoute, puzzleOn, today } from '@/puzzle-data';
+import { MAX_TRIES, isOver, puzzleNumber, type Game, type PuzzleArt, type Stats } from '@/puzzle';
+import { currentStats, loadGame, puzzleEntryRoute, puzzleOn, today, todaysArt } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 
-type Seen = { on: boolean; number: number; game: Game | null; stats: Stats | null };
+type Seen = { on: boolean; number: number; game: Game | null; stats: Stats | null; art: PuzzleArt | null };
 
 export function PuzzleCard() {
   const [seen, setSeen] = useState<Seen | null>(null);
@@ -42,12 +48,13 @@ export function PuzzleCard() {
         game,
         // Only after today's game: before it, the numbers are yesterday's news.
         stats: game != null && isOver(game) ? currentStats() : null,
+        art: todaysArt(day),
       });
     }, []),
   );
 
   if (!seen?.on) return null;
-  const { game, number, stats } = seen;
+  const { game, number, stats, art } = seen;
 
   const sub =
     game == null || game.guesses.length === 0
@@ -57,22 +64,28 @@ export function PuzzleCard() {
         : game.won
           ? t('puzzle.cardWon', { score: `${game.guesses.length}/${MAX_TRIES}` })
           : t('puzzle.cardLost');
+  // `art.title` is null until today is played, so this never names it early.
+  const line = art?.title ? `${sub} · ${art.title}` : sub;
 
   return (
     <Pressable
       style={s.card}
       onPress={() => router.push(puzzleEntryRoute())}
       accessibilityRole="button"
-      accessibilityLabel={`${t('puzzle.title')} #${number}. ${sub}`}>
+      accessibilityLabel={`${t('puzzle.title')} #${number}. ${line}`}>
       <View style={s.icon}>
-        <Text style={{ fontSize: 24 }}>🎬</Text>
+        {art ? (
+          <Image source={{ uri: art.uri }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" blurRadius={art.blur} />
+        ) : (
+          <Text style={{ fontSize: 24 }}>🎬</Text>
+        )}
       </View>
       <View style={{ flex: 1, gap: 3 }}>
         <Text style={s.title} numberOfLines={1}>
           {t('puzzle.title')} <Text style={s.number}>#{number}</Text>
         </Text>
         <Text style={s.sub} numberOfLines={2}>
-          {sub}
+          {line}
         </Text>
         {game != null && game.guesses.length > 0 && (
           <View style={{ marginTop: 4 }}>
@@ -108,6 +121,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.raise,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   title: { color: colors.text, fontSize: 16.5, fontWeight: '800' },
   number: { color: colors.yellow },

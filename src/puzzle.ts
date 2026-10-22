@@ -605,6 +605,19 @@ export function hoursLeftToday(now: Date): number {
   return Math.max(1, Math.ceil((midnight - now.getTime()) / 3_600_000));
 }
 
+/**
+ * Today's picture on the Explore card and the profile block (22 Oct): sharp,
+ * with the title, once today is played; before that at the game's own first
+ * blur, a teaser that gives nothing away. Null with no picture pinned yet
+ * (the game was never opened today, or offline): the card keeps its old look.
+ */
+export type PuzzleArt = { uri: string; blur: number; title: string | null };
+
+export function puzzleArt(pic: string | null | undefined, played: boolean, title: string | null): PuzzleArt | null {
+  if (!pic) return null;
+  return { uri: pic, blur: played ? 0 : BLUR[0], title: played ? title : null };
+}
+
 /** A free player sees the titles of the last week of history; the rest is Plus. */
 export const FREE_HISTORY_DAYS = 7;
 
