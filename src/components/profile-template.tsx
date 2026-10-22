@@ -99,13 +99,14 @@ export type ProfileCountCell = { key: string; value: string; label: string; onPr
  * here -- the server sends a summary with no posters, and an unmarked blank
  * card with a name on it reads as a list that failed to load.
  */
-function SharedMark({ count }: { count?: number | null }) {
-  return (
-    <View style={styles.sharedMark}>
+function SharedMark({ count, center }: { count?: number | null; center?: boolean }) {
+  const mark = (
+    <View style={[styles.sharedMark, center && styles.sharedMarkInline]}>
       <Ionicons name="people" size={11} color={colors.yellow} />
       {count != null && count > 0 && <Text style={styles.sharedMarkText}>{count}</Text>}
     </View>
   );
+  return center ? <View style={styles.sharedMarkCenter} pointerEvents="none">{mark}</View> : mark;
 }
 
 /** One list, drawn as a collage of its first few posters. */
@@ -779,8 +780,8 @@ export function ProfileTemplate({
               {first != null ? (
                 // A real list: its name sits where a poster band's name sits.
                 <>
-                  <Text style={styles.collageName}>{first.name}</Text>
-                  {first.shared === true && <SharedMark count={first.memberCount} />}
+                  <Text style={[styles.collageName, styles.collageNameCenter]}>{first.name}</Text>
+                  {first.shared === true && <SharedMark count={first.memberCount} center />}
                 </>
               ) : (
                 <Text style={styles.collageEmptyText}>
@@ -797,7 +798,11 @@ export function ProfileTemplate({
             // (`/lists` for the owner, `/user-lists` for a visitor); the
             // fallback is for a caller that one day does not.
             <Pressable
-              style={styles.collage}
+              // A SHORT LIST SITS IN THE MIDDLE (22 Oct, Mahmood): one or two
+              // posters at the start edge left the band's other half empty and
+              // the card read as pushed to one side, in every language. A full
+              // band is unchanged.
+              style={[styles.collage, first.items.length < listTiles(W) && styles.collageCenter]}
               onPress={list.onSeeAll ?? first.onPress}
               accessibilityRole="button"
               // The posters are decoration here; the list's name is the card.
@@ -811,8 +816,8 @@ export function ProfileTemplate({
               ))}
               {/* TV Time darkens towards the bottom so the name reads on any poster */}
               <LinearGradient colors={['rgba(0,0,0,0.05)', 'rgba(0,0,0,0.75)']} locations={[0.35, 1]} style={styles.collageDim} pointerEvents="none" />
-              <Text style={styles.collageName}>{first.name}</Text>
-              {first.shared === true && <SharedMark count={first.memberCount} />}
+              <Text style={[styles.collageName, first.items.length < listTiles(W) && styles.collageNameCenter]}>{first.name}</Text>
+              {first.shared === true && <SharedMark count={first.memberCount} center={first.items.length < listTiles(W)} />}
             </Pressable>
           )}
         </>
@@ -1772,6 +1777,10 @@ const styles = StyleSheet.create({
     marginHorizontal: space.lg,
     overflow: 'hidden',
   },
+  collageCenter: { justifyContent: 'center' },
+  collageNameCenter: { start: 14, end: 14, textAlign: 'center' },
+  sharedMarkCenter: { position: 'absolute', top: 10, left: 0, right: 0, alignItems: 'center' },
+  sharedMarkInline: { position: 'relative', top: 0, start: 0 },
   collageDim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.3)' },
   collageEmpty: {
     marginHorizontal: space.lg,
