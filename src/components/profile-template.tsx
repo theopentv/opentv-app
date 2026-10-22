@@ -1352,7 +1352,11 @@ export function ProfileTemplate({
             } else {
               closeHalf();
               laid.push({ ...b, x: fixed ? space.lg : 0, y: cursor, w: fixed ? m.block : CONTENT_W, h, fixed });
-              cursor += h + BLOCK_GAP;
+              // A block that measured EMPTY takes no gap either (22 Oct). A
+              // visitor's `intro` is a fragment that is there even with no bio
+              // and no private notice; drawn as nothing, it still pushed the
+              // counts a gap's height below the banner — a black strip.
+              cursor += h + (h > 0 ? BLOCK_GAP : 0);
             }
           }
           closeHalf();
