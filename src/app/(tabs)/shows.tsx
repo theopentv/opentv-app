@@ -692,7 +692,8 @@ export default function ShowsScreen() {
         />
         {/* the list/grid toggle floats at the top right, like the real app;
             the sort sits beside it and turns yellow while it is not the default */}
-        <View style={styles.gridToggle}>
+        {/* below the floating Tonight card, not under it */}
+        <View style={[styles.gridToggle, { top: 16 + tonightPad }]}>
           <Pressable
             hitSlop={10}
             accessibilityRole="button"
