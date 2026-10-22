@@ -49,7 +49,7 @@ import { formatCount, intlTag } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
 import { PuzzleBlock } from '@/components/puzzle-block';
 import { parsePublicPuzzle } from '@/puzzle';
-import { publishedPuzzleValue, puzzleBlockValue } from '@/puzzle-data';
+import { currentStreak, publishedPuzzleValue, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
 import { monthOf, todayISO } from '@/components/heatmap';
 import { dominantEmotion, emotionColor, isSafeLinkUrl, parseProfileLinks, shiftMonth, type LinkService } from '@/pure';
 import { router } from 'expo-router';
@@ -276,10 +276,24 @@ export function renderWidget(
   if (id === 'puzzle') {
     const v = isVisitor ? parsePublicPuzzle(pub) : puzzleBlockValue();
     if (!v) return null;
-    return (
+    // The owner's opt-in streak (22 Oct) — read here, on their phone only.
+    const streak = !isVisitor && puzzleStreakOnProfile() ? currentStreak() : 0;
+    const block = (
       <WidgetBox label={t('puzzle.blockName')} span={span}>
-        <PuzzleBlock value={v} span={span} />
+        <PuzzleBlock value={v} span={span} streak={streak} />
       </WidgetBox>
+    );
+    // The owner's block opens the game; a visitor's is somebody else's month.
+    if (isVisitor) return block;
+    return (
+      <Pressable
+        // Takes the place the box would have: the box is `flex: 1` in its cell.
+        style={{ flex: 1 }}
+        accessibilityRole="button"
+        disabled={slots?.editing}
+        onPress={() => router.push(puzzleEntryRoute())}>
+        {block}
+      </Pressable>
     );
   }
 

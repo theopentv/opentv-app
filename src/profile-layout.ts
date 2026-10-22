@@ -625,3 +625,22 @@ export function withGoalBlock(items: readonly Placed[]): Placed[] {
   out.splice(at >= 0 ? at + 1 : Math.min(2, out.length), 0, goal);
   return out;
 }
+
+/**
+ * THE PUZZLE STREAK ON A FREE PROFILE (22 Oct). Free members cannot arrange
+ * blocks, so with "Show my puzzle streak on my profile" on, the daily puzzle's
+ * block joins the fixed page right after Stats — above Lists — or, on a page
+ * without Stats, just before Lists, or at the end of the blocks. A puzzle
+ * block already on the page is left exactly where it is.
+ */
+export function withPuzzleBlock(items: readonly Placed[]): Placed[] {
+  if (items.some((p) => p.id === 'puzzle')) return [...items];
+  const puzzle: Placed = { uid: 'puzzle-auto', id: 'puzzle', span: '2x1' };
+  const out = [...items];
+  const stats = out.findIndex((p) => p.id === 'stats');
+  const lists = out.findIndex((p) => p.id === 'lists');
+  const extra = out.findIndex((p) => p.id === 'extra');
+  const at = stats >= 0 ? stats + 1 : lists >= 0 ? lists : extra >= 0 ? extra : out.length;
+  out.splice(at, 0, puzzle);
+  return out;
+}

@@ -34,6 +34,7 @@ import {
   type WidgetSpan,
   defaultLayout,
   withGoalBlock,
+  withPuzzleBlock,
 } from '@/profile-layout';
 import { widgetValue } from '@/components/profile-widgets';
 import { pushWidgets } from '@/community-profiles';
@@ -58,7 +59,7 @@ import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
-import { closePuzzleBanner, puzzleBannerNow, puzzleEntryRoute } from '@/puzzle-data';
+import { closePuzzleBanner, puzzleBannerNow, puzzleEntryRoute, puzzleStreakOnProfile } from '@/puzzle-data';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
@@ -159,6 +160,7 @@ export default function ProfileScreen() {
   // Gone for good on ✕, and gone by itself once a goal for this year exists.
   const [goalOffer, setGoalOffer] = useState(false);
   const [goalOnPage, setGoalOnPage] = useState(false);
+  const [puzzleOnPage, setPuzzleOnPage] = useState(false);
   // The backup warning can be put away for a week, never for good: losing a
   // library is the one thing this app must keep saying out loud (8 Oct).
   const [backupSnoozed, setBackupSnoozed] = useState(false);
@@ -393,6 +395,7 @@ export default function ProfileScreen() {
       setNotifOff(!notificationsEnabled() && getMeta('notifyNudgeDismissed') !== '1');
       setPuzzleBanner(puzzleBannerNow());
       setGoalOnPage(goalShownOnProfile());
+      setPuzzleOnPage(puzzleStreakOnProfile());
       // Either year: a goal already set for next year has answered the question.
       setGoalOffer(
         getMeta(GOAL_BANNER_CLOSED) !== '1' &&
@@ -1253,9 +1256,13 @@ export default function ProfileScreen() {
        */
       // The goal joins whichever arrangement is drawn while its switch is on —
       // the free classic page included, which otherwise has no way to hold it.
-      arrangement={
-        goalOnPage ? withGoalBlock(plus && arrangement ? arrangement : defaultLayout(SHELF_KEYS)) : plus ? arrangement : undefined
-      }
+      // The puzzle streak (22 Oct) joins the FREE page only: Plus places the
+      // puzzle block where it likes, and nothing of theirs is moved.
+      arrangement={(() => {
+        const free = !plus && puzzleOnPage ? withPuzzleBlock(defaultLayout(SHELF_KEYS)) : undefined;
+        const drawn = plus ? arrangement : free;
+        return goalOnPage ? withGoalBlock(drawn ?? defaultLayout(SHELF_KEYS)) : drawn;
+      })()}
       onArrange={(next: Placed[]) => {
         setArrangement(next);
         // ALIASED ON IMPORT: this screen already has a `setProfileLayout`, and

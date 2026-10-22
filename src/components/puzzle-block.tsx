@@ -78,7 +78,11 @@ export function StatsRow({ stats, big = false }: { stats: Stats; big?: boolean }
   );
 }
 
-export function PuzzleBlock({ value, span }: { value: PublicPuzzle; span: WidgetSpan }) {
+/**
+ * `streak` is the OWNER's alone (22 Oct, opt-in): drawn on their own phone
+ * from `meta`, never from a published value — `publicPuzzle` has none.
+ */
+export function PuzzleBlock({ value, span, streak = 0 }: { value: PublicPuzzle; span: WidgetSpan; streak?: number }) {
   const [box, setBox] = useState({ w: 0, h: 0 });
   const today = todayISO();
   const weeks = calendarMonth(today.slice(0, 7));
@@ -138,9 +142,14 @@ export function PuzzleBlock({ value, span }: { value: PublicPuzzle; span: Widget
   return (
     <View style={[{ flex: 1, gap: 10 }, side && { flexDirection: 'row', alignItems: 'stretch' }]}>
       {calendar}
-      {value.stats ? (
-        <View style={side ? s.statsSide : null}>
-          <StatsRow stats={value.stats} />
+      {value.stats || streak > 0 ? (
+        <View style={[side ? s.statsSide : null, { gap: 6 }]}>
+          {value.stats ? <StatsRow stats={value.stats} /> : null}
+          {streak > 0 ? (
+            <Text style={s.streak} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+              {t('puzzleStreak.days', { count: streak })}
+            </Text>
+          ) : null}
         </View>
       ) : null}
     </View>
@@ -157,6 +166,7 @@ const s = StyleSheet.create({
   future: { borderWidth: 1, borderColor: colors.lift },
   today: { borderWidth: 1.5, borderColor: colors.text },
   stats: { flexDirection: 'row', gap: 6 },
+  streak: { color: colors.text, fontSize: 12.5, fontWeight: '700', textAlign: 'center' },
   stat: { flex: 1, alignItems: 'center', gap: 1, minWidth: 0 },
   value: { color: colors.text, fontSize: 17, fontWeight: '900', letterSpacing: ls(-0.3) },
   valueBig: { fontSize: 26 },
