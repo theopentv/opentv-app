@@ -29,6 +29,7 @@ import {
   StyleSheet,
   View,
   useWindowDimensions,
+  type ViewStyle,
 } from 'react-native';
 import { Text } from '@/components/text';
 import Animated, {
@@ -542,16 +543,39 @@ export function ProfileTemplate({
   const coverH = useDerivedValue(() =>
     interpolate(scrollY.value, [-120, 0, RANGE], [FULL + 120, FULL, BAR], Extrapolation.CLAMP),
   );
-  const coverStyle = useAnimatedStyle(() => ({
+  /*
+   * THE BAND WENT BACK TO FULL HEIGHT OVER A SCROLLED PAGE (22 Oct). Scroll
+   * down, open a show, come back: the cover stood at its full height with the
+   * name showing, over a page still scrolled hundreds of points down — so the
+   * counts, the goal, Stats and the puzzle were all behind it and "Watching
+   * together" peeked out from under it with its top cut off.
+   *
+   * These three values are written by Reanimated, which React never hears
+   * about. Reanimated 4.5 hands a settled value back to React from a JS timer
+   * (every 500 ms, for values 1–2 s old) and throws away anything older — so
+   * when opening a show keeps the JS thread busy through that window, the
+   * collapsed height is dropped without ever reaching React, and the next
+   * React commit draws the band as React last knew it — at the top of the
+   * page. Reproduced on a simulator with JS held busy for 2.6 s on blur.
+   *
+   * `reassert` swaps each style for an identical twin; attaching a style
+   * writes its CURRENT value to the view, which puts the right one back where
+   * the next sync will find it. Flipped on every return (see below).
+   */
+  const [reassert, setReassert] = useState(false);
+  const coverStyle = useReassertedStyle(() => {
+    'worklet';
     // pulling past the top stretches the cover, like the real app
-    height: coverH.value,
-  }));
-  const identityStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollY.value, [0, RANGE * 0.55], [1, 0], Extrapolation.CLAMP),
-  }));
-  const barNameStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollY.value, [RANGE * 0.55, RANGE], [0, 1], Extrapolation.CLAMP),
-  }));
+    return { height: coverH.value };
+  }, reassert);
+  const identityStyle = useReassertedStyle(() => {
+    'worklet';
+    return { opacity: interpolate(scrollY.value, [0, RANGE * 0.55], [1, 0], Extrapolation.CLAMP) };
+  }, reassert);
+  const barNameStyle = useReassertedStyle(() => {
+    'worklet';
+    return { opacity: interpolate(scrollY.value, [RANGE * 0.55, RANGE], [0, 1], Extrapolation.CLAMP) };
+  }, reassert);
 
   /**
    * THE WASH, AND IT USED TO BE INVISIBLE.
@@ -578,7 +602,15 @@ export function ProfileTemplate({
   useFocusEffect(
     useCallback(() => {
       setFocused(true);
-      return () => setFocused(false);
+      // Now, for the commit that coming back makes; and again once the tab's
+      // own refresh (and whatever kept JS busy) is over, in case that dropped
+      // it a second time. See `reassert`.
+      setReassert((r) => !r);
+      const again = setTimeout(() => setReassert((r) => !r), 2500);
+      return () => {
+        clearTimeout(again);
+        setFocused(false);
+      };
     }, []),
   );
 
@@ -1026,7 +1058,7 @@ export function ProfileTemplate({
       {focused && <StatusBarOnCover />}
       <Animated.View style={[styles.cover, coverStyle]}>
         {coverUri != null ? (
-          <BannerImage uri={coverUri} frame={coverFrame ?? null} followLive={coverFollowsLive} box={{ w: W, h: FULL }} liveHeight={coverH} />
+          <BannerImage uri={coverUri} frame={coverFrame ?? null} followLive={coverFollowsLive} box={{ w: W, h: FULL }} liveHeight={coverH} reassert={reassert} />
         ) : coverSource ? (
           <Image source={coverSource} style={StyleSheet.absoluteFill} contentFit="cover" />
         ) : null}
@@ -1492,6 +1524,19 @@ export function ProfileTemplate({
 }
 
 /**
+ * A scroll-linked style that can be RE-WRITTEN on demand. Two handles over one
+ * worklet; flipping `which` attaches the other, and Reanimated writes a style's
+ * current value to the view when it attaches it — on the UI thread, from the
+ * live shared values, whatever React last believed. See `reassert` in the
+ * profile for why that is needed.
+ */
+function useReassertedStyle<S extends ViewStyle>(updater: () => S, which: boolean) {
+  const a = useAnimatedStyle(updater);
+  const b = useAnimatedStyle(updater);
+  return which ? a : b;
+}
+
+/**
  * The banner, framed.
  *
  * MOVED BY A TRANSFORM, NEVER BY IMAGE PROPS. The picture is laid out once at
@@ -1508,6 +1553,7 @@ export function BannerImage({
   followLive,
   box,
   liveHeight,
+  reassert = false,
 }: {
   uri: string;
   frame: CoverFrame | null;
@@ -1517,6 +1563,8 @@ export function BannerImage({
   box: { w: number; h: number };
   /** The band's height right now (collapsing / stretching), on the UI thread. */
   liveHeight?: SharedValue<number>;
+  /** Flipped by the profile to re-write `follow` — see `useReassertedStyle`. */
+  reassert?: boolean;
 }) {
   const live = useLiveCoverFrame();
   const f = (followLive ? live : null) ?? frame;
@@ -1527,10 +1575,11 @@ export function BannerImage({
    * grows the picture to fill it instead of leaving an empty gap (3 Oct). One
    * transform, on the UI thread, so the scroll stays smooth.
    */
-  const follow = useAnimatedStyle(() => {
+  const follow = useReassertedStyle(() => {
+    'worklet';
     const h = liveHeight ? liveHeight.value : box.h;
     return { transform: [{ translateY: (h - box.h) / 2 }, { scale: Math.max(1, h / box.h) }] };
-  });
+  }, reassert);
   // THE SAME SOURCE OBJECT EVERY RENDER. A new `{ uri }` each time made
   // expo-image load it again, and a GIF restarted from its first frame on every
   // finger movement while it was being adjusted (2 Oct).
