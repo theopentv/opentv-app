@@ -40,7 +40,7 @@ import type {
 
 import { getProfileId } from '@/community-session';
 import { matchPlayOption, offerSecondsLeft } from '@/offers';
-import { serverGrantedPlus, setPlusEntitled } from '@/plus';
+import { setStorePlus } from '@/plus';
 import { annualSavingPercent, liveCreatorCode } from '@/pure';
 import { RC_API_KEY_ANDROID, RC_API_KEY_IOS } from '@/rc-keys';
 import { SIDELOADED } from '@/sideload';
@@ -103,7 +103,7 @@ let configured = false;
  */
 function applyEntitlement(info: CustomerInfo): void {
   const fromStore = info.entitlements.active[ENTITLEMENT] != null;
-  setPlusEntitled(fromStore || serverGrantedPlus());
+  setStorePlus(fromStore);
   void reportToServer(info, fromStore);
 }
 

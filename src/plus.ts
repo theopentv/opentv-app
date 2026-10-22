@@ -29,6 +29,7 @@ import { track } from '@/analytics';
 import { setIcon } from '@/app-icon';
 import { isCustomServer } from '@/server-url';
 import { getMeta, setMeta } from '@/db';
+import { plusDecision } from '@/pure';
 
 /** '1' when the store has said this person is Plus. Meta, so it survives offline.
  *  ALSO READ BY `theme.ts`, by the same literal, so that a custom accent stops
@@ -320,6 +321,22 @@ export function usePaywallOverModal() {
  * ever — the thing this exists to make impossible.
  */
 let serverPlus: boolean | null = null;
+/** What the store last said; null before it has answered. */
+let storePlus: boolean | null = null;
+
+/** Called by the purchases module with the store's answer. See `plusDecision`. */
+export function setStorePlus(on: boolean): void {
+  storePlus = on;
+  decidePlus();
+}
+
+function decidePlus(): void {
+  // Lazy: community-session imports this module.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getProfileId } = require('@/community-session') as typeof import('@/community-session');
+  const verdict = plusDecision(storePlus, serverPlus, getProfileId() != null && !isCustomServer());
+  if (verdict !== null) setPlusEntitled(verdict);
+}
 
 export function setServerPlus(on: boolean | null): void {
   /*
@@ -342,6 +359,9 @@ export function setServerPlus(on: boolean | null): void {
    * thing that sells this one.
    */
   serverPlus = isCustomServer() ? null : on;
+  // Only once the store has spoken: before that, `/v1/me` granting is handled
+  // by its caller, and a server 'no' alone revokes nothing.
+  if (storePlus !== null) decidePlus();
 }
 
 /** True only when the server has actually been asked, and said yes. */

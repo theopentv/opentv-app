@@ -8231,6 +8231,22 @@ export function tvdbNameRecord(
   return out;
 }
 
+/**
+ * PLUS FROM TWO ANSWERS, AND A "NO" WAITS FOR BOTH (22 Oct). The store
+ * (RevenueCat) usually answers before the server's `/v1/me`, so a person given
+ * Plus from the dashboard heard the store's "nothing bought" first: Plus went
+ * off, the Plus app icon was reset (iOS's "You have changed the icon" alert),
+ * and it came back a second later. Granting stays on sight; revoking now needs
+ * the server's answer too — unless there is no server to ask (signed out, or
+ * a self-hosted server, which never grants).
+ *  true = Plus, false = not Plus, null = keep what the phone has until more is known.
+ */
+export function plusDecision(store: boolean | null, server: boolean | null, serverCanGrant: boolean): boolean | null {
+  if (store === true || server === true) return true;
+  if (store === false && (server === false || !serverCanGrant)) return false;
+  return null;
+}
+
 export function rankByQuery<T>(items: T[], query: string, nameOf: (t: T) => string): T[] {
   const q = query.trim().toLowerCase();
   const score = (t: T): number => {
