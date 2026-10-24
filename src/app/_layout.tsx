@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, AppState, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { runAfterInteractions } from '@/after-interactions';
 import { markIconsDecorative } from '@/a11y';
@@ -632,6 +632,7 @@ export default function RootLayout() {
           * phone resolved to at launch, which is exactly what the bar sits on.
           */}
         <StatusBar style={appliedLight() ? 'dark' : 'light'} />
+        <SideInsets>
         <Stack
         // Re-reads every t() after a language switch. Not (tabs): it holds the
         // tab navigator, which listens for itself and remounts its own screens.
@@ -998,6 +999,7 @@ export default function RootLayout() {
         />
         </Stack.Protected>
         </Stack>
+        </SideInsets>
         <UpdateGate />
         {repairPhase != null && (
           <View style={[StyleSheet.absoluteFill, styles.repairOverlay]}>
@@ -1039,3 +1041,15 @@ const styles = StyleSheet.create({
   repairTitle: { color: colors.text, fontSize: 18, fontWeight: '800' },
   repairSub: { color: colors.dim, fontSize: 14, lineHeight: 20, textAlign: 'center' },
 });
+
+/**
+ * THE iPHONE DUO'S STRIP. Closed, it moves the clock and the bar buttons into a
+ * column down the camera edge, and since SDK 58 the app is no longer boxed to
+ * the left of it: every screen ran under the clock. Padding the navigator by
+ * the left/right safe area keeps all of them clear at once; on every other
+ * iPhone and iPad in portrait those insets are 0, so nothing moves there.
+ */
+function SideInsets({ children }: { children: React.ReactNode }) {
+  const { left, right } = useSafeAreaInsets();
+  return <View style={{ flex: 1, paddingLeft: left, paddingRight: right, backgroundColor: colors.bg }}>{children}</View>;
+}
