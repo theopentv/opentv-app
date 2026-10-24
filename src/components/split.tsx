@@ -101,7 +101,7 @@ export function SplitHost({ children }: { children: ReactNode }) {
 
   return (
     <View style={styles.row}>
-      <View style={{ width: listW + insets.left }}>
+      <View style={[styles.list, { width: listW + insets.left }]}>
         <ColumnContext value={{ width: listW, padLeft: true, padRight: false }}>{children}</ColumnContext>
       </View>
       <View style={[styles.pane, { width: paneW + insets.right, paddingRight: insets.right }]}>
@@ -118,5 +118,9 @@ export function SplitHost({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   row: { flex: 1, flexDirection: 'row', backgroundColor: colors.bg },
-  pane: { borderStartWidth: StyleSheet.hairlineWidth, borderStartColor: colors.line, backgroundColor: colors.bg },
+  // The divider is the LIST's edge, never the pane's: the pane's pager pages by
+  // its own width, and a hairline taken out of it drifts a third of a point
+  // per episode (39pt by episode 116, the last one showing beside it).
+  list: { borderEndWidth: StyleSheet.hairlineWidth, borderEndColor: colors.line },
+  pane: { backgroundColor: colors.bg },
 });
