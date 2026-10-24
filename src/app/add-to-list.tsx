@@ -118,11 +118,8 @@ export default function AddToListScreen() {
     <Screen>
       <NavHeader
         title={t('addToList.title')}
-        right={
-          <Pressable accessibilityRole="button" hitSlop={10} onPress={() => router.back()}>
-            <Text style={{ color: colors.blue, fontSize: 16, fontWeight: '700' }}>{t('common.done')}</Text>
-          </Pressable>
-        }
+        // A native item so iOS can move it into the iPhone Duo's strip.
+        items={[{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => router.back() }]}
       />
       {item && <Text style={styles.subject} numberOfLines={1}>{item.name}</Text>}
       <FlatList

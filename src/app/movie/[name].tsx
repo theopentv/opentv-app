@@ -14,7 +14,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
 import {
   addMovieToWatchlist,
   deleteMovie,
@@ -952,8 +952,7 @@ export default function MovieScreen() {
             headerTransparent: true,
             title: '',
             headerTintColor: colors.onArt,
-            unstable_headerLeftItems: () => [closeItem()],
-            unstable_headerRightItems: () => [moreMenuItem(movieActions())],
+            ...headerItems({ left: [closeItem()], right: [moreMenuItem(movieActions())] }),
           }}
         />
         {/* The backdrop runs under the status bar, so its glyphs follow the

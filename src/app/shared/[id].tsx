@@ -26,12 +26,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Share, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { TitlePicker } from '@/components/title-picker';
-import { NavHeader, PillButton, Screen } from '@/components/ui';
+import { NavHeader, PillButton, Screen, moreMenuItem, useScreenWidth } from '@/components/ui';
 import { track } from '@/analytics';
 import { communityErrorText } from '@/community-error-text';
 import { forgetTogether, noteTogetherDetail, togetherShowState } from '@/community-together';
@@ -79,10 +79,9 @@ export default function SharedListScreen() {
   /** Remove-mode, the same two-state toggle `/lists/[id]` uses. Never a drag:
    *  a shared list has no single owner to decide its order. */
   const [editing, setEditing] = useState(false);
-  const [sheet, setSheet] = useState(false);
   // The same column count the personal list derives, so the two lay out
   // identically on a rotated tablet.
-  const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
   const choices = useMemo(() => listAddChoices().map((c) => ({ key: c.ref, name: c.name, poster: c.uri })), []);
 
   const addChoice = async (ref: string, name: string, poster: string | null) => {
@@ -300,7 +299,7 @@ export default function SharedListScreen() {
     ...(list?.invite_code
       ? [
           { text: t('shared.shareInvite'), icon: 'share-outline' as const, onPress: () => void oneAtATime('share', shareInvite) },
-          { text: t('shared.newCode'), icon: 'refresh' as const, onPress: () => void rotate() },
+          { text: t('shared.newCode'), icon: 'refresh-outline' as const, onPress: () => void rotate() },
         ]
       : []),
     {
@@ -411,29 +410,23 @@ export default function SharedListScreen() {
        * The "Sort by: added" line is gone (item 19). It was blue and did
        * nothing; the server keeps newest first and there is nothing to choose.
        */}
+      {/* Native items so iOS can move them into the iPhone Duo's strip. The
+          list's own menu (the invite code, a new code, and the way out) is a
+          native ⋯ menu now rather than a sheet: each one is about the LIST
+          rather than about a title in it. */}
       <NavHeader
-        right={
-          member ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-              {editing ? (
-                <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setEditing(false)}>
-                  <Text style={styles.action}>{t('common.done')}</Text>
-                </Pressable>
-              ) : (
-                <>
-                  {/* A together holds one show; there is nothing to edit out of it. */}
-                  {!together && list.items.length > 0 && (
-                    <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setEditing(true)}>
-                      <Text style={styles.action}>{t('profile.edit')}</Text>
-                    </Pressable>
-                  )}
-                  <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.more')} hitSlop={10} onPress={() => setSheet(true)}>
-                    <Ionicons name="ellipsis-horizontal" size={20} color={colors.text} />
-                  </Pressable>
-                </>
-              )}
-            </View>
-          ) : undefined
+        items={
+          !member
+            ? undefined
+            : editing
+              ? [{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setEditing(false) }]
+              : [
+                  // A together holds one show; there is nothing to edit out of it.
+                  ...(!together && list.items.length > 0
+                    ? [{ type: 'button' as const, label: t('profile.edit'), icon: { type: 'sfSymbol' as const, name: 'pencil' as const }, onPress: () => setEditing(true) }]
+                    : []),
+                  moreMenuItem(listActions()),
+                ]
         }
       />
 
@@ -542,15 +535,6 @@ export default function SharedListScreen() {
         actions={menu ? itemActions(menu) : []}
         onClose={() => setMenu(null)}
       />
-      {/* The list's own menu: the invite code, a new code, and the way out.
-          They left the header when it gained Edit, and they belong together --
-          each one is about the LIST rather than about a title in it. */}
-      <ActionSheet
-        visible={sheet}
-        title={list.name}
-        actions={listActions()}
-        onClose={() => setSheet(false)}
-      />
       {/*
         THE SAME PICKER THE ARTWORK AND GIF FLOWS USE. A third searchable list
         of somebody's own library would be a third place for it to behave
@@ -582,7 +566,6 @@ export default function SharedListScreen() {
 }
 
 const styles = StyleSheet.create({
-  action: { color: colors.blue, fontSize: 15.5, fontWeight: '600' },
   bigTitle: { color: colors.text, fontSize: 24, fontWeight: '800' },
   kicker: { color: colors.yellow, fontSize: 11.5, fontWeight: '800', letterSpacing: ls(0.8), textTransform: 'uppercase' },
   showHead: { flexDirection: 'row', alignItems: 'center', gap: 14 },

@@ -1,12 +1,11 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedRef, useScrollViewOffset } from 'react-native-reanimated';
 
 import { Poster, posterSpeech } from '@/components/poster';
 import { SortablePosterGrid } from '@/components/sortable-poster-grid';
-import { NavHeader, PillButton, Screen } from '@/components/ui';
+import { NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
 import { getCustomLists, removeFromList, setListOrder, type CustomList, type CustomListItem } from '@/db';
 import { gridGeometry } from '@/pure';
 import seed from '@/seed';
@@ -21,7 +20,7 @@ export default function ListDetailScreen() {
   const seedLib = isSeedLibrary();
   // same column count the sortable grid derives, so the demo library and a real
   // one lay out identically on a rotated tablet
-  const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
   const [, setTick] = useState(0);
   // 'edit' = add / remove (✕ badges); 'reorder' = drag posters. Never both.
   const [mode, setMode] = useState<ListMode>('view');
@@ -87,25 +86,17 @@ export default function ListDetailScreen() {
   return (
     <Screen>
       <NavHeader
-        right={
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-            {!seedLib && mode !== 'view' ? (
-              <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setMode('view')}>
-                <Text style={{ color: colors.blue, fontSize: 15.5, fontWeight: '700' }}>{t('common.done')}</Text>
-              </Pressable>
-            ) : (
-              <>
-                {!seedLib && items.length > 0 && (
-                  <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setMode('edit')}>
-                    <Text style={{ color: colors.blue, fontSize: 15.5, fontWeight: '600' }}>{t('profile.edit')}</Text>
-                  </Pressable>
-                )}
-                <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.more')} hitSlop={10} onPress={() => router.push(`/list-menu?name=${encodeURIComponent(id ?? '')}`)}>
-                  <Ionicons name="ellipsis-horizontal" size={20} color={colors.text} />
-                </Pressable>
-              </>
-            )}
-          </View>
+        // Native items so iOS can move them into the iPhone Duo's strip. ⋯ stays
+        // a button: it opens the list-menu sheet route, not an ActionSheet.
+        items={
+          !seedLib && mode !== 'view'
+            ? [{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setMode('view') }]
+            : [
+                ...(!seedLib && items.length > 0
+                  ? [{ type: 'button' as const, label: t('profile.edit'), icon: { type: 'sfSymbol' as const, name: 'pencil' as const }, onPress: () => setMode('edit') }]
+                  : []),
+                { type: 'button', label: t('a11y.more'), icon: { type: 'sfSymbol', name: 'ellipsis' }, onPress: () => router.push(`/list-menu?name=${encodeURIComponent(id ?? '')}`) },
+              ]
         }
       />
       <View style={{ paddingHorizontal: space.lg, gap: 12, paddingBottom: 12 }}>

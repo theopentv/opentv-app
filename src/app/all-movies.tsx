@@ -1,10 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, Pressable, SectionList, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { Keyboard, Pressable, SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovies, type MovieRow, getRecentMovies } from '@/db';
 import { movieFacts } from '@/filter-facts';
@@ -41,7 +41,7 @@ export default function AllMoviesScreen() {
 
   const insets = useSafeAreaInsets();
   // rows of N posters, N following the viewport — 3 on a phone, more on a tablet
-  const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
 
   // The expensive half — a metadata lookup per film, for genres and length —
   // depends on (library, filters) alone, so typing in the search box does not

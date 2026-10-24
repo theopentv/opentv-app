@@ -1,7 +1,6 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { AppState, Pressable, RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { AppState, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedRef, useScrollViewOffset } from 'react-native-reanimated';
 
 import { track } from '@/analytics';
@@ -9,7 +8,7 @@ import { listsChanged } from '@/community-publish';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { collageHeight, ListCollage } from '@/components/list-collage';
 import { SortableRows } from '@/components/sortable-rows';
-import { NavHeader, PillButton, Screen } from '@/components/ui';
+import { NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
 import { getCustomLists, getMeta, setListsOrder, setMeta } from '@/db';
 import { useJoined } from '@/community-session';
 import { fetchSharedLists, type SharedListRow } from '@/community-shared-lists';
@@ -67,7 +66,7 @@ const tileWidth = (w: number) => (w - 2 * 12 - (tileCols(w) - 1) * 2) / tileCols
 const ROW_H = collageHeight;
 
 export default function ListsScreen() {
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   const TILE_W = tileWidth(width);
   const COLS = tileCols(width);
   // re-read on focus so a newly created list appears and deleted ones vanish
@@ -210,18 +209,15 @@ export default function ListsScreen() {
     <Screen>
       <NavHeader
         title={t('listsIndex.title')}
-        right={
-          // WAS A BARE ICON. It looked like a button, had no handler, and a
-          // tester reported it as broken — correctly. It sorts now, and drops
-          // into a rearrange mode for the order the export never got right.
-          <Pressable accessibilityRole="button" accessibilityLabel={reordering ? undefined : t('listsIndex.sortTitle')} hitSlop={12} onPress={() => (reordering ? setReordering(false) : setSheet(true))}>
-            {reordering ? (
-              <Text style={styles.doneText}>{t('listsIndex.reorderDone')}</Text>
-            ) : (
-              <Ionicons name="swap-vertical" size={20} color={colors.text} />
-            )}
-          </Pressable>
-        }
+        // WAS A BARE ICON. It looked like a button, had no handler, and a
+        // tester reported it as broken — correctly. It sorts now, and drops
+        // into a rearrange mode for the order the export never got right.
+        // Native items so iOS can move them into the iPhone Duo's strip.
+        items={[
+          reordering
+            ? { type: 'button', label: t('listsIndex.reorderDone'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setReordering(false) }
+            : { type: 'button', label: t('listsIndex.sortTitle'), icon: { type: 'sfSymbol', name: 'arrow.up.arrow.down' }, onPress: () => setSheet(true) },
+        ]}
       />
       <Animated.ScrollView
         ref={scrollRef}
@@ -368,7 +364,6 @@ const styles = StyleSheet.create({
   },
   /* The offer needs air above it -- it follows the last list, not the note. */
   capNote: { marginTop: 18 },
-  doneText: { color: colors.yellow, fontSize: 16, fontWeight: '700' },
   upsell: { color: colors.yellow, fontWeight: '700' },
 });
 

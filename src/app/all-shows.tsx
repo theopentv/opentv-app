@@ -1,13 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { a11yAction } from '@/a11y';
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import db, { getShowProgress, setFollowing, setShowArchived, setShowFavorited, setShowFinished, getRecentShows } from '@/db';
 import { tapLight } from '@/haptics';
 import { showFacts } from '@/filter-facts';
@@ -126,7 +126,7 @@ export default function AllShowsScreen() {
 
   const active = activeFilterCount(filters);
   // columns follow the live viewport — 3 on a phone, up to 9 on a landscape iPad
-  const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
 
   /* Only whether there are enough to make a grid — the card reads the
      shelf itself. */

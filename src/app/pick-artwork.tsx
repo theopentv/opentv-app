@@ -10,11 +10,10 @@
  * the feature asking for work rather than doing any.
  */
 
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { TitlePicker } from '@/components/title-picker';
+import { NavHeader, Screen } from '@/components/ui';
 import { getProfileLayout, setProfileLayout } from '@/db';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
@@ -27,7 +26,6 @@ import {
   specOf,
   type WidgetSpan,
 } from '@/profile-layout';
-import { colors, radius, space } from '@/theme';
 
 export default function PickArtworkScreen() {
   /** The size chosen in the preview before getting here. */
@@ -58,42 +56,15 @@ export default function PickArtworkScreen() {
   };
 
   return (
-    <View style={s.page}>
-      <View style={s.head}>
-        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} hitSlop={12} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={26} color={colors.text} />
-        </Pressable>
-        <Text accessibilityRole="header" style={s.title}>{t('pickArtwork.title')}</Text>
-        <View style={{ width: 26 }} />
-      </View>
+    <Screen>
+      {/* The native header: its back button is one iOS can move into the
+          iPhone Duo's strip, which a drawn chevron never is. */}
+      <NavHeader title={t('pickArtwork.title')} />
 
       {/* The same grid the GIF picker's first step draws — one component, so
           the two flows cannot drift apart. */}
       <TitlePicker onPick={(c) => choose(c.key)} />
-    </View>
+    </Screen>
   );
 }
 
-const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: colors.bg },
-  head: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: space.lg,
-    paddingTop: 60,
-    paddingBottom: 10,
-  },
-  title: { color: colors.text, fontSize: 18, fontWeight: '800' },
-  search: {
-    marginHorizontal: space.lg,
-    backgroundColor: colors.card,
-    borderRadius: radius.card,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    color: colors.text,
-    fontSize: 16,
-  },
-  empty: { color: colors.faint, fontSize: 15, padding: space.xl },
-  poster: { aspectRatio: 2 / 3, borderRadius: 8, backgroundColor: colors.card },
-});

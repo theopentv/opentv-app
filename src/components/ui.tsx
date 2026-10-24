@@ -2,13 +2,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
-import { cloneElement, isValidElement, use, type ReactElement, type ReactNode } from 'react';
-import { I18nManager, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
+import { cloneElement, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import { I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';
-import type { SheetAction } from '@/components/action-sheet';
+import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
 import { detailPaneLayout } from '@/pure';
@@ -179,17 +179,9 @@ export function NavHeader({
         // container's is its route name, "(tabs)". One step back is all we need.
         headerBackButtonMenuEnabled: false,
         // A sheet has no screen to go back to, so it gets a native close button.
-        unstable_headerLeftItems: close
-          ? () => [
-              {
-                type: 'button',
-                label: t('a11y.close'),
-                icon: { type: 'sfSymbol', name: 'chevron.down' },
-                onPress: () => router.back(),
-              },
-            ]
-          : undefined,
-        unstable_headerRightItems: items?.length ? () => items : undefined,
+        ...headerItems({ left: close ? [closeItem()] : undefined, right: items }),
+        // A custom view: shown in the header, never in the Duo's strip. Where
+        // `items` exist, iOS draws those instead of this.
         headerRight: right != null ? () => right : undefined,
       }}
     />
@@ -208,6 +200,7 @@ const SF_FOR_ION: Record<string, string> = {
   'link-outline': 'link', 'trash-outline': 'trash', 'tv-outline': 'tv', 'desktop-outline': 'desktopcomputer',
   'swap-horizontal-outline': 'arrow.left.arrow.right', 'ticket': 'ticket', 'skull-outline': 'exclamationmark.triangle',
   'ellipsis-horizontal-circle-outline': 'ellipsis.circle', 'flag-outline': 'flag', 'ban-outline': 'nosign',
+  'exit-outline': 'rectangle.portrait.and.arrow.right',
 };
 
 /**
@@ -231,6 +224,77 @@ export function moreMenuItem(actions: SheetAction[], label = t('a11y.more')): Na
       })),
     },
   };
+}
+
+/** The other way round, for Android, which draws header buttons itself. */
+const ION_FOR_SF: Record<string, keyof typeof Ionicons.glyphMap> = {
+  ...(Object.fromEntries(Object.entries(SF_FOR_ION).map(([ion, sf]) => [sf, ion])) as Record<string, keyof typeof Ionicons.glyphMap>),
+  'chevron.down': 'chevron-down', ellipsis: 'ellipsis-horizontal', checkmark: 'checkmark', pencil: 'create-outline',
+  'arrow.up.arrow.down': 'swap-vertical', gearshape: 'settings-outline', 'person.badge.plus': 'person-add-outline',
+  calendar: 'calendar-outline', bell: 'notifications-outline', 'square.and.arrow.up': 'share-outline', xmark: 'close',
+  'bubble.left.and.bubble.right': 'chatbubbles-outline', 'bubble.left.and.bubble.right.fill': 'chatbubbles',
+};
+
+/**
+ * Header buttons for a Stack.Screen, on both platforms. iOS takes them as
+ * native bar items -- the only kind it moves into the iPhone Duo's strip.
+ * Android's native stack ignores those items entirely (it only draws
+ * headerLeft/headerRight), so there the same buttons are drawn, and a menu
+ * opens our bottom sheet with the same actions.
+ */
+export function headerItems({ left, right }: { left?: NativeStackHeaderItem[]; right?: NativeStackHeaderItem[] }) {
+  if (Platform.OS === 'ios') {
+    return {
+      unstable_headerLeftItems: left?.length ? () => left : undefined,
+      unstable_headerRightItems: right?.length ? () => right : undefined,
+    };
+  }
+  return {
+    headerLeft: left?.length ? () => <DrawnItems items={left} /> : undefined,
+    headerRight: right?.length ? () => <DrawnItems items={right} /> : undefined,
+  };
+}
+
+function DrawnItems({ items }: { items: NativeStackHeaderItem[] }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+      {items.map((item, i) => (
+        <DrawnItem key={i} item={item} />
+      ))}
+    </View>
+  );
+}
+
+function DrawnItem({ item }: { item: NativeStackHeaderItem }) {
+  const [open, setOpen] = useState(false);
+  if (item.type === 'custom') return item.element;
+  if (item.type === 'spacing') return <View style={{ width: item.spacing }} />;
+  const sf = item.icon?.type === 'sfSymbol' ? item.icon.name : '';
+  const icon = ION_FOR_SF[sf] ?? 'ellipsis-horizontal';
+  const color = (item.tintColor as string | undefined) ?? colors.text;
+  const button = (onPress: () => void) => (
+    <Pressable style={s.iconBtn} onPress={onPress} hitSlop={8} accessibilityRole="button" accessibilityLabel={item.label} disabled={item.disabled}>
+      <Ionicons name={icon} size={22} color={color} />
+    </Pressable>
+  );
+  if (item.type === 'button') return button(item.onPress);
+  const actions: SheetAction[] = item.menu.items.flatMap((a) =>
+    a.type === 'action'
+      ? [{
+          text: a.label,
+          icon: ION_FOR_SF[a.icon?.type === 'sfSymbol' ? a.icon.name : ''] ?? 'ellipse-outline',
+          destructive: a.destructive,
+          selected: a.state === 'on' ? true : undefined,
+          onPress: a.onPress,
+        }]
+      : [],
+  );
+  return (
+    <>
+      {button(() => setOpen(true))}
+      <ActionSheet visible={open} title={item.menu.title} actions={actions} onClose={() => setOpen(false)} />
+    </>
+  );
 }
 
 /** The close button of a page that slides up: top of the strip on the Duo. */

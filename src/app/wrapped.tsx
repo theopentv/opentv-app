@@ -30,7 +30,6 @@
  * advertising. Plus is what you get for yourself; Wrapped is what you show
  * other people.
  */
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useRef, useState, type RefObject } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -60,7 +59,7 @@ import {
 } from '@/components/wrapped/cards';
 import { MonthBookends, MonthClock, MonthSummary, MonthClosing, MonthContactSheet, MonthGenres, MonthGuide, MonthMarquee, MonthRewatch, MonthTicket, MonthTop, MonthType, MonthVerdict, MonthWeekday } from '@/components/wrapped/month-cards';
 import { SquareCorners } from '@/components/wrapped/primitives';
-import { NavHeader, Screen, useTopInset } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth, useTopInset } from '@/components/ui';
 import { getHandle } from '@/community-session';
 import { getMeta } from '@/db';
 import { tapLight } from '@/haptics';
@@ -116,7 +115,8 @@ export default function WrappedScreen() {
    * because a card taller than the screen is worse than a narrower one.
    */
   const params = useLocalSearchParams<{ demo?: string; month?: string; year?: string; slide?: string }>();
-  const { width, height: screenH } = useWindowDimensions();
+  const width = useScreenWidth();
+  const { height: screenH } = useWindowDimensions();
   /**
    * Sized so the whole 9:16 card fits between the header and the button, on a
    * short phone as well as a tall one — width first, then clamped by height,
@@ -244,18 +244,18 @@ export default function WrappedScreen() {
           <NavHeader
             title={label}
             close
-            right={
-              <Pressable
-                hitSlop={12}
-                accessibilityRole="button"
-                accessibilityLabel={t('plus.wrapped.pickTitle')}
-                onPress={() => {
+            // A native item so iOS can move it into the iPhone Duo's strip.
+            items={[
+              {
+                type: 'button',
+                label: t('plus.wrapped.pickTitle'),
+                icon: { type: 'sfSymbol', name: 'calendar' },
+                onPress: () => {
                   tapLight();
                   setPicking(true);
-                }}>
-                <Ionicons name="calendar-outline" size={22} color={colors.text} />
-              </Pressable>
-            }
+                },
+              },
+            ]}
           />
 
           {/* The stage stops ABOVE the buttons rather than running under them.

@@ -1,10 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { setMovieBackdropOverride, setMoviePosterOverride, setShowBackdrop, setShowPoster } from '@/db';
 import { tmdb } from '@/tmdb';
 import { gridGeometry } from '@/pure';
@@ -30,7 +29,7 @@ const backdropWidth = (w: number) => w - 2 * space.lg;
 // A film is addressed by `movie=<name>` — `movies` has no numeric primary key,
 // and a row may carry neither a tmdbId nor a tvdbId when nothing matched it.
 export default function PosterPickerScreen() {
-  const { width: W } = useWindowDimensions();
+  const W = useScreenWidth();
   const POSTER_W = posterWidth(W);
   const { tvdbId, tmdbId: tmdbHint, name, movie } = useLocalSearchParams<{
     tvdbId?: string;
@@ -106,15 +105,9 @@ export default function PosterPickerScreen() {
 
   return (
     <Screen>
-      <View style={styles.head}>
-        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={24} color={colors.text} />
-        </Pressable>
-        <Text accessibilityRole="header" style={styles.headTitle} numberOfLines={1}>
-          {filmName ?? name ?? t('posterPicker.customizeArtwork')}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
+      {/* The native header: its back button is one iOS can move into the
+          iPhone Duo's strip, which a drawn chevron never is. */}
+      <NavHeader title={filmName ?? name ?? t('posterPicker.customizeArtwork')} />
 
       {posters == null ? (
         <View style={styles.center}>
@@ -174,15 +167,6 @@ export default function PosterPickerScreen() {
 }
 
 const styles = StyleSheet.create({
-  head: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: space.lg,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  headTitle: { color: colors.text, fontSize: 17, fontWeight: '600', flex: 1, textAlign: 'center' },
   section: { color: colors.dim, fontSize: 12.5, fontWeight: '800', letterSpacing: ls(0.5), marginBottom: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP },
   poster: { aspectRatio: 2 / 3, borderRadius: 6, backgroundColor: colors.raise },

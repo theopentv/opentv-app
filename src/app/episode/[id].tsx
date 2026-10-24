@@ -19,7 +19,7 @@ import { CommunityRating } from '@/components/rating-breakdown';
 import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, useDetailPaneStyle } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, useDetailPaneStyle, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -1316,7 +1316,7 @@ export default function EpisodePagerScreen() {
             headerShown: true,
             headerTransparent: true,
             title: '',
-            unstable_headerLeftItems: () => [closeItem()],
+            ...headerItems({ left: [closeItem()] }),
           }}
         />
         {/* header right under the status bar: close + pager dots — it never

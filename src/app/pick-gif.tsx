@@ -3,17 +3,16 @@
  * the banner picker; this screen only decides what happens to the file.
  */
 
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { GifSearch, saveGif, type GifHit } from '@/components/gif-search';
+import { NavHeader, Screen } from '@/components/ui';
 import { getProfileLayout, setProfileLayout } from '@/db';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { newUid, normalise, notifyLayoutSaved, parseLayout, serialise, specOf, type WidgetSpan } from '@/profile-layout';
-import { colors, space } from '@/theme';
 
 export default function PickGifScreen() {
   const { span, uid } = useLocalSearchParams<{ span?: string; uid?: string }>();
@@ -44,28 +43,11 @@ export default function PickGifScreen() {
   };
 
   return (
-    <View style={s.page}>
-      <View style={s.head}>
-        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} hitSlop={12} onPress={() => router.back()}>
-          <Ionicons name="chevron-back" size={26} color={colors.text} />
-        </Pressable>
-        <Text accessibilityRole="header" style={s.title}>{t('pickGif.title')}</Text>
-        <View style={{ width: 26 }} />
-      </View>
+    <Screen>
+      {/* The native header: its back button is one iOS can move into the
+          iPhone Duo's strip, which a drawn chevron never is. */}
+      <NavHeader title={t('pickGif.title')} />
       <GifSearch onPick={(h) => void choose(h)} busyId={saving} />
-    </View>
+    </Screen>
   );
 }
-
-const s = StyleSheet.create({
-  page: { flex: 1, backgroundColor: colors.bg },
-  head: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: space.lg,
-    paddingTop: 60,
-    paddingBottom: 6,
-  },
-  title: { color: colors.text, fontSize: 18, fontWeight: '800' },
-});

@@ -53,7 +53,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { type RailItem } from '@/components/profile-sections';
 import { asProfileLayout, ProfileTemplate, type ProfileListSpec } from '@/components/profile-template';
 import { newUid, parsePublished, type Placed } from '@/profile-layout';
-import { closeItem, moreMenuItem, NavHeader, Screen } from '@/components/ui';
+import { closeItem, moreMenuItem, NavHeader, Screen, headerItems } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { currentLocale, monthYear, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -662,8 +662,7 @@ export default function PublicProfileScreen() {
           headerTransparent: true,
           title: '',
           headerTintColor: colors.text,
-          unstable_headerLeftItems: () => [closeItem()],
-          unstable_headerRightItems: !isSelf && joined ? () => [moreMenuItem(profileActions)] : undefined,
+          ...headerItems({ left: [closeItem()], right: !isSelf && joined ? [moreMenuItem(profileActions)] : undefined }),
         }}
       />
       <ActionSheet

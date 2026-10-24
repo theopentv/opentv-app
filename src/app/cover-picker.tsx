@@ -1,9 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { File, Paths } from 'expo-file-system';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, I18nManager, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { router, useLocalSearchParams, useNavigation, usePreventRemove } from 'expo-router';
+import { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import type { LocaleKey } from '@/locales/keys';
 
 import { track } from '@/analytics';
@@ -16,7 +16,7 @@ import { isPlus, usePlus } from '@/plus';
 import { communityErrorText } from '@/community-error-text';
 import { pushProfileTheme } from '@/community-profiles';
 import { listsChanged } from '@/community-publish';
-import { Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import db, { getCustomLists, getMovies, setListCover, setMeta, getMeta } from '@/db';
 import { paletteFromImage } from '@/theme-from-art';
 import { bannerToDocuments, TEMPLATES, type Template } from '@/profile-templates';
@@ -81,9 +81,9 @@ export default function CoverPickerScreen() {
    */
   const [takeColours, setTakeColours] = useState(() => getMeta(BANNER_THEME_OFF) !== '1');
   const themesProfile = listName == null && takeColours;
-  const { width: W } = useWindowDimensions();
+  const W = useScreenWidth();
   // this screen's lists run full width (image grid + rows, not prose) — the
-  // full-bleed backdrop image sizes off the same raw window width as its
+  // full-bleed backdrop image sizes off the same screen width as its
   // full-width row, or it would leave dead space beside it on a tablet
   const CONTENT_W = W;
   // The Ours tab: two banners across on a phone, three to five on an iPad —
@@ -91,6 +91,15 @@ export default function CoverPickerScreen() {
   // This was `(W - padding - gap) / 2`: two 490pt banners per row on a 13" iPad.
   const oursW = cardGrid(W, space.lg, OURS_GAP).cellW;
   const [selected, setSelected] = useState<Item | null>(null);
+  // Page 2 is state on this screen, not a screen of its own: the native back
+  // button (and the swipe) return to page 1 rather than leaving the picker.
+  // A pick leaves for real (router.back / dismissAll), so it is let through.
+  const navigation = useNavigation();
+  const leaving = useRef(false);
+  usePreventRemove(selected != null, ({ data }) => {
+    if (leaving.current) navigation.dispatch(data.action);
+    else setSelected(null);
+  });
   const [backdrops, setBackdrops] = useState<Backdrop[] | null>(null);
   const [saving, setSaving] = useState(false);
   // Subscribed, so the GIF tab appears the moment Plus does.
@@ -373,6 +382,7 @@ export default function CoverPickerScreen() {
 
   const pick = async (path: string) => {
     if (saving) return;
+    leaving.current = true;
     // A LIST COVER IS JUST THE URL. Nothing to fetch, nothing to write to disk,
     // nothing to clean up after — so it is saved and the screen is gone before
     // the profile path's first `await`.
@@ -483,6 +493,7 @@ export default function CoverPickerScreen() {
       }
       openCoverAdjust();
     } catch (err) {
+      leaving.current = false; // still on page 2, so back returns to page 1 again
       Alert.alert(
         t('coverPicker.couldNotSetCoverTitle'),
         err instanceof ApiError ? communityErrorText(err) : err instanceof Error ? err.message : String(err),
@@ -496,15 +507,7 @@ export default function CoverPickerScreen() {
   if (selected) {
     return (
       <Screen>
-        <View style={styles.head}>
-          <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} onPress={() => setSelected(null)} hitSlop={8}>
-            <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={24} color={colors.text} />
-          </Pressable>
-          <Text accessibilityRole="header" style={styles.headTitle} numberOfLines={1}>
-            {selected.name}
-          </Text>
-          <View style={{ width: 24 }} />
-        </View>
+        <NavHeader title={selected.name} />
         {backdrops == null ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.yellow} />
@@ -541,15 +544,9 @@ export default function CoverPickerScreen() {
   // ---- page 1: your shows and movies, searchable --------------------------------
   return (
     <Screen>
-      <View style={styles.head}>
-        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} onPress={() => router.back()} hitSlop={8}>
-          <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={24} color={colors.text} />
-        </Pressable>
-        <Text accessibilityRole="header" style={styles.headTitle}>
-          {listName != null ? t('plus.lists.chooseCover') : t('editProfile.chooseCover')}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
+      {/* The native header: its back button is one iOS can move into the
+          iPhone Duo's strip, which a drawn chevron never is. */}
+      <NavHeader title={listName != null ? t('plus.lists.chooseCover') : t('editProfile.chooseCover')} />
 
       {/*
         TWO TABS, NOT A LINK TO ANOTHER SCREEN.
@@ -662,14 +659,6 @@ const styles = StyleSheet.create({
   uploadBody: { color: colors.dim, fontSize: 15, lineHeight: 21, textAlign: 'center' },
   uploadBtn: { marginTop: 12, backgroundColor: colors.yellow, borderRadius: 999, paddingVertical: 14, paddingHorizontal: 28, minWidth: 200, alignItems: 'center' },
   uploadBtnText: { color: colors.onYellow, fontWeight: '800', fontSize: 15 },
-  head: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: space.lg,
-    paddingVertical: 12,
-    gap: 12,
-  },
   tabs: { flexDirection: 'row', gap: 8, paddingHorizontal: space.lg, paddingBottom: 10 },
   oursGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: OURS_GAP, paddingHorizontal: space.lg, paddingBottom: 40 },
   oursImg: { width: '100%', aspectRatio: 2.3, borderRadius: 10, backgroundColor: colors.card },
@@ -681,7 +670,6 @@ const styles = StyleSheet.create({
   tabOn: { backgroundColor: colors.yellow },
   tabText: { color: colors.dim, fontSize: 14, fontWeight: '700' },
   tabTextOn: { color: colors.onYellow },
-  headTitle: { color: colors.text, fontSize: 17, fontWeight: '600', flex: 1, textAlign: 'center' },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',

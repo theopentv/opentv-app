@@ -1,12 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedRef, useScrollViewOffset } from 'react-native-reanimated';
 
 import { Poster, posterSpeech } from '@/components/poster';
 import { SortablePosterGrid } from '@/components/sortable-poster-grid';
-import { NavHeader, PillButton, Screen } from '@/components/ui';
+import { NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
 import seed from '@/seed';
 import { getFavoriteMovies, getFavoriteShows, setFavoriteOrder, type CustomListItem } from '@/db';
 import { isSeedLibrary } from '@/library';
@@ -48,7 +48,7 @@ export default function FavoritesScreen() {
     : favMovies.map((m) => ({ kind: 'movie', name: m.name, poster: m.poster }));
 
   // columns follow the live viewport — 3 on a phone, up to 9 on a landscape iPad
-  const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
 
   // The faded tiles only mean anything to somebody who has a profile for them
   // to be missing from, and only when there are actually more than fit — which
@@ -70,14 +70,18 @@ export default function FavoritesScreen() {
   return (
     <Screen>
       <NavHeader
-        right={
-          seedLib || items.length < 2 ? undefined : (
-            <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setDragging((d) => !d)}>
-              <Text style={{ color: colors.blue, fontSize: 15.5, fontWeight: dragging ? '700' : '600' }}>
-                {dragging ? t('common.done') : t('favorites.reorder')}
-              </Text>
-            </Pressable>
-          )
+        // A native item so iOS can move it into the iPhone Duo's strip.
+        items={
+          seedLib || items.length < 2
+            ? undefined
+            : [
+                {
+                  type: 'button',
+                  label: dragging ? t('common.done') : t('favorites.reorder'),
+                  icon: { type: 'sfSymbol', name: dragging ? 'checkmark' : 'arrow.up.arrow.down' },
+                  onPress: () => setDragging((d) => !d),
+                },
+              ]
         }
       />
       <View style={{ paddingHorizontal: space.lg, gap: 12, paddingBottom: 12 }}>

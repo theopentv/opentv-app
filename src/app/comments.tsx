@@ -13,12 +13,11 @@ import {
   Text,
   TextInput,
   View,
-  useWindowDimensions,
 } from 'react-native';
 
 import { formatCommentDate } from '@/components/comment-card';
 import { CommentsList } from '@/components/comments-list';
-import { CONTENT_MAX_WIDTH, NavHeader, Screen } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import seed from '@/seed';
 import db, { addOwnComment, countSeedableCommentRows, dedupeOwnComments, getComments, getMeta, getMovie, setMeta } from '@/db';
 import { serverUrl } from '@/server-url';
@@ -167,7 +166,7 @@ function loadDeleted(): Set<string> {
 type Sheet = { kind: 'own' | 'share'; key: string; text: string; entity: string } | null;
 
 export default function CommentsScreen() {
-  const { width: W } = useWindowDimensions();
+  const W = useScreenWidth();
   const CARD_INNER = cardInnerWidth(W);
   // the FlatList is capped to CONTENT_MAX_WIDTH on a tablet (styles.cappedList)
   // — the compose FAB floats over it and is a sibling of the Screen's
@@ -562,23 +561,17 @@ export default function CommentsScreen() {
           to reveal and so needs no switch. */}
       <NavHeader
         title={title ?? t('comments.title')}
-        right={
-          // An ICON, not a word: the header's right slot is a fixed 40pt box
-          // (see `ui.tsx`), and "Comments" was clipped to "Comm". Filled and
-          // yellow while replies are included, so the state is visible at a
-          // glance rather than needing a label to explain it.
-          <Pressable
-            hitSlop={12}
-            onPress={() => setShowAll((v) => !v)}
-            accessibilityRole="button"
-            accessibilityLabel={showAll ? t('comments.onlyMine') : t('comments.showAll')}>
-            <Ionicons
-              name={showAll ? 'chatbubbles' : 'chatbubbles-outline'}
-              size={20}
-              color={showAll ? colors.yellow : colors.text}
-            />
-          </Pressable>
-        }
+        // A native item so iOS can move it into the iPhone Duo's strip. Filled
+        // while replies are included, so the state is visible at a glance
+        // rather than needing a label to explain it.
+        items={[
+          {
+            type: 'button',
+            label: showAll ? t('comments.onlyMine') : t('comments.showAll'),
+            icon: { type: 'sfSymbol', name: showAll ? 'bubble.left.and.bubble.right.fill' : 'bubble.left.and.bubble.right' },
+            onPress: () => setShowAll((v) => !v),
+          },
+        ]}
       />
       {settling && <ActivityIndicator style={styles.settling} color={colors.dim} />}
       <CommentsList

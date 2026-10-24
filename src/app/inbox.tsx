@@ -34,7 +34,6 @@
  * only way these arrive, which is the quiet version on purpose.
  */
 import { Image } from 'expo-image';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -239,11 +238,8 @@ export default function NotificationsScreen() {
     <Screen>
       <NavHeader
         title={t('notifications.title')}
-        right={
-          <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('activity.settings')} onPress={() => router.push('/notifications')}>
-            <Ionicons name="settings-outline" size={22} color={colors.text} />
-          </Pressable>
-        }
+        // A native item so iOS can move it into the iPhone Duo's strip.
+        items={[{ type: 'button', label: t('activity.settings'), icon: { type: 'sfSymbol', name: 'gearshape' }, onPress: () => router.push('/notifications') }]}
       />
       <FlatList
         data={rows}

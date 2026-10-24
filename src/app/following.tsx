@@ -1,4 +1,3 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, type ImageSourcePropType, Pressable, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
@@ -162,9 +161,9 @@ export default function FollowingScreen() {
     <Screen>
       <NavHeader
         title={showFollowers ? t('following.followersTitle') : t('following.followingTitle')}
-        right={
-          <Ionicons name="person-add-outline" size={20} color={colors.text} onPress={() => router.push('/find-people')} />
-        }
+        // A native item so iOS can move it into the iPhone Duo's strip -- and,
+        // unlike the bare icon it replaces, it has a name for VoiceOver.
+        items={[{ type: 'button', label: t('profileMenu.findPeople'), icon: { type: 'sfSymbol', name: 'person.badge.plus' }, onPress: () => router.push('/find-people') }]}
       />
       <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
         {/*

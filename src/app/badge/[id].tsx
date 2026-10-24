@@ -1,9 +1,9 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useRef } from 'react';
 import { type ViewInstance, Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { NavHeader } from '@/components/ui';
 import badgesJson from '@/data/badges.json';
 import { colors, radius, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
@@ -91,9 +91,8 @@ export default function BadgeScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.close')} style={[styles.close, { top: insets.top + 10 }]} onPress={() => router.back()} hitSlop={12}>
-        <Ionicons name="close" size={28} color={colors.text} />
-      </Pressable>
+      {/* The native close, which iOS can move into the iPhone Duo's strip. */}
+      <NavHeader close />
 
       <View ref={cardRef} collapsable={false} style={styles.card}>
         <Text style={{ fontSize: 96 }}>🏅</Text>
@@ -112,7 +111,6 @@ export default function BadgeScreen() {
 }
 
 const styles = StyleSheet.create({
-  close: { position: 'absolute', start: 18, zIndex: 2 },
   card: {
     flex: 1,
     alignItems: 'center',

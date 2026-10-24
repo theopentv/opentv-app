@@ -22,7 +22,7 @@ import { SectionHeader } from '@/components/profile-sections';
 import { visibleCoverUri } from '@/library';
 import { tapLight } from '@/haptics';
 import { manualBackupOverdue, shareLibraryExport } from '@/manual-backup';
-import { EmptyState, MenuRow } from '@/components/ui';
+import { EmptyState, MenuRow, headerItems } from '@/components/ui';
 import { asProfileLayout, type ProfileLayout, ProfileTemplate } from '@/components/profile-template';
 import {
   normalise,
@@ -1641,24 +1641,22 @@ export default function ProfileScreen() {
           headerTransparent: true,
           title: '',
           headerTintColor: colors.onArt,
-          unstable_headerLeftItems: () => [
-            {
-              type: 'button',
-              label: t('a11y.inbox'),
-              icon: { type: 'sfSymbol', name: 'bell' },
-              variant: 'prominent',
-              tintColor: plus && themeColor != null ? themeColor : colors.yellow,
-              onPress: () => router.push('/inbox'),
-            },
-          ],
-          unstable_headerRightItems: () => [
-            {
-              type: 'button',
-              label: t('a11y.more'),
-              icon: { type: 'sfSymbol', name: 'ellipsis' },
-              onPress: () => router.push('/profile-menu'),
-            },
-          ],
+          ...headerItems({
+            left: [
+              {
+                type: 'button',
+                label: t('a11y.inbox'),
+                icon: { type: 'sfSymbol', name: 'bell' },
+                variant: 'prominent',
+                // Android draws this one itself: the icon takes the colour there.
+                tintColor: plus && themeColor != null ? themeColor : colors.yellow,
+                onPress: () => router.push('/inbox'),
+              },
+            ],
+            right: [
+              { type: 'button', label: t('a11y.more'), icon: { type: 'sfSymbol', name: 'ellipsis' }, onPress: () => router.push('/profile-menu') },
+            ],
+          }),
         }}
       />
     </ProfileTemplate>

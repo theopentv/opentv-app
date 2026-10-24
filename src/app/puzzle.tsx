@@ -309,22 +309,17 @@ export default function PuzzleScreen() {
     <Screen>
       <NavHeader
         title={t('puzzle.title')}
-        right={
-          <View style={s.headRight}>
-            <Text style={s.number}>#{number}</Text>
-            {/* The archive's door, on every visit to today's puzzle: before
-                playing, a way to warm up; after, somewhere to go next. */}
-            {!archive && !view && (
-              <Pressable
-                onPress={() => router.push('/puzzle-archive')}
-                hitSlop={10}
-                accessibilityRole="button"
-                accessibilityLabel={t('puzzlePolish.archive')}>
-                <Ionicons name="calendar-outline" size={22} color={colors.text} />
-              </Pressable>
-            )}
-          </View>
-        }
+        // Native items so iOS can move the archive button into the iPhone
+        // Duo's strip. The puzzle number is text, not a button, so it rides
+        // along as a custom item (a custom `right` is dropped once there are items).
+        items={[
+          { type: 'custom', hidesSharedBackground: true, element: <Text style={s.number}>#{number}</Text> },
+          // The archive's door, on every visit to today's puzzle: before
+          // playing, a way to warm up; after, somewhere to go next.
+          ...(!archive && !view
+            ? [{ type: 'button' as const, label: t('puzzlePolish.archive'), icon: { type: 'sfSymbol' as const, name: 'calendar' as const }, onPress: () => router.push('/puzzle-archive') }]
+            : []),
+        ]}
       />
       <ScrollView
         ref={scrollRef}
@@ -566,7 +561,6 @@ export default function PuzzleScreen() {
 
 const s = StyleSheet.create({
   number: { color: colors.yellow, fontSize: 15, fontWeight: '800' },
-  headRight: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   archiveNote: { color: colors.dim, fontSize: 12.5, textAlign: 'center', marginHorizontal: space.lg, marginTop: 12 },
   statsFrame: { marginHorizontal: space.lg, marginTop: 20 },
   streak: { color: colors.text, fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 12 },

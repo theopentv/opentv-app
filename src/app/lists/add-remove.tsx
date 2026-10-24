@@ -119,11 +119,8 @@ export default function AddRemoveScreen() {
               ? t('profile.sectionFavoriteMovies')
               : listName || t('addToList.title')
         }
-        right={
-          <Pressable accessibilityRole="button" onPress={() => router.back()} hitSlop={10}>
-            <Text style={{ color: colors.blue, fontSize: 16, fontWeight: '700' }}>{t('common.done')}</Text>
-          </Pressable>
-        }
+        // A native item so iOS can move it into the iPhone Duo's strip.
+        items={[{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => router.back() }]}
       />
       <ContentColumn>
         <View style={styles.searchLine}>
