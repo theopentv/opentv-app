@@ -52,7 +52,7 @@ import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
-import { CONTENT_MAX_WIDTH } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, useScreenWidth } from '@/components/ui';
 import { Poster } from '@/components/poster';
 import { PosterRail, SectionHeader, StatsGrid, StatsRail, type RailItem, type StatCard } from '@/components/profile-sections';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -444,7 +444,7 @@ export function asProfileLayout(v: string | null | undefined): ProfileLayout {
 function Tile({ label, children }: { label: string; children: ReactNode }) {
   // ONE MEASUREMENT, EVERYWHERE. A tile is a 1x1, so its height is the grid's
   // row — not a number typed into a stylesheet that drifts from the columns.
-  const { height } = gridMetrics(useWindowDimensions().width);
+  const { height } = gridMetrics(useScreenWidth());
   return (
     <View style={[styles.tile, { height: height(1) }]}>
       <Text style={styles.tileLabel}>{label}</Text>
@@ -505,7 +505,7 @@ export function ProfileTemplate({
   shelves,
   children,
 }: ProfileTemplateProps) {
-  const { width: W } = useWindowDimensions();
+  const W = useScreenWidth();
   const CONTENT_W = Math.min(W, CONTENT_MAX_WIDTH);
   /** The room inside a block: the page, less the margin on each side. Rails are
    *  sized from this and clipped to it, so nothing can reach the screen edge. */
@@ -1054,7 +1054,7 @@ export function ProfileTemplate({
     themeColor != null ? mixHex(washTop, pageColor, Math.min(1, Math.max(0, y) / WASH_H)) : pageColor;
 
   return (
-    <View style={{ flex: 1, backgroundColor: pageColor }}>
+    <View style={{ flex: 1, backgroundColor: pageColor, paddingLeft: insets.left, paddingRight: insets.right }}>
       {/*
         * ONLY WHILE THIS SCREEN IS THE ONE YOU ARE LOOKING AT.
         *
@@ -1249,7 +1249,8 @@ export function ProfileTemplate({
         ref={scrollRef}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        contentContainerStyle={{ paddingTop: FULL, paddingBottom: 24 }}>
+        // insets.bottom: under the native tab bar it includes the bar, which floats over the page.
+        contentContainerStyle={{ paddingTop: FULL, paddingBottom: 24 + insets.bottom }}>
         {/*
           ONE FLAT CANVAS, EVERY BLOCK A DIRECT CHILD, EVERY POSITION COMPUTED.
 

@@ -1,9 +1,10 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, SectionList, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { EmptyState, Screen, TopTabs } from '@/components/ui';
+import { EmptyState, Screen, TopTabs, useScreenWidth } from '@/components/ui';
 import { getMovies, type MovieRow } from '@/db';
 import { airCountdown, gridGeometry, type AirIn } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
@@ -45,7 +46,9 @@ export default function MoviesScreen() {
   const planned = allPlanned.filter((m) => !upcomingNames.has(m.name));
 
   // rows of N posters, N following the viewport — 3 on a phone, more on a tablet
-  const cols = gridGeometry(useWindowDimensions().width, space.md, 3).cols;
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
+  // The native tab bar floats over the list; its height is in the bottom inset.
+  const tabBarSpace = useSafeAreaInsets().bottom;
 
   return (
     <Screen>
@@ -61,7 +64,7 @@ export default function MoviesScreen() {
             sections={[{ title: t('movies.watchNextSection'), data: chunk(planned, cols) }]}
             keyExtractor={(row) => row.map((m) => m.name).join('|')}
             stickySectionHeadersEnabled
-            contentContainerStyle={{ paddingBottom: 24 }}
+            contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}
             renderSectionHeader={({ section }) => (
               // floats at the top while you scroll, like the real app
               <View style={styles.pillRow} pointerEvents="none">
@@ -99,7 +102,7 @@ export default function MoviesScreen() {
           sections={[{ title: t('movies.notOutYetSection'), data: chunk(upcoming, cols) }]}
           keyExtractor={(row) => row.map((x) => x.m.name).join('|')}
           stickySectionHeadersEnabled
-          contentContainerStyle={{ paddingBottom: 24 }}
+          contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}
           renderSectionHeader={({ section }) => (
             <View style={styles.pillRow} pointerEvents="none">
               <Text style={styles.sectionPill} accessibilityRole="header">

@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 /**
  * The Explore "Activity" pill: the friends feed (2.0.0, DESIGN-community §1.2).
  *
@@ -64,6 +65,8 @@ export function FeedList() {
 }
 
 function JoinedFeed() {
+  // Shown under the native tab bar, which floats over the list.
+  const tabBarSpace = useSafeAreaInsets().bottom;
   const feed = useFeed();
   const [revealed, setRevealed] = useState<ReadonlySet<string>>(new Set());
   const [menuFor, setMenuFor] = useState<FeedCardModel | null>(null);
@@ -184,7 +187,7 @@ function JoinedFeed() {
         renderItem={renderItem}
         extraData={revealed}
         ListEmptyComponent={empty}
-        contentContainerStyle={{ paddingTop: 4, paddingBottom: 24 }}
+        contentContainerStyle={{ paddingTop: 4, paddingBottom: 24 + tabBarSpace }}
         refreshControl={<RefreshControl refreshing={feed.refreshing} onRefresh={refresh} tintColor={colors.yellow} />}
         onEndReached={feed.more ? feed.loadMore : undefined}
         onEndReachedThreshold={0.5}

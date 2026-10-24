@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -298,6 +299,8 @@ function FeedCard({ item }: { item: FeedItem }) {
 }
 
 export default function ExploreScreen() {
+  // The native tab bar floats over the lists; its height is in the bottom inset.
+  const tabBarSpace = useSafeAreaInsets().bottom;
   // `?pill=Activity` from the Activity intro. This tab is never unmounted, so
   // the initial state alone would miss it: follow the param when it changes
   // (React's "adjust state on a changed prop" pattern, no effect).
@@ -365,7 +368,7 @@ export default function ExploreScreen() {
       </ScrollView>
 
       {pill === 'Feed' && (
-        <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}>
           {/* Today's "Guess the show" — local, so it is here before the feed
               has loaded and whether or not it ever does. */}
           <ContentColumn>
@@ -399,7 +402,7 @@ export default function ExploreScreen() {
       )}
 
       {pill === 'Groups' && (
-        <ScrollView>
+        <ScrollView contentContainerStyle={{ paddingBottom: tabBarSpace }}>
           <View style={styles.sortRow}>
             <Text style={styles.sortLabel}>
               {t('explore.sortBy')} <Text style={{ color: colors.blue }}>{t('explore.popular')}</Text>

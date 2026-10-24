@@ -34,6 +34,16 @@ export function useTopInset(): number {
   return insets.top || initialWindowMetrics?.insets.top || 0;
 }
 
+/** The width a page has to lay out in: the window, less the left/right safe
+ *  area. On the iPhone Duo closed the clock strip takes a column; anything
+ *  sized from the raw window width ran under it. Equal to the window width on
+ *  every other iPhone and iPad in portrait. */
+export function useScreenWidth(): number {
+  const { width } = useWindowDimensions();
+  const { left, right } = useSafeAreaInsets();
+  return width - left - right;
+}
+
 /** Black full-height screen with a safe top inset. */
 export function Screen({ children }: { children: ReactNode }) {
   // Under a native header (NavHeader) the content starts below the header;
