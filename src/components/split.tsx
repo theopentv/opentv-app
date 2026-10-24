@@ -1,4 +1,4 @@
-import { router, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,7 +6,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import EpisodePagerScreen from '@/app/episode/[id]';
 import MovieScreen from '@/app/movie/[name]';
 import ShowScreen from '@/app/show/[id]';
+import { useHasStrip } from '@/components/ui';
 import { COMMENTS_SPLIT_MIN_W } from '@/pure';
+import { t } from '@/i18n';
 import { ColumnContext, PaneContext, type Pane } from '@/split-context';
 import { colors } from '@/theme';
 
@@ -54,7 +56,7 @@ function parseHref(href: string): { kind: 'show' | 'movie' | 'episode'; params: 
  * the page beside it, both live. Folding the Duo closed with a page open
  * re-opens that page as a normal screen, so the user keeps their place.
  */
-export function SplitHost({ children }: { children: ReactNode }) {
+export function SplitHost({ children, header = false }: { children: ReactNode; header?: boolean }) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const screenW = width - insets.left - insets.right;
@@ -86,7 +88,27 @@ export function SplitHost({ children }: { children: ReactNode }) {
   }, [wide, top]);
 
   const parsed = top != null && wide ? parseHref(top) : null;
-  if (parsed == null) return <>{children}</>;
+
+  // On the Duo the pane's close is a native button, so iOS puts it in the
+  // strip like every other close. A tab's own header (`header`, Profile's)
+  // stays; the others show theirs only while a page is open.
+  const strip = useHasStrip();
+  const native = strip && parsed != null;
+  const closeHeader = strip ? (
+    <Stack.Screen
+      options={{
+        headerShown: header || native,
+        headerTransparent: true,
+        title: '',
+        unstable_headerLeftItems: () =>
+          native
+            ? [{ type: 'button', label: t('a11y.close'), icon: { type: 'sfSymbol', name: 'xmark' }, onPress: () => setStack((s) => s.slice(0, -1)) }]
+            : [],
+      }}
+    />
+  ) : null;
+
+  if (parsed == null) return <>{closeHeader}{children}</>;
 
   const listW = listWidth(screenW);
   const paneW = screenW - listW;
@@ -101,6 +123,7 @@ export function SplitHost({ children }: { children: ReactNode }) {
 
   return (
     <View style={styles.row}>
+      {closeHeader}
       <View style={[styles.list, { width: listW + insets.left }]}>
         <ColumnContext value={{ width: listW, padLeft: true, padRight: false }}>{children}</ColumnContext>
       </View>

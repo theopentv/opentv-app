@@ -1291,7 +1291,7 @@ export default function ProfileScreen() {
   })();
   return (
     // Wide screens: a show, film or episode opens beside this list (components/split).
-    <SplitHost>
+    <SplitHost header>
     <ProfileTemplate
       /* The owner's arrangement, re-read on focus with everything else on this
          screen — coming back from the Arrange screen must show the new order,

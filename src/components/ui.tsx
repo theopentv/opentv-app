@@ -48,6 +48,15 @@ export function useScreenWidth(): number {
   return column ? column.width : width - left - right;
 }
 
+/** Whether the iPhone Duo's strip runs down the right edge, where iOS puts
+ *  native bar buttons. ponytail: inferred from an inset only on the right (a
+ *  landscape iPhone's notch insets both sides); read toolbarVerticalEdge
+ *  through a native module if another device ever matches. */
+export function useHasStrip(): boolean {
+  const { left, right } = useSafeAreaInsets();
+  return Platform.OS === 'ios' && right > left;
+}
+
 /** The left/right safe-area padding this screen owns. A column of a
  *  list|detail split owns only the edges of the window it touches: the list
  *  keeps the left inset, the pane beside it the right one (the Duo's strip). */
@@ -257,9 +266,11 @@ const ION_FOR_SF: Record<string, keyof typeof Ionicons.glyphMap> = {
  */
 export function headerItems({ left, right }: { left?: NativeStackHeaderItem[]; right?: NativeStackHeaderItem[] }) {
   if (Platform.OS === 'ios') {
+    // Only the sides given: a screen whose header another component also
+    // sets (a tab's SplitHost adds the pane's close) must not wipe that side.
     return {
-      unstable_headerLeftItems: left?.length ? () => left : undefined,
-      unstable_headerRightItems: right?.length ? () => right : undefined,
+      ...(left?.length ? { unstable_headerLeftItems: () => left } : {}),
+      ...(right?.length ? { unstable_headerRightItems: () => right } : {}),
     };
   }
   return {
@@ -321,6 +332,7 @@ export function PaneBar({ right }: { right?: NativeStackHeaderItem[] }) {
   const pane = use(PaneContext);
   const headerHeight = use(HeaderHeightContext) ?? 0;
   const topInset = useTopInset();
+  const strip = useHasStrip();
   if (!pane) return null;
   const close: NativeStackHeaderItem = {
     type: 'button',
@@ -330,7 +342,8 @@ export function PaneBar({ right }: { right?: NativeStackHeaderItem[] }) {
   };
   return (
     <View style={[s.paneBar, { top: (headerHeight || topInset) + 4 }]} pointerEvents="box-none">
-      <DrawnItems items={[close]} />
+      {/* On the Duo the close is a native button in the strip (SplitHost) */}
+      {strip ? <View /> : <DrawnItems items={[close]} />}
       {right?.length ? <DrawnItems items={right} /> : <View />}
     </View>
   );
