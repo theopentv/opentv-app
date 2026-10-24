@@ -649,7 +649,10 @@
       "advancedSub": "Votre clé TheTVDB, l'actualisation des visuels et les outils de récupération",
       "linksSection": "Nous trouver",
       "seasonal": "Décorations de saison",
-      "seasonalSub": "Décorations et thèmes d'Halloween et de Noël pour votre profil"
+      "seasonalSub": "Décorations et thèmes d'Halloween et de Noël pour votre profil",
+      "classicTabBar": "Barre d’onglets classique",
+      "classicTabBarSub": "La barre plate en bas de l’écran d’avant iOS 26, au lieu de la barre flottante",
+      "classicTabBarRestart": "Fermez OpenTV puis rouvrez-le pour voir la nouvelle barre d’onglets."
     },
     "data": {
       "icloudSection": "Sauvegarde iCloud",

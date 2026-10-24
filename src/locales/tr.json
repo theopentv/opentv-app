@@ -649,7 +649,10 @@
       "advancedSub": "Kendi TheTVDB anahtarın, görselleri yenileme ve kurtarma araçları",
       "linksSection": "Bizi bul",
       "seasonal": "Mevsimlik süslemeler",
-      "seasonalSub": "Profilin için Cadılar Bayramı ve Noel süslemeleri ile temaları"
+      "seasonalSub": "Profilin için Cadılar Bayramı ve Noel süslemeleri ile temaları",
+      "classicTabBar": "Klasik sekme çubuğu",
+      "classicTabBarSub": "Yüzen çubuk yerine iOS 26 öncesindeki alttaki düz çubuk",
+      "classicTabBarRestart": "Yeni sekme çubuğunu görmek için OpenTV’yi kapatıp yeniden aç."
     },
     "data": {
       "icloudSection": "iCloud yedeği",

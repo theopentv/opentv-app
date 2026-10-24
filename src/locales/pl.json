@@ -667,7 +667,10 @@
       "advancedSub": "Własny klucz TheTVDB, odświeżanie grafik i narzędzia naprawcze",
       "linksSection": "Znajdziesz nas tu",
       "seasonal": "Dekoracje sezonowe",
-      "seasonalSub": "Halloweenowe i świąteczne dekoracje oraz motywy do twojego profilu"
+      "seasonalSub": "Halloweenowe i świąteczne dekoracje oraz motywy do twojego profilu",
+      "classicTabBar": "Klasyczny pasek kart",
+      "classicTabBarSub": "Płaski pasek na dole sprzed iOS 26 zamiast pływającego",
+      "classicTabBarRestart": "Zamknij OpenTV i otwórz ponownie, aby zobaczyć nowy pasek kart."
     },
     "data": {
       "icloudSection": "Kopia zapasowa iCloud",

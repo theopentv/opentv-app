@@ -1,18 +1,27 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 // TV Time's own two: a set with an antenna, and a clapperboard.
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { VectorIcon } from 'expo-router';
+import { Tabs, VectorIcon } from 'expo-router';
 import { NativeTabs } from 'expo-router/native-tabs';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { runAfterInteractions } from '@/after-interactions';
 import { offerBackupIfDue } from '@/backup-prompt';
+import { classicTabBarOn } from '@/classic-tab-bar';
 import { offerCommunityIfDue } from '@/community-prompt';
 import { tapSelection } from '@/haptics';
 import { isNotifyScreenOwed } from '@/session-store';
-import { t, useLocale } from '@/i18n';
+import { remountOnLocale, t, useLocale } from '@/i18n';
 import { colors } from '@/theme';
 import { WhatsNew } from '@/whats-new';
+
+/** TV Time's tab icons are about a third larger than the library's 24. */
+const TAB_ICON = 30;
+
+/** Every tab remounts on a language switch — see `remountOnLocale`. */
+const SCREEN_LAYOUT = remountOnLocale();
 
 export default function TabsLayout() {
   // THE TAB LABELS STAYED IN THE OLD LANGUAGE (15 Oct): this layout never
@@ -20,6 +29,9 @@ export default function TabsLayout() {
   // cached its t() calls besides. It listens for the change and is not memoised.
   'use no memo';
   const locale = useLocale();
+  // Read once: the classic bar applies from the next launch (`classic-tab-bar`).
+  const [classic] = useState(classicTabBarOn);
+  const insets = useSafeAreaInsets();
   // The community offer for everyone who imported before this update existed
   // — and, one screen later, for the user who has just finished an import
   // through the notification opt-in. `offerCommunityIfDue` stamps its own flag
@@ -42,6 +54,74 @@ export default function TabsLayout() {
     });
     return () => task.cancel();
   }, []);
+
+  if (classic) {
+    /*
+     * 2.0.0's BAR, kept as it was. The inset is added to the height so the
+     * icons and labels sit above the home indicator rather than squeezed into
+     * a fixed 58 points with it (14 Oct). The four tabs name their own place to
+     * VoiceOver, in the reader's language, because the hidden `index` is one of
+     * the routes this bar counts.
+     */
+    const tabLabel = (label: string, n: number) =>
+      Platform.OS === 'ios' ? t('a11y.tabOf', { label, n, total: 4 }) : undefined;
+    return (
+      <>
+      <WhatsNew />
+      <Tabs
+        screenLayout={SCREEN_LAYOUT}
+        screenListeners={{ tabPress: () => tapSelection() }}
+        screenOptions={{
+          headerShown: false,
+          sceneStyle: { backgroundColor: colors.bg },
+          tabBarStyle: {
+            backgroundColor: colors.bg,
+            borderTopColor: colors.line,
+            height: 60 + insets.bottom,
+            paddingTop: 6,
+            paddingBottom: insets.bottom,
+          },
+          tabBarActiveTintColor: colors.text,
+          tabBarInactiveTintColor: colors.faint,
+          tabBarLabelStyle: { fontSize: 11, fontWeight: '500', marginTop: 2 },
+        }}>
+        <Tabs.Screen name="index" options={{ href: null }} />
+        <Tabs.Screen
+          name="shows"
+          options={{
+            title: t('tabBar.shows'),
+            tabBarAccessibilityLabel: tabLabel(t('tabBar.shows'), 1),
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="television-classic" size={TAB_ICON} color={color as string} />,
+          }}
+        />
+        <Tabs.Screen
+          name="movies"
+          options={{
+            title: t('tabBar.movies'),
+            tabBarAccessibilityLabel: tabLabel(t('tabBar.movies'), 2),
+            tabBarIcon: ({ color }) => <MaterialCommunityIcons name="movie-open-outline" size={TAB_ICON} color={color as string} />,
+          }}
+        />
+        <Tabs.Screen
+          name="explore"
+          options={{
+            title: t('tabBar.explore'),
+            tabBarAccessibilityLabel: tabLabel(t('tabBar.explore'), 3),
+            tabBarIcon: ({ color }) => <Ionicons name="search" size={TAB_ICON} color={color as string} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: t('tabBar.profile'),
+            tabBarAccessibilityLabel: tabLabel(t('tabBar.profile'), 4),
+            tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={TAB_ICON} color={color as string} />,
+          }}
+        />
+      </Tabs>
+      </>
+    );
+  }
 
   /*
    * NATIVE TABS since 2.0.1. A JS tab bar stays a row at the bottom of the

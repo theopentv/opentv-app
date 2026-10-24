@@ -649,7 +649,10 @@
       "advancedSub": "Your own TheTVDB key, refreshing artwork, and recovery tools",
       "linksSection": "Find us",
       "seasonal": "Seasonal decorations",
-      "seasonalSub": "Halloween and Christmas decorations and themes for your profile"
+      "seasonalSub": "Halloween and Christmas decorations and themes for your profile",
+      "classicTabBar": "Classic tab bar",
+      "classicTabBarSub": "The flat bar along the bottom from before iOS 26, instead of the floating one",
+      "classicTabBarRestart": "Close OpenTV and open it again to see the new tab bar."
     },
     "data": {
       "icloudSection": "iCloud backup",

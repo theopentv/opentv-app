@@ -19,6 +19,7 @@ import { isCustomServer } from '@/server-url';
 import { hapticsOn, setHapticsOn, tapLight } from '@/haptics';
 import { MenuRow, NavHeader, PillButton, PlusChip, Screen, TopTabs } from '@/components/ui';
 import seed from '@/seed';
+import { classicTabBarOffered, setClassicTabBar } from '@/classic-tab-bar';
 import { getMeta, setMeta, wipeAllData } from '@/db';
 import { currentLocale, monthYear, plotLanguage, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
@@ -256,6 +257,7 @@ export default function SettingsScreen() {
   // Lazy initial read, like every other switch here: the React Compiler
   // memoises a render-time store read and would freeze this at first paint.
   const [haptics, setHaptics] = useState(() => hapticsOn());
+  const [classicTab, setClassicTab] = useState(() => getMeta('classicTabBar') === '1');
   // WAS NEVER SAVED OR READ (since 1.1.2): a switch that flipped back the
   // moment you left the screen. It is a meta flag now, read by the show page.
   const [hideWatched, setHideWatchedState] = useState(() => getMeta('hideWatched') === '1');
@@ -636,6 +638,25 @@ export default function SettingsScreen() {
                 />
               }
             />
+            {/* For anybody who does not want iOS 26's floating glass bar.
+                Applies next launch; not offered on the Duo (`classic-tab-bar`). */}
+            {classicTabBarOffered() && (
+              <MenuRow trackId="settings.app.classicTabBar"
+                title={t('settings.app.classicTabBar')}
+                sub={t('settings.app.classicTabBarSub')}
+                right={
+                  <Switch
+                    value={classicTab}
+                    onValueChange={(on) => {
+                      setClassicTab(on);
+                      setClassicTabBar(on);
+                      Alert.alert(t('settings.app.classicTabBar'), t('settings.app.classicTabBarRestart'));
+                    }}
+                    trackColor={{ true: colors.green }}
+                  />
+                }
+              />
+            )}
             <MenuRow trackId="settings.app.seasonal"
               title={t('settings.app.seasonal')}
               sub={t('settings.app.seasonalSub')}

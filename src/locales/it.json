@@ -649,7 +649,10 @@
       "advancedSub": "La tua chiave TheTVDB, l'aggiornamento delle immagini e gli strumenti di recupero",
       "linksSection": "Dove trovarci",
       "seasonal": "Decorazioni stagionali",
-      "seasonalSub": "Decorazioni e temi di Halloween e Natale per il tuo profilo"
+      "seasonalSub": "Decorazioni e temi di Halloween e Natale per il tuo profilo",
+      "classicTabBar": "Barra delle schede classica",
+      "classicTabBarSub": "La barra piatta in basso di prima di iOS 26, al posto di quella fluttuante",
+      "classicTabBarRestart": "Chiudi OpenTV e riaprilo per vedere la nuova barra delle schede."
     },
     "data": {
       "icloudSection": "Backup iCloud",

@@ -649,7 +649,10 @@
       "advancedSub": "Dein eigener TheTVDB-Schlüssel, Bilder aktualisieren und Wiederherstellungs-Tools",
       "linksSection": "Hier findest du uns",
       "seasonal": "Saisonale Deko",
-      "seasonalSub": "Halloween- und Weihnachtsdeko und -Designs für dein Profil"
+      "seasonalSub": "Halloween- und Weihnachtsdeko und -Designs für dein Profil",
+      "classicTabBar": "Klassische Tab-Leiste",
+      "classicTabBarSub": "Die flache Leiste am unteren Rand wie vor iOS 26 statt der schwebenden",
+      "classicTabBarRestart": "Schließe OpenTV und öffne es erneut, um die neue Tab-Leiste zu sehen."
     },
     "data": {
       "icloudSection": "iCloud-Backup",

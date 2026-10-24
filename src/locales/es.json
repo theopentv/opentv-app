@@ -649,7 +649,10 @@
       "advancedSub": "Tu clave de TheTVDB, actualizar las imágenes y herramientas de recuperación",
       "linksSection": "Encuéntranos",
       "seasonal": "Decoraciones de temporada",
-      "seasonalSub": "Decoraciones y temas de Halloween y Navidad para tu perfil"
+      "seasonalSub": "Decoraciones y temas de Halloween y Navidad para tu perfil",
+      "classicTabBar": "Barra de pestañas clásica",
+      "classicTabBarSub": "La barra plana en la parte inferior de antes de iOS 26, en lugar de la flotante",
+      "classicTabBarRestart": "Cierra OpenTV y vuelve a abrirlo para ver la nueva barra de pestañas."
     },
     "data": {
       "icloudSection": "Copia de seguridad en iCloud",
