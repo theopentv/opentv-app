@@ -1642,7 +1642,10 @@ export default function ProfileScreen() {
           title: '',
           headerTintColor: colors.onArt,
           ...headerItems({
-            left: [
+            // Both trailing: the leading slot is where Back lives, and a
+            // prominent action belongs with the trailing group (the bell is
+            // the one that must not overflow, so it comes first).
+            right: [
               {
                 type: 'button',
                 label: t('a11y.inbox'),
@@ -1652,8 +1655,6 @@ export default function ProfileScreen() {
                 tintColor: plus && themeColor != null ? themeColor : colors.yellow,
                 onPress: () => router.push('/inbox'),
               },
-            ],
-            right: [
               { type: 'button', label: t('a11y.more'), icon: { type: 'sfSymbol', name: 'ellipsis' }, onPress: () => router.push('/profile-menu') },
             ],
           }),

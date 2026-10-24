@@ -680,10 +680,11 @@ export default function ShowScreen() {
             <Text style={{ color: colors.dim, fontSize: 14.5 }}>{t('show.loading')}</Text>
           </RNAnimated.View>
         )}
-        <Pressable onPress={() => router.back()} hitSlop={10} style={{ position: 'absolute', top: insets.top + 8, start: 16 }} accessibilityRole="button" accessibilityLabel={t('a11y.back')}>
-          {/* Absolutely positioned over the backdrop image — see `colors.onArt`. */}
-          <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={26} color={colors.onArt} />
-        </Pressable>
+        {/* The same native close as the loaded page, so it does not jump from
+            the iPhone Duo's strip to the top-left while the show loads. */}
+        <Stack.Screen
+          options={{ headerShown: true, headerTransparent: true, title: '', headerTintColor: colors.onArt, ...headerItems({ left: [closeItem()] }) }}
+        />
       </View>
     );
   }

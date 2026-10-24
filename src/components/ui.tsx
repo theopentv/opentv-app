@@ -11,7 +11,6 @@ import { tabA11y } from '@/a11y';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
-import { detailPaneLayout } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 
@@ -339,21 +338,15 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  * exactly the full-screen behaviour they have today.
  */
 export function useDetailPaneStyle(): ViewStyle | null {
-  const { paned, width } = detailPaneLayout(useWindowDimensions().width);
   const { left, right } = useSafeAreaInsets();
-  // Full screen, the page keeps clear of the iPhone Duo's clock strip (0
-  // everywhere else) -- the same room `useDetailWidth` gives it.
-  if (!paned) return left || right ? { paddingLeft: left, paddingRight: right } : null;
-  return {
-    width,
-    alignSelf: 'flex-end',
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: colors.line,
-    shadowColor: '#000',
-    shadowOpacity: 0.5,
-    shadowRadius: 18,
-    shadowOffset: { width: -6, height: 0 },
-  };
+  // THE PANE IS OFF (2.0.1). It worked by leaving the left 40% transparent
+  // over a screen that stayed rendered beneath a transparentModal. The pages
+  // are native pushes now, and a native stack detaches the screen beneath
+  // once the push lands: the pane sat beside 40% of black (iPad 13", open
+  // Duo on its side). Wide screens get the full page (its body centres in a
+  // CONTENT_MAX_WIDTH column) until the list|detail layout replaces this.
+  // The page keeps clear of the Duo's clock strip (0 everywhere else).
+  return left || right ? { paddingLeft: left, paddingRight: right } : null;
 }
 
 /**
@@ -369,8 +362,8 @@ export function useDetailPaneStyle(): ViewStyle | null {
 export function useDetailWidth(): number {
   const w = useWindowDimensions().width;
   const { left, right } = useSafeAreaInsets();
-  const { paned, width } = detailPaneLayout(w);
-  return paned ? width : w - left - right;
+  // See useDetailPaneStyle: no pane until list|detail exists.
+  return w - left - right;
 }
 
 /** TV Time's underline text tabs — WATCH LIST | UPCOMING.

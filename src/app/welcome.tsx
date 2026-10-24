@@ -119,7 +119,7 @@ export default function WelcomeScreen() {
           the import flow. Deliberately a small corner affordance rather than a
           mandatory step: the device locale is already right for most people. */}
       <Pressable
-        style={[styles.langButton, { top: insets.top + 12 }]}
+        style={[styles.langButton, { top: insets.top + 12, end: 16 + insets.right }]}
         accessibilityRole="button"
         accessibilityLabel={t('welcome.languageButtonLabel')}
         onPress={() => router.push('/language')}>
