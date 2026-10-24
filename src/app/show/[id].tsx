@@ -25,7 +25,7 @@ import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems, PaneHeader } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatched, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatched } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -860,7 +860,6 @@ export default function ShowScreen() {
           ...headerItems({ left: [closeItem()], right: [moreMenuItem(showActions())] }),
         }}
       />
-      <PaneHeader right={[moreMenuItem(showActions())]} />
       {/* The backdrop runs under the status bar, so its glyphs follow the
           artwork rather than the page — dark-on-dark otherwise. */}
       <StatusBarOnCover />

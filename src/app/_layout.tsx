@@ -7,7 +7,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { runAfterInteractions } from '@/after-interactions';
-import { useWideDetail } from '@/components/ui';
 import { markIconsDecorative } from '@/a11y';
 import { trackScreen } from '@/analytics';
 import { initAutoBackup } from '@/backup';
@@ -87,6 +86,16 @@ async function applySiriQueue(): Promise<void> {
 
 /** Every root screen remounts on a language switch, except the tab host. */
 const SCREEN_LAYOUT = remountOnLocale('(tabs)');
+
+/**
+ * THE TABS ARE BENEATH EVERY COLD-OPENED PAGE. A show opened from a widget, a
+ * link or a Handoff while the app is closed used to become the ONLY route:
+ * nothing under it, so its close button had nowhere to go ("GO_BACK was not
+ * handled") and, from 600pt up, the list column beside it was an empty white
+ * pane. The anchor tells the router to seed `(tabs)` first and the page on
+ * top, the way a tap from the list would have left things.
+ */
+export const unstable_settings = { anchor: '(tabs)' };
 
 export default function RootLayout() {
   // Runs exactly once, before the first paint: a lazy useState initialiser
@@ -603,8 +612,6 @@ export default function RootLayout() {
     };
   }, []);
 
-  // LIST | DETAIL on a wide screen: see useWideDetail in components/ui.
-  const wideDetail = useWideDetail();
 
   return (
     /*
@@ -739,10 +746,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="show/[id]"
           options={{
-            // Beside the list on a wide screen (transparentModal keeps the list
-            // rendered and tappable beneath); a native push otherwise.
-            presentation: wideDetail ? 'transparentModal' : 'card',
-            contentStyle: wideDetail ? { backgroundColor: 'transparent' } : undefined,
+            presentation: 'card',
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and
             // reach the iPhone Duo's strip; swiping down still closes it.
@@ -753,10 +757,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="episode/[id]"
           options={{
-            // Beside the list on a wide screen (transparentModal keeps the list
-            // rendered and tappable beneath); a native push otherwise.
-            presentation: wideDetail ? 'transparentModal' : 'card',
-            contentStyle: wideDetail ? { backgroundColor: 'transparent' } : undefined,
+            presentation: 'card',
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and
             // reach the iPhone Duo's strip; swiping down still closes it.
@@ -767,10 +768,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="movie/[name]"
           options={{
-            // Beside the list on a wide screen (transparentModal keeps the list
-            // rendered and tappable beneath); a native push otherwise.
-            presentation: wideDetail ? 'transparentModal' : 'card',
-            contentStyle: wideDetail ? { backgroundColor: 'transparent' } : undefined,
+            presentation: 'card',
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and
             // reach the iPhone Duo's strip; swiping down still closes it.
