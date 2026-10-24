@@ -17,11 +17,12 @@
  * the profile theme for free.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { I18nManager, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { busyDayCount, heatLevel, heatShades, monthColumns, monthsGrid, shiftMonth } from '@/pure';
+import { useScreenWidth } from '@/components/ui';
 import { colors, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
@@ -100,7 +101,7 @@ export function Heatmap({
   /** A day the reader tapped. Absent leaves the grid inert, as on a profile. */
   onPressDay?: (day: string) => void;
 }) {
-  const window = useWindowDimensions().width;
+  const window = useScreenWidth();
   const width = boxWidth ?? window;
   const grid = monthsGrid(endMonth, months, counts);
   const busy = busyDayCount(counts);

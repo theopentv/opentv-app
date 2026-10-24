@@ -14,7 +14,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Switch, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -27,6 +27,7 @@ import { t } from '@/i18n';
 import { visibleCoverUri } from '@/library';
 import { usePlus } from '@/plus';
 import { BANNER_MAX_SIZE, bannerGeometry, bannerHeight, CENTRE_FRAME, coverFrameString, parseCoverFrame, type CoverFrame } from '@/pure';
+import { useScreenWidth } from '@/components/ui';
 import { colors, radius, space } from '@/theme';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -37,7 +38,7 @@ const OVERLAY_COLOURS = ['#000000', '#ffffff', '#1d4ed8', '#7c3aed', '#be185d', 
 
 export default function CoverAdjustScreen() {
   const insets = useSafeAreaInsets();
-  const { width: W } = useWindowDimensions();
+  const W = useScreenWidth();
   const plus = usePlus();
   const uri = visibleCoverUri(plus);
   const layout = plus ? asProfileLayout(getMeta('profileThemeLayout')) : 'classic';

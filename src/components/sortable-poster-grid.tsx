@@ -31,6 +31,7 @@ import {
   type GridSplit,
 } from '@/pure';
 import { t } from '@/i18n';
+import { useScreenWidth } from '@/components/ui';
 import { colors, radius, space, ls } from '@/theme';
 
 // how far from the top/bottom of the screen the drag must reach to auto-scroll,
@@ -99,8 +100,9 @@ export function SortablePosterGrid({
   scrollRef,
   scrollY,
 }: Props) {
-  const { width, height } = useWindowDimensions();
-  // raw window width is correct only because this grid's only caller,
+  const { height } = useWindowDimensions();
+  const width = useScreenWidth();
+  // screen width (window minus side safe-area insets) is correct only because this grid's only caller,
   // lists/[id].tsx, is NOT capped by ContentColumn/CONTENT_MAX_WIDTH today.
   // If that screen ever gains the cap, this must derive from the capped
   // width instead — drop targets would otherwise be hit-tested against the

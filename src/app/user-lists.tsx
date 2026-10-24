@@ -21,12 +21,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { fetchList, fetchProfileLists, type PublishedList } from '@/community-profiles';
 import { fetchSharedList } from '@/community-shared-lists';
 import { ListCollage, type CollageList } from '@/components/list-collage';
-import { ContentColumn, NavHeader, Screen } from '@/components/ui';
+import { ContentColumn, NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { t } from '@/i18n';
 import { TABLET_MIN_W } from '@/pure';
 import { colors, space } from '@/theme';
@@ -38,7 +38,7 @@ const tileWidth = (w: number) => (w - 2 * 12 - (tileCols(w) - 1) * 2) / tileCols
 export default function UserListsScreen() {
   const { handle: raw } = useLocalSearchParams<{ handle?: string }>();
   const handle = raw ?? '';
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   const TILE_W = tileWidth(width);
   const COLS = tileCols(width);
 

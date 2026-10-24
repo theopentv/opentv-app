@@ -38,7 +38,7 @@ import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, ScrollView
 import { Text } from '@/components/text';
 
 import { posterSpeech } from '@/components/poster';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { getHandle } from '@/community-session';
 import { getFavoriteMovies, getFavoriteShows, getRecentMovies, getRecentShows } from '@/db';
 import { tapLight, tapSelection } from '@/haptics';
@@ -48,8 +48,6 @@ import { withLink } from '@/share-link';
 import { colors, radius, ls } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
-
-const W = Math.min(Dimensions.get('window').width, 420);
 
 /* The picture is 1080 wide; the preview is not. Same reasoning as the title
    share card — `captureRef` snapshots the view's own bounds at device scale,
@@ -66,10 +64,11 @@ const POST_H = Math.round((EXPORT_W * 5) / 4);
 const SCREEN_H = Dimensions.get('window').height;
 // Smaller than the title card's: this screen also carries a picker, and a
 // 9:16 preview plus a shelf of posters plus a button does not fit otherwise.
-const PREVIEW_W = Math.round(Math.min(W - 120, 244, ((SCREEN_H - 420) * 9) / 16));
-const PREVIEW_STORY_H = Math.round((PREVIEW_W * 16) / 9);
-const PREVIEW_POST_H = Math.round((PREVIEW_W * 5) / 4);
-const PREVIEW_SCALE = PREVIEW_W / EXPORT_W;
+// Width from useScreenWidth, not the window (closed iPhone Duo side strip).
+function usePreview() {
+  const w = Math.round(Math.min(Math.min(useScreenWidth(), 420) - 120, 244, ((SCREEN_H - 420) * 9) / 16));
+  return { w, scale: w / EXPORT_W, storyH: Math.round((w * 16) / 9), postH: Math.round((w * 5) / 4) };
+}
 const SF = EXPORT_W / 268;
 const ss = (n: number) => Math.round(n * SF * 2) / 2;
 
@@ -362,6 +361,7 @@ function bestGrid(count: number, titles: boolean, cardH: number, profile = false
 }
 
 export default function ShareFavoritesScreen() {
+  const preview = usePreview();
   const { type, source } = useLocalSearchParams<{ type?: string; source?: string }>();
   const isShows = type === 'shows';
   /*
@@ -704,8 +704,8 @@ export default function ShareFavoritesScreen() {
           ))}
         </View>
 
-        <View style={[s.box, { height: shape === 'story' ? PREVIEW_STORY_H : PREVIEW_POST_H }]}>
-          <View style={s.scale}>
+        <View style={[s.box, { width: preview.w, height: shape === 'story' ? preview.storyH : preview.postH }]}>
+          <View style={[s.scale, { transform: [{ scale: preview.scale }] }]}>
             <View ref={cardRef} collapsable={false} style={[s.card, { height: cardH }]}>
               <LinearGradient
                 colors={['#16161A', '#08080A']}
@@ -953,8 +953,8 @@ const s = StyleSheet.create({
   },
 
   // Height comes from the shape — see the preview box above.
-  box: { width: PREVIEW_W, borderRadius: 12, overflow: 'hidden' },
-  scale: { transform: [{ scale: PREVIEW_SCALE }], transformOrigin: 'top left' },
+  box: { borderRadius: 12, overflow: 'hidden' },
+  scale: { transformOrigin: 'top left' },
   card: {
     width: EXPORT_W,
     // Square -- `box` rounds the preview. See the note in share-card.tsx.

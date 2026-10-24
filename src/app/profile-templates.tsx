@@ -10,11 +10,11 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { communityErrorText } from '@/community-error-text';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { ApiError } from '@/api';
 import { getMeta } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -54,7 +54,7 @@ function markerText(m: Template['marker']): string | null {
 
 export default function ProfileTemplatesScreen() {
   const plus = usePlus();
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   const [busy, setBusy] = useState<string | null>(null);
   // Two columns on a phone, three to five on an iPad (`cardGrid`). This was
   // `(min(width, 700) - padding - gap) / 2`: two cards and the right third of

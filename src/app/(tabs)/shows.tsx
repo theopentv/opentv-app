@@ -3,13 +3,13 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { FlatList, I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
-import { CheckCircle, EmptyState, Screen, TopTabs } from '@/components/ui';
+import { CheckCircle, EmptyState, Screen, TopTabs, useScreenWidth } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -117,11 +117,11 @@ function chunk<T>(arr: T[], n: number): T[][] {
 
 export default function ShowsScreen() {
   const plus = usePlus();
-  const { width: W } = useWindowDimensions();
+  const W = useScreenWidth();
   // the Watch List's rows and grid run full width (no ContentColumn cap) —
   // these are repeated rows/tiles, not prose, so a tablet should show MORE of
   // them rather than a narrow capped column. The column count derives from
-  // the raw window width. On a phone this is unchanged from before.
+  // the screen width (window minus side safe-area insets). On a phone this is unchanged from before.
   const gridCols = gridGeometry(W, space.md, 3).cols;
   const [tab, setTab] = useState<(typeof TABS)[number]>('Watch List');
   const [view, setView] = useState<'list' | 'grid'>(() => (getMeta('showsView') === 'grid' ? 'grid' : 'list'));

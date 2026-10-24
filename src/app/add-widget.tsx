@@ -18,7 +18,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { WidgetBox, renderWidget, widgetValue } from '@/components/profile-widgets';
 import { pushWidgets } from '@/community-profiles';
 import { previewSlot } from '@/components/widget-previews';
-import { CONTENT_MAX_WIDTH, gridMetrics } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, gridMetrics, useScreenWidth } from '@/components/ui';
 import db, { getMeta, getProfileLayout, isStorageFull, setProfileLayout } from '@/db';
 import { TEMPLATE_LAYOUT, TEMPLATE_NAME } from '@/profile-templates';
 import { tapLight } from '@/haptics';
@@ -88,7 +88,7 @@ export default function AddWidgetSheet() {
   const win = useWindowDimensions();
   /** As much of the screen as a bottom sheet can take without becoming a page. */
   const SHEET_MAX = win.height * 0.62;
-  const W = Math.min(win.width, CONTENT_MAX_WIDTH);
+  const W = Math.min(useScreenWidth(), CONTENT_MAX_WIDTH);
   const keys = useMemo(() => shelfKeys(), []);
   const [layout, setLayout] = useState<Placed[]>(() => normalise(parseLayout(getProfileLayout()), keys));
   /** The widget being previewed, over the list rather than instead of it. */

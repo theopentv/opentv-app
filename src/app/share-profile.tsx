@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { useRef } from 'react';
 import { type ViewInstance, Alert, Dimensions, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import seed from '@/seed';
 import { getMeta, getMovieTotals, getTotals } from '@/db';
 import { isSeedLibrary, profileImageUri } from '@/library';
@@ -63,6 +63,10 @@ const DOODLES = [
 ] as const;
 
 export default function ShareProfileScreen() {
+  // The card is export-sized (CARD_W, fixed at import); on a screen narrower than
+  // it was measured for (closed iPhone Duo: side strip) it is scaled to fit on
+  // screen only — the capture is on the inner card and never sees the scale.
+  const fit = Math.min(1, (useScreenWidth() - 32) / CARD_W);
   const cardRef = useRef<ViewInstance>(null);
   const username = getMeta('username') ?? seed.profile.username;
   const totals = getTotals();
@@ -126,7 +130,7 @@ export default function ShareProfileScreen() {
         {/* the card itself — captured pixel-perfect when sharing. The frame
             rounds it on screen ONLY; see the note in share-card.tsx for why
             the captured rectangle has to stay square. */}
-        <View style={styles.cardFrame}>
+        <View style={[styles.cardFrame, fit < 1 && { transform: [{ scale: fit }] }]}>
         <View ref={cardRef} collapsable={false} style={styles.card}>
           <View style={styles.left}>
             {DOODLES.map((d, i) => (

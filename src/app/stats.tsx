@@ -1,10 +1,10 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { type ReactNode, useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PeriodSheet } from '@/components/period-picker';
-import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs } from '@/components/ui';
+import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs, useScreenWidth } from '@/components/ui';
 import { badges, charVotes } from '@/bundled-data';
 import { tapLight } from '@/haptics';
 import { isJoined } from '@/community-session';
@@ -25,7 +25,7 @@ const TABS = ['Shows', 'Movies'] as const;
  *  are), so this must track the raw window width too, or a wide iPad gets a
  *  page sized for a 700pt card crammed into a much wider one. */
 function usePageWidth(): number {
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   return width - 2 * space.lg - 2 * space.lg;
 }
 

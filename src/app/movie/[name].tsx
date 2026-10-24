@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Alert, I18nManager, Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -14,7 +14,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth } from '@/components/ui';
 import {
   addMovieToWatchlist,
   deleteMovie,
@@ -150,7 +150,7 @@ function filmPage(tmdbId: number): Promise<FilmPage> {
 
 export default function MovieScreen() {
   const insets = useSafeAreaInsets();
-  const { width: winW } = useWindowDimensions();
+  const winW = useDetailWidth();
   // Read once per page: the season does not change while a page is open.
   const [season] = useState(() => currentLook(isPlus()));
   // Which comments screen Comments leads to — see `goComments`.

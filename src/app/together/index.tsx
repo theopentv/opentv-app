@@ -8,7 +8,7 @@
  */
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, FlatList, Pressable, RefreshControl, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, AppState, FlatList, Pressable, RefreshControl, StyleSheet, TextInput, View } from 'react-native';
 
 import { ApiError } from '@/api';
 import { communityErrorText } from '@/community-error-text';
@@ -17,7 +17,7 @@ import { fetchSharedLists, joinSharedList, type SharedListRow } from '@/communit
 import { noteTogetherIndex, noteTogetherJoined, publishPositions } from '@/community-together';
 import { ListCollage } from '@/components/list-collage';
 import { Text } from '@/components/text';
-import { NavHeader, PillButton, Screen } from '@/components/ui';
+import { NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
@@ -31,7 +31,7 @@ const tileWidth = (w: number) => (w - 2 * 12 - (tileCols(w) - 1) * 2) / tileCols
 export default function TogetherScreen() {
   // `?join=1` (from the profile ••• menu): the code box is the reason they came.
   const { join: focusJoin } = useLocalSearchParams<{ join?: string }>();
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   const joined = useJoined();
   const plus = usePlus();
   const [rows, setRows] = useState<SharedListRow[] | null>(null);

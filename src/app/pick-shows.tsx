@@ -21,7 +21,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -30,6 +30,7 @@ import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { TVDB_LANG, artworkUrl, gridGeometry, tvdbLangChain } from '@/pure';
 import { leaveOnboarding } from '@/session-store';
+import { useScreenWidth } from '@/components/ui';
 import { colors, space, ls } from '@/theme';
 import { pool } from '@/tmdb';
 import { tvdbEpisodes, tvdbMovieTranslation, tvdbSeries, tvdbSearch, tvdbSearchMovies, tvdbTranslation, tvdbTrending, type TvdbEpisode } from '@/tvdb';
@@ -93,7 +94,7 @@ export default function PickShowsScreen() {
 /** The poster grid both steps share: this week's trending, a search box, tap to pick. */
 function PickGrid({ kind, onSkip, onContinue }: { kind: 'tv' | 'movie'; onSkip: () => void; onContinue: (picks: Pick[]) => void }) {
   const insets = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   const film = kind === 'movie';
 
   const [trending, setTrending] = useState<Pick[] | null>(null);

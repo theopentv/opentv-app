@@ -17,10 +17,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
-import { I18nManager, Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
-import { gridMetrics } from '@/components/ui';
+import { gridMetrics, useScreenWidth } from '@/components/ui';
 // Imports `WidgetBox` back from here, at render time only — safe both ways.
 import { goalWidgetValue, renderGoalWidget } from '@/components/yearly-goal';
 import {
@@ -89,7 +89,7 @@ export function WidgetBox({
   /** The label becomes a header with a › that goes somewhere. */
   onLabelPress?: () => void;
 }) {
-  const { height } = gridMetrics(useWindowDimensions().width);
+  const { height } = gridMetrics(useScreenWidth());
   return (
     <View style={[s.box, bare && { padding: 0 }, !hug && { height: height(span === '2x2' ? 2 : 1) }]}>
       {!bare && onLabelPress && (
@@ -765,7 +765,7 @@ function parseFelt(v: unknown): FeltDay[] {
  * widget wants the wall of colour and nothing else.
  */
 function FeltGrid({ days, months }: { days: readonly FeltDay[]; months: number }) {
-  const width = useWindowDimensions().width - 2 * space.lg - 2 * space.md;
+  const width = useScreenWidth() - 2 * space.lg - 2 * space.md;
   const felt = new Map(days);
   const today = todayISO();
   const endMonth = monthOf(today);

@@ -29,12 +29,13 @@
 
 import { Image } from 'expo-image';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { titleChoices } from '@/db';
 import { GIPHY_API_KEY } from '@/giphy-key';
 import { t } from '@/i18n';
 import { cardGrid } from '@/pure';
+import { useScreenWidth } from '@/components/ui';
 import { colors, radius, space, ls } from '@/theme';
 
 /** The grid's gap — one number for the list's `gap` styles and the cell
@@ -77,7 +78,7 @@ export function GifSearch({ onPick, busyId }: { onPick: (hit: GifHit) => void; b
   // picker's rule (`cardGrid`). This was `(min(width, 700) - padding - gap) / 2`:
   // the cap shrank the cells without centring the list, so a 13" iPad showed
   // two columns and an empty right third, the same bug as the templates.
-  const { cols, cellW: cell } = cardGrid(useWindowDimensions().width, space.lg, GAP);
+  const { cols, cellW: cell } = cardGrid(useScreenWidth(), space.lg, GAP);
 
   /*
    * SHOWS AND FILMS, TAKEN IN TURNS.

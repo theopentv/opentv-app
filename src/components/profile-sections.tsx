@@ -15,12 +15,12 @@
  * offers Follow.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { FlatList, I18nManager, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { FlatList, I18nManager, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 import { ArrangingContext } from '@/components/profile-arrange';
 import { useContext } from 'react';
 
-import { CONTENT_MAX_WIDTH, GRID_GUTTER, gridMetrics } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, GRID_GUTTER, gridMetrics, useScreenWidth } from '@/components/ui';
 import { Poster, posterSpeech } from '@/components/poster';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -119,7 +119,7 @@ export function PosterRail({
   contentWidth?: number;
   gap?: number;
 }) {
-  const screen = useWindowDimensions().width;
+  const screen = useScreenWidth();
   const width = posterWidth(contentWidth ?? screen, gap);
   const arranging = useContext(ArrangingContext);
   return (

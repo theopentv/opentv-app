@@ -13,10 +13,10 @@
  */
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { fetchPublishedProfile, type PublishedProfile, type PublishedTitle } from '@/community-profiles';
 import { gridGeometry } from '@/pure';
 import { colors, space } from '@/theme';
@@ -56,7 +56,7 @@ export default function UserTitlesScreen() {
     rawKind === 'fav-shows' || rawKind === 'movies' || rawKind === 'fav-movies' ? rawKind : 'shows';
 
   const [pub, setPub] = useState<PublishedProfile | null>(null);
-  const { width } = useWindowDimensions();
+  const width = useScreenWidth();
   const { cols } = gridGeometry(width, space.md, 3);
 
   useEffect(() => {

@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { getEpisodeVote, getMovie, getShowBrief } from '@/db';
 import { episodeMeta, showMeta } from '@/metadata';
 import { movieMeta } from '@/movie-metadata';
@@ -91,12 +91,14 @@ const POST_H = Math.round((EXPORT_W * 5) / 4);
  * one axis 9:16 actually stresses.
  */
 const SCREEN_H = Dimensions.get('window').height;
-const PREVIEW_W = Math.round(Math.min(W - 120, 268, ((SCREEN_H - 300) * 9) / 16));
-const PREVIEW_SCALE = PREVIEW_W / EXPORT_W;
+// Width from useScreenWidth, not the window: on a closed iPhone Duo the side
+// strip takes a column the screen is padded clear of.
 // The preview is measured for the TALLEST shape, so switching shapes never
 // moves the share button.
-const PREVIEW_STORY_H = Math.round((PREVIEW_W * 16) / 9);
-const PREVIEW_POST_H = Math.round((PREVIEW_W * 5) / 4);
+function usePreview() {
+  const w = Math.round(Math.min(Math.min(useScreenWidth(), 420) - 120, 268, ((SCREEN_H - 300) * 9) / 16));
+  return { w, scale: w / EXPORT_W, storyH: Math.round((w * 16) / 9), postH: Math.round((w * 5) / 4) };
+}
 // Type scales against the EXPORT size, so the proportions are identical at
 // any preview size and on any device density.
 const SF = EXPORT_W / 268;
@@ -121,6 +123,11 @@ const fs = (n: number) => Math.round(n * F * 2) / 2;
 const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function ShareCardScreen() {
+  const preview = usePreview();
+  // The card is export-sized (CARD_W, fixed at import); on a screen narrower than
+  // it was measured for (closed iPhone Duo: side strip) it is scaled to fit on
+  // screen only — the capture is on the inner card and never sees the scale.
+  const fit = Math.min(1, (useScreenWidth() - 32) / CARD_W);
   const { type, id, season, episode, name, poster: posterHint } = useLocalSearchParams<{
     type?: string;
     id?: string;
@@ -329,8 +336,8 @@ export default function ShareCardScreen() {
           // The box is preview-sized; the card inside it is export-sized and
           // scaled to fit. `cardRef` is on the card, so the capture never sees
           // the scale.
-          <View style={[styles.storyBox, { height: shape === 'story' ? PREVIEW_STORY_H : PREVIEW_POST_H }]}>
-            <View style={styles.storyScale}>
+          <View style={[styles.storyBox, { width: preview.w, height: shape === 'story' ? preview.storyH : preview.postH }]}>
+            <View style={[styles.storyScale, { transform: [{ scale: preview.scale }] }]}>
           <View
             ref={cardRef}
             collapsable={false}
@@ -451,7 +458,7 @@ export default function ShareCardScreen() {
             </View>
           </View>
         ) : (
-        <View style={styles.cardFrame}>
+        <View style={[styles.cardFrame, fit < 1 && { transform: [{ scale: fit }] }]}>
         <View ref={cardRef} collapsable={false} style={styles.card}>
           {/* poster left */}
           <View style={styles.left}>
@@ -677,8 +684,8 @@ const styles = StyleSheet.create({
   // ── the story ─────────────────────────────────────────────────────────
   // The visible slot: preview-sized, and it clips the oversized card in it.
   // Height comes from the shape — see the tall branch above.
-  storyBox: { width: PREVIEW_W, borderRadius: 12, overflow: 'hidden' },
-  storyScale: { transform: [{ scale: PREVIEW_SCALE }], transformOrigin: 'top left' },
+  storyBox: { borderRadius: 12, overflow: 'hidden' },
+  storyScale: { transformOrigin: 'top left' },
   story: {
     // Export size, not preview size. This is the rectangle that becomes the
     // PNG; `storyScale` is the only thing that makes it look small.
