@@ -13,6 +13,8 @@ describe('banner frame', () => {
     expect(bannerHeight('classic', 0.9, 400)).toBe(360);
     expect(bannerHeight('classic', 0.3, 400)).toBe(196);
     expect(bannerHeight('cards', 0, 400)).toBe(252);
+    // the wide avatar (112, not 84) grows the banner by the difference
+    expect(bannerHeight('cards', 0, 669)).toBe(280);
     expect(bannerHeight('classic', 2, 400)).toBe(640);
   });
   it('knows a GIF by its name', () => {

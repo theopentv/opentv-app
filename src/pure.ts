@@ -8096,8 +8096,17 @@ export const BANNER_MAX_SIZE = 1.6;
  * or the height its owner dragged it to — never shorter than normal, which is
  * what the name and picture are laid out to fit in.
  */
+/** The profile picture's diameter. 58 beside the name (classic); 84 centred
+ *  above it, and 112 once the page is wide (the open iPhone Duo, an iPad),
+ *  where 84 sat small in the middle of a 600pt+ banner. */
+export function profileAvatarSize(layout: 'classic' | 'cards' | 'poster', width: number): number {
+  if (layout === 'classic') return 58;
+  return width >= COMMENTS_SPLIT_MIN_W ? 112 : 84;
+}
+
 export function bannerHeight(layout: 'classic' | 'cards' | 'poster', size: number, width: number): number {
-  const normal = layout !== 'classic' ? 252 : 196;
+  // a bigger centred avatar takes its extra height from the banner, not the name
+  const normal = layout !== 'classic' ? 252 + profileAvatarSize(layout, width) - 84 : 196;
   return size > 0 ? Math.max(normal, Math.round(Math.min(size, BANNER_MAX_SIZE) * width)) : normal;
 }
 

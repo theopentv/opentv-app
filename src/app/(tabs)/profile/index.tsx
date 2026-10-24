@@ -22,7 +22,7 @@ import { SectionHeader } from '@/components/profile-sections';
 import { visibleCoverUri } from '@/library';
 import { tapLight } from '@/haptics';
 import { manualBackupOverdue, shareLibraryExport } from '@/manual-backup';
-import { EmptyState, MenuRow, headerItems } from '@/components/ui';
+import { EmptyState, MenuRow, headerItems, useScreenWidth } from '@/components/ui';
 import { asProfileLayout, type ProfileLayout, ProfileTemplate } from '@/components/profile-template';
 import {
   normalise,
@@ -66,7 +66,7 @@ import { closePuzzleBanner, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute,
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
-import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, wrappedToOffer, mixHex } from '@/pure';
+import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, wrappedToOffer, mixHex } from '@/pure';
 import { lastFriendMatches } from '@/community-seed';
 import { appLinks } from '@/links';
 import { colors, onAccent, radius, space, ls } from '@/theme';
@@ -686,6 +686,7 @@ export default function ProfileScreen() {
   // Render-safe subscription, so a purchase or a restore flips the chip on this
   // screen without a navigation — see the React Compiler note in `plus.ts`.
   const plus = usePlus();
+  const screenW = useScreenWidth();
   /*
    * PLUS IS OFTEN LEARNED AFTER THIS TAB OPENS — a fresh sign-in resolves the
    * entitlement a moment later — and the focus read above had already decided
@@ -1411,9 +1412,8 @@ export default function ProfileScreen() {
           <Image source={AVATAR} style={StyleSheet.absoluteFill} contentFit="cover" />
         ) : (
           // the initial is a picture of the name, which the heading beside it reads
-          // 45% of the circle: 26 in the classic 58pt one, 38 in the 84pt one
-          // the cards and poster layouts centre, where 26 sat lost in the middle
-          <Text style={{ color: colors.yellow, fontSize: plus && profileLayout !== 'classic' ? 38 : 26, fontWeight: '800' }} {...a11yHidden()}>
+          // 45% of the circle, whichever size it is (see profileAvatarSize)
+          <Text style={{ color: colors.yellow, fontSize: Math.round(0.45 * profileAvatarSize(plus ? profileLayout : 'classic', screenW)), fontWeight: '800' }} {...a11yHidden()}>
             {username[0]?.toUpperCase() ?? '?'}
           </Text>
         )

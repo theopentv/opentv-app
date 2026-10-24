@@ -65,7 +65,7 @@ import { LOCKED, STYLED, WIDGET_NAME, defaultLayout, onArrangeRequested, type Pl
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { t } from '@/i18n';
 import { usePlusUi } from '@/plus';
-import { bannerGeometry, bannerHeight, mixHex, smootherstep, type CoverFrame } from '@/pure';
+import { bannerGeometry, bannerHeight, mixHex, profileAvatarSize, smootherstep, type CoverFrame } from '@/pure';
 import { LinearGradient } from 'expo-linear-gradient';
 import { setLiveCoverRatio, useLiveCoverFrame } from '@/cover-frame-live';
 import { colors, radius, space, ls } from '@/theme';
@@ -514,6 +514,7 @@ export function ProfileTemplate({
    *  is deliberately unspent — it is where the peek shows. */
   const RAIL_W = CONTENT_W - space.lg;
   const LIST_TILE_W = listTileWidth(W);
+  const AVATAR = profileAvatarSize(layout, W);
   const insets = useSafeAreaInsets();
 
   // TV Time's collapsing cover: pinned over the content, it shrinks from the
@@ -1121,11 +1122,11 @@ export function ProfileTemplate({
         <Animated.View style={[styles.identity, layout !== 'classic' && styles.identityCards, identityStyle]}>
           {/* Outside the clipped circle, so the decoration can sit on its edge. */}
           <View>
-            {seasonLook?.glow && <GlowRing color={seasonLook.ring} size={layout !== 'classic' ? 84 : 58} playing={focused} />}
+            {seasonLook?.glow && <GlowRing color={seasonLook.ring} size={AVATAR} playing={focused} />}
             <View
               style={[
                 styles.avatar,
-                layout !== 'classic' && styles.avatarCards,
+                { width: AVATAR, height: AVATAR, borderRadius: AVATAR / 2 },
                 themeColor != null && { borderWidth: 2, borderColor: themeColor },
                 seasonLook != null && { borderWidth: 3, borderColor: seasonLook.ring },
               ]}>
@@ -1781,7 +1782,6 @@ const styles = StyleSheet.create({
   // Avatar over name, both centred: the reference's shape, and the one that
   // gives a themed cover room to be looked at rather than stood next to.
   identityCards: { flexDirection: 'column', alignItems: 'center', gap: 8 },
-  avatarCards: { width: 84, height: 84, borderRadius: 42 },
   decoration: { position: 'absolute', top: -12, right: -8, fontSize: 24, transform: [{ rotate: '14deg' }] },
   decorationCards: { top: -14, right: -6, fontSize: 32 },
   companion: { position: 'absolute', fontSize: 15 },
