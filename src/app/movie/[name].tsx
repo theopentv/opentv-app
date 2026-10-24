@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { NoteRow } from '@/components/note-row';
@@ -14,7 +14,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
-import { CheckCircle, ContentColumn, TopTabs, useDetailPaneStyle } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle } from '@/components/ui';
 import {
   addMovieToWatchlist,
   deleteMovie,
@@ -617,7 +617,8 @@ export default function MovieScreen() {
    * Remove is the one that cannot: there is nothing to remove until there is a
    * row, so it only appears when there is one.
    */
-  const openMenu = () => {
+  /** The ⋯ actions: one list, shown as Apple's native menu (into the Duo's strip). */
+  const movieActions = (): SheetAction[] => {
     const favorited = !!dbMovie?.favorited;
     const actions: SheetAction[] = [
       {
@@ -686,7 +687,7 @@ export default function MovieScreen() {
           ),
       });
     }
-    setMenu(actions);
+    return actions;
   };
   const [watchedOn, setWatchedOn] = useState<number | null>(() => {
     const i = WATCH_TILES.findIndex((wt) => wt.name === dbMovie?.watchedOn);
@@ -944,6 +945,17 @@ export default function MovieScreen() {
     <GestureDetector gesture={pan}>
       <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
         <SplitPage split={split}>
+        {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            title: '',
+            headerTintColor: colors.onArt,
+            unstable_headerLeftItems: () => [closeItem()],
+            unstable_headerRightItems: () => [moreMenuItem(movieActions())],
+          }}
+        />
         {/* The backdrop runs under the status bar, so its glyphs follow the
             artwork rather than the page — dark-on-dark otherwise. */}
         <StatusBarOnCover />
@@ -967,16 +979,8 @@ export default function MovieScreen() {
                 <SeasonEffect emoji={season.effect} width={winW} height={insets.top + 230} playing repeatMs={0} count={6} />
               </>
             )}
-            <View style={[styles.backdropBar, { marginTop: insets.top + 4 }]}>
-              <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
-                {/* In the bar that sits on the backdrop — see `colors.onArt`.
-                    Fixed on the show screen and missed here. */}
-                <Ionicons name="chevron-down" size={26} color={colors.onArt} />
-              </Pressable>
-              <Pressable hitSlop={10} onPress={openMenu} accessibilityRole="button" accessibilityLabel={t('a11y.more')}>
-                <Ionicons name="ellipsis-horizontal" size={22} color={colors.onArt} />
-              </Pressable>
-            </View>
+            {/* Where the drawn close/⋯ row was: the native header sits over it now. */}
+            <View style={{ height: insets.top + 4 + 26 }} />
             <View style={styles.backdropMeta}>
               <View style={{ flex: 1 }}>
                 {/* shrinks instead of truncating — same reason as the show
