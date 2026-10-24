@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { NoteRow } from '@/components/note-row';
@@ -14,7 +14,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, headerItems, moreMenuItem, PaneBar, TopTabs, useDetailNav, useDetailPaneStyle, useDetailParams, useDetailWidth } from '@/components/ui';
 import {
   addMovieToWatchlist,
   deleteMovie,
@@ -161,7 +161,9 @@ export default function MovieScreen() {
     tvdbId: tvdbIdParam,
     poster: routePoster,
     year: routeYearParam,
-  } = useLocalSearchParams<{ name: string; tmdbId?: string; tvdbId?: string; poster?: string; year?: string }>();
+  } = useDetailParams<{ name: string; tmdbId?: string; tvdbId?: string; poster?: string; year?: string }>();
+  // Close acts on the list|detail pane when the page is drawn in one.
+  const nav = useDetailNav();
   // a tmdbId param is real identity — supplied whenever the tap came from a
   // search/catalog result, never for a bare imported title — and it is what
   // tells apart two different films sharing a display name ("Amado" 2011 vs.
@@ -534,7 +536,7 @@ export default function MovieScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tmdbId, tvdbId, dbMovie?.name, dbMovie?.poster, dbMovie?.tvdbId, name, routeYear]);
 
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true, canDismiss: !nav.inPane });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
   // Opened wide (iPhone Duo), the film's thread sits beside the page.
@@ -681,7 +683,7 @@ export default function MovieScreen() {
             t('media.removeConfirmTitle', { title }),
             t('movie.removeConfirmBody'),
             [
-              { text: t('common.remove'), style: 'destructive', onPress: () => { deleteMovie(rowName); router.back(); } },
+              { text: t('common.remove'), style: 'destructive', onPress: () => { deleteMovie(rowName); nav.close(); } },
               { text: t('common.cancel'), style: 'cancel' },
             ],
           ),
@@ -946,15 +948,19 @@ export default function MovieScreen() {
       <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
         <SplitPage split={split}>
         {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTransparent: true,
-            title: '',
-            headerTintColor: colors.onArt,
-            ...headerItems({ left: [closeItem()], right: [moreMenuItem(movieActions())] }),
-          }}
-        />
+        {nav.inPane ? (
+          <PaneBar right={[moreMenuItem(movieActions())]} />
+        ) : (
+          <Stack.Screen
+            options={{
+              headerShown: true,
+              headerTransparent: true,
+              title: '',
+              headerTintColor: colors.onArt,
+              ...headerItems({ left: [closeItem()], right: [moreMenuItem(movieActions())] }),
+            }}
+          />
+        )}
         {/* The backdrop runs under the status bar, so its glyphs follow the
             artwork rather than the page — dark-on-dark otherwise. */}
         <StatusBarOnCover />

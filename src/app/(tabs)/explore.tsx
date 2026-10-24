@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { openDetail, SplitHost } from '@/components/split';
 import { Text } from '@/components/text';
 
 import { tabA11y } from '@/a11y';
@@ -149,12 +150,12 @@ function FeedCard({ item }: { item: FeedItem }) {
       item.title.toLowerCase(),
     ]);
     if (row) {
-      router.push(`/show/${row.tvdbId}`);
+      openDetail(`/show/${row.tvdbId}`);
       return;
     }
     const tvdbId = await tvdbIdFor(item);
     if (tvdbId) {
-      router.push(`/show/${tvdbId}${item.tmdbId ? `?tmdbId=${item.tmdbId}` : ''}`);
+      openDetail(`/show/${tvdbId}${item.tmdbId ? `?tmdbId=${item.tmdbId}` : ''}`);
       return;
     }
     alertNotOnTvdb(item.title);
@@ -337,6 +338,8 @@ export default function ExploreScreen() {
   }, []);
 
   return (
+    // Wide screens: a show, film or episode opens beside this list (components/split).
+    <SplitHost>
     <Screen>
       <Pressable style={styles.searchLine} onPress={() => router.push('/search')} accessibilityRole="button">
         <Ionicons name="search" size={18} color={colors.faint} />
@@ -431,6 +434,7 @@ export default function ExploreScreen() {
       {/* The friends feed (2.0.0): components/feed-list.tsx. */}
       {pill === 'Activity' && <FeedList />}
     </Screen>
+    </SplitHost>
   );
 }
 

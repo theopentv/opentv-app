@@ -35,8 +35,11 @@ import { nextAtTop, shouldDismissOnPull } from '@/pure';
  * so this hook's header pan is off there. The pull past the top of the content
  * stays on: it is what closed a page from over its content in 2.0.0, and the
  * system swipe never reaches a touch an inner scroll view has taken.
+ *
+ * `canDismiss: false`: the page is drawn in a list|detail pane, not as a
+ * screen of its own; pulling past the top must not pop the tab beneath it.
  */
-export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
+export function useSwipeDown({ native = false, canDismiss = true }: { native?: boolean; canDismiss?: boolean } = {}) {
   const translateY = useSharedValue(0);
   const screenH = useWindowDimensions().height;
   /*
@@ -196,13 +199,13 @@ export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
     // pulled past the top with the finger still down — the page leaves.
     // Same guard as the fling, and it has to be the SAME one: either path
     // committing must stop the other.
-    if (shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
+    if (canDismiss && shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
       router.back();
       return;
     }
     setAtTop(nextAtTop(atTop.current, y <= 2, scrolling.current));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable boxes only
-  }, [commitDismiss]);
+  }, [commitDismiss, canDismiss]);
 
   const onScrollBeginDrag = () => {
     scrolling.current = true;

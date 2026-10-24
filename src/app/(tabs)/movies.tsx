@@ -3,6 +3,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
+import { openDetail, SplitHost } from '@/components/split';
 import { Poster, posterSpeech } from '@/components/poster';
 import { EmptyState, Screen, TopTabs, useScreenWidth } from '@/components/ui';
 import { getMovies, type MovieRow } from '@/db';
@@ -51,6 +52,8 @@ export default function MoviesScreen() {
   const tabBarSpace = useSafeAreaInsets().bottom;
 
   return (
+    // Wide screens: a show, film or episode opens beside this list (components/split).
+    <SplitHost>
     <Screen>
       <TopTabs
         tabs={TABS}
@@ -79,7 +82,7 @@ export default function MoviesScreen() {
                   <Pressable
                     key={m.name}
                     style={{ flex: 1 }}
-                    onPress={() => router.push(`/movie/${encodeURIComponent(m.name)}`)}
+                    onPress={() => openDetail(`/movie/${encodeURIComponent(m.name)}`)}
                     accessibilityRole="button"
                     accessibilityLabel={posterSpeech(m.title)}>
                     <Poster name={m.title} uri={m.poster} />
@@ -116,7 +119,7 @@ export default function MoviesScreen() {
                 <Pressable
                   key={m.name}
                   style={{ flex: 1 }}
-                  onPress={() => router.push(`/movie/${encodeURIComponent(m.name)}`)}
+                  onPress={() => openDetail(`/movie/${encodeURIComponent(m.name)}`)}
                   accessibilityRole="button"
                   // The countdown under the poster is part of the card's one line.
                   accessibilityLabel={`${posterSpeech(m.title)}, ${t(soon.key, { count: soon.count })}`}>
@@ -141,6 +144,7 @@ export default function MoviesScreen() {
         </View>
       )}
     </Screen>
+    </SplitHost>
   );
 }
 

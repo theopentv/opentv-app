@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { openDetail, SplitHost } from '@/components/split';
 import { Text } from '@/components/text';
 
 import { a11yAction, a11yHidden } from '@/a11y';
@@ -240,7 +241,7 @@ export default function ShowsScreen() {
       // metadata hasn't loaded — marking blind here once fabricated ghost
       // episodes (FROM S04E19…E28). Open the show instead: the visit fetches
       // the real structure, and marking resumes verified
-      router.push(`/show/${sp.tvdbId}`);
+      openDetail(`/show/${sp.tvdbId}`);
       return;
     }
     markWatchedWithPrompt(sp.tvdbId, next.season, next.episode, () => setTick((t) => t + 1));
@@ -404,6 +405,8 @@ export default function ShowsScreen() {
   const tabBarSpace = useSafeAreaInsets().bottom;
 
   return (
+    // Wide screens: a show, film or episode opens beside this list (components/split).
+    <SplitHost>
     <Screen>
       <TopTabs
         tabs={TABS}
@@ -511,7 +514,7 @@ export default function ShowsScreen() {
                         // TalkBack stopped on the bare frame and said only
                         // "double tap". "no" hides the frame and keeps its children.
                         importantForAccessibility="no"
-                        onPress={() => router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`)}>
+                        onPress={() => openDetail(`/episode/${w.showId}-s${w.season}e${w.episode}`)}>
                         <View style={styles.thumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -524,8 +527,8 @@ export default function ShowsScreen() {
                           accessible
                           accessibilityRole="button"
                           accessibilityLabel={[w.name, t('a11y.seasonEpisode', { season: w.season, episode: w.episode }), title].join(', ')}
-                          {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${w.showId}`))}>
-                          <Pressable style={styles.showPill} onPress={() => router.push(`/show/${w.showId}`)} accessibilityRole="button" accessibilityLabel={w.name}>
+                          {...a11yAction('openShow', t('a11y.openShow'), () => openDetail(`/show/${w.showId}`))}>
+                          <Pressable style={styles.showPill} onPress={() => openDetail(`/show/${w.showId}`)} accessibilityRole="button" accessibilityLabel={w.name}>
                             <Text style={styles.showPillText} numberOfLines={1}>
                               {w.name.toUpperCase()} ›
                             </Text>
@@ -598,8 +601,8 @@ export default function ShowsScreen() {
                     // structure) rather than a possibly-nonexistent episode,
                     // same guard markNext uses
                     next === 'unknown'
-                      ? router.push(`/show/${sp.tvdbId}`)
-                      : router.push(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
+                      ? openDetail(`/show/${sp.tvdbId}`)
+                      : openDetail(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
                   }
                 >
                   <View style={styles.thumb} {...a11yHidden()}>
@@ -641,8 +644,8 @@ export default function ShowsScreen() {
                     ]
                       .filter(Boolean)
                       .join(', ')}
-                    {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${sp.tvdbId}`))}>
-                    <Pressable style={styles.showPill} onPress={() => router.push(`/show/${sp.tvdbId}`)} accessibilityRole="button" accessibilityLabel={sp.name}>
+                    {...a11yAction('openShow', t('a11y.openShow'), () => openDetail(`/show/${sp.tvdbId}`))}>
+                    <Pressable style={styles.showPill} onPress={() => openDetail(`/show/${sp.tvdbId}`)} accessibilityRole="button" accessibilityLabel={sp.name}>
                       <Text style={styles.showPillText} numberOfLines={1}>
                         {sp.name.toUpperCase()} ›
                       </Text>
@@ -690,7 +693,7 @@ export default function ShowsScreen() {
                   <Pressable
                     key={sp.tvdbId}
                     style={{ flex: 1 }}
-                    onPress={() => router.push(`/show/${sp.tvdbId}`)}
+                    onPress={() => openDetail(`/show/${sp.tvdbId}`)}
                     accessibilityRole="button"
                     accessibilityLabel={posterSpeech(sp.name, { progress: progressOf(sp) })}>
                     <Poster name={sp.name} uri={sp.posterUrl} progress={progressOf(sp)} progressColor={progressColorOf(sp)} animateProgress />
@@ -791,7 +794,7 @@ export default function ShowsScreen() {
                   style={styles.card}
                   accessibilityRole="button"
                   accessibilityLabel={[u.showName, t('a11y.seasonEpisode', { season: u.season, episode: u.episode }), title].join(', ')}
-                  onPress={() => router.push(`/episode/${u.showId}-s${u.season}e${u.episode}`)}>
+                  onPress={() => openDetail(`/episode/${u.showId}-s${u.season}e${u.episode}`)}>
                   <View style={styles.thumb}>
                     {(u.still ?? u.poster) && (
                       <Image source={{ uri: u.still ?? u.poster! }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -848,6 +851,7 @@ export default function ShowsScreen() {
       )}
       </View>
     </Screen>
+    </SplitHost>
   );
 }
 

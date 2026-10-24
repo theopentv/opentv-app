@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { openDetail, SplitHost } from '@/components/split';
 import { Text } from '@/components/text';
 
 import { Image } from 'expo-image';
@@ -1289,6 +1290,8 @@ export default function ProfileScreen() {
     );
   })();
   return (
+    // Wide screens: a show, film or episode opens beside this list (components/split).
+    <SplitHost>
     <ProfileTemplate
       /* The owner's arrangement, re-read on focus with everything else on this
          screen — coming back from the Arrange screen must show the new order,
@@ -1594,7 +1597,7 @@ export default function ProfileScreen() {
           title: t('stats.headers.shows'),
           items: recentShows.map((sp) => ({ key: String(sp.tvdbId), name: sp.name, uri: sp.posterUrl })),
           onTitlePress: () => router.push('/all-shows'),
-          onItemPress: (k: string) => router.push(`/show/${k}`),
+          onItemPress: (k: string) => openDetail(`/show/${k}`),
         },
         {
           key: 'fav-shows',
@@ -1602,14 +1605,14 @@ export default function ProfileScreen() {
           heart: true,
           items: favShows.map((f) => ({ key: String(f.tvdbId), name: f.name, uri: f.poster })),
           onTitlePress: () => router.push('/favorites/shows'),
-          onItemPress: (k: string) => router.push(`/show/${k}`),
+          onItemPress: (k: string) => openDetail(`/show/${k}`),
         },
         {
           key: 'movies',
           title: t('stats.headers.movies'),
           items: recentMovies.map((m) => ({ key: m.name, name: m.name, uri: m.poster })),
           onTitlePress: () => router.push('/all-movies'),
-          onItemPress: (k: string) => router.push(`/movie/${encodeURIComponent(k)}`),
+          onItemPress: (k: string) => openDetail(`/movie/${encodeURIComponent(k)}`),
         },
         {
           key: 'fav-movies',
@@ -1617,7 +1620,7 @@ export default function ProfileScreen() {
           heart: true,
           items: favMovies.map((m, i) => ({ key: `${m.name}-${i}`, name: m.name, uri: m.poster })),
           onTitlePress: () => router.push('/favorites/movies'),
-          onItemPress: (k: string) => router.push(`/movie/${encodeURIComponent(k.replace(/-\d+$/, ''))}`),
+          onItemPress: (k: string) => openDetail(`/movie/${encodeURIComponent(k.replace(/-\d+$/, ''))}`),
         },
       ]}>
       {/* A fresh library used to render "Shows ›" and "Movies ›" over nothing,
@@ -1661,6 +1664,7 @@ export default function ProfileScreen() {
         }}
       />
     </ProfileTemplate>
+    </SplitHost>
   );
 }
 
