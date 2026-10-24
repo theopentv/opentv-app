@@ -2,10 +2,11 @@ import * as Notifications from 'expo-notifications';
 import { router, Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, AppState, InteractionManager, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, AppState, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
+import { runAfterInteractions } from '@/after-interactions';
 import { markIconsDecorative } from '@/a11y';
 import { trackScreen } from '@/analytics';
 import { initAutoBackup } from '@/backup';
@@ -261,7 +262,7 @@ export default function RootLayout() {
     // settling its initial route and replaces the stack underneath it. The
     // effect ran, the call was reached, and nothing appeared; deferring one
     // beat is the difference.
-    const task = InteractionManager.runAfterInteractions(() => {
+    const task = runAfterInteractions(() => {
       router.push(`/verify-email?email=${encodeURIComponent(unverified)}`);
     });
     return () => task.cancel();
@@ -308,7 +309,7 @@ export default function RootLayout() {
     // and running it before first paint froze the splash (users thought it hung
     // and reinstalled, losing hand-fixed matches). runAfterInteractions lets the
     // UI come up first; the overlay below then covers the actual repair.
-    const task = InteractionManager.runAfterInteractions(() => {
+    const task = runAfterInteractions(() => {
       void (async () => {
         await resumeInterruptedImport();
         await runStartupRepairs(setRepairPhase);
@@ -579,7 +580,7 @@ export default function RootLayout() {
            * The same call runs on launch, further up, for the cold-start case.
          */
         void applySiriQueue();
-        InteractionManager.runAfterInteractions(() => {
+        runAfterInteractions(() => {
           // Same pair, same order, for the same reason as on launch: send
           // first, then read. A phone that sat in a pocket while its owner
           // rated three episodes on the train has three rows owed, and they

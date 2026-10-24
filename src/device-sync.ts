@@ -31,6 +31,7 @@
  * OFFLINE IS NOT AN ERROR. The outbox is only emptied on acknowledgement, so a
  * week on a plane costs nothing but a longer first sync.
  */
+import { runAfterInteractions } from '@/after-interactions';
 import { backupShouldTurnOn, syncShouldTurnOn } from '@/pure';
 import { cloudStorageAllowed } from '@/plus';
 import {
@@ -46,7 +47,7 @@ import {
 import * as Device from 'expo-device';
 import { router } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { Alert, AppState, InteractionManager, Platform } from 'react-native';
+import { Alert, AppState, Platform } from 'react-native';
 
 import { api, ApiError } from '@/api';
 import { getToken } from '@/community-session';
@@ -241,7 +242,7 @@ async function seedFromBackup(): Promise<void> {
    * anything.
    */
   await new Promise<void>((resolve) => {
-    InteractionManager.runAfterInteractions(() => resolve());
+    runAfterInteractions(() => resolve());
   });
 
   let took = false;
@@ -384,7 +385,7 @@ function startPolling(): void {
  */
 function catchUpBackup(): void {
   setTimeout(() => {
-    InteractionManager.runAfterInteractions(() => {
+    runAfterInteractions(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { serverBackupNow } = require('@/cloud-backup') as typeof import('@/cloud-backup');
       void serverBackupNow().catch(() => {});

@@ -14,7 +14,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { type ViewInstance, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PeriodSheet } from '@/components/period-picker';
 import { Bars, MenuRow, NavHeader, Screen, StatCard, StatTable } from '@/components/ui';
@@ -54,7 +54,7 @@ function YearChips({ years, year, onChange }: { years: number[]; year: number | 
 
 /** The one thing here that leaves the phone, and only when it is tapped. */
 function ShareRow({ genres, score }: { genres: string[]; score: number | null }) {
-  const card = useRef<View>(null);
+  const card = useRef<ViewInstance>(null);
 
   const share = async () => {
     tapLight();

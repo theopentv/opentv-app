@@ -16,7 +16,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import type { RefObject } from 'react';
-import { ActivityIndicator, I18nManager, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { type TextInputInstance, ActivityIndicator, I18nManager, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { tapSelection } from '@/haptics';
 import { t } from '@/i18n';
@@ -38,7 +38,7 @@ export type CommentComposerProps = {
   joined: boolean;
   placeholder?: string;
   /** So a Reply tap can put the caret straight in the box. */
-  inputRef?: RefObject<TextInput | null>;
+  inputRef?: RefObject<TextInputInstance | null>;
   /**
    * THE PICTURE, if one has been chosen but not yet sent.
    *

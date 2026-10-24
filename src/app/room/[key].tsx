@@ -342,7 +342,7 @@ export default function RoomScreen() {
                 contentContainerStyle={{ paddingVertical: space.sm }}
                 ListEmptyComponent={
                   // The list flips this back the right way up itself (VirtualizedList's inversionStyle).
-                  live ? <Text style={styles.empty}>{t('room.empty')}</Text> : null
+                  live ? <Text style={styles.empty}>{t('room.empty')}</Text> : undefined
                 }
               />
               <View pointerEvents="none" style={StyleSheet.absoluteFill}>

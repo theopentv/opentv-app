@@ -34,7 +34,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, Dimensions, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { posterSpeech } from '@/components/poster';
@@ -376,7 +376,7 @@ export default function ShareFavoritesScreen() {
   /* Read once: neither can change while this screen is open. */
   const [handle] = useState(getHandle);
   const [avatarUri] = useState(() => profileImageUri('avatar'));
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewInstance>(null);
   /* Post is the default for the same reason it is on the title card: it is the
      only one of the shapes no feed crops. */
   const [shape, setShape] = useState<'post' | 'story'>('post');

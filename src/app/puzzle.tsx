@@ -35,7 +35,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
+import { type ScrollViewInstance, type ViewInstance, ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/text';
 
@@ -135,7 +135,7 @@ export default function PuzzleScreen() {
   const [sharing, setSharing] = useState(false);
   const [query, setQuery] = useState('');
   const [added, setAdded] = useState(false);
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewInstance>(null);
   /*
    * THE KEYBOARD HID THE SUGGESTIONS. The answer box sits under the picture and
    * five clue rows, so the list it opens landed behind the keyboard (developer,
@@ -143,7 +143,7 @@ export default function PuzzleScreen() {
    * scroll view takes the keyboard's height as an inset so the list can be
    * reached below it.
    */
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   const searchY = useRef(0);
   const liftAnswerBox = () => scrollRef.current?.scrollTo({ y: Math.max(0, searchY.current - 12), animated: true });
   // Again once the suggestions exist: before them the page may be too short to

@@ -32,7 +32,7 @@
  */
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, View } from 'react-native';
+import { type ViewInstance, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { useState } from 'react';
@@ -132,7 +132,7 @@ export function PuzzleShareCard({
   /** Today's player's stats; null on an archive game, which does not count. */
   stats: Stats | null;
   /** Where `captureRef` points. The card is what it photographs. */
-  cardRef?: React.RefObject<View | null>;
+  cardRef?: React.RefObject<ViewInstance | null>;
   /** Today's still; drawn at the game's first, heaviest blur. */
   picture?: string | null;
 }) {

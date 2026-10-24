@@ -178,7 +178,7 @@ export default function AllShowsScreen() {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         ListEmptyComponent={
-          query.trim() ? <Text style={styles.empty}>{t('allShows.noMatches', { query: query.trim() })}</Text> : null
+          query.trim() ? <Text style={styles.empty}>{t('allShows.noMatches', { query: query.trim() })}</Text> : undefined
         }
         renderItem={({ item, index }) => (
           <Pressable

@@ -3,9 +3,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Tabs } from 'expo-router';
 import { useEffect } from 'react';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { runAfterInteractions } from '@/after-interactions';
 import { offerBackupIfDue } from '@/backup-prompt';
 import { offerCommunityIfDue } from '@/community-prompt';
 import { tapSelection } from '@/haptics';
@@ -55,7 +56,7 @@ export default function TabsLayout() {
   // defers startup repairs: navigating while the tab navigator is still
   // mounting drops the push entirely.
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
+    const task = runAfterInteractions(() => {
       // Not while the notification screen is still owed: it is drawn on top of
       // these tabs, so the push lands behind it and its `replace` discards it —
       // having already stamped the flag. `notify-optin` makes the offer itself
@@ -110,7 +111,7 @@ export default function TabsLayout() {
         options={{
           title: t('tabBar.shows'),
           tabBarAccessibilityLabel: tabLabel(t('tabBar.shows'), 1),
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="television-classic" size={TAB_ICON} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="television-classic" size={TAB_ICON} color={color as string} />,
         }}
       />
       <Tabs.Screen
@@ -118,7 +119,7 @@ export default function TabsLayout() {
         options={{
           title: t('tabBar.movies'),
           tabBarAccessibilityLabel: tabLabel(t('tabBar.movies'), 2),
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="movie-open-outline" size={TAB_ICON} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="movie-open-outline" size={TAB_ICON} color={color as string} />,
         }}
       />
       <Tabs.Screen
@@ -126,7 +127,7 @@ export default function TabsLayout() {
         options={{
           title: t('tabBar.explore'),
           tabBarAccessibilityLabel: tabLabel(t('tabBar.explore'), 3),
-          tabBarIcon: ({ color }) => <Ionicons name="search" size={TAB_ICON} color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="search" size={TAB_ICON} color={color as string} />,
         }}
       />
       <Tabs.Screen
@@ -134,7 +135,7 @@ export default function TabsLayout() {
         options={{
           title: t('tabBar.profile'),
           tabBarAccessibilityLabel: tabLabel(t('tabBar.profile'), 4),
-          tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={TAB_ICON} color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={TAB_ICON} color={color as string} />,
         }}
       />
     </Tabs>

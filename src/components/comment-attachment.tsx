@@ -274,7 +274,7 @@ export function useCommentAttachment() {
                     // Cache, not Documents: this copy exists only until it is
                     // uploaded, and the server keeps the one that matters.
                     const f = new File(Paths.cache, `comment-gif-${hit.id}.gif`);
-                    f.write(bytes);
+                    f.writeSync(bytes);
                     setPicked({ uri: f.uri, mimeType: 'image/gif', assetId: hit.id });
                   } catch {
                     Alert.alert(t('community.comments.uploadFailed'));

@@ -197,7 +197,7 @@ export default function ReconnectScreen() {
           </View>
         }
         ListFooterComponent={
-          empty === 'allHere' ? <Text style={styles.note}>{t('community.reconnect.allHere')}</Text> : null
+          empty === 'allHere' ? <Text style={styles.note}>{t('community.reconnect.allHere')}</Text> : undefined
         }
         renderItem={({ item }) => {
           if (item.kind === 'header') return <Text accessibilityRole="header" style={styles.section}>{item.title}</Text>;

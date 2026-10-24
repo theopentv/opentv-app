@@ -536,11 +536,11 @@ export default function SearchScreen() {
               </Pressable>
             );
           }}
-          ListFooterComponent={loading ? <ActivityIndicator color={colors.yellow} style={{ margin: 18 }} /> : null}
+          ListFooterComponent={loading ? <ActivityIndicator color={colors.yellow} style={{ margin: 18 }} /> : undefined}
           ListEmptyComponent={
             !loading ? (
               <Text style={styles.note}>{query ? t('search.noMatches') : t('search.emptyHint')}</Text>
-            ) : null
+            ) : undefined
           }
         />
       ) : tab === 'Users' ? (
@@ -576,14 +576,14 @@ export default function SearchScreen() {
             />
           )}
           ListFooterComponent={
-            usersLoading ? <ActivityIndicator color={colors.yellow} style={{ margin: 18 }} /> : null
+            usersLoading ? <ActivityIndicator color={colors.yellow} style={{ margin: 18 }} /> : undefined
           }
           ListEmptyComponent={
             !usersLoading ? (
               <Text style={styles.note}>
                 {userQuery ? t('search.users.noMatch') : t('search.users.hint')}
               </Text>
-            ) : null
+            ) : undefined
           }
         />
       ) : (

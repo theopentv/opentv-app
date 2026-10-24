@@ -176,7 +176,7 @@ export default function AddToListScreen() {
                 );
               })}
             </View>
-          ) : null
+          ) : undefined
         }
       />
       <PromptModal

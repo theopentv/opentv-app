@@ -415,7 +415,7 @@ export async function resumeInterruptedImport(): Promise<void> {
       // committed — promote to the preserved original, THEN clear the flag last
       const orig = new File(Paths.document, 'tvtime-original.zip');
       if (orig.exists) orig.delete();
-      orig.write(bytes);
+      orig.writeSync(bytes);
       const staged = new File(Paths.document, 'tvtime-importing.zip');
       if (staged.exists) staged.delete();
       setMeta('importPending', '');

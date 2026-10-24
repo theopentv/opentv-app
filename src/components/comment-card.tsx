@@ -20,7 +20,7 @@
  * which is the failure nobody sees until it is too late.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Image as ExpoImage } from 'expo-image';
+import { Image as ExpoImage, type ImageProps as ExpoImageProps } from 'expo-image';
 import { useState } from 'react';
 import { type ImageSourcePropType, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -47,7 +47,7 @@ export type CommentCardProps = {
   /** Display name, drawn as written — no `@` is added. */
   author: string;
   /** Remote avatar, else the first letter of `author` on a plain circle. */
-  avatar?: ImageSourcePropType | { uri: string } | null;
+  avatar?: ExpoImageProps['source'] | null;
   /** Already formatted. The card never parses a date. */
   date: string;
   /** The pill's text. Hidden entirely when absent, for a thread that has one subject. */

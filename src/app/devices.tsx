@@ -138,7 +138,7 @@ export default function DevicesScreen() {
               <ContentColumn>
                 <Text style={styles.footer}>{t('devices.limitNote', { count: limit })}</Text>
               </ContentColumn>
-            ) : null
+            ) : undefined
           }
           renderItem={({ item }) => <DeviceRow d={item} mine={item.device === me} onRemove={() => remove(item)} />}
         />

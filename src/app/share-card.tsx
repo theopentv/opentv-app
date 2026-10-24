@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Alert, Dimensions, PixelRatio, Pressable, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { NavHeader, Screen } from '@/components/ui';
@@ -132,7 +132,7 @@ export default function ShareCardScreen() {
      *  comes from the row. */
     poster?: string;
   }>();
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewInstance>(null);
 
   const isMovie = type === 'movie';
   const isEpisode = type === 'episode';

@@ -153,7 +153,7 @@ export default function TogetherScreen() {
           ) : undefined
         }
         ListHeaderComponent={header}
-        ListEmptyComponent={rows == null && joined ? <ActivityIndicator color={colors.yellow} style={{ marginTop: 20 }} /> : null}
+        ListEmptyComponent={rows == null && joined ? <ActivityIndicator color={colors.yellow} style={{ marginTop: 20 }} /> : undefined}
         renderItem={({ item }) => (
           <ListCollage
             list={{

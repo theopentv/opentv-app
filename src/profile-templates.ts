@@ -252,7 +252,7 @@ export async function bannerToDocuments(banner: number | string): Promise<string
   } else if (typeof banner === 'string') {
     const res = await fetch(banner);
     if (!res.ok) throw new Error('download failed');
-    dest.write(new Uint8Array(await res.arrayBuffer()));
+    dest.writeSync(new Uint8Array(await res.arrayBuffer()));
   } else {
     const asset = await Asset.fromModule(banner).downloadAsync();
     new File(asset.localUri ?? asset.uri).copy(dest);
@@ -542,7 +542,7 @@ export async function serverTemplates(): Promise<ServerTemplate[]> {
         if (!file.exists) {
           const res = await fetch(tpl.banner);
           if (!res.ok) return null;
-          file.write(new Uint8Array(await res.arrayBuffer()));
+          file.writeSync(new Uint8Array(await res.arrayBuffer()));
         }
         return { ...tpl, banner: file.uri };
       } catch {

@@ -92,7 +92,7 @@ export async function syncWidgets(): Promise<void> {
       for (let i = 0; i < payload.movies.length; i++) {
         payload.movies[i].thumb = await thumb(thumbs, payload.movies[i].poster, `mv-${i}.jpg`);
       }
-      new File(group, 'widget-data.json').write(JSON.stringify(payload));
+      new File(group, 'widget-data.json').writeSync(JSON.stringify(payload));
       /*
        * SIRI'S INDEX, WRITTEN ON THE SAME BEAT. It answers "which show did they
        * say" and goes stale for exactly the same reason the widget payload

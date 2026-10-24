@@ -7,7 +7,7 @@ import { Alert, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } 
 import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
-import { FlatList, Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
+import { LegacyFlatList as FlatList, Gesture, GestureDetector, LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

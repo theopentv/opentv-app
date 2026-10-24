@@ -94,9 +94,9 @@ export function CommentsList({
                 </Pressable>
               )}
             </View>
-          ) : null
+          ) : undefined
         }
-        ListFooterComponent={ListFooterComponent}
+        ListFooterComponent={ListFooterComponent ?? undefined}
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={{ fontSize: 40 }}>💬</Text>

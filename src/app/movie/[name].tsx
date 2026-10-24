@@ -6,7 +6,7 @@ import { Alert, I18nManager, Linking, Pressable, StyleSheet, View, useWindowDime
 import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
-import { GestureDetector, ScrollView } from 'react-native-gesture-handler';
+import { GestureDetector, LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

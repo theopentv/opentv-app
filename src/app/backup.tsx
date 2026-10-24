@@ -72,7 +72,7 @@ async function exportJson() {
     const name = `opentv-backup-${new Date().toISOString().slice(0, 10)}.json`;
     const file = new File(Paths.cache, name);
     if (file.exists) file.delete();
-    file.write(JSON.stringify(exportAll()));
+    file.writeSync(JSON.stringify(exportAll()));
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: name });
     }

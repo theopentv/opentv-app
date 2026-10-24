@@ -167,7 +167,7 @@ export default function SharedListsScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.dim} />}
           contentContainerStyle={{ padding: space.md, paddingBottom: 60, gap: 8 }}
           ListHeaderComponent={
-            error ? <Text style={styles.error}>{error}</Text> : null
+            error ? <Text style={styles.error}>{error}</Text> : undefined
           }
           ListEmptyComponent={
             <View style={styles.empty}>

@@ -22,9 +22,9 @@
  * of whether to show it is read during render, not in an effect.
  */
 import { router } from 'expo-router';
-import { InteractionManager } from 'react-native';
 import { useSyncExternalStore } from 'react';
 
+import { runAfterInteractions } from '@/after-interactions';
 import { maybePrefetchAggregates } from '@/community-prefetch';
 import { pushDisplayName, syncDisplayName } from '@/community-profiles';
 import { ownTvTimeId, maybeReconcileFriends, seedEverything } from '@/community-seed';
@@ -246,7 +246,7 @@ export async function retryHandleClaim(): Promise<void> {
    * documents: a push issued while the navigator is still settling its initial
    * route is made and then lost.
    */
-  InteractionManager.runAfterInteractions(() => router.push('/handle'));
+  runAfterInteractions(() => router.push('/handle'));
 }
 
 export async function claimImportedHandle(): Promise<boolean> {

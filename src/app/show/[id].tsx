@@ -3,7 +3,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated as RNAnimated, Easing as RNEasing, FlatList, I18nManager, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { GestureType } from 'react-native-gesture-handler';
-import { Gesture, GestureDetector, ScrollView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
 import Animated, {
   Extrapolation,
   FadeIn,

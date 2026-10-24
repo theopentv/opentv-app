@@ -22,7 +22,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { RatingsGrid } from '@/components/ratings-grid';
@@ -46,8 +46,8 @@ export default function RatingsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const tvdbId = Number(id);
   const [tab, setTab] = useState<(typeof TABS)[number]>('Overview');
-  const mineCard = useRef<View>(null);
-  const theirsCard = useRef<View>(null);
+  const mineCard = useRef<ViewInstance>(null);
+  const theirsCard = useRef<ViewInstance>(null);
 
   /*
    * Read ONCE per mount rather than on every render. Nothing on this screen
@@ -453,7 +453,7 @@ function GridSection({
  * only in a real build, and a screen that imported them at the top would not
  * load at all in a JS-only environment.
  */
-async function shareCard(ref: React.RefObject<View | null>): Promise<void> {
+async function shareCard(ref: React.RefObject<ViewInstance | null>): Promise<void> {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { captureRef } = require('react-native-view-shot') as typeof import('react-native-view-shot');

@@ -931,7 +931,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
       </View>
       {tab === 'commsuni' && !deciding && <BoardBanner board={shared} part="both" />}
     </View>
-  ) : null;
+  ) : undefined;
 
   const renderOwn = (row: Row) => (
           <CommentRow

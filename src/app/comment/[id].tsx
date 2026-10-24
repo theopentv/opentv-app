@@ -21,7 +21,7 @@
  */
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, type TextInput, View } from 'react-native';
+import { type TextInputInstance, ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, type TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -105,7 +105,7 @@ export default function CommentScreen() {
   const [spoiler, setSpoiler] = useState(false);
   const [sending, setSending] = useState(false);
   const attach = useCommentAttachment();
-  const inputRef = useRef<TextInput | null>(null);
+  const inputRef = useRef<TextInputInstance | null>(null);
 
   const patch = (target: string, fn: (x: Comment) => Comment) => {
     setRoot((prev) => (prev != null && prev !== 'missing' && prev.id === target ? fn(prev) : prev));
@@ -270,7 +270,7 @@ export default function CommentScreen() {
           ListFooterComponent={
             root.reply_count > 0 && replies.length === 0 ? (
               <ActivityIndicator style={styles.spinner} color={colors.dim} />
-            ) : null
+            ) : undefined
           }
         />
         {/* Every post here answers the comment at the top, so no reply bar. */}

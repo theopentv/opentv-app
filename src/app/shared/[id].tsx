@@ -459,7 +459,7 @@ export default function SharedListScreen() {
           />
         }
         ListEmptyComponent={
-          together ? null : (
+          together ? undefined : (
             <View style={styles.empty}>
               <Text style={styles.emptyTitle}>{t('shared.noItemsTitle')}</Text>
               <Text style={styles.blurb}>{t('shared.noItemsBody')}</Text>
@@ -469,7 +469,7 @@ export default function SharedListScreen() {
         ListFooterComponent={
           !together && list.items.length > 0 ? (
             <Text style={styles.note}>{t('listDetail.itemsCountFull', { count: list.items.length })}</Text>
-          ) : null
+          ) : undefined
         }
         renderItem={({ item }) => {
           const ticked = me != null && item.watched_by.includes(me.id);

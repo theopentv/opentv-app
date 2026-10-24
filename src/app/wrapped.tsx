@@ -35,7 +35,7 @@ import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useRef, useState, type RefObject } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Alert, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { type ViewInstance, Alert, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -153,7 +153,7 @@ export default function WrappedScreen() {
   // every card from the simulator; harmless from anywhere else.
   const [index, setIndex] = useState(() => Math.max(0, Number(params.slide ?? 0) || 0));
   const [picking, setPicking] = useState(false);
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewInstance>(null);
   const topInset = useTopInset();
 
   // Swipe down to dismiss. A plain pan, not `useSwipeDown` — that one is
@@ -427,7 +427,7 @@ function demoData(d: Wrapped, mode: string | undefined): Wrapped {
 /** The closing card, as a PNG, through the same view-shot + Share path the
  *  Deep Stats card already uses. No new dependency, and both cards fail the
  *  same way on a build whose native module predates them. */
-async function shareCard(cardRef: RefObject<View | null>): Promise<void> {
+async function shareCard(cardRef: RefObject<ViewInstance | null>): Promise<void> {
   tapLight();
   try {
     // lazy-load: both need the native module from the latest build

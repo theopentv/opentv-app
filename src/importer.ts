@@ -504,7 +504,7 @@ export async function pickAndImport(
     let stagedOk = false;
     try {
       if (staged.exists) staged.delete();
-      staged.write(bytes);
+      staged.writeSync(bytes);
       stagedOk = true;
     } catch {
       // out of disk — resume won't be possible for this run
@@ -546,7 +546,7 @@ export async function pickAndImport(
       if (isTvTimeExport(bytes)) {
         const orig = new File(Paths.document, 'tvtime-original.zip');
         if (orig.exists) orig.delete();
-        orig.write(bytes);
+        orig.writeSync(bytes);
       }
       if (staged.exists) staged.delete();
       setMeta('importPending', '');
@@ -868,7 +868,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     if (!name || name.includes('/') || name.includes('..')) continue;
     try {
       const f = new File(Paths.document, name);
-      if (!f.exists) f.write(files[key]);
+      if (!f.exists) f.writeSync(files[key]);
     } catch {
       // out of disk or an unwritable name — the relink repair just won't find it
     }

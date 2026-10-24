@@ -26,9 +26,10 @@
  * No push either way: a push would need our server.
  */
 import * as Device from 'expo-device';
-import { InteractionManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import ICloud from '../modules/icloud-drive';
+import { runAfterInteractions } from '@/after-interactions';
 import { dropOps, getMeta, notifyRemoteChange, pendingOps, setApplyingRemote, setMeta } from '@/db';
 import { deviceId } from '@/device-id';
 import { pickDeviceName } from '@/devices';
@@ -234,7 +235,7 @@ function seedFor(via: Via): Seed {
  */
 async function takeBackup(via: Via): Promise<number | null> {
   await new Promise<void>((resolve) => {
-    InteractionManager.runAfterInteractions(() => resolve());
+    runAfterInteractions(() => resolve());
   });
   const seed = seedFor(via);
   let at: number | null;

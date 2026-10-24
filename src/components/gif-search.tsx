@@ -339,7 +339,7 @@ export async function saveGif(hit: GifHit, prefix: 'widget-gif' | 'profile-cover
   const res = await fetch(hit.full);
   const buf = new Uint8Array(await res.arrayBuffer());
   const name = `${prefix}-${Date.now()}.gif`;
-  new File(Paths.document, name).write(buf);
+  new File(Paths.document, name).writeSync(buf);
   return name;
 }
 

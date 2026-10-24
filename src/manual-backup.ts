@@ -62,7 +62,7 @@ export async function shareLibraryExport(): Promise<boolean> {
   const name = `opentv-export-${new Date().toISOString().slice(0, 10)}.zip`;
   const file = new File(Paths.cache, name);
   if (file.exists) file.delete();
-  file.write(buildTvTimeZip());
+  file.writeSync(buildTvTimeZip());
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Sharing = require('expo-sharing') as typeof import('expo-sharing');

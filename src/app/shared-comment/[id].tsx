@@ -297,7 +297,7 @@ export default function SharedCommentScreen() {
                 )}
               </>
             }
-            ListEmptyComponent={root.replyCount > 0 && replies === null ? <ActivityIndicator style={styles.spinner} color={colors.dim} /> : null}
+            ListEmptyComponent={root.replyCount > 0 && replies === null ? <ActivityIndicator style={styles.spinner} color={colors.dim} /> : undefined}
             renderItem={({ item }) => (
               <View>
                 <Card c={item} reply mine={mine.has(item.id) || item.id.startsWith('local-')} revealed={revealed.has(item.id)} onReveal={() => reveal(item.id)} onMenu={menuFor(item)} onReply={() => openWriter(item)} />

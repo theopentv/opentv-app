@@ -394,7 +394,7 @@ export default function CoverPickerScreen() {
       const old = getMeta('coverFile');
       const dest = new File(Paths.document, name);
       if (dest.exists) dest.delete();
-      dest.write(bytes);
+      dest.writeSync(bytes);
       setMeta('coverFile', name);
       setMeta('coverUrl', path);
       /*

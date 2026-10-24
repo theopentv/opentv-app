@@ -16,7 +16,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
-import { Alert, FlatList, I18nManager, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { type ScrollViewInstance, Alert, FlatList, I18nManager, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 
 import { track } from '@/analytics';
 import { pushWidgets } from '@/community-profiles';
@@ -83,7 +83,7 @@ export default function YearlyGoalScreen() {
   // A PAST YEAR IS A RECORD, NOT A FORM. Opened from "Past years", it shows its
   // rings and what counted, and no fields: the year is over (12 Oct).
   const pastYear = year < thisYear;
-  const scroller = useRef<ScrollView>(null);
+  const scroller = useRef<ScrollViewInstance>(null);
   // Lazy initial reads, like every switch in Settings: the React Compiler
   // memoises a render-time store read and would freeze these at first paint.
   const [on, setOn] = useState(() => goalOn());

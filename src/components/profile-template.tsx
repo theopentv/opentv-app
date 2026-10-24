@@ -48,7 +48,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Image } from 'expo-image';
+import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
@@ -144,7 +144,7 @@ export type ProfileListSpec = {
 export type ProfileTemplateProps = {
   /** A photo from disk or the network. Falls back to `coverSource`, then plain. */
   coverUri?: string | null;
-  coverSource?: ImageSourcePropType | null;
+  coverSource?: ImageProps['source'] | null;
   /** Which part of the banner shows, and whether a GIF banner is tall. Null: centred. */
   coverFrame?: CoverFrame | null;
   /** The owner's own tab: the banner follows the adjuster while it is open. */

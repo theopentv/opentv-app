@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { useRef } from 'react';
-import { Alert, Dimensions, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 
 import { NavHeader, Screen } from '@/components/ui';
 import seed from '@/seed';
@@ -63,7 +63,7 @@ const DOODLES = [
 ] as const;
 
 export default function ShareProfileScreen() {
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewInstance>(null);
   const username = getMeta('username') ?? seed.profile.username;
   const totals = getTotals();
   const movies = getMovieTotals();

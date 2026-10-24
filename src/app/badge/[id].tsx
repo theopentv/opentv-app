@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef } from 'react';
-import { Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
+import { type ViewInstance, Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import badgesJson from '@/data/badges.json';
@@ -64,7 +64,7 @@ function longDate(iso?: string | null): string | null {
 export default function BadgeScreen() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const cardRef = useRef<View>(null);
+  const cardRef = useRef<ViewInstance>(null);
 
   const app = badges.app.find((b) => b.id === id);
   const watch = badges.watch.find((b) => b.id === id);

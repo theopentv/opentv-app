@@ -268,7 +268,7 @@ export default function FixMatchScreen() {
                       ? t('fixMatch.emptyNoShowMatches')
                       : t('fixMatch.emptyNoResults')}
                 </Text>
-              ) : null
+              ) : undefined
             }
             renderItem={({ item }) => (
               <Pressable accessibilityRole="button" style={styles.row} onPress={() => void choose(item)}>

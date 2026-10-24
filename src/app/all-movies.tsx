@@ -135,7 +135,7 @@ export default function AllMoviesScreen() {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           ListEmptyComponent={
-            query.trim() ? <Text style={styles.empty}>{t('allMovies.noMatches', { query: query.trim() })}</Text> : null
+            query.trim() ? <Text style={styles.empty}>{t('allMovies.noMatches', { query: query.trim() })}</Text> : undefined
           }
           contentContainerStyle={{ paddingBottom: 70 }}
           renderSectionHeader={({ section }) => (

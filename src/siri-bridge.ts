@@ -185,7 +185,7 @@ export function writeSiriIndex(): void {
       return { name: m.name, year: m.year, watchedAt: m.watchedAt, en: t.en, alt };
     });
 
-    new File(group, INDEX_FILE).write(
+    new File(group, INDEX_FILE).writeSync(
       JSON.stringify({ updatedAt: new Date().toISOString(), shows, movies }),
     );
   } catch {
