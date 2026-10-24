@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatCommentDate } from '@/components/comment-card';
 import { CommentsList } from '@/components/comments-list';
+import { StripClose } from '@/components/strip-close';
 import { CONTENT_MAX_WIDTH, NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import seed from '@/seed';
 import db, { addOwnComment, countSeedableCommentRows, dedupeOwnComments, getComments, getMeta, getMovie, setMeta } from '@/db';
@@ -681,13 +682,17 @@ export default function CommentsScreen() {
         </Pressable>
       )}
       <Modal visible={canWriteLocally && writing} animationType="slide" presentationStyle="fullScreen" onRequestClose={() => setWriting(false)}>
+        <StripClose enabled={besideStrip} onClose={() => setWriting(false)}>
         <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8, paddingLeft: insets.left, paddingRight: insets.right }]} behavior="padding">
-          <View style={styles.writeHead}>
-            <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('a11y.close')} onPress={() => setWriting(false)}>
-              <Ionicons name="close" size={26} color={colors.text} />
-            </Pressable>
-            {!besideStrip && postButton}
-          </View>
+          {/* beside the strip the ✕ is a native one, in the strip (StripClose) */}
+          {!besideStrip && (
+            <View style={styles.writeHead}>
+              <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('a11y.close')} onPress={() => setWriting(false)}>
+                <Ionicons name="close" size={26} color={colors.text} />
+              </Pressable>
+              {postButton}
+            </View>
+          )}
           <TextInput
             style={styles.writeInput}
             value={draft}
@@ -722,6 +727,7 @@ export default function CommentsScreen() {
             {besideStrip && postButton}
           </View>
         </KeyboardAvoidingView>
+        </StripClose>
       </Modal>
 
       {/* own-comment / share sheets, like the real app */}

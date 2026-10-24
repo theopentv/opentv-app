@@ -24,6 +24,7 @@
  */
 import type { BoardTarget, SharedComment } from '@/commsuni';
 import { BoardBanner, BoardMore, ConsentSheet, SharedRow, useBoard, useReport } from '@/components/commsuni-board';
+import { StripClose } from '@/components/strip-close';
 import { decision as commsuniDecision, share as shareToCommsuni, sharingOn } from '@/commsuni';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
@@ -1081,19 +1082,28 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
           setWriting(false);
           setReplyTo(null);
         }}>
+        <StripClose
+          enabled={besideStrip}
+          onClose={() => {
+            setWriting(false);
+            setReplyTo(null);
+          }}>
         <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8, paddingLeft: insets.left, paddingRight: insets.right }]} behavior="padding">
-          <View style={styles.writeHead}>
-            <Pressable accessibilityRole="button"
-              hitSlop={12}
-              accessibilityLabel={t('community.comments.closeWriting')}
-              onPress={() => {
-                setWriting(false);
-                setReplyTo(null);
-              }}>
-              <Ionicons name="close" size={26} color={colors.text} />
-            </Pressable>
-            {!besideStrip && postButton}
-          </View>
+          {/* beside the strip the ✕ is a native one, in the strip (StripClose) */}
+          {!besideStrip && (
+            <View style={styles.writeHead}>
+              <Pressable accessibilityRole="button"
+                hitSlop={12}
+                accessibilityLabel={t('community.comments.closeWriting')}
+                onPress={() => {
+                  setWriting(false);
+                  setReplyTo(null);
+                }}>
+                <Ionicons name="close" size={26} color={colors.text} />
+              </Pressable>
+              {postButton}
+            </View>
+          )}
           {replyTo && (
             <Text style={styles.writeReplying} numberOfLines={1}>
               {t('community.comments.replyingTo', { handle: replyTo.author.handle })}
@@ -1158,6 +1168,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
             {besideStrip && postButton}
           </View>
         </KeyboardAvoidingView>
+        </StripClose>
         {attach.ui}
       </Modal>
 
