@@ -47,7 +47,6 @@ import { notifyKindEnabled } from '@/notifications';
 import { memoryFor, memorySentence } from '@/on-this-day';
 import { localDayStamp, memoryDismissed, type MemoryEvent } from '@/pure';
 import { colors, space } from '@/theme';
-import { openDetail } from '@/components/split';
 
 /** The day today's memory was last put away. A date, not a flag — see
  *  `memoryDismissed`. */
@@ -98,8 +97,8 @@ export function MemoryCard() {
   const open = () => {
     if (memory.kind === 'comment') router.push('/comments');
     else if (memory.kind === 'episode')
-      openDetail(`/episode/${memory.showId}-s${memory.season}e${memory.episode}`);
-    else openDetail(`/show/${memory.showId}`);
+      router.push(`/episode/${memory.showId}-s${memory.season}e${memory.episode}`);
+    else router.push(`/show/${memory.showId}`);
     // Read and acted on. It has done its job for today.
     dismiss();
   };

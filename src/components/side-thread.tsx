@@ -12,7 +12,7 @@
  * page would be a pitch, not their comments. Folding the phone shut puts the
  * page back to full width and its Comments row back where it was.
  */
-import { use, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { KeyboardAvoidingView, StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import type { ThreadTarget } from '@/community-comments';
@@ -20,7 +20,6 @@ import { useJoined } from '@/community-session';
 import { CommentThread } from '@/components/comment-thread';
 import { Text } from '@/components/text';
 import { PillButton, useDetailWidth, useTopInset } from '@/components/ui';
-import { PaneContext } from '@/split-context';
 import { getWatch } from '@/db';
 import { t } from '@/i18n';
 import { boardTargetFor, commentsSplitLayout } from '@/pure';
@@ -31,9 +30,7 @@ import { colors, space } from '@/theme';
 export function useCommentsSplit(): { pageW: number; threadW: number } | null {
   const joined = useJoined();
   const layout = commentsSplitLayout(useWindowDimensions().width);
-  // Not inside a list|detail pane: the pane is already one of two columns.
-  const inPane = use(PaneContext) != null;
-  return joined && layout.split && !inPane ? layout : null;
+  return joined && layout.split ? layout : null;
 }
 
 /** `useDetailWidth`, narrowed to the page's half while the comments are beside it.

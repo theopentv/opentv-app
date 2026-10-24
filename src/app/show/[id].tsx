@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated as RNAnimated, Easing as RNEasing, FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -25,7 +25,7 @@ import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, headerItems, moreMenuItem, PaneBar, TopTabs, useDetailNav, useDetailPaneStyle, useDetailParams, useDetailWidth } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatched, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatched } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -103,9 +103,7 @@ export default function ShowScreen() {
   const winW = useDetailWidth();
   // Read once per page: the season does not change while a page is open.
   const [season] = useState(() => currentLook(isPlus()));
-  const { id, tmdbId } = useDetailParams<{ id: string; tmdbId?: string }>();
-  // Close, open and replace act on the list|detail pane when the page is drawn in one.
-  const nav = useDetailNav();
+  const { id, tmdbId } = useLocalSearchParams<{ id: string; tmdbId?: string }>();
   const tvdbId = Number(id);
 
   // metadata for shows outside the bundle arrives from TMDB at runtime
@@ -131,7 +129,7 @@ export default function ShowScreen() {
   useEffect(() => {
     if (dbShow) return;
     const to = Number(getMeta(`showRemap:${tvdbId}`));
-    if (Number.isFinite(to) && to > 0 && to !== tvdbId) nav.replace(`/show/${to}`);
+    if (Number.isFinite(to) && to > 0 && to !== tvdbId) router.replace(`/show/${to}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -268,7 +266,7 @@ export default function ShowScreen() {
     return list;
   }, [show, tick]);
 
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: !nav.inPane, onDismiss: nav.inPane ? nav.close : undefined });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
   // the horizontal carousel is a native scroll view that grabs vertical drags
@@ -579,7 +577,7 @@ export default function ShowScreen() {
       const tvdb = await showTvdbIdForTmdb(sim.tmdbId);
       // TheTVDB genuinely may not carry it — say so rather than absorb the tap
       // a second time, which is the bug this whole block replaces.
-      if (tvdb) nav.open(`/show/${tvdb}`);
+      if (tvdb) router.push(`/show/${tvdb}`);
       else Alert.alert(sim.name ?? '', t('show.notOnTvdb'));
     } finally {
       setBusySimilar(null);
@@ -684,13 +682,9 @@ export default function ShowScreen() {
         )}
         {/* The same native close as the loaded page, so it does not jump from
             the iPhone Duo's strip to the top-left while the show loads. */}
-        {nav.inPane ? (
-          <PaneBar />
-        ) : (
-          <Stack.Screen
-            options={{ headerShown: true, headerTransparent: true, title: '', headerTintColor: colors.onArt, ...headerItems({ left: [closeItem()] }) }}
-          />
-        )}
+        <Stack.Screen
+          options={{ headerShown: true, headerTransparent: true, title: '', headerTintColor: colors.onArt, ...headerItems({ left: [closeItem()] }) }}
+        />
       </View>
     );
   }
@@ -841,7 +835,7 @@ export default function ShowScreen() {
                 style: 'destructive',
                 onPress: () => {
                   deleteShow(show.tvdbId);
-                  nav.close();
+                  router.back();
                 },
               },
               { text: t('common.cancel'), style: 'cancel' },
@@ -857,19 +851,15 @@ export default function ShowScreen() {
     <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
       <SplitPage split={split}>
       {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
-      {nav.inPane ? (
-        <PaneBar right={[moreMenuItem(showActions())]} />
-      ) : (
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTransparent: true,
-            title: '',
-            headerTintColor: colors.onArt,
-            ...headerItems({ left: [closeItem()], right: [moreMenuItem(showActions())] }),
-          }}
-        />
-      )}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: '',
+          headerTintColor: colors.onArt,
+          ...headerItems({ left: [closeItem()], right: [moreMenuItem(showActions())] }),
+        }}
+      />
       {/* The backdrop runs under the status bar, so its glyphs follow the
           artwork rather than the page — dark-on-dark otherwise. */}
       <StatusBarOnCover />
@@ -1569,7 +1559,7 @@ export default function ShowScreen() {
                     accessibilityLabel={[t('a11y.seasonEpisode', { season: picked.season, episode: picked.episode }), em?.title].filter(Boolean).join(', ')}
                     onPress={() => {
                       tapSelection();
-                      nav.open(`/episode/${show.tvdbId}-s${picked.season}e${picked.episode}`);
+                      router.push(`/episode/${show.tvdbId}-s${picked.season}e${picked.episode}`);
                     }}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.chartPickCode}>
@@ -1785,7 +1775,7 @@ export default function ShowScreen() {
                 <Pressable
                   style={[styles.carCard, { width: CARD_W }]}
                   accessible={false} importantForAccessibility="no"
-                  onPress={() => nav.open(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
+                  onPress={() => router.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
                   <View style={styles.carThumb} {...a11yHidden()}>
                     {em?.still ? (
                       <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -2105,7 +2095,7 @@ export default function ShowScreen() {
                         key={epNum}
                         style={styles.epRow}
                         accessible={false} importantForAccessibility="no"
-                        onPress={() => nav.open(`/episode/${show.tvdbId}-s${sr.season}e${epNum}`)}>
+                        onPress={() => router.push(`/episode/${show.tvdbId}-s${sr.season}e${epNum}`)}>
                         <View style={styles.epThumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -2344,7 +2334,6 @@ function ExtremeRow({
   air?: string | null;
   still?: string | null;
 }) {
-  const extremeNav = useDetailNav();
   return (
     <Pressable
       style={styles.extremeRow}
@@ -2361,7 +2350,7 @@ function ExtremeRow({
         .join(', ')}
       onPress={() => {
         tapSelection();
-        extremeNav.open(`/episode/${showId}-s${season}e${episode}`);
+        router.push(`/episode/${showId}-s${season}e${episode}`);
       }}>
       {/* THE STILL, because a season's best episode is recognised before it is
           read. A show whose artwork never downloaded gets the badge alone

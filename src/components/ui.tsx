@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useLocalSearchParams, useRoute } from 'expo-router';
+import { router, Stack, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
 import { cloneElement, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
@@ -8,7 +8,6 @@ import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';
-import { ColumnContext, PaneContext } from '@/split-context';
 import { COMMENTS_SPLIT_MIN_W } from '@/pure';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { track } from '@/analytics';
@@ -43,28 +42,7 @@ export function useTopInset(): number {
 export function useScreenWidth(): number {
   const { width } = useWindowDimensions();
   const { left, right } = useSafeAreaInsets();
-  // Inside a list|detail column (components/split) the room is the column's.
-  const column = use(ColumnContext);
-  return column ? column.width : width - left - right;
-}
-
-/** Whether the iPhone Duo's strip runs down the right edge, where iOS puts
- *  native bar buttons. ponytail: inferred from an inset only on the right (a
- *  landscape iPhone's notch insets both sides); read toolbarVerticalEdge
- *  through a native module if another device ever matches. */
-export function useHasStrip(): boolean {
-  const { left, right } = useSafeAreaInsets();
-  return Platform.OS === 'ios' && right > left;
-}
-
-/** The left/right safe-area padding this screen owns. A column of a
- *  list|detail split owns only the edges of the window it touches: the list
- *  keeps the left inset, the pane beside it the right one (the Duo's strip). */
-export function useSideInsets(): { left: number; right: number } {
-  const { left, right } = useSafeAreaInsets();
-  const column = use(ColumnContext);
-  if (!column) return { left, right };
-  return { left: column.padLeft ? left : 0, right: column.padRight ? right : 0 };
+  return width - left - right;
 }
 
 /** Black full-height screen with a safe top inset. */
@@ -77,7 +55,7 @@ export function Screen({ children }: { children: ReactNode }) {
   // The iPhone Duo's clock strip runs down one side when it is closed. The
   // native header reaches it (that is how its buttons get into the strip), so
   // the content keeps clear here instead. 0 on every other iPhone in portrait.
-  const { left, right } = useSideInsets();
+  const { left, right } = useSafeAreaInsets();
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: headerHeight || topInset, paddingLeft: left, paddingRight: right }}>
       {children}
@@ -266,11 +244,9 @@ const ION_FOR_SF: Record<string, keyof typeof Ionicons.glyphMap> = {
  */
 export function headerItems({ left, right }: { left?: NativeStackHeaderItem[]; right?: NativeStackHeaderItem[] }) {
   if (Platform.OS === 'ios') {
-    // Only the sides given: a screen whose header another component also
-    // sets (a tab's SplitHost adds the pane's close) must not wipe that side.
     return {
-      ...(left?.length ? { unstable_headerLeftItems: () => left } : {}),
-      ...(right?.length ? { unstable_headerRightItems: () => right } : {}),
+      unstable_headerLeftItems: left?.length ? () => left : undefined,
+      unstable_headerRightItems: right?.length ? () => right : undefined,
     };
   }
   return {
@@ -322,33 +298,6 @@ function DrawnItem({ item }: { item: NativeStackHeaderItem }) {
 }
 
 
-/**
- * Close and ⋯ for a detail page drawn in a list|detail pane. The pane is part
- * of a tab screen, so the page has no native header of its own: these are
- * drawn over its backdrop instead, below the tab's own header when it has one
- * (Profile). Renders nothing outside a pane.
- */
-export function PaneBar({ right }: { right?: NativeStackHeaderItem[] }) {
-  const pane = use(PaneContext);
-  const headerHeight = use(HeaderHeightContext) ?? 0;
-  const topInset = useTopInset();
-  const strip = useHasStrip();
-  if (!pane) return null;
-  const close: NativeStackHeaderItem = {
-    type: 'button',
-    label: t('a11y.close'),
-    icon: { type: 'sfSymbol', name: 'xmark' },
-    onPress: pane.close,
-  };
-  return (
-    <View style={[s.paneBar, { top: (headerHeight || topInset) + 4 }]} pointerEvents="box-none">
-      {/* On the Duo the close is a native button in the strip (SplitHost) */}
-      {strip ? <View /> : <DrawnItems items={[close]} />}
-      {right?.length ? <DrawnItems items={right} /> : <View />}
-    </View>
-  );
-}
-
 /** The close button of a page that slides up: top of the strip on the Duo. */
 export function closeItem(): NativeStackHeaderItem {
   return { type: 'button', label: t('a11y.close'), icon: { type: 'sfSymbol', name: 'chevron.down' }, onPress: () => router.back() };
@@ -395,39 +344,13 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  *  placed it beside the list is off -- see design/iphone-duo/PLAN.md, Phase 4. */
 export function useDetailPaneStyle(): ViewStyle | null {
   const { left, right } = useSafeAreaInsets();
-  // In a list|detail pane the pane itself keeps clear of the strip.
-  if (use(PaneContext)) return null;
   return left || right ? { paddingLeft: left, paddingRight: right } : null;
 }
 
-/** The width a detail page lays out in: its pane beside the list, or the
- *  window less the Duo's strip. The episode pager sizes each page from this. */
+/** The width a detail page lays out in: the window less the Duo's strip. The
+ *  episode pager sizes each page from this. */
 export function useDetailWidth(): number {
-  const screenW = useScreenWidth();
-  const pane = use(PaneContext);
-  return pane ? pane.width : screenW;
-}
-
-/** The page's route params: from its pane when it is drawn beside a list,
- *  from the route otherwise. The three detail pages read their id here. */
-export function useDetailParams<T extends Record<string, string | undefined>>(): T {
-  const route = useLocalSearchParams();
-  const pane = use(PaneContext);
-  return (pane ? pane.params : route) as T;
-}
-
-/** Navigation for a detail page, wherever it is drawn. In a pane, closing goes
- *  one level back in the pane and opening stacks in it; as a route, these are
- *  the router's back / push / replace. */
-export function useDetailNav(): { inPane: boolean; close: () => void; open: (href: string) => void; replace: (href: string) => void } {
-  const pane = use(PaneContext);
-  if (pane) return { inPane: true, close: pane.close, open: pane.open, replace: pane.replace };
-  return {
-    inPane: false,
-    close: () => router.back(),
-    open: (href) => router.push(href as never),
-    replace: (href) => router.replace(href as never),
-  };
+  return useScreenWidth();
 }
 
 /** TV Time's underline text tabs — WATCH LIST | UPCOMING.
@@ -861,7 +784,6 @@ const s = StyleSheet.create({
   // minWidth, not width: this holds words as often as icons ("Reorder"), and
   // the title beside it gives up the room.
   navRight: { minWidth: 40, height: 34, alignItems: 'flex-end', justifyContent: 'center', flexShrink: 0 },
-  paneBar: { position: 'absolute', left: 0, right: 0, zIndex: 20, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 },
   topTabs: { flexDirection: 'row' },
   tabHairline: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: colors.line },
   topTab: { flex: 1, alignItems: 'center', paddingVertical: 14 },

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
 import { runOnJS, useAnimatedStyle, useSharedValue, withDelay, withSequence, withSpring, withTiming } from 'react-native-reanimated';
@@ -35,20 +35,9 @@ import { nextAtTop, shouldDismissOnPull } from '@/pure';
  * so this hook's header pan is off there. The pull past the top of the content
  * stays on: it is what closed a page from over its content in 2.0.0, and the
  * system swipe never reaches a touch an inner scroll view has taken.
- *
- * `onDismiss`: what leaving does, when it is not `router.back()`. A page drawn
- * in a list|detail pane closes the pane; going back there would pop the tab.
  */
-export function useSwipeDown({ native = false, onDismiss }: { native?: boolean; onDismiss?: () => void } = {}) {
+export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
   const translateY = useSharedValue(0);
-  // In a ref, read through one stable function: the pane hands a new `close`
-  // every render, and a new one in `makePan`'s deps would rebuild the gestures
-  // mid-touch (see the arming timestamp below).
-  const dismissRef = useRef(onDismiss);
-  useEffect(() => {
-    dismissRef.current = onDismiss;
-  });
-  const leave = useCallback(() => (dismissRef.current ?? router.back)(), []);
   const screenH = useWindowDimensions().height;
   /*
    * THE ARMING TIMESTAMP IS A SHARED VALUE, NOT STATE, AND THAT IS A BUG FIX.
@@ -146,7 +135,7 @@ export function useSwipeDown({ native = false, onDismiss }: { native?: boolean; 
              */
             if (!dismissing.value) {
               dismissing.value = true;
-              runOnJS(leave)();
+              runOnJS(router.back)();
             }
             /*
              * ON DOWN, FROM WHERE THE FINGER LET GO. This sprang the screen back
@@ -166,7 +155,7 @@ export function useSwipeDown({ native = false, onDismiss }: { native?: boolean; 
           // that flashed the screen behind.
           translateY.value = withSpring(0, { damping: 26, stiffness: 300, overshootClamping: true });
         }),
-    [translateY, dismissible, armedAt, screenH, leave],
+    [translateY, dismissible, armedAt, screenH],
   );
 
   // ARMING DELAY. atTop alone is not enough: several screens set it directly
@@ -208,12 +197,12 @@ export function useSwipeDown({ native = false, onDismiss }: { native?: boolean; 
     // Same guard as the fling, and it has to be the SAME one: either path
     // committing must stop the other.
     if (shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
-      leave();
+      router.back();
       return;
     }
     setAtTop(nextAtTop(atTop.current, y <= 2, scrolling.current));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable boxes only
-  }, [commitDismiss, leave]);
+  }, [commitDismiss]);
 
   const onScrollBeginDrag = () => {
     scrolling.current = true;

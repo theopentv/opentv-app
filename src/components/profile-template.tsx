@@ -52,7 +52,7 @@ import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
-import { CONTENT_MAX_WIDTH, useScreenWidth, useSideInsets } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, useScreenWidth } from '@/components/ui';
 import { Poster } from '@/components/poster';
 import { PosterRail, SectionHeader, StatsGrid, StatsRail, type RailItem, type StatCard } from '@/components/profile-sections';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -515,8 +515,6 @@ export function ProfileTemplate({
   const RAIL_W = CONTENT_W - space.lg;
   const LIST_TILE_W = listTileWidth(W);
   const insets = useSafeAreaInsets();
-  // The side insets this page owns: in a list|detail column, only its own edge's.
-  const side = useSideInsets();
 
   // TV Time's collapsing cover: pinned over the content, it shrinks from the
   // full banner to a compact bar; avatar fades out, the centred name fades in.
@@ -1056,7 +1054,7 @@ export function ProfileTemplate({
     themeColor != null ? mixHex(washTop, pageColor, Math.min(1, Math.max(0, y) / WASH_H)) : pageColor;
 
   return (
-    <View style={{ flex: 1, backgroundColor: pageColor, paddingLeft: side.left, paddingRight: side.right }}>
+    <View style={{ flex: 1, backgroundColor: pageColor, paddingLeft: insets.left, paddingRight: insets.right }}>
       {/*
         * ONLY WHILE THIS SCREEN IS THE ONE YOU ARE LOOKING AT.
         *

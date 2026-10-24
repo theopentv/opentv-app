@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
@@ -19,7 +19,7 @@ import { CommunityRating } from '@/components/rating-breakdown';
 import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, headerItems, PaneBar, useDetailNav, useDetailPaneStyle, useDetailParams } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, useDetailPaneStyle, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -169,8 +169,6 @@ function EpisodePage({
   /** A neighbour the pager keeps mounted but is not showing — see the pager. */
   offscreen?: boolean;
 }) {
-  // Opening the show acts on the list|detail pane when the page is drawn in one.
-  const pageNav = useDetailNav();
   const insets = useSafeAreaInsets();
   // real watch state from the database — toggling writes back to it
   const existing = show ? getWatch(show.tvdbId, season, ep) : null;
@@ -701,7 +699,7 @@ function EpisodePage({
                 that is not in the library — it falls back to fetched metadata —
                 so guarding on the library row here made the pill inert for
                 exactly the shows somebody most wants to look up. */}
-            <Pressable style={styles.showPill} onPress={() => tvdbId && pageNav.open(`/show/${tvdbId}`)} accessibilityRole="button" accessibilityLabel={showName}>
+            <Pressable style={styles.showPill} onPress={() => tvdbId && router.push(`/show/${tvdbId}`)} accessibilityRole="button" accessibilityLabel={showName}>
               <Text style={styles.showPillText} numberOfLines={1}>
                 {showName.toUpperCase()} ›
               </Text>
@@ -1122,8 +1120,7 @@ export default function EpisodePagerScreen() {
   // the pane's width when beside the list, the window's otherwise
   const W = usePageWidth();
   const split = useCommentsSplit();
-  const { id } = useDetailParams<{ id: string }>();
-  const nav = useDetailNav();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   // ids look like "72454-s1e2" — resolve the show from the library first
   // (imported/added shows), falling back to the bundled seed (demo library)
@@ -1184,7 +1181,7 @@ export default function EpisodePagerScreen() {
   const dotStart = Math.min(Math.max(index - 2, 0), Math.max(episodes.length - dotCount, 0));
 
   const insets = useSafeAreaInsets();
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: !nav.inPane, onDismiss: nav.inPane ? nav.close : undefined });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
 
@@ -1314,18 +1311,14 @@ export default function EpisodePagerScreen() {
         <SplitPage split={split}>
         {/* Native, transparent: its close button goes into the iPhone Duo's strip.
             The pager dots below stay in the same row, centred under it. */}
-        {nav.inPane ? (
-          <PaneBar />
-        ) : (
-          <Stack.Screen
-            options={{
-              headerShown: true,
-              headerTransparent: true,
-              title: '',
-              ...headerItems({ left: [closeItem()] }),
-            }}
-          />
-        )}
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            title: '',
+            ...headerItems({ left: [closeItem()] }),
+          }}
+        />
         {/* header right under the status bar: close + pager dots — it never
             scrolls, so dragging it down always dismisses */}
         <GestureDetector gesture={headerGesture}>
