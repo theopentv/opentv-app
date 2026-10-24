@@ -196,7 +196,10 @@ export function NavHeader({
  */
 export function useDetailPaneStyle(): ViewStyle | null {
   const { paned, width } = detailPaneLayout(useWindowDimensions().width);
-  if (!paned) return null;
+  const { left, right } = useSafeAreaInsets();
+  // Full screen, the page keeps clear of the iPhone Duo's clock strip (0
+  // everywhere else) -- the same room `useDetailWidth` gives it.
+  if (!paned) return left || right ? { paddingLeft: left, paddingRight: right } : null;
   return {
     width,
     alignSelf: 'flex-end',
@@ -221,8 +224,9 @@ export function useDetailPaneStyle(): ViewStyle | null {
  */
 export function useDetailWidth(): number {
   const w = useWindowDimensions().width;
+  const { left, right } = useSafeAreaInsets();
   const { paned, width } = detailPaneLayout(w);
-  return paned ? width : w;
+  return paned ? width : w - left - right;
 }
 
 /** TV Time's underline text tabs — WATCH LIST | UPCOMING.
