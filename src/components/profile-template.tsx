@@ -25,6 +25,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   type ImageSourcePropType,
+  Platform,
   Pressable,
   StyleSheet,
   View,
@@ -527,7 +528,16 @@ export function ProfileTemplate({
   const overlay = coverFrame?.strength ?? 1;
   /** Smooth edge: the banner melts into the page, ending exactly at its line. */
   const fadeMode = coverFrame?.fade === true && (coverUri != null || coverSource != null);
-  const BAR = insets.top + 52;
+  /*
+   * NO PINNED BAR BESIDE THE iPHONE DUO'S STRIP. There iOS moves every bar to
+   * the side so the content reaches the top edge — height is the scarce thing
+   * on that screen — and the bell and ⋯ are already in the strip. A 52pt band
+   * kept at the top only to repeat the name spent exactly that height, so the
+   * cover scrolls away entirely instead. The strip is inferred from an inset
+   * on the right only (a landscape iPhone's notch insets both sides).
+   */
+  const besideStrip = Platform.OS === 'ios' && insets.right > insets.left;
+  const BAR = besideStrip ? 0 : insets.top + 52;
   const RANGE = FULL - BAR;
 
   const plusUi = usePlusUi();
