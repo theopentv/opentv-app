@@ -8,6 +8,7 @@ import {
   type ImageSourcePropType,
   KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   Share,
   StyleSheet,
@@ -205,6 +206,10 @@ export default function CommentsScreen() {
   /** The writing page is open (the ✎, like the community thread's). */
   const [writing, setWriting] = useState(false);
   const insets = useSafeAreaInsets();
+  /* Beside the iPhone Duo's strip POST goes to the bottom row: this Modal is
+     outside the bars iOS moves into the strip, so top-right sat under the
+     camera. Same rule as the community thread's writing page. */
+  const besideStrip = Platform.OS === 'ios' && insets.right > insets.left;
 
   const pickLocalImage = async (): Promise<void> => {
     // The same guard `comment-attachment` uses: in a build without the native
@@ -560,6 +565,19 @@ export default function CommentsScreen() {
     [shown, username, seedLib, archiveReady],
   );
 
+  const postButton = (
+    <Pressable
+      accessibilityRole="button"
+      disabled={!canSendLocal}
+      style={[styles.post, !canSendLocal && styles.localSendOff]}
+      onPress={() => {
+        setWriting(false);
+        void sendLocal();
+      }}>
+      <Text style={styles.postText}>{t('createTopic.post')}</Text>
+    </Pressable>
+  );
+
   return (
     <Screen>
       {/* OWNER ONLY. This screen is only ever the phone owner's own archive —
@@ -663,21 +681,12 @@ export default function CommentsScreen() {
         </Pressable>
       )}
       <Modal visible={canWriteLocally && writing} animationType="slide" presentationStyle="fullScreen" onRequestClose={() => setWriting(false)}>
-        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior="padding">
+        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8, paddingLeft: insets.left, paddingRight: insets.right }]} behavior="padding">
           <View style={styles.writeHead}>
             <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('a11y.close')} onPress={() => setWriting(false)}>
               <Ionicons name="close" size={26} color={colors.text} />
             </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              disabled={!canSendLocal}
-              style={[styles.post, !canSendLocal && styles.localSendOff]}
-              onPress={() => {
-                setWriting(false);
-                void sendLocal();
-              }}>
-              <Text style={styles.postText}>{t('createTopic.post')}</Text>
-            </Pressable>
+            {!besideStrip && postButton}
           </View>
           <TextInput
             style={styles.writeInput}
@@ -709,6 +718,8 @@ export default function CommentsScreen() {
             <Pressable hitSlop={8} style={styles.attachBtn} onPress={() => void pickLocalImage()} accessibilityRole="button" accessibilityLabel={t('a11y.attachImage')}>
               <Ionicons name={localImage ? 'image' : 'image-outline'} size={19} color={localImage ? colors.yellow : colors.dim} />
             </Pressable>
+            {besideStrip && <View style={{ flex: 1 }} />}
+            {besideStrip && postButton}
           </View>
         </KeyboardAvoidingView>
       </Modal>

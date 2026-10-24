@@ -986,6 +986,25 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
     );
   }
 
+  /* POST BESIDE THE iPHONE DUO'S STRIP GOES TO THE BOTTOM. The writing page is
+     a full-screen Modal, outside the navigation bars iOS moves into the strip,
+     so a POST in the top-right corner sat under the camera. Beside the strip it
+     joins the tools above the keyboard; everywhere else it stays top-right.
+     The strip is inferred from an inset on the right only. */
+  const besideStrip = Platform.OS === 'ios' && insets.right > insets.left;
+  const postButton = (
+    <Pressable accessibilityRole="button"
+      disabled={!canSend || sending}
+      style={[styles.post, (!canSend || sending) && styles.sendOff]}
+      onPress={() => {
+        void send();
+        setWriting(false);
+        setReplyTo(null);
+      }}>
+      {sending ? <ActivityIndicator size="small" color={colors.onYellow} /> : <Text style={styles.postText}>{t('createTopic.post')}</Text>}
+    </Pressable>
+  );
+
   return (
     <View style={styles.fill}>
       <FlatList<Item>
@@ -1062,7 +1081,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
           setWriting(false);
           setReplyTo(null);
         }}>
-        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior="padding">
+        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8, paddingLeft: insets.left, paddingRight: insets.right }]} behavior="padding">
           <View style={styles.writeHead}>
             <Pressable accessibilityRole="button"
               hitSlop={12}
@@ -1073,16 +1092,7 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
               }}>
               <Ionicons name="close" size={26} color={colors.text} />
             </Pressable>
-            <Pressable accessibilityRole="button"
-              disabled={!canSend || sending}
-              style={[styles.post, (!canSend || sending) && styles.sendOff]}
-              onPress={() => {
-                void send();
-                setWriting(false);
-                setReplyTo(null);
-              }}>
-              {sending ? <ActivityIndicator size="small" color={colors.onYellow} /> : <Text style={styles.postText}>{t('createTopic.post')}</Text>}
-            </Pressable>
+            {!besideStrip && postButton}
           </View>
           {replyTo && (
             <Text style={styles.writeReplying} numberOfLines={1}>
@@ -1144,6 +1154,8 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
                 {t('community.comments.spoilerToggle')}
               </Text>
             </Pressable>
+            {besideStrip && <View style={{ flex: 1 }} />}
+            {besideStrip && postButton}
           </View>
         </KeyboardAvoidingView>
         {attach.ui}
