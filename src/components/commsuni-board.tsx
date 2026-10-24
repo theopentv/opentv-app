@@ -33,6 +33,7 @@ import { formatCount } from '@/locale-resolve';
 import { colors, radius, space } from '@/theme';
 import { sharedAuthorName } from '@/pure';
 import { sharedPicture as pictureOf } from '@/components/shared-picture';
+import { useScreenWidth } from '@/components/ui';
 
 const COMMSUNI_URL = 'https://commsuni.tv';
 const ARCHIVE_URL = 'https://tvtime-archive.com';
@@ -375,6 +376,8 @@ export function useReport(onHidden: (id: string) => void) {
 }
 
 export function SharedRow({ c, onMenu }: { c: SharedComment; onMenu?: () => void }) {
+  // The picture fits the room left after the iPhone Duo's strip.
+  const screenW = useScreenWidth();
   const [revealed, setRevealed] = useState(false);
   const open = () => {
     tapLight();
@@ -389,7 +392,7 @@ export function SharedRow({ c, onMenu }: { c: SharedComment; onMenu?: () => void
       entity={c.origin.displayName || null}
       body={c.text}
       translate={offerTranslate(c.language) ? { cacheKey: `cu:${c.id}`, run: () => translateShared(c.id, c.text, c.language) } : undefined}
-      image={pictureOf(c)}
+      image={pictureOf(c, screenW)}
       likes={c.likes}
       replies={c.replyCount}
       spoiler={c.isSpoiler}

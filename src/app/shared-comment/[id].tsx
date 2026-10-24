@@ -49,7 +49,7 @@ import { useAndroidKeyboardUp } from '@/components/comment-thread';
 import { GifSearch } from '@/components/gif-search';
 import { isPlus, usePaywallOverModal, usePlusUi } from '@/plus';
 import { Image } from 'expo-image';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { tapLight, tapSelection } from '@/haptics';
 import { t } from '@/i18n';
 import { colors, radius, space } from '@/theme';
@@ -82,6 +82,8 @@ function Card({
   /** Your own reply: nothing to translate. */
   mine?: boolean;
 }) {
+  // The picture fits the room left after the iPhone Duo's strip.
+  const screenW = useScreenWidth();
   const card = (
     <CommentCard
       author={sharedAuthorName(c.author.name)}
@@ -90,7 +92,7 @@ function Card({
       entity={c.origin.displayName || null}
       body={c.text}
       translate={!mine && offerTranslate(c.language) ? { cacheKey: `cu:${c.id}`, run: () => translateShared(c.id, c.text, c.language) } : undefined}
-      image={pictureOf(c)}
+      image={pictureOf(c, screenW)}
       likes={c.likes}
       replies={c.replyCount}
       spoiler={c.isSpoiler}
