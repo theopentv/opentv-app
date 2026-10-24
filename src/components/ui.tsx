@@ -161,6 +161,9 @@ export function NavHeader({
         headerTitleStyle: { color: colors.text },
         headerShadowVisible: false,
         headerBackButtonDisplayMode: 'minimal',
+        // Long-pressing back lists the screens behind by title, and the tab
+        // container's is its route name, "(tabs)". One step back is all we need.
+        headerBackButtonMenuEnabled: false,
         // A sheet has no screen to go back to, so it gets a native close button.
         unstable_headerLeftItems: close
           ? () => [
