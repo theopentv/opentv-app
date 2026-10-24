@@ -52,7 +52,7 @@ import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
-import { CONTENT_MAX_WIDTH, useScreenWidth } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, useScreenWidth } from '@/components/ui';
 import { Poster } from '@/components/poster';
 import { PosterRail, SectionHeader, StatsGrid, StatsRail, type RailItem, type StatCard } from '@/components/profile-sections';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -506,7 +506,7 @@ export function ProfileTemplate({
   children,
 }: ProfileTemplateProps) {
   const W = useScreenWidth();
-  const CONTENT_W = Math.min(W, CONTENT_MAX_WIDTH);
+  const CONTENT_W = Math.min(W, PROFILE_MAX_WIDTH);
   /** The room inside a block: the page, less the margin on each side. Rails are
    *  sized from this and clipped to it, so nothing can reach the screen edge. */
   const BLOCK_W = CONTENT_W - 2 * space.lg;
@@ -1391,7 +1391,7 @@ export function ProfileTemplate({
               style={{
                 height: Math.max(cursor, editing ? m.height(1) + BLOCK_GAP : 0),
                 width: '100%',
-                maxWidth: CONTENT_MAX_WIDTH,
+                maxWidth: PROFILE_MAX_WIDTH,
                 alignSelf: 'center',
                 // NOT SHOWN UNTIL EVERY BLOCK HAS BEEN MEASURED. Until then the
                 // content-sized ones sit at a guessed height, and the first

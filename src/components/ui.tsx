@@ -73,6 +73,12 @@ export function Screen({ children }: { children: ReactNode }) {
  *  must not be merged into one. */
 export const CONTENT_MAX_WIDTH = 700;
 
+/** The profile's cap: wider than the reading cap, so the open iPhone Duo
+ *  (867pt) and an iPad mini get the whole width. Blocks and stats grow with
+ *  it; posters keep their size (posterWidth stays on CONTENT_MAX_WIDTH), so a
+ *  wider page shows more of a shelf rather than bigger posters. */
+export const PROFILE_MAX_WIDTH = 900;
+
 /**
  * THE GRID'S UNITS. Two columns, and every block is a whole number of them.
  *
@@ -100,7 +106,7 @@ const CELL_ASPECT = 1.25;
 export type BlockSpan = '1x1' | '2x1' | '2x2';
 
 export function gridMetrics(pageWidth: number) {
-  const block = Math.min(pageWidth, CONTENT_MAX_WIDTH) - 2 * 16;
+  const block = Math.min(pageWidth, PROFILE_MAX_WIDTH) - 2 * 16;
   const col = (block - GRID_GUTTER) / 2;
   const row = Math.round(col / CELL_ASPECT);
   return {

@@ -20,7 +20,7 @@ import { Text } from '@/components/text';
 import { ArrangingContext } from '@/components/profile-arrange';
 import { useContext } from 'react';
 
-import { CONTENT_MAX_WIDTH, GRID_GUTTER, gridMetrics, useScreenWidth } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, GRID_GUTTER, PROFILE_MAX_WIDTH, gridMetrics, useScreenWidth } from '@/components/ui';
 import { Poster, posterSpeech } from '@/components/poster';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -561,7 +561,7 @@ export function StatsRail({
    * stat ran straight off the edge. A component told how much room it has
    * should not go behind the caller's back to ask the window.
    */
-  const col = (Math.min(contentWidth, CONTENT_MAX_WIDTH) - GRID_GUTTER) / 2;
+  const col = (Math.min(contentWidth, PROFILE_MAX_WIDTH) - GRID_GUTTER) / 2;
   // TV Time's rail: a short, wide card (~106pt at 430pt), not a 1x1 square.
   // Widths are unchanged, so the cards still line up with the grid below.
   const row = Math.round(col * 0.55);
