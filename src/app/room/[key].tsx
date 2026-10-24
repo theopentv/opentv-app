@@ -292,12 +292,13 @@ export default function RoomScreen() {
             <NavHeader
               title={title}
               close
-              right={
-                live ? (
-                  <Text style={styles.count} accessibilityLabel={t('room.watching', { count: view.watching })}>
-                    {`${view.watching} 👁`}
-                  </Text>
-                ) : null
+              // The count as a badge on a symbol, not text beside one: text
+              // keeps an item out of the iPhone Duo's strip, a badged symbol
+              // goes in, and a badge is what a count looks like on iOS.
+              items={
+                live
+                  ? [{ type: 'button', label: t('room.watching', { count: view.watching }), icon: { type: 'sfSymbol', name: 'eye' }, badge: { value: view.watching }, onPress: () => {} }]
+                  : undefined
               }
             />
             {live && view.faces.length > 0 && (
@@ -390,7 +391,6 @@ export default function RoomScreen() {
 }
 
 const styles = StyleSheet.create({
-  count: { color: colors.text, fontSize: 15, fontWeight: '700' },
   faces: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6, paddingHorizontal: space.lg, paddingBottom: space.md },
   more: { color: colors.dim, fontSize: 14, fontWeight: '700', marginStart: 4 },
   notice: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 14, paddingHorizontal: space.xxl },

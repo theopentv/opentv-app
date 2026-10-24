@@ -8,9 +8,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { t } from '@/i18n';
+import { COMMENTS_SPLIT_MIN_W } from '@/pure';
 import { colors, radius, space } from '@/theme';
 
 export type SheetAction = {
@@ -42,8 +43,23 @@ export function ActionSheet({
    *  sheet with no actions, and wants this one's slide, backdrop and close. */
   children?: ReactNode;
 }) {
-  const insets = useSafeAreaInsets();
-  const { height } = useWindowDimensions();
+  // Inside a Modal the safe-area context reads zero (see useTopInset in
+  // ui.tsx); initialWindowMetrics is filled natively and survives it. On the
+  // closed iPhone Duo the trailing inset is the 84pt clock strip -- without it
+  // the end of every row (the green checkmark) sat under the strip.
+  const live = useSafeAreaInsets();
+  const init = initialWindowMetrics?.insets;
+  const insets = {
+    top: live.top || init?.top || 0,
+    bottom: live.bottom || init?.bottom || 0,
+    left: live.left || init?.left || 0,
+    right: live.right || init?.right || 0,
+  };
+  const { width, height } = useWindowDimensions();
+  // A SHEET STAYS IN ONE HALF on a wide screen (open iPhone Duo, iPad): the
+  // fold runs down the middle, and a system sheet slides aside from it. Ours
+  // keeps to the trailing half, the thumb side and where the strip already is.
+  const oneHalf = width >= COMMENTS_SPLIT_MIN_W;
   // Modal's own "slide" would drag the backdrop up with the sheet, showing its
   // top edge — so the sheet slides while the backdrop only fades.
   const slide = useRef(new Animated.Value(1)).current;
@@ -72,6 +88,9 @@ export function ActionSheet({
       <Animated.View
         style={[
           styles.sheet,
+          oneHalf
+            ? { width: Math.min(Math.round(width / 2) - insets.right, 420), right: insets.right, left: undefined, borderTopLeftRadius: 16, borderTopRightRadius: 16 }
+            : { paddingLeft: insets.left, paddingRight: insets.right },
           {
             paddingBottom: Math.max(insets.bottom, 14),
             // a long list (sixteen Wrapped periods) scrolls inside the sheet

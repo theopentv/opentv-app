@@ -134,7 +134,7 @@ export default function AllShowsScreen() {
 
   return (
     <Screen>
-      <NavHeader title={t('allShows.title')} right={<Ionicons name="eye-outline" size={20} color={colors.yellow} />} />
+      <NavHeader title={t('allShows.title')} />
       {/* THE OTHER SHELF WORTH POSTING. Favourites are curation and change
           once a year; what you have just watched changes every week, which is
           what makes it worth a card. Hidden under two, because no grid tiles
