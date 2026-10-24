@@ -129,7 +129,7 @@ function cappedFavouriteMovies(): ReturnType<typeof getFavoriteMovies> {
 }
 
 function shelfShows(): LocalTitle[] {
-  // Byte for byte the tab's `recentShows` — see app/(tabs)/profile.tsx.
+  // Byte for byte the tab's `recentShows` — see app/(tabs)/profile/index.tsx.
   const recent = getShowProgress()
     .filter((sp) => (sp.lastWatchedAt ?? sp.addedAt) != null)
     .sort(

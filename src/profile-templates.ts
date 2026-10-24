@@ -213,7 +213,7 @@ export const TEMPLATES: readonly Template[] = [
 export const TEMPLATE_LAYOUT = 'templateLayout';
 export const TEMPLATE_NAME = 'templateName';
 
-/** The same four the profile tab draws (see `(tabs)/profile.tsx`). */
+/** The same four the profile tab draws (see `(tabs)/profile/index.tsx`). */
 const SHELF_KEYS = ['shows', 'fav-shows', 'movies', 'fav-movies'];
 
 /** The template's blocks as an arrangement, in order, each at its size. */

@@ -28,7 +28,7 @@
  * honest rendering (see `components/person-row.tsx`).
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -53,7 +53,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { type RailItem } from '@/components/profile-sections';
 import { asProfileLayout, ProfileTemplate, type ProfileListSpec } from '@/components/profile-template';
 import { newUid, parsePublished, type Placed } from '@/profile-layout';
-import { NavHeader, Screen } from '@/components/ui';
+import { closeItem, moreMenuItem, NavHeader, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { currentLocale, monthYear, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -537,23 +537,6 @@ export default function PublicProfileScreen() {
           </Pressable>
         )
       }
-      // This screen is a modal, so the bell's place in the bar is the way out
-      // of it. The tab has no such control because a tab cannot be dismissed.
-      barLeft={
-        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.close')} hitSlop={10} onPress={() => router.back()}>
-          <Ionicons name="chevron-down" size={22} color={colors.text} />
-        </Pressable>
-      }
-      // The ••• of design/referance/52-user-profile-sarah-menu.png. Absent on
-      // your own profile: blocking or reporting yourself is not a thing, and a
-      // menu whose every item is inapplicable is worse than no menu.
-      barRight={
-        !isSelf && joined ? (
-          <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.more')} hitSlop={10} onPress={() => setMenu(true)}>
-            <Ionicons name="ellipsis-horizontal" size={22} color={colors.text} />
-          </Pressable>
-        ) : undefined
-      }
       intro={
         <>
           {detail && p.bio != null && p.bio.length > 0 && <Text style={styles.bio}>{p.bio}</Text>}
@@ -670,6 +653,19 @@ export default function PublicProfileScreen() {
             ].filter((sh) => !hidden(SHELF_SECTION[sh.key]))
           : []
       }>
+      {/* Native, transparent over the cover: close (the way out of this pushed
+          screen) and the ••• go into the iPhone Duo's strip. No ••• on your own
+          profile -- blocking or reporting yourself is not a thing. */}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: '',
+          headerTintColor: colors.text,
+          unstable_headerLeftItems: () => [closeItem()],
+          unstable_headerRightItems: !isSelf && joined ? () => [moreMenuItem(profileActions)] : undefined,
+        }}
+      />
       <ActionSheet
         visible={menu}
         title={`@${p.handle}`}

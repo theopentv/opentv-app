@@ -3,7 +3,7 @@
  *
  * WHY THIS FILE EXISTS. `renderWidget` draws the widgets, and the Add sheet can
  * simply call it. The page's own sections — the heatmap, Stats, Lists, the
- * shelves — are built inside `(tabs)/profile.tsx` and handed to the template as
+ * shelves — are built inside `(tabs)/profile/index.tsx` and handed to the template as
  * slots, because there they carry that screen's navigation: tapping a poster
  * opens the show, tapping Lists opens the Lists screen. Nothing outside that
  * screen can produce one.

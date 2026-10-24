@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -76,8 +76,8 @@ import { formatCount, formatPeriod } from '@/locale-resolve';
 const { profile } = seed;
 
 // your real TV Time cover + avatar, rescued from the export into the bundle
-const COVER = require('../../../assets/profile/cover.jpg');
-const AVATAR = require('../../../assets/profile/avatar.jpg');
+const COVER = require('../../../../assets/profile/cover.jpg');
+const AVATAR = require('../../../../assets/profile/avatar.jpg');
 
 // Profile is the one screen NOT wrapped in ContentColumn: it is a dashboard of
 // bands and shelves with no prose to protect, so a 700pt column would leave
@@ -1433,25 +1433,6 @@ export default function ProfileScreen() {
       // until a relaunch — on the one screen where the new colour is already
       // everywhere else. Reading the profile theme here makes the header agree
       // with the page under it immediately.
-      barLeft={
-        <Pressable
-          style={[styles.bell, plus && themeColor != null && { backgroundColor: themeColor }]}
-          accessibilityRole="button"
-          accessibilityLabel={t('a11y.inbox')}
-          onPress={() => router.push('/inbox')}>
-          <Ionicons
-            name="notifications-outline"
-            size={21}
-            color={plus && themeColor != null ? onAccent(themeColor) : colors.onYellow}
-          />
-        </Pressable>
-      }
-      barRight={
-        <Pressable hitSlop={8} onPress={() => router.push('/profile-menu')} accessibilityRole="button" accessibilityLabel={t('a11y.more')}>
-          {/* On the cover, like the bell opposite it — see `colors.onArt`. */}
-          <Ionicons name="ellipsis-horizontal" size={22} color={colors.onArt} />
-        </Pressable>
-      }
       banners={banners}
       cells={[
         {
@@ -1651,6 +1632,35 @@ export default function ProfileScreen() {
           onPress={() => router.push('/search')}
         />
       )}
+      {/* Native, transparent over the cover: the bell (inbox) and the ⋯ go into
+          the iPhone Duo's strip. The bell keeps its yellow -- or the profile's
+          theme colour, the moment it changes. */}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: '',
+          headerTintColor: colors.onArt,
+          unstable_headerLeftItems: () => [
+            {
+              type: 'button',
+              label: t('a11y.inbox'),
+              icon: { type: 'sfSymbol', name: 'bell' },
+              variant: 'prominent',
+              tintColor: plus && themeColor != null ? themeColor : colors.yellow,
+              onPress: () => router.push('/inbox'),
+            },
+          ],
+          unstable_headerRightItems: () => [
+            {
+              type: 'button',
+              label: t('a11y.more'),
+              icon: { type: 'sfSymbol', name: 'ellipsis' },
+              onPress: () => router.push('/profile-menu'),
+            },
+          ],
+        }}
+      />
     </ProfileTemplate>
   );
 }
