@@ -1,51 +1,25 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 // TV Time's own two: a set with an antenna, and a clapperboard.
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Tabs } from 'expo-router';
+import { VectorIcon } from 'expo-router';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { runAfterInteractions } from '@/after-interactions';
 import { offerBackupIfDue } from '@/backup-prompt';
 import { offerCommunityIfDue } from '@/community-prompt';
 import { tapSelection } from '@/haptics';
 import { isNotifyScreenOwed } from '@/session-store';
-import { remountOnLocale, t, useLocale } from '@/i18n';
+import { t, useLocale } from '@/i18n';
 import { colors } from '@/theme';
 import { WhatsNew } from '@/whats-new';
-
-/** TV Time's tab icons are about a third larger than the library's 24. */
-const TAB_ICON = 30;
-
-/** Every tab remounts on a language switch — see `remountOnLocale`. */
-const SCREEN_LAYOUT = remountOnLocale();
 
 export default function TabsLayout() {
   // THE TAB LABELS STAYED IN THE OLD LANGUAGE (15 Oct): this layout never
   // unmounts, nothing re-rendered it after a switch, and the compiler had
   // cached its t() calls besides. It listens for the change and is not memoised.
   'use no memo';
-  useLocale();
-  /*
-   * THE NAVIGATION BAR WAS SITTING ON THE TAB LABELS.
-   *
-   * Expo draws Android edge-to-edge, so the app owns the strip the system
-   * buttons are painted over and has to keep out of it itself. It did not: on
-   * a phone with three-button navigation, back/home/recents landed directly on
-   * "Shows", "Movies" and "Explore" — unreadable, and the tabs under them hard
-   * to hit. Never seen because nothing in this app had been run on Android.
-   *
-   * iOS TOO, and this is where it went wrong for a year. The note here said
-   * iOS's tab bar "already clears the home indicator" — it does, but only at
-   * its own height. The fixed `height: 58` below overrode it, so the bar's
-   * home-indicator padding was squeezed INSIDE those 58 points: the icons and
-   * the labels sat crammed against the bottom edge, and next to TV Time's
-   * (design/referance/03-movies-watchlist.png) the whole bar read small and
-   * low (developer, 14 Oct). Both platforms now add the inset to the height.
-   */
-  const insets = useSafeAreaInsets();
-  const bottom = insets.bottom;
+  const locale = useLocale();
   // The community offer for everyone who imported before this update existed
   // — and, one screen later, for the user who has just finished an import
   // through the notification opt-in. `offerCommunityIfDue` stamps its own flag
@@ -70,75 +44,46 @@ export default function TabsLayout() {
   }, []);
 
   /*
-   * "Profile, tab, 5 of 5" WITH FOUR TABS ON SCREEN. The tab bar counts its
-   * routes, and the hidden `index` (href: null) is one of them — and it says
-   * "tab" and "of" in English whatever the app's language. So each tab names
-   * its own place among the four that are drawn, in the reader's language,
-   * through the same string the screens' own tab rows use. iOS only, as the
-   * library's own label is; TalkBack counts the tabs itself.
+   * NATIVE TABS since 2.0.1. A JS tab bar stays a row at the bottom of the
+   * iPhone Duo's outer screen; a native one is what iOS moves into the strip
+   * beside the clock. The native bar also counts and names its own tabs to
+   * VoiceOver in the reader's language, which the old bar had to be told
+   * (the hidden `index` route is not a tab at all here). TV Time's own icons
+   * stay, drawn through VectorIcon.
    */
-  const tabLabel = (label: string, n: number) =>
-    Platform.OS === 'ios' ? t('a11y.tabOf', { label, n, total: 4 }) : undefined;
-
   return (
     <>
     <WhatsNew />
-    <Tabs
-      screenLayout={SCREEN_LAYOUT}
+    <NativeTabs
+      // Every tab remounts on a language switch, as `remountOnLocale` does for the
+      // stack: NativeTabs has no screenLayout, so the whole bar is keyed instead.
+      key={locale}
+      tintColor={colors.text}
+      iconColor={{ default: colors.faint, selected: colors.text }}
+      labelStyle={{ default: { color: colors.faint }, selected: { color: colors.text } }}
+      backgroundColor={colors.bg}
       // The bottom bar is a row of tabs like any other, and ticks like them
       // (14 Oct): every tab row in the app goes through `tapSelection`.
-      screenListeners={{ tabPress: () => tapSelection() }}
-      screenOptions={{
-        headerShown: false,
-        sceneStyle: { backgroundColor: colors.bg },
-        tabBarStyle: {
-          backgroundColor: colors.bg,
-          borderTopColor: colors.line,
-          // TV Time's proportions: a taller band above the inset, the icon
-          // larger than the label, a little air above the icon.
-          height: 60 + bottom,
-          paddingTop: 6,
-          paddingBottom: bottom,
-        },
-        tabBarActiveTintColor: colors.text,
-        tabBarInactiveTintColor: colors.faint,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '500', marginTop: 2 },
-      }}>
-      {/* "/" only redirects to Explore — hidden from the tab bar */}
-      <Tabs.Screen name="index" options={{ href: null }} />
-      <Tabs.Screen
-        name="shows"
-        options={{
-          title: t('tabBar.shows'),
-          tabBarAccessibilityLabel: tabLabel(t('tabBar.shows'), 1),
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="television-classic" size={TAB_ICON} color={color as string} />,
-        }}
-      />
-      <Tabs.Screen
-        name="movies"
-        options={{
-          title: t('tabBar.movies'),
-          tabBarAccessibilityLabel: tabLabel(t('tabBar.movies'), 2),
-          tabBarIcon: ({ color }) => <MaterialCommunityIcons name="movie-open-outline" size={TAB_ICON} color={color as string} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: t('tabBar.explore'),
-          tabBarAccessibilityLabel: tabLabel(t('tabBar.explore'), 3),
-          tabBarIcon: ({ color }) => <Ionicons name="search" size={TAB_ICON} color={color as string} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: t('tabBar.profile'),
-          tabBarAccessibilityLabel: tabLabel(t('tabBar.profile'), 4),
-          tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={TAB_ICON} color={color as string} />,
-        }}
-      />
-    </Tabs>
+      screenListeners={{ tabPress: () => tapSelection() }}>
+      {/* "/" only redirects to the opening tab — never shown as a tab */}
+      <NativeTabs.Trigger name="index" hidden />
+      <NativeTabs.Trigger name="shows">
+        <NativeTabs.Trigger.Icon src={<VectorIcon family={MaterialCommunityIcons} name="television-classic" />} />
+        <NativeTabs.Trigger.Label>{t('tabBar.shows')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="movies">
+        <NativeTabs.Trigger.Icon src={<VectorIcon family={MaterialCommunityIcons} name="movie-open-outline" />} />
+        <NativeTabs.Trigger.Label>{t('tabBar.movies')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="explore">
+        <NativeTabs.Trigger.Icon src={<VectorIcon family={Ionicons} name="search" />} />
+        <NativeTabs.Trigger.Label>{t('tabBar.explore')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <NativeTabs.Trigger.Icon src={<VectorIcon family={Ionicons} name="person-outline" />} />
+        <NativeTabs.Trigger.Label>{t('tabBar.profile')}</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
     </>
   );
 }

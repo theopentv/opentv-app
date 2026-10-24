@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -399,6 +400,8 @@ export default function ShowsScreen() {
   // first tappable row, and for a free user it opened the paywall.
   const showTonight = rows.length > 0 && (plus || !tonightClosed);
   const tonightPad = showTonight ? tonightH : 0;
+  // The native tab bar floats over the list; its height is in the bottom inset.
+  const tabBarSpace = useSafeAreaInsets().bottom;
 
   return (
     <Screen>
@@ -550,7 +553,7 @@ export default function ShowsScreen() {
               <View style={{ height: 6 }} />
             </View>
           }
-          contentContainerStyle={rows.length === 0 ? { paddingBottom: 24, flexGrow: 1 } : { paddingBottom: 24, paddingTop: tonightPad }}
+          contentContainerStyle={rows.length === 0 ? { paddingBottom: 24 + tabBarSpace, flexGrow: 1 } : { paddingBottom: 24 + tabBarSpace, paddingTop: tonightPad }}
           ListEmptyComponent={
             <EmptyState
               title={t('shows.emptyTrackingTitle')}
@@ -768,7 +771,7 @@ export default function ShowsScreen() {
           style={{ backgroundColor: colors.panel }}
           data={upcoming}
           keyExtractor={(u) => `${u.showId}-${u.season}-${u.episode}`}
-          contentContainerStyle={{ paddingBottom: 90, paddingTop: tonightPad }}
+          contentContainerStyle={{ paddingBottom: 90 + tabBarSpace, paddingTop: tonightPad }}
           renderItem={({ item: u, index }) => {
             const first = index === 0 || upcoming[index - 1].air !== u.air;
             const d = new Date(`${u.air}T12:00:00`);
