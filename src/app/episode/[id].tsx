@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
@@ -19,7 +19,7 @@ import { CommunityRating } from '@/components/rating-breakdown';
 import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, ContentColumn, useDetailPaneStyle } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, useDetailPaneStyle } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -1309,13 +1309,20 @@ export default function EpisodePagerScreen() {
     <GestureDetector gesture={pan}>
       <Animated.View style={[{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }, animatedStyle, paneStyle, split && splitRow]}>
         <SplitPage split={split}>
+        {/* Native, transparent: its close button goes into the iPhone Duo's strip.
+            The pager dots below stay in the same row, centred under it. */}
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            title: '',
+            unstable_headerLeftItems: () => [closeItem()],
+          }}
+        />
         {/* header right under the status bar: close + pager dots — it never
             scrolls, so dragging it down always dismisses */}
         <GestureDetector gesture={headerGesture}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} hitSlop={10} style={{ position: 'absolute', start: 14 }} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
-            <Ionicons name="chevron-down" size={26} color={colors.text} />
-          </Pressable>
           {titleMode ? (
             <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
               {show?.name ?? ''} {headerCode}
