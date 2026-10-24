@@ -1411,7 +1411,9 @@ export default function ProfileScreen() {
           <Image source={AVATAR} style={StyleSheet.absoluteFill} contentFit="cover" />
         ) : (
           // the initial is a picture of the name, which the heading beside it reads
-          <Text style={{ color: colors.yellow, fontSize: 26, fontWeight: '800' }} {...a11yHidden()}>
+          // 45% of the circle: 26 in the classic 58pt one, 38 in the 84pt one
+          // the cards and poster layouts centre, where 26 sat lost in the middle
+          <Text style={{ color: colors.yellow, fontSize: plus && profileLayout !== 'classic' ? 38 : 26, fontWeight: '800' }} {...a11yHidden()}>
             {username[0]?.toUpperCase() ?? '?'}
           </Text>
         )
