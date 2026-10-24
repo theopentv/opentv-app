@@ -31,9 +31,10 @@ import { nextAtTop, shouldDismissOnPull } from '@/pure';
  */
 /**
  * `native`: the page is a native push whose own vertical swipe closes it (show,
- * film and episode since 2.0.1). Then neither the header drag nor the pull past
- * the top dismisses -- both would move or pop the page on top of the system's
- * gesture -- and only the at-top tracking the pages read is kept.
+ * film and episode since 2.0.1). The header drag is left to that system swipe,
+ * so this hook's header pan is off there. The pull past the top of the content
+ * stays on: it is what closed a page from over its content in 2.0.0, and the
+ * system swipe never reaches a touch an inner scroll view has taken.
  */
 export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
   const translateY = useSharedValue(0);
@@ -195,13 +196,13 @@ export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
     // pulled past the top with the finger still down — the page leaves.
     // Same guard as the fling, and it has to be the SAME one: either path
     // committing must stop the other.
-    if (!native && shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
+    if (shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
       router.back();
       return;
     }
     setAtTop(nextAtTop(atTop.current, y <= 2, scrolling.current));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable boxes only
-  }, [commitDismiss, native]);
+  }, [commitDismiss]);
 
   const onScrollBeginDrag = () => {
     scrolling.current = true;
