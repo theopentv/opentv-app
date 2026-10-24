@@ -177,6 +177,52 @@ export type SlotEdit = { editing: boolean; onCount: (n: number) => void };
  */
 export type Published = { value?: unknown };
 
+/** The grid's row on the 430pt phone the profile's sizes were set on. */
+const PHONE_GRID_ROW = gridMetrics(430).row;
+
+/** The 64pt row was sized for a phone's grid. On a wide page the box is the
+ *  grid's row, which grows with the width (2x on the open iPhone Duo), so the
+ *  rows share the whole box and the type grows with it, instead of one small
+ *  row at the top of an empty card. Type grows at half the rate: larger, not
+ *  shouted. */
+function TogetherRows({ rows, withPoster, editing }: {
+  rows: { key: string; title: string; poster: string | null; line: string; open?: () => void }[];
+  withPoster: boolean;
+  editing: boolean;
+}) {
+  const scale = Math.max(1, gridMetrics(useScreenWidth()).row / PHONE_GRID_ROW);
+  const type = 1 + (scale - 1) / 2;
+  return (
+    <View style={s.togetherList}>
+      {rows.map((r) => (
+        <Pressable
+          key={r.key}
+          // phone: capped at 64; wide: the rows share the whole box
+          style={[s.togetherRow, scale > 1 && { maxHeight: undefined }, { gap: 10 * type }]}
+          disabled={!r.open || editing}
+          onPress={r.open}
+          accessibilityRole={r.open ? 'button' : undefined}
+          accessibilityLabel={`${r.title}, ${r.line}`}>
+          {withPoster &&
+            (r.poster ? (
+              <Image source={{ uri: r.poster }} style={s.togetherPoster} contentFit="cover" />
+            ) : (
+              <View style={[s.togetherPoster, s.posterBlank]} />
+            ))}
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text style={[s.togetherName, { fontSize: 13.5 * type }]} numberOfLines={1}>
+              {r.title}
+            </Text>
+            <Text style={[s.togetherLine, { fontSize: 11.5 * type }]} numberOfLines={1}>
+              {r.line}
+            </Text>
+          </View>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 export function renderWidget(
   id: string,
   span: WidgetSpan,
@@ -362,32 +408,7 @@ export function renderWidget(
         label={t('together.title')}
         span={span}
         onLabelPress={isVisitor || slots?.editing ? undefined : () => router.push('/together')}>
-        <View style={s.togetherList}>
-          {rows.map((r) => (
-            <Pressable
-              key={r.key}
-              style={s.togetherRow}
-              disabled={!r.open || slots?.editing}
-              onPress={r.open}
-              accessibilityRole={r.open ? 'button' : undefined}
-              accessibilityLabel={`${r.title}, ${r.line}`}>
-              {!isVisitor &&
-                (r.poster ? (
-                  <Image source={{ uri: r.poster }} style={s.togetherPoster} contentFit="cover" />
-                ) : (
-                  <View style={[s.togetherPoster, s.posterBlank]} />
-                ))}
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={s.togetherName} numberOfLines={1}>
-                  {r.title}
-                </Text>
-                <Text style={s.togetherLine} numberOfLines={1}>
-                  {r.line}
-                </Text>
-              </View>
-            </Pressable>
-          ))}
-        </View>
+        <TogetherRows rows={rows} withPoster={!isVisitor} editing={!!slots?.editing} />
       </WidgetBox>
     );
   }
