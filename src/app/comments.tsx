@@ -5,8 +5,9 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  I18nManager,
   type ImageSourcePropType,
+  KeyboardAvoidingView,
+  Modal,
   Pressable,
   Share,
   StyleSheet,
@@ -14,6 +15,8 @@ import {
   TextInput,
   View,
 } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatCommentDate } from '@/components/comment-card';
 import { CommentsList } from '@/components/comments-list';
@@ -199,6 +202,9 @@ export default function CommentsScreen() {
      and the archive carries plenty; refusing one here would be this app being
      stricter about somebody's own notes than the service it replaces. */
   const canSendLocal = draft.trim().length > 0 || localImage != null;
+  /** The writing page is open (the ✎, like the community thread's). */
+  const [writing, setWriting] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const pickLocalImage = async (): Promise<void> => {
     // The same guard `comment-attachment` uses: in a build without the native
@@ -637,18 +643,56 @@ export default function CommentsScreen() {
         * is the whole point — this composer must not be the one thing on a
         * declined device that talks to a server.
         */}
+      {/*
+        * THE SAME ✎ AND WRITING PAGE AS THE COMMUNITY THREAD (25 Oct). A bar
+        * typed into at the bottom made this the one comments screen that
+        * looked and worked differently from the rest; a member's thread has
+        * the pencil and a full writing page, so this does too. Still local:
+        * `sendLocal` writes to SQLite and nothing else.
+        */}
       {canWriteLocally && (
-        <View style={styles.localComposerWrap}>
+        <Pressable
+          accessibilityRole="button"
+          style={styles.fab}
+          accessibilityLabel={t('comments.writePlaceholder')}
+          onPress={() => {
+            tapLight();
+            setWriting(true);
+          }}>
+          <Ionicons name="pencil" size={24} color={colors.onYellow} />
+        </Pressable>
+      )}
+      <Modal visible={canWriteLocally && writing} animationType="slide" presentationStyle="fullScreen" onRequestClose={() => setWriting(false)}>
+        <KeyboardAvoidingView style={[styles.writeScreen, { paddingTop: insets.top + 8 }]} behavior="padding">
+          <View style={styles.writeHead}>
+            <Pressable accessibilityRole="button" hitSlop={12} accessibilityLabel={t('a11y.close')} onPress={() => setWriting(false)}>
+              <Ionicons name="close" size={26} color={colors.text} />
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              disabled={!canSendLocal}
+              style={[styles.post, !canSendLocal && styles.localSendOff]}
+              onPress={() => {
+                setWriting(false);
+                void sendLocal();
+              }}>
+              <Text style={styles.postText}>{t('createTopic.post')}</Text>
+            </Pressable>
+          </View>
+          <TextInput
+            style={styles.writeInput}
+            value={draft}
+            onChangeText={setDraft}
+            placeholder={t('comments.writePlaceholder')}
+            accessibilityLabel={t('comments.writePlaceholder')}
+            placeholderTextColor={colors.faint}
+            multiline
+            autoFocus
+          />
           {/*
-            * THE PICTURE, AND WHAT WILL HAPPEN TO IT.
-            *
-            * Same shape as the community composer's "waiting to be reviewed"
-            * note, and for the same reason: a picture whose fate is unstated
-            * gets reported as a bug. Here the fate is different — it is not
-            * waiting for a moderator, it is on this phone and going nowhere,
-            * and the day its author joins it needs Plus to travel. Saying so
-            * at the moment of attaching beats saying it weeks later when the
-            * upload silently does not happen.
+            * THE PICTURE, AND WHAT WILL HAPPEN TO IT: on this phone and going
+            * nowhere, and the day its author joins it needs Plus to travel.
+            * Said at the moment of attaching, not weeks later.
             */}
           {localImage != null && (
             <View style={styles.attachRow}>
@@ -661,38 +705,13 @@ export default function CommentsScreen() {
               </Pressable>
             </View>
           )}
-        <View style={styles.localComposer}>
-          <Pressable hitSlop={8} style={styles.localAttach} onPress={() => void pickLocalImage()} accessibilityRole="button" accessibilityLabel={t('a11y.attachImage')}>
-            <Ionicons
-              name={localImage ? 'image' : 'image-outline'}
-              size={19}
-              color={localImage ? colors.yellow : colors.dim}
-            />
-          </Pressable>
-          <TextInput
-            style={styles.localInput}
-            value={draft}
-            onChangeText={setDraft}
-            placeholder={t('comments.writePlaceholder')}
-            accessibilityLabel={t('comments.writePlaceholder')}
-            placeholderTextColor={colors.faint}
-            multiline
-          />
-          <Pressable
-            style={[styles.localSend, !canSendLocal && styles.localSendOff]}
-            disabled={!canSendLocal}
-            accessibilityRole="button"
-            accessibilityLabel={t('support.send')}
-            onPress={() => void sendLocal()}>
-            <Ionicons
-              name={I18nManager.isRTL ? 'arrow-back' : 'arrow-forward'}
-              size={18}
-              color={colors.onYellow}
-            />
-          </Pressable>
-        </View>
-        </View>
-      )}
+          <View style={[styles.writeTools, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+            <Pressable hitSlop={8} style={styles.attachBtn} onPress={() => void pickLocalImage()} accessibilityRole="button" accessibilityLabel={t('a11y.attachImage')}>
+              <Ionicons name={localImage ? 'image' : 'image-outline'} size={19} color={localImage ? colors.yellow : colors.dim} />
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
 
       {/* own-comment / share sheets, like the real app */}
       {/* THE BACKDROP IS NOT AN ELEMENT. A Pressable is a leaf to VoiceOver,
@@ -792,46 +811,16 @@ const styles = StyleSheet.create({
   actionCount: { color: colors.dim, fontSize: 14 },
   empty: { alignItems: 'center', gap: 12, marginTop: 60, paddingHorizontal: 40 },
   emptyText: { color: colors.dim, fontSize: 15, textAlign: 'center' },
-  localComposerWrap: { backgroundColor: colors.bg },
-  attachRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: space.lg,
-    paddingTop: 10,
-  },
+  writeScreen: { flex: 1, backgroundColor: colors.bg },
+  writeHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.lg, paddingBottom: space.md },
+  post: { backgroundColor: colors.yellow, borderRadius: radius.pill, paddingHorizontal: 18, height: 36, minWidth: 74, alignItems: 'center', justifyContent: 'center' },
+  postText: { color: colors.onYellow, fontSize: 14, fontWeight: '900', letterSpacing: ls(1), textTransform: 'uppercase' },
+  writeInput: { flex: 1, color: colors.text, fontSize: 18, lineHeight: 25, paddingHorizontal: space.lg, paddingTop: space.sm, textAlignVertical: 'top' },
+  writeTools: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: space.lg, paddingTop: 10, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line },
+  attachRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 8, paddingHorizontal: space.lg },
   attachThumb: { width: 44, height: 44, borderRadius: 8, backgroundColor: colors.card },
   attachNote: { flex: 1, color: colors.faint, fontSize: 12, lineHeight: 16 },
-  localAttach: { paddingHorizontal: 2, paddingVertical: 8, justifyContent: 'center' },
-  localComposer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 10,
-    paddingHorizontal: space.lg,
-    paddingTop: 10,
-    paddingBottom: 28,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: colors.line,
-    backgroundColor: colors.bg,
-  },
-  localInput: {
-    flex: 1,
-    maxHeight: 120,
-    backgroundColor: colors.card,
-    borderRadius: radius.card,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    color: colors.text,
-    fontSize: 15,
-  },
-  localSend: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: colors.yellow,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  attachBtn: { width: 38, height: 38, borderRadius: radius.pill, backgroundColor: colors.panel, alignItems: 'center', justifyContent: 'center' },
   localSendOff: { opacity: 0.35 },
   fab: {
     position: 'absolute',
