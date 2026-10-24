@@ -1065,7 +1065,10 @@ export function ProfileTemplate({
         * makes it a property of this screen rather than of the session.
         */}
       {focused && <StatusBarOnCover />}
-      <Animated.View style={[styles.cover, coverStyle]}>
+      {/* The picture runs under the iPhone Duo's strip (absolute, so the page's
+          side padding does not reach it), but the bar, avatar and name keep
+          clear of it: centred on the content, not on the whole window. */}
+      <Animated.View style={[styles.cover, { paddingLeft: space.lg + insets.left, paddingRight: space.lg + insets.right }, coverStyle]}>
         {coverUri != null ? (
           <BannerImage uri={coverUri} frame={coverFrame ?? null} followLive={coverFollowsLive} box={{ w: W, h: FULL }} liveHeight={coverH} reassert={reassert} />
         ) : coverSource ? (
