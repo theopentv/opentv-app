@@ -1,14 +1,16 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
-import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
-import { Dimensions, I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
+import { router, Stack } from 'expo-router';
+import { HeaderHeightContext } from 'expo-router/react-navigation';
+import type { NativeStackHeaderItem } from 'expo-router/native-stack';
+import { cloneElement, isValidElement, use, type ReactElement, type ReactNode } from 'react';
+import { I18nManager, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';
 import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
-import { detailPaneLayout, hasWindowControls } from '@/pure';
+import { detailPaneLayout } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 
@@ -34,8 +36,19 @@ export function useTopInset(): number {
 
 /** Black full-height screen with a safe top inset. */
 export function Screen({ children }: { children: ReactNode }) {
+  // Under a native header (NavHeader) the content starts below the header;
+  // iOS 26+ draws that header as glass over the content, so it has to be cleared
+  // here. Screens without one keep the plain safe-area inset.
+  const headerHeight = use(HeaderHeightContext) ?? 0;
+  const topInset = useTopInset();
+  // The iPhone Duo's clock strip runs down one side when it is closed. The
+  // native header reaches it (that is how its buttons get into the strip), so
+  // the content keeps clear here instead. 0 on every other iPhone in portrait.
+  const { left, right } = useSafeAreaInsets();
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: useTopInset() }}>{children}</View>
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: headerHeight || topInset, paddingLeft: left, paddingRight: right }}>
+      {children}
+    </View>
   );
 }
 
@@ -108,45 +121,51 @@ export function ContentColumn({
   return <View style={[{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' }, style]}>{children}</View>;
 }
 
-/** Pushed/modal page header: back or close, centered title, optional right slot. */
-/** Clearance for the iPadOS window controls, which are drawn by the system at
- *  the top-left of a windowed app — directly on top of our back button. iOS
- *  reports no safe-area inset for them, so the app has to make the room. */
-const WINDOW_CONTROLS_W = 76;
-
+/**
+ * Pushed/modal page header: back or close, title, optional buttons.
+ *
+ * A NATIVE HEADER since 2.0.1. Drawn in JS it stayed a row at the top of the
+ * iPhone Duo's outer screen, while every Apple app moves its back button and
+ * actions into the strip beside the clock -- iOS only does that for real
+ * UIBarButtonItems. So this hands its title and buttons to the stack instead
+ * of drawing them. `items` are native buttons (they join the strip); `right`
+ * is a custom view, which still shows in the header but never in the strip.
+ */
 export function NavHeader({
   title,
   close,
   right,
+  items,
 }: {
   title?: string;
   close?: boolean;
   right?: ReactNode;
+  items?: NativeStackHeaderItem[];
 }) {
-  // windowed (Split View, Stage Manager, a tiled window) when the app's own
-  // width is narrower than the physical screen. Full screen on any device —
-  // including every phone — leaves this at 0 and the header untouched.
-  const appW = useWindowDimensions().width;
-  const windowed = hasWindowControls(Platform.OS === 'ios' && !Platform.isPad, appW, Dimensions.get('screen').width);
   return (
-    <View style={[s.navHead, windowed && { paddingLeft: WINDOW_CONTROLS_W }]}>
-      <Pressable
-        style={s.iconBtn}
-        onPress={() => router.back()}
-        hitSlop={8}
-        accessibilityRole="button"
-        accessibilityLabel={t(close ? 'a11y.close' : 'a11y.back')}>
-        <Ionicons
-          name={close ? 'chevron-down' : I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'}
-          size={24}
-          color={colors.text}
-        />
-      </Pressable>
-      <Text style={s.navTitle} numberOfLines={1} accessibilityRole="header">
-        {title ?? ''}
-      </Text>
-      <View style={s.navRight}>{right}</View>
-    </View>
+    <Stack.Screen
+      options={{
+        headerShown: true,
+        title: title ?? '',
+        headerTintColor: colors.text,
+        headerTitleStyle: { color: colors.text },
+        headerShadowVisible: false,
+        headerBackButtonDisplayMode: 'minimal',
+        // A sheet has no screen to go back to, so it gets a native close button.
+        unstable_headerLeftItems: close
+          ? () => [
+              {
+                type: 'button',
+                label: t('a11y.close'),
+                icon: { type: 'sfSymbol', name: 'chevron.down' },
+                onPress: () => router.back(),
+              },
+            ]
+          : undefined,
+        unstable_headerRightItems: items?.length ? () => items : undefined,
+        headerRight: right != null ? () => right : undefined,
+      }}
+    />
   );
 }
 
@@ -599,19 +618,6 @@ const s = StyleSheet.create({
   tableRight: { color: colors.dim, fontSize: 14, fontVariant: ['tabular-nums'] },
   tableColA: { minWidth: 76, textAlign: 'right' },
   tableColB: { minWidth: 48, textAlign: 'right' },
-  navHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: space.md,
-    paddingVertical: 10,
-    // TV Time draws a hairline under every pushed screen's header (Lists, Stats,
-    // Settings); without it the title floats into the content.
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.line,
-  },
-  navTitle: { color: colors.text, fontSize: 16, fontWeight: '600', flex: 1, textAlign: 'center' },
-  iconBtn: { width: 40, height: 34, alignItems: 'center', justifyContent: 'center' },
   /**
    * The header's right slot. `minWidth` rather than `width`, because this holds
    * WORDS as often as icons — "Reorder" rendered as "Reorc" inside the 40pt an
@@ -620,13 +626,6 @@ const s = StyleSheet.create({
    * up the room. Right-aligned so a one-word action still lands under the
    * thumb at the screen edge.
    */
-  navRight: {
-    minWidth: 40,
-    height: 34,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
 
   topTabs: { flexDirection: 'row' },
   tabHairline: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: colors.line },
