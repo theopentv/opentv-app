@@ -529,15 +529,15 @@ export function ProfileTemplate({
   /** Smooth edge: the banner melts into the page, ending exactly at its line. */
   const fadeMode = coverFrame?.fade === true && (coverUri != null || coverSource != null);
   /*
-   * NO PINNED BAR BESIDE THE iPHONE DUO'S STRIP. There iOS moves every bar to
-   * the side so the content reaches the top edge — height is the scarce thing
-   * on that screen — and the bell and ⋯ are already in the strip. A 52pt band
-   * kept at the top only to repeat the name spent exactly that height, so the
-   * cover scrolls away entirely instead. The strip is inferred from an inset
-   * on the right only (a landscape iPhone's notch insets both sides).
+   * A TALLER BAR BESIDE THE iPHONE DUO'S STRIP. A phone's bar is 52pt under a
+   * status bar, so the band reads as one ~110pt object; beside the strip the
+   * clock lives in the strip, the top inset is 0, and 52 was a thin line with
+   * the name crammed against the edge. 80 is the size the owner picked from
+   * the collapse (25 Oct). The strip is inferred from an inset on the right
+   * only (a landscape iPhone's notch insets both sides).
    */
   const besideStrip = Platform.OS === 'ios' && insets.right > insets.left;
-  const BAR = besideStrip ? 0 : insets.top + 52;
+  const BAR = besideStrip ? 80 : insets.top + 52;
   const RANGE = FULL - BAR;
 
   const plusUi = usePlusUi();
@@ -1114,7 +1114,8 @@ export function ProfileTemplate({
         ) : (
           layout !== 'classic' && <CoverFade color={pageColor} height={140} />
         )}
-        <View style={[styles.coverBar, { marginTop: insets.top + 6 }]}>
+        {/* beside the strip the name centres in its 80pt bar: (80 - 31.5) / 2 */}
+        <View style={[styles.coverBar, { marginTop: besideStrip ? 24 : insets.top + 6 }]}>
           {/* Both slots are rendered even when empty, so the centred name stays
               centred on a screen that has a bell and one that does not. */}
           <View style={styles.barSlot}>{barLeft}</View>
