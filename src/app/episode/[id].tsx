@@ -1181,7 +1181,7 @@ export default function EpisodePagerScreen() {
   const dotStart = Math.min(Math.max(index - 2, 0), Math.max(episodes.length - dotCount, 0));
 
   const insets = useSafeAreaInsets();
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown();
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
 

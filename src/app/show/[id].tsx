@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated as RNAnimated, Easing as RNEasing, FlatList, I18nManager, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -25,7 +25,7 @@ import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, ContentColumn, TopTabs, useDetailPaneStyle } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatched, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatched } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -266,7 +266,7 @@ export default function ShowScreen() {
     return list;
   }, [show, tick]);
 
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown();
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
   // the horizontal carousel is a native scroll view that grabs vertical drags
@@ -688,10 +688,178 @@ export default function ShowScreen() {
     );
   }
 
+  /** The ⋯ actions: one list, shown as Apple's native menu (into the Duo's strip). */
+  const showActions = (): SheetAction[] => {
+    const following = !!dbShow?.followed;
+    const favorited = !!dbShow?.favorited;
+    const archived = !!dbShow?.archived;
+    const finished = !!dbShow?.finished;
+    const refresh = () => setTick((t) => t + 1);
+    // An untracked preview has no row to flag. Following one is how TV
+    // Time adds a show, so Follow does exactly what ADD SHOW does;
+    // favourite and stop-watching have nothing to act on until then.
+    const tracked = !!dbShow;
+    const actions: SheetAction[] = [
+      ...(tracked ? [{
+        icon: (favorited ? 'heart-dislike-outline' : 'heart-outline') as SheetAction['icon'],
+        text: favorited ? t('media.actions.removeFavorite') : t('media.actions.addFavorite'),
+        onPress: () => {
+          setShowFavorited(show.tvdbId, !favorited);
+          refresh();
+        },
+      }] : []),
+      {
+        icon: following ? 'eye-off-outline' : 'eye-outline',
+        text: following ? t('show.actions.stopFollowing') : t('show.actions.follow'),
+        onPress: () => {
+          if (tracked) setFollowing(show.tvdbId, !following);
+          else addShow(tvdbId, fetched?.name ?? show.name, fetched?.poster ?? null);
+          refresh();
+        },
+      },
+      ...(tracked ? [{
+        icon: (archived ? 'play-circle-outline' : 'pause-circle-outline') as SheetAction['icon'],
+        text: archived ? t('show.actions.resumeWatching') : t('show.actions.stopWatching'),
+        onPress: () => {
+          setShowArchived(show.tvdbId, !archived);
+          refresh();
+        },
+      }] : []),
+      {
+        icon: finished ? 'refresh-outline' : 'checkmark-done-outline',
+        text: finished ? t('show.actions.markNotFinished') : t('show.actions.markFinished'),
+        onPress: () => {
+          if (!finished) {
+            // mark every aired, non-special episode watched (same rule
+            // as the "mark all" checkmark) so "finished" actually
+            // completes the show — specials stay optional, like TV Time
+            const m = showMeta(show.tvdbId);
+            if (m) {
+              const today = new Date().toISOString().slice(0, 10);
+              const seen = getWatchedSet(show.tvdbId);
+              for (const [sn, sv] of Object.entries(m.seasons)) {
+                const s = Number(sn);
+                if (s < 1) continue;
+                for (let e = 1; e <= (sv?.count ?? 0); e++) {
+                  const air = m.episodes[`${s}-${e}`]?.air;
+                  if ((!air || air <= today) && !seen.has(`${s}-${e}`)) markWatched(show.tvdbId, s, e);
+                }
+              }
+            }
+          }
+          // flag it too, so returning shows / off-TMDB shows (nothing
+          // to mark) still read as complete
+          setShowFinished(show.tvdbId, !finished);
+          refresh();
+        },
+      },
+      {
+        icon: 'create-outline',
+        text: t('show.actions.customizePosterBackdrop'),
+        onPress: () =>
+          router.push(
+            `/poster-picker?tvdbId=${show.tvdbId}&tmdbId=${meta?.tmdbId ?? ''}&name=${encodeURIComponent(show.name)}`,
+          ),
+      },
+      {
+        icon: 'list-outline',
+        text: t('media.actions.addToList'),
+        onPress: () => router.push(`/add-to-list?type=show&id=${show.tvdbId}`),
+      },
+      // WATCHING TOGETHER (2.0.0): Plus to start, free to join — so it
+      // is offered to every member and the paywall says what it costs.
+      ...(joined
+        ? [
+            {
+              icon: 'people-outline' as const,
+              text: isPlus() ? t('together.start') : t('together.startPlus'),
+              // ASK FIRST (22 Oct): start one, or join the friend's
+              // code — so two people never end up in two separate
+              // togethers for the same show. Already in one for this
+              // show (owned or joined): startTogether just opens it.
+              onPress: () => {
+                const go = () =>
+                  void startTogether({ tvdbId: show.tvdbId, title: show.name, poster: meta?.poster ?? null })
+                    .then((r) => {
+                      if (r) router.push(`/shared/${encodeURIComponent(r.id)}`);
+                    })
+                    .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)));
+                Alert.alert(t('together.title'), t('together.askBody'), [
+                  { text: isPlus() ? t('together.askStart') : t('together.askStartPlus'), onPress: go },
+                  { text: t('together.haveCode'), onPress: () => router.push('/together?join=1') },
+                  { text: t('common.cancel'), style: 'cancel' },
+                ]);
+              },
+            },
+          ]
+        : []),
+      // SMART REMINDERS for this one show (2.0.0, PLUS) — only for a
+      // followed show, the only kind that gets reminders at all.
+      ...(following && plusUiVisible()
+        ? [
+            {
+              icon: 'notifications-outline' as const,
+              text: isPlus() ? t('smartReminders.forShow') : t('smartReminders.forShowPlus'),
+              onPress: () => {
+                if (requirePlus('smart_reminders_show'))
+                  router.push(`/smart-reminders?show=${show.tvdbId}&name=${encodeURIComponent(show.name)}`);
+              },
+            },
+          ]
+        : []),
+      {
+        icon: 'share-outline',
+        text: t('media.actions.share'),
+        onPress: () => router.push(`/share-card?type=show&id=${show.tvdbId}`),
+      },
+      // the banner only appears while unmatched; re-matching an
+      // already-matched show belongs here, not in a standing bar
+      {
+        icon: 'link-outline',
+        text: t('media.actions.changeMatch'),
+        onPress: () =>
+          router.push(`/fix-match?type=show&id=${tvdbId}&name=${encodeURIComponent(show.name)}`),
+      },
+      {
+        icon: 'trash-outline',
+        text: t('media.actions.removeFromLibrary'),
+        destructive: true,
+        onPress: () =>
+          Alert.alert(
+            t('media.removeConfirmTitle', { title: show.name }),
+            t('show.removeConfirmBody'),
+            [
+              {
+                text: t('common.remove'),
+                style: 'destructive',
+                onPress: () => {
+                  deleteShow(show.tvdbId);
+                  router.back();
+                },
+              },
+              { text: t('common.cancel'), style: 'cancel' },
+            ],
+          ),
+      },
+    ];
+    return actions;
+  };
+
   return (
     <GestureDetector gesture={pan}>
     <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
       <SplitPage split={split}>
+      {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: '',
+          headerTintColor: colors.onArt,
+          unstable_headerLeftItems: () => [closeItem()],
+          unstable_headerRightItems: () => [moreMenuItem(showActions())],
+        }}
+      />
       {/* The backdrop runs under the status bar, so its glyphs follow the
           artwork rather than the page — dark-on-dark otherwise. */}
       <StatusBarOnCover />
@@ -712,177 +880,9 @@ export default function ShowScreen() {
                 <SeasonEffect emoji={season.effect} width={winW} height={insets.top + 260} playing repeatMs={0} count={6} />
               </>
             )}
-        <View style={[styles.backdropBar, { marginTop: insets.top + 4 }]}>
-          <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
-            {/* In the bar that sits on the backdrop — see `colors.onArt`. */}
-            <Ionicons name="chevron-down" size={26} color={colors.onArt} />
-          </Pressable>
-          {/* The title's scrolled-in twin; the heading below is the one read. */}
-          <Animated.Text style={[styles.barTitle, barTitleFade]} numberOfLines={1} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            {show.name}
-          </Animated.Text>
-          <Pressable
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel={t('a11y.more')}
-            onPress={() => {
-              const following = !!dbShow?.followed;
-              const favorited = !!dbShow?.favorited;
-              const archived = !!dbShow?.archived;
-              const finished = !!dbShow?.finished;
-              const refresh = () => setTick((t) => t + 1);
-              // An untracked preview has no row to flag. Following one is how TV
-              // Time adds a show, so Follow does exactly what ADD SHOW does;
-              // favourite and stop-watching have nothing to act on until then.
-              const tracked = !!dbShow;
-              const actions: SheetAction[] = [
-                ...(tracked ? [{
-                  icon: (favorited ? 'heart-dislike-outline' : 'heart-outline') as SheetAction['icon'],
-                  text: favorited ? t('media.actions.removeFavorite') : t('media.actions.addFavorite'),
-                  onPress: () => {
-                    setShowFavorited(show.tvdbId, !favorited);
-                    refresh();
-                  },
-                }] : []),
-                {
-                  icon: following ? 'eye-off-outline' : 'eye-outline',
-                  text: following ? t('show.actions.stopFollowing') : t('show.actions.follow'),
-                  onPress: () => {
-                    if (tracked) setFollowing(show.tvdbId, !following);
-                    else addShow(tvdbId, fetched?.name ?? show.name, fetched?.poster ?? null);
-                    refresh();
-                  },
-                },
-                ...(tracked ? [{
-                  icon: (archived ? 'play-circle-outline' : 'pause-circle-outline') as SheetAction['icon'],
-                  text: archived ? t('show.actions.resumeWatching') : t('show.actions.stopWatching'),
-                  onPress: () => {
-                    setShowArchived(show.tvdbId, !archived);
-                    refresh();
-                  },
-                }] : []),
-                {
-                  icon: finished ? 'refresh-outline' : 'checkmark-done-outline',
-                  text: finished ? t('show.actions.markNotFinished') : t('show.actions.markFinished'),
-                  onPress: () => {
-                    if (!finished) {
-                      // mark every aired, non-special episode watched (same rule
-                      // as the "mark all" checkmark) so "finished" actually
-                      // completes the show — specials stay optional, like TV Time
-                      const m = showMeta(show.tvdbId);
-                      if (m) {
-                        const today = new Date().toISOString().slice(0, 10);
-                        const seen = getWatchedSet(show.tvdbId);
-                        for (const [sn, sv] of Object.entries(m.seasons)) {
-                          const s = Number(sn);
-                          if (s < 1) continue;
-                          for (let e = 1; e <= (sv?.count ?? 0); e++) {
-                            const air = m.episodes[`${s}-${e}`]?.air;
-                            if ((!air || air <= today) && !seen.has(`${s}-${e}`)) markWatched(show.tvdbId, s, e);
-                          }
-                        }
-                      }
-                    }
-                    // flag it too, so returning shows / off-TMDB shows (nothing
-                    // to mark) still read as complete
-                    setShowFinished(show.tvdbId, !finished);
-                    refresh();
-                  },
-                },
-                {
-                  icon: 'create-outline',
-                  text: t('show.actions.customizePosterBackdrop'),
-                  onPress: () =>
-                    router.push(
-                      `/poster-picker?tvdbId=${show.tvdbId}&tmdbId=${meta?.tmdbId ?? ''}&name=${encodeURIComponent(show.name)}`,
-                    ),
-                },
-                {
-                  icon: 'list-outline',
-                  text: t('media.actions.addToList'),
-                  onPress: () => router.push(`/add-to-list?type=show&id=${show.tvdbId}`),
-                },
-                // WATCHING TOGETHER (2.0.0): Plus to start, free to join — so it
-                // is offered to every member and the paywall says what it costs.
-                ...(joined
-                  ? [
-                      {
-                        icon: 'people-outline' as const,
-                        text: isPlus() ? t('together.start') : t('together.startPlus'),
-                        // ASK FIRST (22 Oct): start one, or join the friend's
-                        // code — so two people never end up in two separate
-                        // togethers for the same show. Already in one for this
-                        // show (owned or joined): startTogether just opens it.
-                        onPress: () => {
-                          const go = () =>
-                            void startTogether({ tvdbId: show.tvdbId, title: show.name, poster: meta?.poster ?? null })
-                              .then((r) => {
-                                if (r) router.push(`/shared/${encodeURIComponent(r.id)}`);
-                              })
-                              .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)));
-                          Alert.alert(t('together.title'), t('together.askBody'), [
-                            { text: isPlus() ? t('together.askStart') : t('together.askStartPlus'), onPress: go },
-                            { text: t('together.haveCode'), onPress: () => router.push('/together?join=1') },
-                            { text: t('common.cancel'), style: 'cancel' },
-                          ]);
-                        },
-                      },
-                    ]
-                  : []),
-                // SMART REMINDERS for this one show (2.0.0, PLUS) — only for a
-                // followed show, the only kind that gets reminders at all.
-                ...(following && plusUiVisible()
-                  ? [
-                      {
-                        icon: 'notifications-outline' as const,
-                        text: isPlus() ? t('smartReminders.forShow') : t('smartReminders.forShowPlus'),
-                        onPress: () => {
-                          if (requirePlus('smart_reminders_show'))
-                            router.push(`/smart-reminders?show=${show.tvdbId}&name=${encodeURIComponent(show.name)}`);
-                        },
-                      },
-                    ]
-                  : []),
-                {
-                  icon: 'share-outline',
-                  text: t('media.actions.share'),
-                  onPress: () => router.push(`/share-card?type=show&id=${show.tvdbId}`),
-                },
-                // the banner only appears while unmatched; re-matching an
-                // already-matched show belongs here, not in a standing bar
-                {
-                  icon: 'link-outline',
-                  text: t('media.actions.changeMatch'),
-                  onPress: () =>
-                    router.push(`/fix-match?type=show&id=${tvdbId}&name=${encodeURIComponent(show.name)}`),
-                },
-                {
-                  icon: 'trash-outline',
-                  text: t('media.actions.removeFromLibrary'),
-                  destructive: true,
-                  onPress: () =>
-                    Alert.alert(
-                      t('media.removeConfirmTitle', { title: show.name }),
-                      t('show.removeConfirmBody'),
-                      [
-                        {
-                          text: t('common.remove'),
-                          style: 'destructive',
-                          onPress: () => {
-                            deleteShow(show.tvdbId);
-                            router.back();
-                          },
-                        },
-                        { text: t('common.cancel'), style: 'cancel' },
-                      ],
-                    ),
-                },
-              ];
-              setMenu(actions);
-            }}>
-            <Ionicons name="ellipsis-horizontal" size={22} color={colors.text} />
-          </Pressable>
-        </View>
+        {/* Where the drawn close/⋯ row was (the 26pt chevron under the status bar):
+            the native header now sits over it, the title stays where it was. */}
+        <View style={{ height: insets.top + 4 + 26 }} />
         <Animated.View style={[styles.backdropMeta, metaFade]}>
           <View style={{ flex: 1 }}>
             {/* LONG TITLES SHRINK RATHER THAN TRUNCATE. Two lines at a fixed

@@ -728,31 +728,41 @@ export default function RootLayout() {
         <Stack.Protected guard={onboarded && !askNotify}>
         <Stack.Screen name="(tabs)" />
         {/* show / episode / movie cover the whole screen incl. status bar, like
-            the real app. transparentModal keeps the previous screen rendered
-            underneath, so dragging the page down reveals it instead of a black
-            void; the pages paint their own opaque background */}
+            the real app. Native pushes since 2.0.1 (they were transparentModal):
+            only a screen inside the native stack gets a native header, and only
+            native header buttons go into the iPhone Duo's strip. The screens that
+            open them are pushes too, or a push would land behind a modal. */}
         <Stack.Screen
           name="show/[id]"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen
           name="episode/[id]"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen
           name="movie/[name]"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         {/* joining the community. Both are full-height sheets rather than
@@ -873,17 +883,23 @@ export default function RootLayout() {
         <Stack.Screen
           name="room/[key]"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen
           name="thread"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         {/* Somebody else's profile, and a list they published. Both are
@@ -894,9 +910,12 @@ export default function RootLayout() {
         <Stack.Screen
           name="profile/[handle]"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         {/* Where a public profile's arrows lead: one shelf in full, and
@@ -905,17 +924,23 @@ export default function RootLayout() {
         <Stack.Screen
           name="user-titles"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen
           name="user-people"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen
@@ -925,17 +950,23 @@ export default function RootLayout() {
         <Stack.Screen
           name="user-comments"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen
           name="list/[id]"
           options={{
-            presentation: 'transparentModal',
+            presentation: 'card',
             animation: 'slide_from_bottom',
-            contentStyle: { backgroundColor: 'transparent' },
+            // A native push now (2.0.1), so its header and buttons are native and
+            // reach the iPhone Duo's strip; swiping down still closes it.
+            gestureDirection: 'vertical',
+            fullScreenGestureEnabled: true,
           }}
         />
         <Stack.Screen name="review-movies" options={{ presentation: 'modal' }} />

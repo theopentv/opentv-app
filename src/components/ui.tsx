@@ -8,6 +8,7 @@ import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';
+import type { SheetAction } from '@/components/action-sheet';
 import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
 import { detailPaneLayout } from '@/pure';
@@ -149,8 +150,7 @@ export function ContentColumn({
  */
 const DRAWN_HEADER_ROUTES = new Set([
   'email-sign-in', 'verify-email', 'reset-password', 'handle', 'join', 'paywall', 'seed',
-  'room/[key]', 'thread', 'profile/[handle]', 'user-titles', 'user-people', 'user-comments',
-  'list/[id]', 'cover-adjust', 'add-widget',
+  'cover-adjust', 'add-widget',
 ]);
 
 export function NavHeader({
@@ -194,6 +194,48 @@ export function NavHeader({
       }}
     />
   );
+}
+
+/** Our sheet icons (Ionicons) as SF Symbols, for the native menus that iOS
+ *  can put into the iPhone Duo's strip. Anything unmapped gets a neutral dot. */
+const SF_FOR_ION: Record<string, string> = {
+  'heart-outline': 'heart', 'heart-dislike-outline': 'heart.slash',
+  'eye-outline': 'eye', 'eye-off-outline': 'eye.slash',
+  'play-circle-outline': 'play.circle', 'pause-circle-outline': 'pause.circle',
+  'refresh-outline': 'arrow.counterclockwise', 'checkmark-done-outline': 'checkmark.circle',
+  'create-outline': 'pencil', 'image-outline': 'photo', 'list-outline': 'list.bullet',
+  'people-outline': 'person.2', 'notifications-outline': 'bell', 'share-outline': 'square.and.arrow.up',
+  'link-outline': 'link', 'trash-outline': 'trash', 'tv-outline': 'tv', 'desktop-outline': 'desktopcomputer',
+  'swap-horizontal-outline': 'arrow.left.arrow.right', 'ticket': 'ticket', 'skull-outline': 'exclamationmark.triangle',
+  'ellipsis-horizontal-circle-outline': 'ellipsis.circle', 'flag-outline': 'flag', 'ban-outline': 'nosign',
+};
+
+/**
+ * A ⋯ button as a native menu, built from the same actions the bottom sheet
+ * shows. Only a native menu can go into the Duo's strip, and it is what every
+ * iOS app's ⋯ is. `selected` becomes the menu's checkmark.
+ */
+export function moreMenuItem(actions: SheetAction[], label = t('a11y.more')): NativeStackHeaderItem {
+  return {
+    type: 'menu',
+    label,
+    icon: { type: 'sfSymbol', name: 'ellipsis' },
+    menu: {
+      items: actions.map((a) => ({
+        type: 'action' as const,
+        label: a.text,
+        icon: { type: 'sfSymbol' as const, name: (SF_FOR_ION[a.icon] ?? 'circle.fill') as never },
+        destructive: a.destructive,
+        state: a.selected ? ('on' as const) : undefined,
+        onPress: a.onPress,
+      })),
+    },
+  };
+}
+
+/** The close button of a page that slides up: top of the strip on the Duo. */
+export function closeItem(): NativeStackHeaderItem {
+  return { type: 'button', label: t('a11y.close'), icon: { type: 'sfSymbol', name: 'chevron.down' }, onPress: () => router.back() };
 }
 
 /** The header as it was before 2.0.1, for the screens a native one cannot reach. */

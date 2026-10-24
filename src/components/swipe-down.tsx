@@ -29,7 +29,13 @@ import { nextAtTop, shouldDismissOnPull } from '@/pure';
  *
  * `bounces` must stay ON: pulling past the top is the dismiss signal.
  */
-export function useSwipeDown() {
+/**
+ * `native`: the page is a native push whose own vertical swipe closes it (show,
+ * film and episode since 2.0.1). Then neither the header drag nor the pull past
+ * the top dismisses -- both would move or pop the page on top of the system's
+ * gesture -- and only the at-top tracking the pages read is kept.
+ */
+export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
   const translateY = useSharedValue(0);
   const screenH = useWindowDimensions().height;
   /*
@@ -169,7 +175,7 @@ export function useSwipeDown() {
   // see onScroll — which cannot be confused with arriving at it.
   const gesture = useMemo(() => makePan(false), [makePan]);
   // fixed banners/headers outside the scroll view: always draggable
-  const headerGesture = useMemo(() => makePan(true), [makePan]);
+  const headerGesture = useMemo(() => makePan(!native), [makePan, native]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -189,13 +195,13 @@ export function useSwipeDown() {
     // pulled past the top with the finger still down — the page leaves.
     // Same guard as the fling, and it has to be the SAME one: either path
     // committing must stop the other.
-    if (shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
+    if (!native && shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
       router.back();
       return;
     }
     setAtTop(nextAtTop(atTop.current, y <= 2, scrolling.current));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable boxes only
-  }, [commitDismiss]);
+  }, [commitDismiss, native]);
 
   const onScrollBeginDrag = () => {
     scrolling.current = true;
