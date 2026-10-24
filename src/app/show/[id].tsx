@@ -268,7 +268,7 @@ export default function ShowScreen() {
     return list;
   }, [show, tick]);
 
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true, canDismiss: !nav.inPane });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: !nav.inPane, onDismiss: nav.inPane ? nav.close : undefined });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
   // the horizontal carousel is a native scroll view that grabs vertical drags
