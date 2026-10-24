@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useRoute } from 'expo-router';
+import { router, Stack, useRoute, useSegments } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
 import { cloneElement, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
@@ -8,6 +8,7 @@ import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { tabA11y } from '@/a11y';
+import { COMMENTS_SPLIT_MIN_W } from '@/pure';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { track } from '@/analytics';
 import { tapLight, tapSelection } from '@/haptics';
@@ -55,11 +56,37 @@ export function Screen({ children }: { children: ReactNode }) {
   // native header reaches it (that is how its buttons get into the strip), so
   // the content keeps clear here instead. 0 on every other iPhone in portrait.
   const { left, right } = useSafeAreaInsets();
+  // LIST | DETAIL: while a detail page sits beside this screen (useWideDetail
+  // and a show/film/episode route on top), the screen lays out in the list
+  // column only, so its rows reflow to LIST_W instead of running under the
+  // pane with their right two thirds hidden.
+  const listColumn = useListColumn();
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: headerHeight || topInset, paddingLeft: left, paddingRight: right }}>
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: headerHeight || topInset, paddingLeft: left, paddingRight: listColumn ? listColumn : right }}>
       {children}
     </View>
   );
+}
+
+/**
+ * The right padding a tab root needs so it occupies the list column while a
+ * detail page is open beside it: everything right of LIST_W. 0 otherwise, and
+ * 0 on a narrow screen (the detail is a push there, nothing shares the width).
+ */
+/** Whether a show, film or episode route is on top right now. From the
+ *  router's own segments, so it re-renders when they change and keeps no
+ *  store of its own (the React Compiler would cache a store read). */
+export function useDetailOpen(): boolean {
+  const segments = useSegments() as string[];
+  return segments.some((seg) => seg === 'show' || seg === 'movie' || seg === 'episode');
+}
+
+export function useListColumn(): number {
+  const screenW = useScreenWidth();
+  const { right } = useSafeAreaInsets();
+  const wide = screenW >= COMMENTS_SPLIT_MIN_W;
+  const detailOpen = useDetailOpen();
+  return wide && detailOpen ? screenW - LIST_W + right : 0;
 }
 
 /** The readable content width every capped screen shares. Exported so screens
@@ -296,6 +323,23 @@ function DrawnItem({ item }: { item: NativeStackHeaderItem }) {
   );
 }
 
+/**
+ * The header of a detail page while it sits BESIDE the list (a transparentModal,
+ * so no native header): the same close and ⋯ as items, drawn over the backdrop.
+ * Renders nothing when the page is a native push -- the native header has them.
+ */
+export function PaneHeader({ right }: { right?: NativeStackHeaderItem[] }) {
+  const wide = useWideDetail();
+  const top = useTopInset();
+  if (!wide) return null;
+  return (
+    <View style={[s.paneHead, { top: top + 4 }]} pointerEvents="box-none">
+      <DrawnItems items={[closeItem()]} />
+      {right?.length ? <DrawnItems items={right} /> : <View />}
+    </View>
+  );
+}
+
 /** The close button of a page that slides up: top of the strip on the Duo. */
 export function closeItem(): NativeStackHeaderItem {
   return { type: 'button', label: t('a11y.close'), icon: { type: 'sfSymbol', name: 'chevron.down' }, onPress: () => router.back() };
@@ -337,33 +381,46 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  * Returns nothing below the breakpoint, so phones and narrow windows keep
  * exactly the full-screen behaviour they have today.
  */
+/** LIST | DETAIL (2.0.1). From 600pt up -- the open iPhone Duo in either
+ *  pose, every iPad -- a show, film or episode opens BESIDE the list instead
+ *  of over it: Apple's Mail pattern, the same hierarchy with one more level
+ *  visible. The list keeps LIST_W on the left and stays tappable; the detail
+ *  takes the rest, clear of the Duo's clock strip. Below 600pt the page is a
+ *  normal native push. Replaces the 2.0.0 60/40 pane, which drew over black
+ *  once the pages became native pushes. */
+export const LIST_W = 320;
+
+export function useWideDetail(): boolean {
+  return useScreenWidth() >= COMMENTS_SPLIT_MIN_W;
+}
+
 export function useDetailPaneStyle(): ViewStyle | null {
+  const screenW = useScreenWidth();
   const { left, right } = useSafeAreaInsets();
-  // THE PANE IS OFF (2.0.1). It worked by leaving the left 40% transparent
-  // over a screen that stayed rendered beneath a transparentModal. The pages
-  // are native pushes now, and a native stack detaches the screen beneath
-  // once the push lands: the pane sat beside 40% of black (iPad 13", open
-  // Duo on its side). Wide screens get the full page (its body centres in a
-  // CONTENT_MAX_WIDTH column) until the list|detail layout replaces this.
-  // The page keeps clear of the Duo's clock strip (0 everywhere else).
-  return left || right ? { paddingLeft: left, paddingRight: right } : null;
+  const wide = screenW >= COMMENTS_SPLIT_MIN_W;
+  if (!wide) return left || right ? { paddingLeft: left, paddingRight: right } : null;
+  return {
+    width: screenW - LIST_W + right,
+    alignSelf: 'flex-end',
+    paddingRight: right,
+    borderLeftWidth: StyleSheet.hairlineWidth,
+    borderLeftColor: colors.line,
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 18,
+    shadowOffset: { width: -6, height: 0 },
+  };
 }
 
 /**
- * The width a detail screen actually occupies — the pane's width when it is
- * beside the list, the window's width otherwise.
- *
- * Any geometry inside a detail screen must measure against THIS, not the
- * window. The episode pager sizes each page and computes its scroll offsets
- * from it: given the window width while sitting in a 60% pane, every page was
- * wider than its container, so the content spilled out and slid sideways as
- * you scrolled.
+ * The width a detail page lays out in: its pane beside the list on a wide
+ * screen, the window less the Duo's strip otherwise. The episode pager sizes
+ * each page from this; given the window width inside a pane, every page was
+ * wider than its container and slid sideways.
  */
 export function useDetailWidth(): number {
-  const w = useWindowDimensions().width;
-  const { left, right } = useSafeAreaInsets();
-  // See useDetailPaneStyle: no pane until list|detail exists.
-  return w - left - right;
+  const screenW = useScreenWidth();
+  return screenW >= COMMENTS_SPLIT_MIN_W ? screenW - LIST_W : screenW;
 }
 
 /** TV Time's underline text tabs — WATCH LIST | UPCOMING.
@@ -797,6 +854,7 @@ const s = StyleSheet.create({
   // minWidth, not width: this holds words as often as icons ("Reorder"), and
   // the title beside it gives up the room.
   navRight: { minWidth: 40, height: 34, alignItems: 'flex-end', justifyContent: 'center', flexShrink: 0 },
+  paneHead: { position: 'absolute', left: 0, right: 0, zIndex: 10, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10 },
   topTabs: { flexDirection: 'row' },
   tabHairline: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: colors.line },
   topTab: { flex: 1, alignItems: 'center', paddingVertical: 14 },

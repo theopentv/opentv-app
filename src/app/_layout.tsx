@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { runAfterInteractions } from '@/after-interactions';
+import { useWideDetail } from '@/components/ui';
 import { markIconsDecorative } from '@/a11y';
 import { trackScreen } from '@/analytics';
 import { initAutoBackup } from '@/backup';
@@ -602,6 +603,9 @@ export default function RootLayout() {
     };
   }, []);
 
+  // LIST | DETAIL on a wide screen: see useWideDetail in components/ui.
+  const wideDetail = useWideDetail();
+
   return (
     /*
      * THE SAFE AREA'S ONE SOURCE OF TRUTH.
@@ -735,7 +739,10 @@ export default function RootLayout() {
         <Stack.Screen
           name="show/[id]"
           options={{
-            presentation: 'card',
+            // Beside the list on a wide screen (transparentModal keeps the list
+            // rendered and tappable beneath); a native push otherwise.
+            presentation: wideDetail ? 'transparentModal' : 'card',
+            contentStyle: wideDetail ? { backgroundColor: 'transparent' } : undefined,
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and
             // reach the iPhone Duo's strip; swiping down still closes it.
@@ -746,7 +753,10 @@ export default function RootLayout() {
         <Stack.Screen
           name="episode/[id]"
           options={{
-            presentation: 'card',
+            // Beside the list on a wide screen (transparentModal keeps the list
+            // rendered and tappable beneath); a native push otherwise.
+            presentation: wideDetail ? 'transparentModal' : 'card',
+            contentStyle: wideDetail ? { backgroundColor: 'transparent' } : undefined,
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and
             // reach the iPhone Duo's strip; swiping down still closes it.
@@ -757,7 +767,10 @@ export default function RootLayout() {
         <Stack.Screen
           name="movie/[name]"
           options={{
-            presentation: 'card',
+            // Beside the list on a wide screen (transparentModal keeps the list
+            // rendered and tappable beneath); a native push otherwise.
+            presentation: wideDetail ? 'transparentModal' : 'card',
+            contentStyle: wideDetail ? { backgroundColor: 'transparent' } : undefined,
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and
             // reach the iPhone Duo's strip; swiping down still closes it.

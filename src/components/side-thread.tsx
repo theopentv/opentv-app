@@ -19,7 +19,7 @@ import type { ThreadTarget } from '@/community-comments';
 import { useJoined } from '@/community-session';
 import { CommentThread } from '@/components/comment-thread';
 import { Text } from '@/components/text';
-import { PillButton, useDetailWidth, useTopInset } from '@/components/ui';
+import { PillButton, useDetailWidth, useTopInset, useWideDetail } from '@/components/ui';
 import { getWatch } from '@/db';
 import { t } from '@/i18n';
 import { boardTargetFor, commentsSplitLayout } from '@/pure';
@@ -30,7 +30,12 @@ import { colors, space } from '@/theme';
 export function useCommentsSplit(): { pageW: number; threadW: number } | null {
   const joined = useJoined();
   const layout = commentsSplitLayout(useWindowDimensions().width);
-  return joined && layout.split ? layout : null;
+  // OFF WHERE THE PAGE SITS BESIDE THE LIST (2.0.1). From 600pt up the page
+  // is already one pane of two, and 669pt cannot hold list + page + comments.
+  // There the comments are the next level down, opened from the page, which is
+  // what Apple's list|detail keeps: the same hierarchy, one more level visible.
+  const wide = useWideDetail();
+  return joined && layout.split && !wide ? layout : null;
 }
 
 /** `useDetailWidth`, narrowed to the page's half while the comments are beside it.
