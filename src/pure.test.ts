@@ -645,6 +645,16 @@ describe('gridGeometry (the reorder grid must follow the viewport)', () => {
     }
   });
 
+  it.each(PAIRS)('keeps the open iPhone Duo on its side at an even count too (PAD=$PAD)', ({ PAD, GAP }) => {
+    // 867pt is what a grid sees there: the 951pt window less the 84pt strip
+    // (every grid reads useScreenWidth, never the raw window). It lands on 6
+    // by rounding, not by the <700pt even rule -- pinned here so a change to
+    // the tablet cell target cannot quietly put a poster column on the fold.
+    // 744 (iPad mini, no fold) must stay 5, so the even rule cannot simply be
+    // widened to cover this width.
+    expect(gridGeometry(867, PAD, GAP).cols).toBe(6);
+  });
+
   it.each(PAIRS)('keeps posters at the 2:3 aspect ratio (PAD=$PAD)', ({ PAD, GAP }) => {
     const g = gridGeometry(1024, PAD, GAP);
     expect(g.cellH).toBeCloseTo(g.cellW * 1.5, 5);
