@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack } from 'expo-router';
+import { router, Stack, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
 import { cloneElement, isValidElement, use, type ReactElement, type ReactNode } from 'react';
@@ -141,6 +141,18 @@ export function ContentColumn({
  * of drawing them. `items` are native buttons (they join the strip); `right`
  * is a custom view, which still shows in the header but never in the strip.
  */
+/**
+ * Routes presented as `transparentModal` in app/_layout.tsx. Such a screen sits
+ * outside the native navigation stack, so a native header never appears on it:
+ * these keep the header drawn here, close button included. Keep in step with
+ * the layout.
+ */
+const DRAWN_HEADER_ROUTES = new Set([
+  'email-sign-in', 'verify-email', 'reset-password', 'handle', 'join', 'paywall', 'seed',
+  'room/[key]', 'thread', 'profile/[handle]', 'user-titles', 'user-people', 'user-comments',
+  'list/[id]', 'cover-adjust', 'add-widget',
+]);
+
 export function NavHeader({
   title,
   close,
@@ -152,6 +164,8 @@ export function NavHeader({
   right?: ReactNode;
   items?: NativeStackHeaderItem[];
 }) {
+  const route = useRoute();
+  if (DRAWN_HEADER_ROUTES.has(route.name)) return <DrawnNavHeader title={title} close={close} right={right} />;
   return (
     <Stack.Screen
       options={{
@@ -179,6 +193,30 @@ export function NavHeader({
         headerRight: right != null ? () => right : undefined,
       }}
     />
+  );
+}
+
+/** The header as it was before 2.0.1, for the screens a native one cannot reach. */
+function DrawnNavHeader({ title, close, right }: { title?: string; close?: boolean; right?: ReactNode }) {
+  return (
+    <View style={s.navHead}>
+      <Pressable
+        style={s.iconBtn}
+        onPress={() => router.back()}
+        hitSlop={8}
+        accessibilityRole="button"
+        accessibilityLabel={t(close ? 'a11y.close' : 'a11y.back')}>
+        <Ionicons
+          name={close ? 'chevron-down' : I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'}
+          size={24}
+          color={colors.text}
+        />
+      </Pressable>
+      <Text style={s.navTitle} numberOfLines={1} accessibilityRole="header">
+        {title ?? ''}
+      </Text>
+      <View style={s.navRight}>{right}</View>
+    </View>
   );
 }
 
@@ -644,6 +682,22 @@ const s = StyleSheet.create({
    * thumb at the screen edge.
    */
 
+  navHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: space.md,
+    paddingVertical: 10,
+    // TV Time draws a hairline under every pushed screen's header (Lists, Stats,
+    // Settings); without it the title floats into the content.
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.line,
+  },
+  navTitle: { color: colors.text, fontSize: 16, fontWeight: '600', flex: 1, textAlign: 'center' },
+  iconBtn: { width: 40, height: 34, alignItems: 'center', justifyContent: 'center' },
+  // minWidth, not width: this holds words as often as icons ("Reorder"), and
+  // the title beside it gives up the room.
+  navRight: { minWidth: 40, height: 34, alignItems: 'flex-end', justifyContent: 'center', flexShrink: 0 },
   topTabs: { flexDirection: 'row' },
   tabHairline: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, backgroundColor: colors.line },
   topTab: { flex: 1, alignItems: 'center', paddingVertical: 14 },
