@@ -166,7 +166,8 @@
         {
           "android": {
             "enableMinifyInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "extraProguardRules": "-keep class androidx.work.impl.** { *; }\n-keep class * extends androidx.room.RoomDatabase { *; }\n-keep class **_Impl { *; }\n-keep class **_Impl$* { *; }\n-keep class androidx.room.** { *; }"
           }
         }
       ],
