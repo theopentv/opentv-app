@@ -9,6 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
+| 2.0.2 | — | (97) | **not built yet** — Simkl import that works on a real backup (shows, anime, films, anime films as films, memos as notes, dropped archived), a clear message for Simkl's CSV |
 | 2.0.1 | 113 | 96 | **built 25 Oct 2026** — iPhone Duo support (controls in the side strip, nothing under it or on the fold), Expo SDK 58, a wider profile on big screens, the ✎ writing page for private comments, and a Classic tab bar setting |
 | 1.7.1 | 98 | 77 | **built 14 Oct 2026** — a fix release: IMDb import brings series and rated episodes (resolved by tt id on TheTVDB), not only films; email sign-up finishes joining (11 users were left without a handle since 4 Oct), no false "Backup hasn't worked" after iOS cuts an upload short, sync polls every 20 s, lists no longer show a series as its TheTVDB number, privacy copy that admits Backup/Sync store the history, developer messages no longer open the chat, Test Lab robots not counted |
 | 1.7.0 | 96 | 74 | **built 12 Oct 2026** (AAB in ~/Downloads, iOS archive in Organizer) — the finished half of the 2.0.0 plan: stats names, iPad card grids, self-hosted sync without Plus, one phone publishes the profile, the Wrapped overlap, Moving from another phone?, server-managed templates, Your devices (cap of five), the GitHub APK, a yearly goal, Serializd import, and the empty-owner library fix. The daily puzzle and the social features stay in 2.0.0 |
@@ -40,6 +41,25 @@ Play Console record rather than per-change.
 
 ---
 
+
+## 2.0.2 — in development (iOS 97 reserved)
+
+**Simkl import, fixed against two real backups** (one a full 2,200-title
+library from a German blog's tester): the backup nests title and ids under
+`show` / `movie`, which the parser never read, so every Simkl import came out
+empty and fell through to an English "no CSV" error naming TV Time.
+- Shows, anime and films, every episode with its date.
+- Anime films (Spirited Away, Totoro) are films, matched by their TMDB id.
+- Memos become private notes; dropped shows arrive archived; plan-to-watch
+  shows are followed; watchlist films keep the date they were added.
+- Simkl's CSV (last episode only) is refused with a sentence in nine languages
+  pointing at the ZIP from simkl.com/apps/backup, before Replace can wipe.
+- The empty-file error is translated and names no app.
+- A resumed import of a bare JSON/CSV can be read, and no longer overwrites the
+  preserved TV Time original.
+- Re-importing the same file adds nothing twice (checked three times over).
+
+---
 
 ## 2.0.1 — built 25 Oct 2026 (Android 113, iOS 96)
 
