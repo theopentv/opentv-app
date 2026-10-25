@@ -259,6 +259,20 @@ describe('simklRows', () => {
     expect(out.notes).toEqual({ shows: [{ showId: 73739, season: -1, episode: -1, text: 'gave up in S3' }], movies: [{ movie: 'Heat', text: 'Best heist' }] });
   });
 
+  it('anime films are films, with their TMDB id; anime series stay shows', () => {
+    const out = simklRows({
+      anime: [
+        { status: 'completed', anime_type: 'movie', last_watched_at: '2019-08-24T10:31:36Z', show: { title: 'Sen to Chihiro no Kamikakushi', year: 2001, ids: { tvdb: '276', tmdb: '129' } } },
+        { status: 'plantowatch', anime_type: 'movie', show: { title: 'Kimi no Na wa.', year: 2016, ids: { tvdb: '197', tmdb: '372058' } } },
+        { status: 'completed', anime_type: 'tv', show: { title: 'Hagane no Renkinjutsushi', ids: { tvdb: '85249' } }, seasons: [{ number: 1, episodes: [{ number: 1, watched_at: '2026-01-01' }] }] },
+      ],
+    });
+    expect(out.showRows.map((r) => r.tv_show_id)).toEqual(['85249']);
+    expect(out.movieRows.find((r) => r.movie_name === 'Sen to Chihiro no Kamikakushi')).toMatchObject({ type: 'watch', created_at: '2019-08-24T10:31:36Z' });
+    expect(out.movieRows.find((r) => r.movie_name === 'Kimi no Na wa.')?.type).toBe('towatch');
+    expect(out.movieTmdb).toEqual([{ name: 'Sen to Chihiro no Kamikakushi', tmdbId: 129 }, { name: 'Kimi no Na wa.', tmdbId: 372058 }]);
+  });
+
   it('survives a file that is not what anybody expected', () => {
     expect(simklRows(null).movieRows).toEqual([]);
     expect(simklRows({ shows: [{ title: 'x' }] }).episodeRows).toEqual([]);

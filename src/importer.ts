@@ -914,6 +914,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   let foreignEpRatings: { name: string; season: number; episode: number; ten: number }[] = [];
   let foreignComments: { entity: string; text: string; date: string }[] = [];
   let foreignNotes: NonNullable<ReturnType<typeof simklRows>['notes']> = { shows: [], movies: [] };
+  let foreignMovieTmdb = new Map<string, number>();
   if (v2all.length === 0 && showRows.length === 0 && detectForeignSource(Object.keys(files)) === 'letterboxd') {
     const parsed: Record<string, Record<string, string>[]> = {};
     for (const k of Object.keys(files)) {
@@ -1020,6 +1021,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       foreignEpRatings = mapped.episodeRatings ?? [];
       foreignComments = mapped.comments ?? [];
       foreignNotes = mapped.notes ?? foreignNotes;
+      foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
     }
   }
 
@@ -1684,6 +1686,21 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       if (ex?.tmdbId) {
         movieInfo.set(m.name, { poster: ex.poster, year: ex.year, tmdbId: ex.tmdbId });
         return null;
+      }
+      // The file named the film's TMDB id (Simkl): ask for that film.
+      const fid = foreignMovieTmdb.get(m.name);
+      if (fid) {
+        try {
+          const f = await tmdb<{ poster_path?: string; release_date?: string; id: number }>(`/movie/${fid}`);
+          movieInfo.set(m.name, {
+            poster: f.poster_path ? `https://image.tmdb.org/t/p/w342${f.poster_path}` : null,
+            year: (f.release_date || '').slice(0, 4) || null,
+            tmdbId: f.id,
+          });
+          return null;
+        } catch {
+          // falls through to the title search below
+        }
       }
       const res = await tmdb<{
         results: { title?: string; original_title?: string; poster_path?: string; release_date?: string; id: number; vote_count?: number }[];

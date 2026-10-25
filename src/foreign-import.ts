@@ -48,6 +48,10 @@ export type ForeignRows = {
   /** Private notes (Simkl's memos), never published: a show's whole-show note
    *  is season -1 / episode -1, the same key the notes screen writes. */
   notes?: { shows: { showId: number; season: number; episode: number; text: string }[]; movies: { movie: string; text: string }[] };
+  /** A film's TMDB id where the file names it (Simkl), so the importer asks
+   *  for that film instead of searching its title: Simkl names anime films in
+   *  romaji ("Sen to Chihiro no Kamikakushi"), which no title search finds. */
+  movieTmdb?: { name: string; tmdbId: number }[];
 };
 
 export const NO_ROWS: ForeignRows = { showRows: [], episodeRows: [], movieRows: [], movieRatings: [] };
@@ -768,8 +772,17 @@ export function simklRows(json: unknown): ForeignRows {
   // older or hand-made file.
   const titleOf = (e: SimklEntry, key: 'show' | 'movie'): ForeignTitle => e[key] ?? { title: e.title, year: e.year, ids: e.ids };
 
-  // Anime is its own list in the file, and on TheTVDB it is just another show.
-  for (const entry of [...(doc.shows ?? []), ...(doc.anime ?? [])]) {
+  // ANIME FILMS ARE FILMS. Simkl lists them under anime with `anime_type:
+  // "movie"`, and their tvdb id is a TheTVDB FILM id: read as a show it named a
+  // poster-less "show" (Spirited Away, Totoro) and could collide with a real
+  // series holding the same number.
+  const anime = doc.anime ?? [];
+  const animeFilms = anime.filter((e) => (e as { anime_type?: string }).anime_type === 'movie');
+  const animeShows = anime.filter((e) => (e as { anime_type?: string }).anime_type !== 'movie');
+  const movieTmdb: NonNullable<ForeignRows['movieTmdb']> = [];
+
+  // The rest of the anime list is, on TheTVDB, just more shows.
+  for (const entry of [...(doc.shows ?? []), ...animeShows]) {
     const show = titleOf(entry, 'show');
     let episodes = 0;
     for (const season of entry.seasons ?? []) {
@@ -789,8 +802,10 @@ export function simklRows(json: unknown): ForeignRows {
     if (tvdb && memo) notes.shows.push({ showId: Number(tvdb), season: -1, episode: -1, text: memo });
   }
 
-  for (const entry of doc.movies ?? []) {
-    const m = titleOf(entry, 'movie');
+  for (const entry of [...(doc.movies ?? []), ...animeFilms]) {
+    const m = entry.movie ?? titleOf(entry, 'show');
+    const tmdb = Number(m.ids?.tmdb);
+    if (m.title && Number.isFinite(tmdb) && tmdb > 0) movieTmdb.push({ name: m.title, tmdbId: tmdb });
     // `plantowatch` is Simkl's watchlist; anything else with a date is a watch.
     const item: ForeignItem = { movie: { title: m.title, year: m.year, ids: m.ids }, type: 'movie' };
     if (entry.status === 'plantowatch') watchlist.push({ ...item, listed_at: entry.added_to_watchlist_at ?? entry.watched_at ?? '' });
@@ -807,6 +822,7 @@ export function simklRows(json: unknown): ForeignRows {
     if (!have.has(tvdb)) rows.showRows.push({ tv_show_id: tvdb, tv_show_name: name, is_followed: '1', is_favorited: '0', archived: dropped.has(tvdb) ? '1' : '0' });
   }
   if (notes.shows.length || notes.movies.length) rows.notes = notes;
+  if (movieTmdb.length) rows.movieTmdb = movieTmdb;
   return rows;
 }
 
