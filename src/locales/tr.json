@@ -1143,13 +1143,14 @@
     "from": {
       "tvtime": "TV Time kapanmadan önce sana gönderdiği ZIP dosyası — Dosyalar'a, İndirilenler'e ya da o e-postaya bak.",
       "trakt": "trakt.tv'den aldığın dışa aktarma (Settings → Data → Export) — bir JSON ya da ZIP dosyası.",
-      "simkl": "simkl.com'dan aldığın yedek (Settings → Export) — bir JSON dosyası.",
+      "simkl": "simkl.com/apps/backup adresindeki yedeğin: içinde JSON dosyası olan ZIP (CSV yalnızca son bölümünü içerir).",
       "letterboxd": "letterboxd.com'dan aldığın dışa aktarma (Settings → Import & Export) — bir ZIP ya da CSV dosyası.",
       "imdb": "imdb.com'dan puanların ya da izleme listen (⋯ menüsü → Export) — bir CSV dosyası.",
       "title": "Geçmişin nereden geliyor?",
       "change": "Başka bir uygulama",
       "opentv": "Diğer telefonundaki dışa aktarma dosyası — oradaki OpenTV'de: Ayarlar → Kitaplık → Yedekleme → Verilerimi dışa aktar. Bir ZIP dosyası."
-    }
+    },
+    "nothingRead": "Bu dosyada dizi, bölüm ya da film bulunamadı. Geldiğin uygulamanın tam dışa aktarımı olduğundan emin ol; eksik bir dosya ya da ekran görüntüsü olmasın. Simkl için simkl.com/apps/backup adresindeki ZIP'i kullan."
   },
   "episode": {
     "genericShowLabel": "Dizi",

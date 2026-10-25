@@ -182,6 +182,11 @@ export function foundCsvsMessage(fileKeys: string[]): string {
  * another phone. Recognised so the importer can say so, instead of "no CSV".
  * Only the head is read; Trakt and Simkl exports are JSON too and never start so.
  */
+/** Thrown when a file yields no shows, episodes or films; `import.tsx` shows
+ *  `import.nothingRead` in the reader's language. It used to be an English
+ *  sentence naming TV Time, whatever app the file came from. */
+export const NOTHING_READ = 'opentv:nothing-read';
+
 /** Thrown by the importer for it; `import.tsx` shows `import.jsonBackup`. */
 export const RAW_JSON_BACKUP = 'opentv:raw-json-backup';
 export function isRawJsonBackup(head: string): boolean {

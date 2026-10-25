@@ -10,7 +10,7 @@ import { offerCommunityIfDue } from '@/community-prompt';
 import { isJoined } from '@/community-session';
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import db, { countSeedableCommentRows, getMeta, hasLibrary, libraryOwner, setMeta } from '@/db';
-import { mixHex, RAW_JSON_BACKUP } from '@/pure';
+import { mixHex, NOTHING_READ, RAW_JSON_BACKUP } from '@/pure';
 import { tapLight } from '@/haptics';
 import { PopcornGame } from '@/components/popcorn-game';
 import type { ImportResult, Progress } from '@/importer';
@@ -435,6 +435,8 @@ export default function ImportScreen() {
       Alert.alert(t('import.buildNeededTitle'), t('import.buildNeededBody'));
     } else if (msg === RAW_JSON_BACKUP) {
       Alert.alert(t('import.importFailedTitle'), t('import.jsonBackup'));
+    } else if (msg === NOTHING_READ) {
+      Alert.alert(t('import.importFailedTitle'), t('import.nothingRead'));
     } else {
       Alert.alert(
         fromCloud ? t('import.restoreFailedTitle') : t('import.importFailedTitle'),

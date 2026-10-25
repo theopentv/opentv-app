@@ -741,35 +741,57 @@ export function traktRows(payload: {
  * argument is that it keeps the dates.
  */
 export function simklRows(json: unknown): ForeignRows {
-  const doc = (json ?? {}) as { shows?: ForeignItem[]; movies?: ForeignItem[] };
+  type SimklSeason = { number?: number; episodes?: { number?: number; watched_at?: string }[] };
+  type SimklEntry = ForeignItem & {
+    status?: string;
+    added_to_watchlist_at?: string;
+    seasons?: SimklSeason[];
+  };
+  const doc = (json ?? {}) as { shows?: SimklEntry[]; anime?: SimklEntry[]; movies?: SimklEntry[] };
   const history: ForeignItem[] = [];
   const ratings: ForeignItem[] = [];
   const watchlist: ForeignItem[] = [];
+  /** Shows with nothing watched yet (Simkl's "plan to watch"): followed, no episodes. */
+  const followOnly = new Map<string, string>();
 
-  for (const show of doc.shows ?? []) {
-    const seasons = (show as { seasons?: { number?: number; episodes?: { number?: number; watched_at?: string }[] }[] })
-      .seasons;
-    for (const season of seasons ?? []) {
+  // THE REAL FILE NESTS: `{ status, seasons, show: { title, ids } }`. The flat
+  // `{ title, ids, seasons }` the first version assumed is still read, for any
+  // older or hand-made file.
+  const titleOf = (e: SimklEntry, key: 'show' | 'movie'): ForeignTitle => e[key] ?? { title: e.title, year: e.year, ids: e.ids };
+
+  // Anime is its own list in the file, and on TheTVDB it is just another show.
+  for (const entry of [...(doc.shows ?? []), ...(doc.anime ?? [])]) {
+    const show = titleOf(entry, 'show');
+    let episodes = 0;
+    for (const season of entry.seasons ?? []) {
       for (const ep of season.episodes ?? []) {
+        episodes += 1;
         history.push({
-          watched_at: ep.watched_at ?? show.last_watched_at ?? '',
+          watched_at: ep.watched_at ?? entry.last_watched_at ?? '',
           show: { title: show.title, ids: show.ids },
           episode: { season: season.number, number: ep.number },
         });
       }
     }
+    const tvdb = idText(show.ids?.tvdb);
+    if (episodes === 0 && tvdb && show.title) followOnly.set(tvdb, show.title);
   }
 
-  for (const movie of doc.movies ?? []) {
+  for (const entry of doc.movies ?? []) {
+    const m = titleOf(entry, 'movie');
     // `plantowatch` is Simkl's watchlist; anything else with a date is a watch.
-    const status = (movie as { status?: string }).status;
-    const item: ForeignItem = { movie: { title: movie.title, year: movie.year, ids: movie.ids }, type: 'movie' };
-    if (status === 'plantowatch') watchlist.push({ ...item, listed_at: movie.watched_at ?? '' });
-    else history.push({ ...item, watched_at: movie.watched_at ?? movie.last_watched_at ?? '' });
-    if (movie.user_rating != null) ratings.push({ ...item, rating: movie.user_rating });
+    const item: ForeignItem = { movie: { title: m.title, year: m.year, ids: m.ids }, type: 'movie' };
+    if (entry.status === 'plantowatch') watchlist.push({ ...item, listed_at: entry.added_to_watchlist_at ?? entry.watched_at ?? '' });
+    else history.push({ ...item, watched_at: entry.watched_at ?? entry.last_watched_at ?? '' });
+    if (entry.user_rating != null) ratings.push({ ...item, rating: entry.user_rating });
   }
 
-  return traktRows({ history, watchlist, ratings });
+  const rows = traktRows({ history, watchlist, ratings });
+  const have = new Set(rows.showRows.map((r) => r.tv_show_id));
+  for (const [tvdb, name] of followOnly) {
+    if (!have.has(tvdb)) rows.showRows.push({ tv_show_id: tvdb, tv_show_name: name, is_followed: '1', is_favorited: '0', archived: '0' });
+  }
+  return rows;
 }
 
 /**

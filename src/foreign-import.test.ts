@@ -197,6 +197,55 @@ describe('simklRows', () => {
     expect(out.movieRatings).toEqual([{ name: 'Heat', ten: 8 }]);
   });
 
+  /*
+   * THE SHAPE OF A REAL FILE (simkl.com/apps/backup, 25 Oct 2026): the title
+   * and ids sit one level down, in `show` / `movie`, and anime has its own
+   * list. The two tests above were written against a guessed flat shape before
+   * anybody had a file, so they passed while every real import came out empty
+   * and fell through to the TV Time "no CSV" error (a German user's report).
+   */
+  it('reads a real backup: nested show/movie objects, and anime', () => {
+    const out = simklRows({
+      shows: [
+        {
+          status: 'watching',
+          last_watched_at: '2026-10-25T11:58:42Z',
+          show: { title: 'Game of Thrones', year: 2011, ids: { simkl: 17465, tvdb: '121361', tmdb: '1399' } },
+          seasons: [{ number: 1, episodes: [{ number: 1, watched_at: '2026-10-25T11:57:00Z' }, { number: 2, watched_at: '2026-10-25T11:57:01Z' }] }],
+        },
+      ],
+      anime: [
+        {
+          status: 'completed',
+          anime_type: 'tv',
+          show: { title: 'Hagane no Renkinjutsushi', ids: { tvdb: '85249', mal: 5114 } },
+          seasons: [{ number: 1, episodes: [{ number: 1, watched_at: '2026-10-25T11:59:00Z' }] }],
+        },
+      ],
+      movies: [
+        { status: 'completed', last_watched_at: '2026-10-20T20:00:00Z', user_rating: 9, movie: { title: 'Heat', year: 1995, ids: { tmdb: '949' } } },
+        { status: 'plantowatch', added_to_watchlist_at: '2026-10-21T10:00:00Z', movie: { title: 'Stalker', year: 1979, ids: {} } },
+      ],
+    });
+    expect(out.episodeRows.map((r) => [r.s_id, r.season_number, r.episode_number, r.series_name])).toEqual([
+      ['121361', '1', '1', 'Game of Thrones'],
+      ['121361', '1', '2', 'Game of Thrones'],
+      ['85249', '1', '1', 'Hagane no Renkinjutsushi'],
+    ]);
+    expect(out.episodeRows[0].created_at).toBe('2026-10-25T11:57:00Z');
+    expect(out.showRows.map((r) => r.tv_show_id).sort()).toEqual(['121361', '85249']);
+    expect(out.movieRows.find((r) => r.movie_name === 'Heat')).toMatchObject({ type: 'watch', created_at: '2026-10-20T20:00:00Z', movie_year: '1995' });
+    expect(out.movieRows.find((r) => r.movie_name === 'Stalker')).toMatchObject({ type: 'towatch', created_at: '2026-10-21T10:00:00Z' });
+    expect(out.movieRatings).toEqual([{ name: 'Heat', ten: 9 }]);
+  });
+
+  it('follows a show that is only on the watchlist (no episodes yet)', () => {
+    const out = simklRows({
+      shows: [{ status: 'plantowatch', show: { title: 'Severance', ids: { tvdb: '371980' } }, seasons: [] }],
+    });
+    expect(out.showRows).toEqual([expect.objectContaining({ tv_show_id: '371980', tv_show_name: 'Severance' })]);
+  });
+
   it('survives a file that is not what anybody expected', () => {
     expect(simklRows(null).movieRows).toEqual([]);
     expect(simklRows({ shows: [{ title: 'x' }] }).episodeRows).toEqual([]);

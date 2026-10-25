@@ -39,7 +39,7 @@ import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, del
 import { withImportLock } from '@/import-lock';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
 import { notesFromSidecar } from '@/notes-pure';
-import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
+import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, NOTHING_READ, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
 import { lookupWithRetry, tmdb, pool } from '@/tmdb';
 import { fetchToDocuments } from '@/fetch-to-documents';
 import { netIsOpen } from '@/net-circuit';
@@ -1829,9 +1829,10 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   // is the worst outcome for a "bring your TV Time history" app, so surface a
   // real error naming what we actually found. import.tsx shows the message.
   if (shows.length === 0 && watches.length === 0 && movies.length === 0) {
-    throw new Error(
-      `We couldn't read any shows, episodes or movies from this file. Please make sure it's the full TV Time data export (the ZIP they email you), not a screenshot or a partial file. ${foundCsvsMessage(Object.keys(files))}`,
-    );
+    // The file list stays in the log for support; the reader gets a sentence
+    // in their language that names no particular app.
+    console.warn(`[import] nothing read. ${foundCsvsMessage(Object.keys(files))}`);
+    throw new Error(NOTHING_READ);
   }
 
   // ---- write everything to SQLite, atomically -------------------------------------

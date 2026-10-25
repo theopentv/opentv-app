@@ -12,6 +12,7 @@ import db, { backfillShowTmdbIds, dedupeDuplicateMovies, dedupeDuplicateShows, g
 import { withImportLock } from '@/import-lock';
 import { takeSnapshot } from '@/pre-tvdb-snapshot';
 import { zipLookupVerdict } from '@/pure';
+import { isTvTimeExport } from '../packages/tvtime-export/src';
 import { netBudget } from '@/net-circuit';
 
 function b64ToBytes(b64: string): Uint8Array {
@@ -402,7 +403,14 @@ export async function resumeInterruptedImport(): Promise<void> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { importZipBytes } = require('@/importer') as typeof import('@/importer');
-      const result = await importZipBytes(bytes, () => {});
+      // A ZIP opens on its own; a bare file needs a name for the importer to
+      // know what it is (a Simkl JSON or an IMDb CSV, staged under the same
+      // .zip name). Without one, an interrupted Simkl import failed on resume
+      // with TV Time's "no CSV" error, every launch.
+      const isZip = bytes.length > 1 && bytes[0] === 0x50 && bytes[1] === 0x4b;
+      const head = String.fromCharCode(...bytes.subarray(0, 16)).trimStart();
+      const bareName = isZip ? undefined : head.startsWith('{') || head.startsWith('[') ? 'import.json' : 'import.csv';
+      const result = await importZipBytes(bytes, () => {}, bareName);
       // A resumed import has no screen in front of it, so its summary — the
       // counts AND the "Needs attention" list — was thrown away: the import
       // silently finished and the user was never told which shows failed to
@@ -413,9 +421,14 @@ export async function resumeInterruptedImport(): Promise<void> {
         // an unserialisable summary must never fail the import itself
       }
       // committed — promote to the preserved original, THEN clear the flag last
-      const orig = new File(Paths.document, 'tvtime-original.zip');
-      if (orig.exists) orig.delete();
-      orig.writeSync(bytes);
+      // ONLY A TV TIME EXPORT IS PRESERVED, as `pickAndImport` already does: a
+      // resumed Simkl or IMDb file overwrote the TV Time original the
+      // self-repair re-reads.
+      if (isTvTimeExport(bytes)) {
+        const orig = new File(Paths.document, 'tvtime-original.zip');
+        if (orig.exists) orig.delete();
+        orig.writeSync(bytes);
+      }
       const staged = new File(Paths.document, 'tvtime-importing.zip');
       if (staged.exists) staged.delete();
       setMeta('importPending', '');

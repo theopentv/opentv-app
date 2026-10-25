@@ -1213,13 +1213,14 @@
     "from": {
       "tvtime": "Plik ZIP, który TV Time wysłał ci przed zamknięciem — zajrzyj do Plików, Pobranych lub tamtego maila.",
       "trakt": "Twój eksport z trakt.tv (Settings → Data → Export) — plik JSON lub ZIP.",
-      "simkl": "Twoja kopia z simkl.com (Settings → Export) — plik JSON.",
+      "simkl": "Twoja kopia z simkl.com/apps/backup: plik ZIP z plikiem JSON w środku (CSV zawiera tylko ostatni odcinek).",
       "letterboxd": "Twój eksport z letterboxd.com (Settings → Import & Export) — plik ZIP lub CSV.",
       "imdb": "Twoje oceny lub lista do obejrzenia z imdb.com (menu ⋯ → Export) — plik CSV.",
       "title": "Skąd pochodzi twoja historia?",
       "change": "Inna aplikacja",
       "opentv": "Plik eksportu z twojego drugiego telefonu — w tamtym OpenTV: Ustawienia → Biblioteka → Kopia zapasowa → Eksportuj moje dane. Plik ZIP."
-    }
+    },
+    "nothingRead": "W tym pliku nie znaleziono seriali, odcinków ani filmów. Sprawdź, czy to pełny eksport z aplikacji, z której przechodzisz, a nie częściowy plik lub zrzut ekranu. Dla Simkl użyj pliku ZIP z simkl.com/apps/backup."
   },
   "episode": {
     "genericShowLabel": "Serial",

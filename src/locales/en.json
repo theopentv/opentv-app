@@ -1143,13 +1143,14 @@
     "from": {
       "tvtime": "The ZIP file TV Time sent you before it shut down — look in Files, Downloads or that email.",
       "trakt": "Your export from trakt.tv (Settings → Data → Export) — a JSON or ZIP file.",
-      "simkl": "Your backup from simkl.com (Settings → Export) — a JSON file.",
+      "simkl": "Your backup from simkl.com/apps/backup: the ZIP with a JSON file inside (the CSV has only your last episode).",
       "letterboxd": "Your export from letterboxd.com (Settings → Import & Export) — a ZIP or CSV file.",
       "imdb": "Your ratings or watchlist from imdb.com (the ⋯ menu → Export) — a CSV file.",
       "title": "Where is your history coming from?",
       "change": "Another app",
       "opentv": "The export file from your other phone — in OpenTV there: Settings → Library → Backup → Export my data. A ZIP file."
-    }
+    },
+    "nothingRead": "We couldn't find any shows, episodes or films in this file. Check that it's the complete export from the app you're moving from, not a partial file or a screenshot. For Simkl, use the ZIP from simkl.com/apps/backup."
   },
   "episode": {
     "genericShowLabel": "Show",

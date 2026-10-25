@@ -931,6 +931,7 @@ export type LocaleKey =
   | "import.jsonBackup"
   | "import.keepOpenBody"
   | "import.mergeIntoLibrary"
+  | "import.nothingRead"
   | "import.restoreFailedTitle"
   | "import.restoringLists"
   | "import.steps.step1"
