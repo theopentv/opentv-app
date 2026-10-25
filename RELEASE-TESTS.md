@@ -12,6 +12,35 @@ failure written next to it, not in a commit message.
 
 ---
 
+## 2.0.1 — built 25 Oct 2026 (iOS 93)
+
+Simulator ticks are marked (sim); none of these has run on a real phone yet.
+
+### SDK 58 on a real phone (iPhone and Android)
+- [ ] Opens, imports nothing new, library intact after the update from 2.0.0
+- [ ] Mark an episode watched, rate a film, open a show, swipe a show page down to close
+- [ ] Widgets still update (iOS widget target survived the local archive)
+- [ ] Push notification arrives (community reply)
+
+### iPhone Duo (sim only; no Duo exists to test on)
+- [x] (sim) Closed: tabs, back / close / ⋯ and the profile bell sit in the strip
+- [x] (sim) Comment writing page: ✕ in the strip, POST in the bottom row
+- [x] (sim) Episode pager swipes without drift
+- [ ] Open on its side: paywall and welcome in the right half, nothing on the fold
+- [ ] Half-written comment beside a show survives folding closed
+- [ ] Profile on the closed Duo: collapsed bar 80pt, name centred
+
+### Everywhere
+- [x] (sim) Comments without the community: ✎ opens the writing page; POST adds the note
+- [x] (sim) Settings → General → Classic tab bar: 2.0.0's bar after relaunch (set via the database, not the switch)
+- [ ] The Classic tab bar switch itself, on, relaunch, off, relaunch
+- [x] (sim) Profile bell on the left, ⋯ on the right (iPhone)
+- [x] (sim) iPad: profile 900pt, bigger avatar, Watching together fills its box
+- [ ] A show link opened while the app is closed (cold start) lands on the show
+- [ ] Lists / shared list: ⋯ stays (greyed) while editing
+
+---
+
 ## 2.0.0 — merged 14 Oct 2026, not yet on a device
 
 Deploy the server first, in this order: D1 migrations 0055, 0056, 0059 and 0061, then the Worker. The deploy also applies Durable Object migration v1. 0055 MUST land before the Worker, or `/v1/me/feed` answers 500. 0061 (personal offers, backend branch `2.0.0-offers`) is not deployed yet, and offers can't be tested until it is. Simkl needs a client id in `src/simkl-key.ts`, which is still empty. Two test accounts: amanda (A) and opentvtestamanda (B), who follow each other.
