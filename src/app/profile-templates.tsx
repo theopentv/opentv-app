@@ -10,7 +10,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 
 import { communityErrorText } from '@/community-error-text';
@@ -59,7 +59,17 @@ export default function ProfileTemplatesScreen() {
   // Two columns on a phone, three to five on an iPad (`cardGrid`). This was
   // `(min(width, 700) - padding - gap) / 2`: two cards and the right third of
   // a 13" iPad empty, because the cap shrank the cards without centring them.
-  const cardW = cardGrid(width, space.lg, GAP).cellW;
+  // A card is 1.9x as tall as it is wide. On a short, wide screen (the open
+  // iPhone Duo on its side: 867 x 669) two columns made each card taller than
+  // the screen, so one row was all anybody saw and the other templates sat
+  // out of sight. Cards are capped at ~45% of the screen's height there, which
+  // brings in more columns; phones and portrait iPads are unchanged.
+  const { height } = useWindowDimensions();
+  const maxCardW = (height * 0.45) / 1.9;
+  const fit = cardGrid(width, space.lg, GAP);
+  const inner = width - space.lg * 2;
+  const capCols = Math.ceil((inner + GAP) / (maxCardW + GAP));
+  const cardW = fit.cellW <= maxCardW ? fit.cellW : (inner - GAP * (capCols - 1)) / capCols;
   const avatar = profileImageUri('avatar');
   const initial = (getMeta('username') ?? '?')[0]?.toUpperCase() ?? '?';
   // From the reader's own shows and films — fetched, so they arrive a moment after the made ones.
