@@ -49,7 +49,7 @@ const STORE_URL = SIDELOADED
   : Platform.OS === 'android'
     ? 'https://play.google.com/store/apps/details?id=com.insightfy.opentv'
     : 'https://apps.apple.com/app/id6787399404';
-const CTA_KEY = SIDELOADED ? 'sideload.updateCta' : 'updateGate.cta';
+const CTA_KEY = SIDELOADED ? 'sideload.updateCta' : Platform.OS === 'android' ? 'updateGate.ctaAndroid' : 'updateGate.cta';
 
 /** Which version the reader last dismissed a soft prompt for. */
 const SEEN_KEY = 'updateSuggestSeen';
@@ -126,7 +126,7 @@ export function UpdateGate() {
         <Ionicons name="arrow-up-circle-outline" size={44} color={colors.yellow} />
       </View>
       <Text accessibilityRole="header" style={styles.title}>{t('updateGate.title')}</Text>
-      <Text style={styles.sub}>{t(SIDELOADED ? 'sideload.updateBody' : 'updateGate.body')}</Text>
+      <Text style={styles.sub}>{t(SIDELOADED ? 'sideload.updateBody' : Platform.OS === 'android' ? 'updateGate.bodyAndroid' : 'updateGate.body')}</Text>
       <Pressable accessibilityRole="button" style={styles.cta} onPress={() => void Linking.openURL(STORE_URL)}>
         <Text style={styles.ctaText}>{t(CTA_KEY)}</Text>
       </Pressable>

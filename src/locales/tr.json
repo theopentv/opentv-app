@@ -79,7 +79,9 @@
     "cta": "APP STORE'DA GÜNCELLE",
     "suggestTitle": "Yeni sürüm çıktı",
     "suggestBody": "En yeni özellikler, düzeltmeler ve güvenlik güncellemeleriyle en iyi deneyimi yaşarsın.",
-    "later": "Şimdi değil"
+    "later": "Şimdi değil",
+    "bodyAndroid": "OpenTV'nin bu sürümü artık desteklenmiyor. Takibe devam etmek için Google Play'den güncelle — kitaplığın ve yedeğin olduğu gibi kalır.",
+    "ctaAndroid": "GOOGLE PLAY'DE GÜNCELLE"
   },
   "startupRepair": {
     "body": "İçe aktardığın kitaplık iyileştiriliyor. Bu, güncellemeden sonra bir kez çalışır ve biraz sürebilir — lütfen uygulamayı açık tut."
@@ -2736,7 +2738,8 @@
     "now": "Puanla",
     "later": "Şimdi değil",
     "freshTitle": "OpenTV'yi beğendin mi?",
-    "freshBody": "Burada {{count}} bölüm takip ettin. OpenTV yerini hak ediyorsa, mağazada bir puan sandığından çok daha fazla yardımcı olur — sonraki kişinin ilk gördüğü şey o."
+    "freshBody": "Burada {{count}} bölüm takip ettin. OpenTV yerini hak ediyorsa, mağazada bir puan sandığından çok daha fazla yardımcı olur — sonraki kişinin ilk gördüğü şey o.",
+    "bodyAndroid": "OpenTV az önce {{count}} bölümü telefonuna geri getirdi. Bu bir işe yaradıysa, Google Play'de bir puan sandığından çok daha fazla yardımcı olur — sonraki kişinin ilk gördüğü şey o."
   },
   "signIn": {
     "title": "Bir hesap",

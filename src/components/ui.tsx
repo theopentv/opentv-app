@@ -199,6 +199,10 @@ export function NavHeader({
         headerTintColor: colors.text,
         headerTitleStyle: { color: colors.text },
         headerShadowVisible: false,
+        // ANDROID PAINTS ITS NATIVE HEADER WHITE unless told otherwise (2.0.1:
+        // every NavHeader screen had a white band with a white, invisible back
+        // arrow on it). iOS keeps its glass header and draws no background.
+        ...(Platform.OS === 'android' ? { headerStyle: { backgroundColor: colors.bg } } : {}),
         headerBackButtonDisplayMode: 'minimal',
         // Long-pressing back lists the screens behind by title, and the tab
         // container's is its route name, "(tabs)". One step back is all we need.

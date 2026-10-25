@@ -79,7 +79,9 @@
     "cta": "METTRE À JOUR SUR L'APP STORE",
     "suggestTitle": "Une nouvelle version est là",
     "suggestBody": "Elle apporte les dernières fonctionnalités, des correctifs et des mises à jour de sécurité, pour la meilleure expérience possible.",
-    "later": "Plus tard"
+    "later": "Plus tard",
+    "bodyAndroid": "Cette version d'OpenTV n'est plus prise en charge. Mets-la à jour depuis Google Play pour continuer à suivre tes séries — ta bibliothèque et ta sauvegarde restent intactes.",
+    "ctaAndroid": "METTRE À JOUR SUR GOOGLE PLAY"
   },
   "startupRepair": {
     "body": "Amélioration de ta bibliothèque importée en cours. Cette opération ne se fait qu'une fois après une mise à jour et peut prendre un moment — laisse l'app ouverte."
@@ -2736,7 +2738,8 @@
     "now": "Noter",
     "later": "Plus tard",
     "freshTitle": "OpenTV vous plaît ?",
-    "freshBody": "Vous avez suivi {{count}} épisodes ici. Si OpenTV mérite sa place, une note sur le store aide plus qu'on ne le croit — c'est la première chose que voit la personne suivante."
+    "freshBody": "Vous avez suivi {{count}} épisodes ici. Si OpenTV mérite sa place, une note sur le store aide plus qu'on ne le croit — c'est la première chose que voit la personne suivante.",
+    "bodyAndroid": "OpenTV vient de remettre {{count}} épisodes sur votre téléphone. Si ça valait quelque chose, une note sur Google Play aide plus qu'on ne croit : c'est la première chose que voit la personne suivante."
   },
   "signIn": {
     "title": "Un compte",

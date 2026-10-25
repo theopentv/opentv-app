@@ -79,7 +79,9 @@
     "cta": "ACTUALIZAR EN LA APP STORE",
     "suggestTitle": "Hay una nueva versión",
     "suggestBody": "Trae las últimas funciones, correcciones y actualizaciones de seguridad, para que tengas la mejor experiencia posible.",
-    "later": "Ahora no"
+    "later": "Ahora no",
+    "bodyAndroid": "Esta versión de OpenTV ya no es compatible. Actualiza desde Google Play para seguir usándola — tu biblioteca y tu copia de seguridad quedan intactas.",
+    "ctaAndroid": "ACTUALIZAR EN GOOGLE PLAY"
   },
   "startupRepair": {
     "body": "Mejorando tu biblioteca importada. Esto ocurre una sola vez tras una actualización y puede tardar un momento — mantén la aplicación abierta."
@@ -2736,7 +2738,8 @@
     "now": "Valorar",
     "later": "Ahora no",
     "freshTitle": "¿Te gusta OpenTV?",
-    "freshBody": "Has registrado {{count}} episodios aquí. Si OpenTV se está ganando su sitio, una valoración en la tienda ayuda más de lo que crees: es lo primero que ve la siguiente persona."
+    "freshBody": "Has registrado {{count}} episodios aquí. Si OpenTV se está ganando su sitio, una valoración en la tienda ayuda más de lo que crees: es lo primero que ve la siguiente persona.",
+    "bodyAndroid": "OpenTV acaba de devolver {{count}} episodios a tu teléfono. Si eso valió algo, una valoración en Google Play ayuda más de lo que parece: es lo primero que ve la siguiente persona."
   },
   "signIn": {
     "title": "Una cuenta",

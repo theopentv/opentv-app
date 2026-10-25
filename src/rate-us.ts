@@ -104,7 +104,7 @@ export function maybeAskForRating(episodesRecovered: number): void {
      * "4182" where the profile and the import summary both say "4,182" — and
      * the whole point of the sentence is that the number feels large.
      */
-    ask(t('rate.title'), t('rate.body', { count: formatCount(episodesRecovered, currentLocale()) }));
+    ask(t('rate.title'), t(Platform.OS === 'android' ? 'rate.bodyAndroid' : 'rate.body', { count: formatCount(episodesRecovered, currentLocale()) }));
   } catch {
     // No store on this build, or a simulator. Both normal.
   }
