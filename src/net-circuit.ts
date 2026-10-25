@@ -46,6 +46,11 @@ let consecutive = 0;
 let openedAt = 0;
 let probing = false;
 let deadline = 0;
+/** How many times the breaker has opened since launch — the importer compares
+ *  it before and after a pass to know whether the network failed mid-pass. */
+let trips = 0;
+
+export const netTrips = (): number => trips;
 
 /** Thrown instead of making a request the breaker believes will fail.
  *  Callers treat it exactly like any other fetch failure — `pool` records a
@@ -110,7 +115,10 @@ export function netReachable(): void {
 export function netUnreachable(): void {
   probing = false;
   consecutive += 1;
-  if (consecutive === THRESHOLD) openedAt = Date.now();
+  if (consecutive === THRESHOLD) {
+    openedAt = Date.now();
+    trips += 1;
+  }
   else if (consecutive > THRESHOLD) openedAt = Date.now(); // a failed probe restarts the cooldown
 }
 

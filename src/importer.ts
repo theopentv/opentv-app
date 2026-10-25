@@ -40,7 +40,7 @@ import { withImportLock } from '@/import-lock';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
 import { notesFromSidecar } from '@/notes-pure';
 import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
-import { tmdb, pool } from '@/tmdb';
+import { lookupWithRetry, tmdb, pool } from '@/tmdb';
 import { fetchToDocuments } from '@/fetch-to-documents';
 import { netIsOpen } from '@/net-circuit';
 
@@ -1376,13 +1376,20 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       .replace(/ة/g, 'ه')
       .replace(/[^\p{L}\p{N}]+/gu, ' ')
       .trim();
-  await pool(
+  await lookupWithRetry(
     shows,
     async (s) => {
-      const found = await tmdb<{ tv_results: { id: number; poster_path?: string }[] }>(
-        `/find/${s.tvdbId}?external_source=tvdb_id`,
-      );
-      const hit = found.tv_results?.[0];
+      // In a try: a TMDB failure here used to end the whole lookup for the
+      // show, skipping the name search and TheTVDB below.
+      let hit: { id: number; poster_path?: string } | undefined;
+      try {
+        const found = await tmdb<{ tv_results: { id: number; poster_path?: string }[] }>(
+          `/find/${s.tvdbId}?external_source=tvdb_id`,
+        );
+        hit = found.tv_results?.[0];
+      } catch {
+        hit = undefined;
+      }
       if (hit?.id) {
         showTmdb.set(s.tvdbId, hit.id);
         if (hit.poster_path) showPosters.set(s.tvdbId, `https://image.tmdb.org/t/p/w342${hit.poster_path}`);
@@ -1428,6 +1435,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       }
       return null;
     },
+    (s) => !showTmdb.has(s.tvdbId) && !showTvdb.has(s.tvdbId),
     10,
     (done) =>
       onProgress({
@@ -1665,7 +1673,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
 
   type Resolved = { poster: string | null; year: string | null; tmdbId: number | null };
   const movieInfo = new Map<string, Resolved>();
-  await pool(
+  await lookupWithRetry(
     movies,
     async (m) => {
       // a link carried in the sidecar (earlier match or the user's Fix match)
@@ -1711,6 +1719,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       }
       return null;
     },
+    (m) => !movieInfo.get(m.name),
     10,
     (done) => onProgress({ phase: 'Finding movie artwork…', done, total: movies.length }),
   );

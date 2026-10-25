@@ -4,7 +4,7 @@
  * cached in the db (meta key `showMeta:{tvdbId}`), then indistinguishable
  * from bundled shows everywhere: episodes tab, continue tracking, stats.
  */
-import db, { getAllShowIds, getMeta, getMoviesMissingPoster, markMovieGuessed, getPlannedMoviesMissingRelease, getShowsMissingName, getShowsMissingPoster, markShowNameTried, setMeta, setShowName, setMoviePoster, setMovieRelease, setShowBackdrop, setShowPoster } from '@/db';
+import db, { getAllShowIds, getMeta, getMoviesMissingPoster, markMovieGuessed, getPlannedMoviesMissingRelease, getShowsMissingName, getShowsMissingPoster, fillShowPosterIfMissing, markShowNameTried, setMeta, setShowName, setMoviePoster, setMovieRelease, setShowBackdrop, setShowPoster } from '@/db';
 import { registerShowMeta, showMeta, type CastMeta, type CharacterMeta, type EpisodeMeta, type SeasonMeta, type ShowMeta } from '@/metadata';
 import * as Localization from 'expo-localization';
 import { plotTmdbCode, plotTvdbCodes } from '@/i18n';
@@ -747,6 +747,7 @@ export async function linkShowToSeries(tvdbId: number, tmdbId: number): Promise<
     // in memory alone, so a hand-picked match would vanish on the next launch
     // and never register as fixed. A deliberate choice must outlive the session.
     setMeta(`showMeta:${tvdbId}`, JSON.stringify(m));
+    fillShowPosterIfMissing(Number(tvdbId), m.poster);
     setMeta(`showTmdbHint:${tvdbId}`, String(tmdbId));
   }
   return m;
@@ -844,6 +845,7 @@ export async function linkShowToMovie(tvdbId: number, tmdbMovieId: number): Prom
       },
     };
     setMeta(`showMeta:${tvdbId}`, JSON.stringify(m));
+    fillShowPosterIfMissing(Number(tvdbId), m.poster);
     // deliberately NOT showTmdbHint: that key means "series id" and would send
     // the next refresh to /tv with a movie id
     setMeta(`showMovieLink:${tvdbId}`, String(tmdbMovieId));
@@ -1082,6 +1084,7 @@ async function doFetch(tvdbId: number, tmdbIdHint?: number | null): Promise<Show
       : tvdbRecord;
 
     setMeta(`showMeta:${tvdbId}`, JSON.stringify(m));
+    fillShowPosterIfMissing(Number(tvdbId), m.poster);
     if (m.tmdbId) {
       // remember the link itself too — exported in backups so restores keep it
       setMeta(`showTmdbHint:${tvdbId}`, String(m.tmdbId));
@@ -1253,6 +1256,7 @@ export async function fillMissingEpisodeStills(): Promise<void> {
       // actually arrived.
       registerShowMeta(tvdbId, updated);
       setMeta(`showMeta:${tvdbId}`, JSON.stringify(updated));
+    fillShowPosterIfMissing(Number(tvdbId), updated.poster);
     } catch {
       // offline or rate-limited — try again on a later launch
     }

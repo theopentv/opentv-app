@@ -3327,6 +3327,16 @@ export function movieBackdropOverride(name: string): string | null {
   return getMeta(movieArtKey('backdrop', name)) || null;
 }
 
+/** A show's list poster, filled only where it is empty — never over a poster
+ *  the user picked or the import found. Called whenever show metadata is saved
+ *  with a poster: a show whose import lookup failed (a network drop mid-import
+ *  failed 1,368 of 1,370 for one user) otherwise kept initials for ever, while
+ *  its own page, read from the metadata, had the picture all along. */
+export function fillShowPosterIfMissing(tvdbId: number, posterUrl: string | null | undefined): void {
+  if (!posterUrl || posterUrl.includes('/images/missing/')) return;
+  db.runSync("UPDATE shows SET posterUrl = ? WHERE tvdbId = ? AND (posterUrl IS NULL OR posterUrl = '')", [posterUrl, tvdbId]);
+}
+
 /** Poster update after a manual show match. */
 export function setShowPoster(tvdbId: number, posterUrl: string | null): void {
   if (!posterUrl) return;
