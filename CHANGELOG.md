@@ -9,6 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
+| 2.0.1 | (EAS) | 93 | **built 25 Oct 2026** — iPhone Duo support (controls in the side strip, nothing under it or on the fold), Expo SDK 58, a wider profile on big screens, the ✎ writing page for private comments, and a Classic tab bar setting |
 | 1.7.1 | 98 | 77 | **built 14 Oct 2026** — a fix release: IMDb import brings series and rated episodes (resolved by tt id on TheTVDB), not only films; email sign-up finishes joining (11 users were left without a handle since 4 Oct), no false "Backup hasn't worked" after iOS cuts an upload short, sync polls every 20 s, lists no longer show a series as its TheTVDB number, privacy copy that admits Backup/Sync store the history, developer messages no longer open the chat, Test Lab robots not counted |
 | 1.7.0 | 96 | 74 | **built 12 Oct 2026** (AAB in ~/Downloads, iOS archive in Organizer) — the finished half of the 2.0.0 plan: stats names, iPad card grids, self-hosted sync without Plus, one phone publishes the profile, the Wrapped overlap, Moving from another phone?, server-managed templates, Your devices (cap of five), the GitHub APK, a yearly goal, Serializd import, and the empty-owner library fix. The daily puzzle and the social features stay in 2.0.0 |
 | 1.6.8 | 95 | 73 | **released 12 Oct 2026, both stores** — Add your shows in three steps, Message the developer, the inbox back, OpenTV Backup that catches up on open and only starts sync once a copy has landed, Google Drive on the Android welcome |
@@ -39,6 +40,38 @@ Play Console record rather than per-change.
 
 ---
 
+
+## 2.0.1 — built 25 Oct 2026 (iOS 93)
+
+**iPhone Duo.** Apple's first foldable iPhone moves every bar to a strip down
+the right edge when it is closed or open on its side. OpenTV now uses native
+bars everywhere, so its tabs, back, close and ⋯ buttons, the profile's bell and
+the comment writing page's ✕ all land in that strip; no screen draws under it,
+and the paywall and welcome keep price and button out of the fold (one pane on
+its side). A comment half-written beside a show survives folding the phone.
+List screens keep the same strip buttons while editing.
+
+**Expo SDK 58** (React Native 0.88, React 19.3) under it all.
+
+**Bigger screens.** The profile fills the open Duo and an iPad mini (cap 900pt,
+was 700); its avatar grows to 112pt on a wide page; Watching Together fills its
+box instead of one small row; the cover's name centres on the content. On the
+closed Duo the collapsed profile bar is 80pt with the name centred.
+
+**Everywhere.**
+- Comments without the community: the ✎ and a full writing page (✕, POST,
+  picture), like a member's thread, instead of a bar at the bottom.
+- The profile's bell is back on the left, as in 2.0.0.
+- The avatar's initial fills its circle in the cards and poster layouts.
+- Settings → General → Classic tab bar: 2.0.0's flat bar instead of iOS 26's
+  floating one (iOS, not on the Duo; from the next launch).
+- A link that opens a show while the app is closed no longer lands on a blank
+  screen.
+
+**Tried and dropped:** list | detail side by side on wide screens. Every page
+stays full width (see design/iphone-duo/PLAN.md).
+
+---
 
 ## 1.7.0 — built 12 Oct 2026 (Android 96, iOS 74)
 
