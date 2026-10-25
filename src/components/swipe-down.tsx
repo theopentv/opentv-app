@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { goBack } from '@/components/ui';
 import { useCallback, useMemo, useRef } from 'react';
 import { useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
@@ -135,7 +135,7 @@ export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
              */
             if (!dismissing.value) {
               dismissing.value = true;
-              runOnJS(router.back)();
+              runOnJS(goBack)();
             }
             /*
              * ON DOWN, FROM WHERE THE FINGER LET GO. This sprang the screen back
@@ -197,7 +197,7 @@ export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
     // Same guard as the fling, and it has to be the SAME one: either path
     // committing must stop the other.
     if (shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
-      router.back();
+      goBack();
       return;
     }
     setAtTop(nextAtTop(atTop.current, y <= 2, scrolling.current));

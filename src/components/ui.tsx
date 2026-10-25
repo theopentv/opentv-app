@@ -323,9 +323,17 @@ function DrawnItem({ item }: { item: NativeStackHeaderItem }) {
 }
 
 
+/** Back, or home when there is nothing to go back to: a page cold-opened from
+ *  a widget, a link or Handoff is the only route, and `back()` there was
+ *  "GO_BACK was not handled" with the user stuck on it. */
+export function goBack(): void {
+  if (router.canGoBack()) router.back();
+  else router.replace('/');
+}
+
 /** The close button of a page that slides up: top of the strip on the Duo. */
 export function closeItem(): NativeStackHeaderItem {
-  return { type: 'button', label: t('a11y.close'), icon: { type: 'sfSymbol', name: 'chevron.down' }, onPress: () => router.back() };
+  return { type: 'button', label: t('a11y.close'), icon: { type: 'sfSymbol', name: 'chevron.down' }, onPress: goBack };
 }
 
 /** The header as it was before 2.0.1, for the screens a native one cannot reach. */
@@ -334,7 +342,7 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
     <View style={s.navHead}>
       <Pressable
         style={s.iconBtn}
-        onPress={() => router.back()}
+        onPress={goBack}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel={t(close ? 'a11y.close' : 'a11y.back')}>

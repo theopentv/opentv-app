@@ -87,15 +87,19 @@ async function applySiriQueue(): Promise<void> {
 /** Every root screen remounts on a language switch, except the tab host. */
 const SCREEN_LAYOUT = remountOnLocale('(tabs)');
 
-/**
- * THE TABS ARE BENEATH EVERY COLD-OPENED PAGE. A show opened from a widget, a
- * link or a Handoff while the app is closed used to become the ONLY route:
- * nothing under it, so its close button had nowhere to go ("GO_BACK was not
- * handled") and, from 600pt up, the list column beside it was an empty white
- * pane. The anchor tells the router to seed `(tabs)` first and the page on
- * top, the way a tap from the list would have left things.
+/*
+ * NO `unstable_settings.anchor` HERE. Anchoring the root on `(tabs)` (2.0.1,
+ * for cold-opened pages) sent every FRESH INSTALL to the About screen: `(tabs)`
+ * is behind the onboarded guard, so the router fell back to the first route
+ * alphabetically. A cold-opened page's close goes home instead (`goBack`).
  */
-export const unstable_settings = { anchor: '(tabs)' };
+
+/** Routes a not-yet-onboarded user may be on: Welcome and what it opens. */
+const PRE_ONBOARDING = new Set([
+  'welcome', 'language', 'restore', 'email-sign-in', 'verify-email', 'reset-password',
+  'set-password', 'sign-in', 'handle', 'setup-profile', 'cloud-backup', 'self-host',
+  'import', 'moving', 'join', 'notify-optin', 'seed', 'pick-shows', 'paywall', 'devices',
+]);
 
 export default function RootLayout() {
   // Runs exactly once, before the first paint: a lazy useState initialiser
@@ -242,6 +246,21 @@ export default function RootLayout() {
    * forty. Firebase drops these entirely for anyone who has not joined.
    */
   const segments = useSegments();
+
+  /*
+   * A FRESH INSTALL OPENED ON "ABOUT" (2.0.1, expo-router 58). With `(tabs)`
+   * behind the onboarded guard, the router no longer falls back to the first
+   * DECLARED screen (welcome) but to the first route by file name, which is
+   * `about.tsx`. So before onboarding, anything outside the welcome flow's own
+   * screens goes to Welcome. Pushes from Welcome itself (language, restore,
+   * the sign-in cluster) are on the list and stay where they are.
+   */
+  const firstSegment = (segments as string[])[0];
+  const preOnboardingRoute = firstSegment == null || PRE_ONBOARDING.has(firstSegment);
+  useEffect(() => {
+    if (onboarded || preOnboardingRoute) return;
+    router.replace('/welcome');
+  }, [onboarded, preOnboardingRoute]);
 
   /**
    * An account whose email is still unconfirmed cannot use the community — the
