@@ -246,6 +246,19 @@ describe('simklRows', () => {
     expect(out.showRows).toEqual([expect.objectContaining({ tv_show_id: '371980', tv_show_name: 'Severance' })]);
   });
 
+  it('dropped shows arrive archived; memos become private notes', () => {
+    const out = simklRows({
+      shows: [
+        { status: 'dropped', show: { title: 'Lost', ids: { tvdb: '73739' } }, memo: { text: ' gave up in S3 ', is_private: true }, seasons: [{ number: 1, episodes: [{ number: 1, watched_at: '2026-01-01' }] }] },
+        { status: 'watching', show: { title: 'Dark', ids: { tvdb: '334824' } }, memo: {}, seasons: [] },
+      ],
+      movies: [{ status: 'completed', last_watched_at: '2026-02-02', movie: { title: 'Heat', ids: {} }, memo: { text: 'Best heist' } }],
+    });
+    expect(out.showRows.find((r) => r.tv_show_id === '73739')?.archived).toBe('1');
+    expect(out.showRows.find((r) => r.tv_show_id === '334824')?.archived).toBe('0');
+    expect(out.notes).toEqual({ shows: [{ showId: 73739, season: -1, episode: -1, text: 'gave up in S3' }], movies: [{ movie: 'Heat', text: 'Best heist' }] });
+  });
+
   it('survives a file that is not what anybody expected', () => {
     expect(simklRows(null).movieRows).toEqual([]);
     expect(simklRows({ shows: [{ title: 'x' }] }).episodeRows).toEqual([]);

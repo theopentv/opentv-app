@@ -913,6 +913,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   // Serializd alone brings these; they join the GDPR-shaped piles further down.
   let foreignEpRatings: { name: string; season: number; episode: number; ten: number }[] = [];
   let foreignComments: { entity: string; text: string; date: string }[] = [];
+  let foreignNotes: NonNullable<ReturnType<typeof simklRows>['notes']> = { shows: [], movies: [] };
   if (v2all.length === 0 && showRows.length === 0 && detectForeignSource(Object.keys(files)) === 'letterboxd') {
     const parsed: Record<string, Record<string, string>[]> = {};
     for (const k of Object.keys(files)) {
@@ -1018,6 +1019,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       foreignMovieRatings = mapped.movieRatings;
       foreignEpRatings = mapped.episodeRatings ?? [];
       foreignComments = mapped.comments ?? [];
+      foreignNotes = mapped.notes ?? foreignNotes;
     }
   }
 
@@ -2261,6 +2263,16 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     }
     for (const n of notes.movies) {
       db.runSync(`INSERT OR ${verb} INTO movie_notes (movie, text, updatedAt) VALUES (?, ?, ?)`, [n.movie, n.text, n.updatedAt]);
+    }
+  }
+  // Simkl's memos, as private notes. Never over a note already on this phone.
+  {
+    const at = new Date().toISOString();
+    for (const n of foreignNotes.shows) {
+      db.runSync('INSERT OR IGNORE INTO show_notes (showId, season, episode, text, updatedAt) VALUES (?, ?, ?, ?, ?)', [n.showId, n.season, n.episode, n.text, at]);
+    }
+    for (const n of foreignNotes.movies) {
+      db.runSync('INSERT OR IGNORE INTO movie_notes (movie, text, updatedAt) VALUES (?, ?, ?)', [n.movie, n.text, at]);
     }
   }
   for (const ex of extras.epCharVotes ?? []) {

@@ -45,6 +45,9 @@ export type ForeignRows = {
   episodeRatings?: { name: string; season: number; episode: number; ten: number }[];
   /** Reviews as rows of the comments table: `entity` is "Show" or "Show S1E2". Serializd only. */
   comments?: { entity: string; text: string; date: string }[];
+  /** Private notes (Simkl's memos), never published: a show's whole-show note
+   *  is season -1 / episode -1, the same key the notes screen writes. */
+  notes?: { shows: { showId: number; season: number; episode: number; text: string }[]; movies: { movie: string; text: string }[] };
 };
 
 export const NO_ROWS: ForeignRows = { showRows: [], episodeRows: [], movieRows: [], movieRatings: [] };
@@ -746,6 +749,8 @@ export function simklRows(json: unknown): ForeignRows {
     status?: string;
     added_to_watchlist_at?: string;
     seasons?: SimklSeason[];
+    /** Simkl's memo: `{ text, is_private }`, or `{}` when none is set. */
+    memo?: { text?: string };
   };
   const doc = (json ?? {}) as { shows?: SimklEntry[]; anime?: SimklEntry[]; movies?: SimklEntry[] };
   const history: ForeignItem[] = [];
@@ -753,6 +758,10 @@ export function simklRows(json: unknown): ForeignRows {
   const watchlist: ForeignItem[] = [];
   /** Shows with nothing watched yet (Simkl's "plan to watch"): followed, no episodes. */
   const followOnly = new Map<string, string>();
+  /** Shows the user dropped on Simkl: they arrive archived, as TV Time's "stopped". */
+  const dropped = new Set<string>();
+  const notes: NonNullable<ForeignRows['notes']> = { shows: [], movies: [] };
+  const memoText = (e: SimklEntry) => (typeof e.memo?.text === 'string' ? e.memo.text.trim() : '');
 
   // THE REAL FILE NESTS: `{ status, seasons, show: { title, ids } }`. The flat
   // `{ title, ids, seasons }` the first version assumed is still read, for any
@@ -775,6 +784,9 @@ export function simklRows(json: unknown): ForeignRows {
     }
     const tvdb = idText(show.ids?.tvdb);
     if (episodes === 0 && tvdb && show.title) followOnly.set(tvdb, show.title);
+    if (tvdb && entry.status === 'dropped') dropped.add(tvdb);
+    const memo = memoText(entry);
+    if (tvdb && memo) notes.shows.push({ showId: Number(tvdb), season: -1, episode: -1, text: memo });
   }
 
   for (const entry of doc.movies ?? []) {
@@ -784,13 +796,17 @@ export function simklRows(json: unknown): ForeignRows {
     if (entry.status === 'plantowatch') watchlist.push({ ...item, listed_at: entry.added_to_watchlist_at ?? entry.watched_at ?? '' });
     else history.push({ ...item, watched_at: entry.watched_at ?? entry.last_watched_at ?? '' });
     if (entry.user_rating != null) ratings.push({ ...item, rating: entry.user_rating });
+    const memo = memoText(entry);
+    if (m.title && memo) notes.movies.push({ movie: m.title, text: memo });
   }
 
   const rows = traktRows({ history, watchlist, ratings });
+  for (const r of rows.showRows) if (dropped.has(r.tv_show_id)) r.archived = '1';
   const have = new Set(rows.showRows.map((r) => r.tv_show_id));
   for (const [tvdb, name] of followOnly) {
-    if (!have.has(tvdb)) rows.showRows.push({ tv_show_id: tvdb, tv_show_name: name, is_followed: '1', is_favorited: '0', archived: '0' });
+    if (!have.has(tvdb)) rows.showRows.push({ tv_show_id: tvdb, tv_show_name: name, is_followed: '1', is_favorited: '0', archived: dropped.has(tvdb) ? '1' : '0' });
   }
+  if (notes.shows.length || notes.movies.length) rows.notes = notes;
   return rows;
 }
 
