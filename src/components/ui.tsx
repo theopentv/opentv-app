@@ -131,11 +131,30 @@ export function gridMetrics(pageWidth: number) {
 export function ContentColumn({
   children,
   style,
+  onePane = false,
 }: {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
+  /**
+   * KEEP OFF THE FOLD. On the open iPhone Duo a centred 700pt column runs
+   * straight through the hinge at the window's middle, which is where a
+   * paywall's price and button landed. With this the column takes the
+   * trailing half instead (beside the strip, under the thumb): price, button
+   * and restore stay in one pane. Read from size: an iPhone (not an iPad,
+   * which has no fold) wider than 600pt and wider than tall can only be the
+   * Duo open on its side; an iPhone app here is portrait-only.
+   */
+  onePane?: boolean;
 }) {
-  return <View style={[{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' }, style]}>{children}</View>;
+  const { width, height } = useWindowDimensions();
+  const { right } = useSafeAreaInsets();
+  // On its side only: upright, the fold runs across the screen, not down it.
+  const half = onePane && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - right : null;
+  return (
+    <View style={[half != null ? { width: half, alignSelf: 'flex-end' } : { width: '100%', maxWidth: CONTENT_MAX_WIDTH, alignSelf: 'center' }, style]}>
+      {children}
+    </View>
+  );
 }
 
 /**

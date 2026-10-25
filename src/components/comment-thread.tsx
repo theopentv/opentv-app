@@ -438,6 +438,16 @@ export function CommentRow({
 
 // ── the thread ───────────────────────────────────────────────────────────────
 
+/**
+ * HALF-WRITTEN COMMENTS OUTLIVE THE THREAD THAT HELD THEM. Folding an iPhone
+ * Duo closed below 600pt unmounts the side thread on a show or episode page
+ * and the comments open as their own screen instead; the words typed into the
+ * first were lost on the way to the second. Kept in memory, keyed by what the
+ * comment is about, until it is sent or emptied. ponytail: memory only, so a
+ * force-quit still loses a draft; persist to meta if anybody asks.
+ */
+const drafts = new Map<string, string>();
+
 export function CommentThread({ target, board = null }: { target: ThreadTarget; board?: BoardTarget | null }) {
   // Built once for the whole thread rather than per card: a busy thread would
   // otherwise scan the local comments table for every row rendered. See
@@ -468,7 +478,12 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [text, setText] = useState('');
+  const draftKey = `${target.source}:${target.key}:${target.season ?? ''}:${target.episode ?? ''}`;
+  const [text, setText] = useState(() => drafts.get(draftKey) ?? '');
+  useEffect(() => {
+    if (text) drafts.set(draftKey, text);
+    else drafts.delete(draftKey);
+  }, [text, draftKey]);
   const [spoiler, setSpoiler] = useState(false);
   const [sending, setSending] = useState(false);
   const attach = useCommentAttachment();

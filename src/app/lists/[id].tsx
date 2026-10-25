@@ -90,7 +90,12 @@ export default function ListDetailScreen() {
         // a button: it opens the list-menu sheet route, not an ActionSheet.
         items={
           !seedLib && mode !== 'view'
-            ? [{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setMode('view') }]
+            ? [
+                // The ⋯ stays, disabled, so the strip keeps the same buttons in
+                // the same places while editing instead of one vanishing.
+                { type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setMode('view') },
+                { type: 'button', label: t('a11y.more'), icon: { type: 'sfSymbol', name: 'ellipsis' }, disabled: true, onPress: () => {} },
+              ]
             : [
                 ...(!seedLib && items.length > 0
                   ? [{ type: 'button' as const, label: t('profile.edit'), icon: { type: 'sfSymbol' as const, name: 'pencil' as const }, onPress: () => setMode('edit') }]

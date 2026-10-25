@@ -419,7 +419,11 @@ export default function SharedListScreen() {
           !member
             ? undefined
             : editing
-              ? [{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setEditing(false) }]
+              ? [
+                  // The ⋯ stays, disabled: the same buttons in the same places.
+                  { type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => setEditing(false) },
+                  { type: 'button', label: t('a11y.more'), icon: { type: 'sfSymbol', name: 'ellipsis' }, disabled: true, onPress: () => {} },
+                ]
               : [
                   // A together holds one show; there is nothing to edit out of it.
                   ...(!together && list.items.length > 0

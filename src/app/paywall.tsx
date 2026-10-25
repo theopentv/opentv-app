@@ -313,7 +313,7 @@ export default function PaywallScreen() {
   return (
     <Screen>
       <NavHeader title={t('plus.title')} close />
-      <ContentColumn style={{ flex: 1, paddingHorizontal: space.xl }}>
+      <ContentColumn onePane style={{ flex: 1, paddingHorizontal: space.xl }}>
         {/*
           `flex: 1` FOR THE SAME REASON AS THE JOIN SCREEN, and here it is worse.
 
