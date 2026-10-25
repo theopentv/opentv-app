@@ -1150,7 +1150,8 @@
       "change": "Another app",
       "opentv": "The export file from your other phone — in OpenTV there: Settings → Library → Backup → Export my data. A ZIP file."
     },
-    "nothingRead": "We couldn't find any shows, episodes or films in this file. Check that it's the complete export from the app you're moving from, not a partial file or a screenshot. For Simkl, use the ZIP from simkl.com/apps/backup."
+    "nothingRead": "We couldn't find any shows, episodes or films in this file. Check that it's the complete export from the app you're moving from, not a partial file or a screenshot. For Simkl, use the ZIP from simkl.com/apps/backup.",
+    "simklCsv": "This is Simkl's CSV, which keeps only the last episode of each show, so your history can't be rebuilt from it. Download the ZIP from simkl.com/apps/backup instead and import that."
   },
   "episode": {
     "genericShowLabel": "Show",

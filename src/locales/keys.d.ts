@@ -934,6 +934,7 @@ export type LocaleKey =
   | "import.nothingRead"
   | "import.restoreFailedTitle"
   | "import.restoringLists"
+  | "import.simklCsv"
   | "import.steps.step1"
   | "import.steps.step2"
   | "import.steps.step3"

@@ -1220,7 +1220,8 @@
       "change": "Inna aplikacja",
       "opentv": "Plik eksportu z twojego drugiego telefonu — w tamtym OpenTV: Ustawienia → Biblioteka → Kopia zapasowa → Eksportuj moje dane. Plik ZIP."
     },
-    "nothingRead": "W tym pliku nie znaleziono seriali, odcinków ani filmów. Sprawdź, czy to pełny eksport z aplikacji, z której przechodzisz, a nie częściowy plik lub zrzut ekranu. Dla Simkl użyj pliku ZIP z simkl.com/apps/backup."
+    "nothingRead": "W tym pliku nie znaleziono seriali, odcinków ani filmów. Sprawdź, czy to pełny eksport z aplikacji, z której przechodzisz, a nie częściowy plik lub zrzut ekranu. Dla Simkl użyj pliku ZIP z simkl.com/apps/backup.",
+    "simklCsv": "To plik CSV z Simkl, który zawiera tylko ostatni odcinek każdego serialu, więc nie da się z niego odtworzyć historii. Pobierz zamiast tego plik ZIP z simkl.com/apps/backup i zaimportuj go."
   },
   "episode": {
     "genericShowLabel": "Serial",

@@ -187,6 +187,15 @@ export function foundCsvsMessage(fileKeys: string[]): string {
  *  sentence naming TV Time, whatever app the file came from. */
 export const NOTHING_READ = 'opentv:nothing-read';
 
+/** Simkl's CSV backup: one row per title with only the LAST episode watched,
+ *  so it cannot rebuild a history; its Title/Year/Rating columns made the
+ *  Letterboxd reader take every show for a film. Recognised by its first
+ *  column and refused with `import.simklCsv`, which points at the ZIP. */
+export const SIMKL_CSV = 'opentv:simkl-csv';
+export function isSimklCsv(head: string): boolean {
+  return /^\uFEFF?\s*"?SIMKL_ID"?\s*,/i.test(head);
+}
+
 /** Thrown by the importer for it; `import.tsx` shows `import.jsonBackup`. */
 export const RAW_JSON_BACKUP = 'opentv:raw-json-backup';
 export function isRawJsonBackup(head: string): boolean {

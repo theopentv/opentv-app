@@ -799,3 +799,13 @@ describe('imdbTvRows', () => {
     expect(twice).toEqual(once);
   });
 });
+
+describe('isSimklCsv', () => {
+  it('knows Simkl\'s CSV by its first column, and nothing else', () => {
+    const { isSimklCsv } = jest.requireActual('@/pure') as typeof import('@/pure');
+    expect(isSimklCsv('SIMKL_ID,Title,Type,Year,Watchlist,LastEpWatched,WatchedDate,Rating,Memo,TVDB,TMDB,IMDB')).toBe(true);
+    expect(isSimklCsv('\uFEFF"SIMKL_ID","Title"')).toBe(true);
+    expect(isSimklCsv('Date,Name,Year,Letterboxd URI,Rating')).toBe(false);
+    expect(isSimklCsv('Const,Your Rating,Date Rated,Title')).toBe(false);
+  });
+});

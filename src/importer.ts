@@ -39,7 +39,7 @@ import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, del
 import { withImportLock } from '@/import-lock';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
 import { notesFromSidecar } from '@/notes-pure';
-import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, NOTHING_READ, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
+import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, NOTHING_READ, SIMKL_CSV, isSimklCsv, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
 import { lookupWithRetry, tmdb, pool } from '@/tmdb';
 import { fetchToDocuments } from '@/fetch-to-documents';
 import { netIsOpen } from '@/net-circuit';
@@ -488,6 +488,8 @@ export async function pickAndImport(
   // name rather than "no CSV files" — and here, BEFORE a replace wipes the
   // library for a file that was never going to import (see `isRawJsonBackup`).
   else if (isRawJsonBackup(String.fromCharCode(...bytes.subarray(0, 64)))) throw new Error(RAW_JSON_BACKUP);
+  // before a replace can wipe anything: a Simkl CSV cannot rebuild a history
+  else if (isSimklCsv(String.fromCharCode(...bytes.subarray(0, 64)))) throw new Error(SIMKL_CSV);
 
   // Stage the export on disk BEFORE importing, then run under the import lock so
   // a concurrent startup resume can't stomp the same staged file / flag.
@@ -994,6 +996,14 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
    * app — so people are moving, and the export ZIP is the route that needs
    * nothing from us and no token from them.
    */
+  // A Simkl CSV (alone or in a ZIP) is refused before the CSV readers below
+  // can mistake it for Letterboxd. See `isSimklCsv`.
+  if (v2all.length === 0 && showRows.length === 0 && v1.length === 0) {
+    for (const k of Object.keys(files)) {
+      if (k.toLowerCase().endsWith('.csv') && isSimklCsv(strFromU8(files[k].subarray(0, 64)))) throw new Error(SIMKL_CSV);
+    }
+  }
+
   if (v2all.length === 0 && showRows.length === 0 && v1.length === 0) {
     const jsons: unknown[] = [];
     for (const k of Object.keys(files)) {

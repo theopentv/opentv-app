@@ -1150,7 +1150,8 @@
       "change": "Başka bir uygulama",
       "opentv": "Diğer telefonundaki dışa aktarma dosyası — oradaki OpenTV'de: Ayarlar → Kitaplık → Yedekleme → Verilerimi dışa aktar. Bir ZIP dosyası."
     },
-    "nothingRead": "Bu dosyada dizi, bölüm ya da film bulunamadı. Geldiğin uygulamanın tam dışa aktarımı olduğundan emin ol; eksik bir dosya ya da ekran görüntüsü olmasın. Simkl için simkl.com/apps/backup adresindeki ZIP'i kullan."
+    "nothingRead": "Bu dosyada dizi, bölüm ya da film bulunamadı. Geldiğin uygulamanın tam dışa aktarımı olduğundan emin ol; eksik bir dosya ya da ekran görüntüsü olmasın. Simkl için simkl.com/apps/backup adresindeki ZIP'i kullan.",
+    "simklCsv": "Bu, Simkl'in CSV dosyası; her dizinin yalnızca son bölümünü tutar, bu yüzden geçmişin bundan yeniden oluşturulamaz. Bunun yerine simkl.com/apps/backup adresinden ZIP'i indirip onu içe aktar."
   },
   "episode": {
     "genericShowLabel": "Dizi",
