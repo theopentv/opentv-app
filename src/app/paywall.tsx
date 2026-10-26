@@ -42,7 +42,7 @@ import {
   getOffering,
   getPersonalOffer,
   plusStatus,
-  appleRedeemUrl,
+  APPLE_REDEEM_URL,
   restore,
   type AppleExtras,
   type Plans,
@@ -248,15 +248,6 @@ export default function PaywallScreen() {
   const trial = chosenShown?.kind === 'trial';
 
   const applyCode = () => {
-    // iPhone: Apple checks the code, on its own sheet, opened by the link.
-    if (Platform.OS === 'ios') {
-      const url = appleRedeemUrl(codeText);
-      if (!url) return;
-      tapLight();
-      track('plus_code_applied');
-      void Linking.openURL(url).catch(() => Alert.alert(t('plus.code.invalid')));
-      return;
-    }
     if (!plans) return;
     const ok = checkCreatorCode(plans, codeText);
     if (!ok) {
@@ -271,6 +262,12 @@ export default function PaywallScreen() {
 
   const haveCode = () => {
     tapLight();
+    // iPhone: no field here (App Review, 3.1.1). Apple's page takes the code.
+    if (Platform.OS === 'ios') {
+      track('plus_code_applied');
+      void Linking.openURL(APPLE_REDEEM_URL);
+      return;
+    }
     setCodeOpen(true);
   };
   const saving = plans ? annualSaving(plans) : null;

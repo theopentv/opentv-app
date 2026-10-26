@@ -285,18 +285,17 @@ export function checkCreatorCode(plans: Plans, typed: string): string | null {
 }
 
 /**
- * iPhone: Apple's redeem page with the code already in it.
+ * iPhone: Apple's own redeem page, where the person types the code.
+ *
+ * NO CODE FIELD IN THE APP (2.0.2 build 98). App Review rejected build 97
+ * under 3.1.1 because the paywall had a text field + Apply, read as a custom
+ * unlock even though it only forwarded the code to this page. So iOS gets one
+ * button and Apple's screen does the typing and the checking.
  *
  * NOT `presentCodeRedemptionSheet` (8 Oct). That StoreKit 1 sheet showed
- * nothing on a real iPhone — no error either, so the button just did nothing.
- * The redeem URL is the same one the show notes use: it opens the App Store's
- * own sheet with the offer named, and it works from any build. Nothing is
- * checked here — Apple owns the codes on iOS and says whether one is valid.
+ * nothing on a real iPhone, no error either, so the button just did nothing.
  */
-export function appleRedeemUrl(typed: string): string | null {
-  const code = typed.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-  return code ? `https://apps.apple.com/redeem?ctx=offercodes&id=6787399404&code=${code}` : null;
-}
+export const APPLE_REDEEM_URL = 'https://apps.apple.com/redeem?ctx=offercodes&id=6787399404';
 
 /**
  * WHAT APPLE WILL DISCOUNT FOR THIS PERSON, per plan — see `planOffer` in
