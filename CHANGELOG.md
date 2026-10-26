@@ -42,6 +42,203 @@ Play Console record rather than per-change.
 ---
 
 
+## 2.0.4 — the plan
+
+- **PLUS: OpenTV inside Claude and ChatGPT (an MCP server), built on a per-user
+  database** (Mahmood, 26 Oct: "do B directly"). Bingers already sells this on its
+  top plan ($4.99/mo, "Icon"). Replaces the 20 Oct sketch in "2.0.1 — the plan".
+  It must answer real questions about a person's own history, not a summary: "did I
+  watch X?", "when?", "what did I rate it / write about it?", "what did I watch last
+  winter?", "compare my ratings of A and B".
+  - **Data:** when a new backup lands in R2 (`backup.ts`), the Worker unpacks it once
+    into a **Durable Object with SQLite, one per user** (shows, episodes watched with
+    dates, films, ratings, emotions, favourite characters, lists, the user's own
+    comments and private notes). MCP tools query that. Rebuilt on every newer backup;
+    **deleted when the user turns MCP off, deletes the backup, or deletes the account.**
+    Backups today: 19 users, ~1.15 MB average, 8.85 MB max, so this is small.
+    Verify first that comments and private notes are inside `libraryZip`.
+  - **Who:** Plus members with cloud backup on, who switch MCP on themselves. Off by
+    default. Free users' history never leaves the phone.
+  - **All of Plus, monthly and yearly** (Mahmood, 26 Oct), not a yearly-only or higher
+    tier: one Plus, no confusion. Push yearly with the price ("$19.99/yr = $1.67/mo"),
+    not by withholding features. "MCP for less than Bingers' $4.99 tier" is the line.
+  - **Consent creates the database, nothing before it** (Mahmood, 26 Oct). Setting up
+    MCP shows what will happen in plain words (your backup is turned into a private
+    database only you can query; Claude/ChatGPT see what you ask about; turning it off
+    deletes it). Only after the user accepts does the Worker build their Durable Object.
+    No consent = no database, for anyone, ever.
+  - **Read tools:** search a title (watched? dates, rating, feeling, notes, comments),
+    history by date range, what's next / watchlist, stats, lists.
+  - **Write tools:** mark watched (date, rating, feeling), add to watchlist, rate — sent
+    as `sync_ops` from an "assistant" device, so the phones apply them. Freshness =
+    the last backup; say so in the consent copy.
+  - **Needs:** OAuth 2.1 (PKCE + dynamic client registration) with a web sign-in page,
+    a remote MCP endpoint on the Worker, consent copy saying the history goes to
+    Anthropic/OpenAI when asked, `docs/privacy.html` sentence, D1/DO cost check.
+  - The server rule ("no watch-history table") still holds in spirit: this is the
+    user's own opt-in backup made queryable, isolated per user, and removable.
+
+
+## 2.0.3 — the plan
+
+- **"Everything I watch" in one page, as a profile widget** (Mahmood, 26 Oct, from
+  the Arabic channel admin's question: "is there no way to see all the films, series
+  and anime I follow?"). Today it is two pages: the Shows shelf title → `all-shows`,
+  the Films shelf title → `all-movies`. Add one page that lists shows, anime and films
+  together (filter chips: All / Shows / Films, sort, search), reached from a new
+  profile widget that shows the totals and a few posters. Anime is a show; split it
+  out only if a reliable genre/flag exists, never by guessing.
+- **Widget picker, organised like Apple's widget gallery** (Mahmood, 26 Oct).
+  `add-widget.tsx` lists widgets as icon + name rows, and only shows a picture after a
+  tap. Make it look like the iOS "Add Widget" gallery: the list itself shows each
+  widget as its real preview (the same `renderWidget` / `previewSlot` drawing the
+  pager uses), grouped under a few headings (e.g. Stats, Shelves, Photos & text,
+  Activity), tap → the existing size pager → Add. The page's own sections that today
+  get an outline card (heatmap, Lists, Stats, shelves) need sample previews so no
+  tile in the gallery is a grey box.
+
+- **Ask for a rating at a second good moment, not only after an import** (Mahmood,
+  25 Oct). Play has 18 ratings; the target is 100 by January. Today `rate-us.ts` asks
+  only when an import finishes with 50+ episodes, so everyone who started fresh, or
+  imported before that code shipped, is never asked. Add: after the **10th episode
+  marked watched in the app** (counted from that moment, not the imported history).
+  Same rules as now: native sheet first, once per version at most, never on a
+  failure or mid-task.
+- **Bug: the sort and grid buttons sit on top of a list row on the Shows tab**
+  (seen 25 Oct on the iPhone Duo simulator, inner display upright, light theme).
+  When the Watch List opens scrolled so the recently watched rows show above
+  WATCH NEXT, the ⇅ and grid buttons beside the WATCH NEXT header draw over the
+  row underneath, on top of its green check. They should belong to the header,
+  not float over the list.
+
+**DONE in 2.0.2 build 98 (26 Oct): iOS "Have a code?" now opens Apple's redeem page (`APPLE_REDEEM_URL`, no code in the URL), no field in the app; `presentCodeRedemptionSheet` was NOT used because it showed nothing on a real iPhone (8 Oct). Original note:** **REQUIRED by App Review: no code field on iOS** (2.0.2/97 rejected 25 Oct under
+3.1.1, "the app uses codes"; Mahmood replied asking for approval as a bug-fix and
+promised this in the next update). On iOS, `paywall.tsx` (~250, `applyCode`) shows
+"Have a code?" + a text field + Apply, which only opens Apple's offer-code redeem URL,
+but the reviewer read it as a custom unlock. Replace it on iOS with one button that
+calls RevenueCat `Purchases.presentCodeRedemptionSheet()` (Apple's native sheet); no
+text entry in the app. Android keeps the Play creator-offer field (Play allows it).
+
+**From u/azz922 on r/Saudi_Series_TVshows (26 Oct, a new user):**
+- Bug: on the Profile, some show posters don't load and show the title's initials
+  instead (the name card), only sometimes. Find which shelf and why the poster URL is
+  missing. **Az's detail (26 Oct):** Profile → Series shelf; e.g. House showed "H"
+  with no poster right after import, then fixed itself later (he's on 2.0.0). Likely the
+  poster arrives only after the show's metadata is fetched; 2.0.2 already adds
+  `fillShowPosterIfMissing` after each metadata save. Verify on 2.0.2 with a fresh
+  import before doing more.
+  **Then his screenshot (26 Oct 11:03): many shows still letters (3R, F, J, TB, MIT, TP,
+  I2), so it is not only timing.** Root causes in `fillMissingShowPosters`
+  (`show-meta-fetch.ts` ~567): (1) strictly sequential, two TheTVDB requests per show,
+  so a 200-show library fills over many launches; (2) when TheTVDB answers with no
+  image it sets `tvdbShowPosterMiss:<id>` forever and never tries **TMDB** (we have it);
+  (3) one throw ends the whole loop until next launch. Fix: a small pool (4–6), TMDB
+  poster fallback before giving up, try/catch per show.
+- Request: import from **Sofa Time**. **Real file received 26 Oct** from the same user
+  (Telegram "Az", Saudi): `~/Downloads/sofa_time_export_2026_10_26_10_54_59.zip`
+  (a user's personal data: test with it, never commit, delete after). A ZIP of six JSON
+  arrays: `watchedShow_*.json`, `stopWatchingShow_*.json`, `watchlistShow_*.json`,
+  `watchedMovie_*.json`, `watchlistMovie_*.json`, `stopWatchingMovie_*.json` (the
+  movie files are empty in this sample, so their shape is unconfirmed; assume the same
+  fields minus `seasons`). Each show: `title`, `tmdb` (always present), `imdb`, `type`
+  ("tv"), `addedDate`, `release_date`, `runtime`, `genres`, `seasons[{number,
+  episodes[{number, addedDate, rating?}]}]` (season 0 = specials; `addedDate` = when it
+  was marked watched; `rating` is rare, out of 10). `stopWatchingShow` items carry
+  `archive_type`: "dropped" / "hold" → archived. `watchlistShow` = watchlist.
+  This sample: 205 watched shows (10,532 episodes), 46 stopped (1,619 episodes), 9
+  watchlist, 0 films. Match by TMDB id. **When it ships: tell Az (@azoz); he already has 3 months of Plus (given 26 Oct).**
+- Request: count **rewatched episodes** in the episodes-watched total. Today rewatches
+  are recorded (`watches.rewatch`) and shown in Wrapped ("new vs. again"), but the main
+  totals count each episode once. Consider a "including rewatches" figure.
+
+**Bug: "Where are you?" (onboarding, `pick-shows.tsx` ~287 `apply`) freezes on Done**
+(reported 26 Oct by an Arabic Telegram channel admin on Android, with a screenshot:
+"adding takes time after pressing Done"). Picking "I'm at S17 E06" on a long show calls
+`markWatched` once per episode (~370 for Grey's Anatomy), and each call does
+`ensureShowTracked` + INSERT + `clearUnmarkTombstone` + `recountShow` + `queueOp`, each
+its own commit. Fix: a `markWatchedMany(showId, episodes, watchedAt)` in `db.ts` that
+runs in one `withTransactionSync`, updates tombstones once and recounts once; use it here
+and for the show page's "Mark all" / season ticks (`show/[id].tsx` ~746, ~1858, ~2033).
+
+**Bug: long single seasons (anime) are heavy to scroll and to open episodes**
+(same Arabic channel admin, 26 Oct, Android, Boruto: one season of 293 episodes).
+`show/[id].tsx` ~2079 renders an open season with `.map` up to `limitFor()` = 120 rows,
+each inside reanimated FadeIn/FadeOut and each calling `episodeMeta()` (a sync DB read)
+during render. `episode/[id].tsx` ~1344 pages a FlatList over all 293. Fix: virtualise
+the season's rows (or page by ~30), read the season's episode meta once and memoise it,
+and give the episode pager `getItemLayout` + a small `windowSize` / `initialNumToRender`.
+Also: **coming back from an episode to the show page leaves it blank for a few seconds** (same user, screenshot), because the focus re-read re-renders the whole open season. On focus, refresh only what changed (watched marks), not the full list. Test on the Android emulator with a 300-episode anime.
+
+**Daily puzzle: two reminders, and they keep working when the app isn't opened**
+(Mahmood, 26 Oct). Today there is one reminder a day at the chosen hour (default 20:00,
+`DEFAULT_REMINDER_HOUR`), only if today's puzzle isn't played (`puzzleReminderAt` in
+`puzzle-data.ts`, `nextPuzzleReminder` in `puzzle.ts`, scheduled in `notifications.ts`
+~428). Nothing says a new puzzle is out, nothing warns before midnight, and only ONE
+future reminder is ever scheduled, so after two days without opening the app it goes
+silent.
+- **"Today's puzzle is ready"** in the morning (the user's chosen hour; not midnight,
+  which would wake people and get notifications switched off).
+- **"Last chance: today's puzzle ends at midnight"** around 22:00–23:00, only if today's
+  puzzle is still unplayed.
+- **Schedule several days ahead** (e.g. 7), cancelling and re-planning on every launch
+  and when the puzzle is finished, so reminders don't stop when the app isn't opened.
+  Stay under iOS's 64 pending-notification limit together with episode reminders.
+- New strings in all 9 locales; run `npm run i18n:types`.
+
+**Import from Bingers** (Mahmood, 26 Oct; asked for on r/TVTime the same day by
+u/the100broken; Bingers is the biggest TV Time successor). A real export is in
+`~/Downloads/bingers-export-2026-10-26.zip` (Mahmood's own library, so test with it
+and never commit it). It is a ZIP of four UTF-8-with-BOM CSVs, and every row carries
+a TVDB and/or TMDB id, so nothing has to be matched by title:
+- `library.csv`: type (show/movie), title, original_title, year, tvdb_id, tmdb_id,
+  favorite (yes/no), list_status (`watching` / `following` / `for_later`), added_at,
+  for_later_at, stopped_watching_at, hidden_at. `for_later` = watchlist;
+  `stopped_watching_at` = archived.
+- `watches.csv`: type (episode/movie), ids, season_number, episode_number,
+  first_watched_at, last_watched_at, plays (>1 = rewatches).
+- `ratings.csv`: episode or movie rating 1–5, favorite_character (`|`-separated),
+  emotions (`|`-separated: touched, shocked, thrilled, amused, scared, confused, tense).
+- `lists.csv`: list_name, list_description, title, type, tvdb_id, tmdb_id.
+Map onto the same foreign-import path as Simkl (`foreign-import.ts`), merge-safe,
+with an error code if the ZIP isn't a Bingers export. Mahmood's file: 415 titles,
+1,251 watches, 231 ratings, 1 list.
+
+**A free month of Plus for signing in** (Mahmood, 25–26 Oct; evidence in
+`outreach/research-growth-2026-10-25.md`: 30-day trials convert far better than
+short ones, and Instapaper gave every Pocket importer a free Premium trial):
+- Every account gets 30 days of Plus once, granted by the server (`plus_until`, the
+  same mechanism as gifting). No payment, no store trial, nothing renews; say so on
+  the card.
+- The invitation: a card after an import finishes ("Sign in and get a month of Plus
+  free"), and a one-time card for existing users who have no account. A clear
+  "No thanks" that never comes back. Accounts stay optional: "No account needed" is
+  a promise in the store listing.
+- A reminder on day 25 ("Your free month ends in 5 days") with the annual offer.
+- One question at sign-up: "Where did you hear about OpenTV?" (Reddit / App Store or
+  Play search / a friend / a creator / other). Today nothing tells us which channel
+  brought a sign-up.
+- Watch D1 usage the first week; Workers Paid ($5/mo) should cover it.
+
+**Year-end Wrapped, must ship before 1 Dec 2026** (Mahmood, 25 Oct; the biggest
+lever in `outreach/plan-10k-2026-10-25.md`, because everyone shares Spotify Wrapped
+in early December):
+- **Wrapped 2026 can be made from 1 Dec, free for everyone.** Today `periodOptions`
+  (`pure.ts` ~5574) lists only years strictly before the current year, so 2026 is not
+  offered until 2027 (`/wrapped?year=2026` works only if typed by hand). From 1 Dec,
+  offer the current year too.
+- **A year nudge on 1 Dec: "Your 2026 is ready".** A Profile banner and a local
+  notification for every user, not only Plus. Today both nudges are month-only
+  (`wrappedToOffer` in `pure.ts` ~6001; the `'wrapped'` notification in
+  `notification-plan.ts` ~530 is Plus-only).
+- **theopentv.com drawn inside every shared image.** The share sheet carries only
+  the image (`expo-sharing` takes a file, no text; `withLink()` runs only on the
+  `Share.share` fallback), so a link that isn't in the picture never reaches the
+  person who sees it. Today only the month closing card has the domain
+  (`month-cards.tsx` ~864). Add it to the year cards (hero `cards.tsx` ~638 and the
+  year closing card), and add the OpenTV name + domain to the ratings grid share
+  (`ratings/[id].tsx`, which has neither), Deep Stats, puzzle and the other share cards.
+
+
 ## 2.0.2 — built 25 Oct 2026 (Android 116, iOS 97)
 
 **Simkl import, fixed against two real backups** (one a full 2,200-title
@@ -674,6 +871,8 @@ half price as soon as the episode airs.
 ## Ideas — no version yet
 
 Not promised. A version number goes on one when it is decided.
+
+- **Jump to an episode on long shows** (Arabic Telegram channel admin, 26 Oct, Boruto, 293 episodes): instead of scrolling down to the episode you're on, a way at the top to say "I'm at episode N" and mark everything before it. Kept as TV Time's design for now (Mahmood: changes to marking need studying first, TV Time users expect it as it was).
 
 - **MCP: talk to your library from ChatGPT or Claude** (seen on Achriom, 10
   Oct). Only possible for Plus with cloud backup on — the backup is the one
