@@ -3900,5 +3900,13 @@
     "paywallTitle": "Você tem Plus, grátis",
     "paywallUntil": "Até {{date}}. Nada é renovado sozinho: para manter o Plus depois, escolha um plano abaixo.",
     "paywallNoDate": "Nada é renovado sozinho: para manter o Plus depois, escolha um plano abaixo."
+  },
+  "wrappedFinal": {
+    "soFar": "{{year}} até agora",
+    "soFarTag": "até agora",
+    "bannerTitle": "Seu {{year}} está completo",
+    "bannerBody": "O ano inteiro, dezembro incluído. Grátis para criar e compartilhar",
+    "notifyTitle": "Seu {{year}} está completo",
+    "notifyBody": "Todas as séries e filmes do ano, Natal incluído. Toque para abrir."
   }
 }

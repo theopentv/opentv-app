@@ -3900,5 +3900,13 @@
     "paywallTitle": "Tienes Plus, gratis",
     "paywallUntil": "Hasta el {{date}}. Nada se renueva solo: para seguir con Plus después, elige un plan abajo.",
     "paywallNoDate": "Nada se renueva solo: para seguir con Plus después, elige un plan abajo."
+  },
+  "wrappedFinal": {
+    "soFar": "{{year}} hasta ahora",
+    "soFarTag": "hasta ahora",
+    "bannerTitle": "Tu {{year}} está completo",
+    "bannerBody": "El año entero, diciembre incluido. Gratis para crear y compartir",
+    "notifyTitle": "Tu {{year}} está completo",
+    "notifyBody": "Todas las series y películas del año, Navidad incluida. Toca para abrirlo."
   }
 }

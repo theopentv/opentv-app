@@ -12,7 +12,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import db, { getMeta, getSeasons, setMeta, watchedInMonth } from '@/db';
+import db, { getMeta, getSeasons, setMeta, watchedInPeriodSplit } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { formatPeriod } from '@/locale-resolve';
 import { isPlus } from '@/plus';
@@ -31,7 +31,7 @@ import {
 } from '@/notification-plan';
 import { memoryFor, memoryNotificationAt, memorySentence } from '@/on-this-day';
 import { puzzleRemindersFrom, setPuzzleReminderOn } from '@/puzzle-data';
-import { shouldResync } from '@/pure';
+import { shouldResync, WRAPPED_SEEN_FINAL_KEY, wrappedFinalNotifyYear, wrappedYearWorthNudge } from '@/pure';
 import { GOAL_NUDGED_AT_KEY, goalNudgeAt, goalNudgeOn, goalStatus, mostBehind } from '@/yearly-goal';
 import type { LocaleKey } from '@/locales/keys';
 
@@ -291,6 +291,9 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
   // The year running, for 1 December. Episodes and films both count: a year
   // of nothing but films is still a year with a recap in it.
   const wrappedYear = todayKey.slice(0, 4);
+  // The year to be told is COMPLETE on 1 January (2.0.3). Both nudges need a
+  // year worth announcing, `wrappedYearWorthNudge`; the picker does not.
+  const finalYear = wrappedFinalNotifyYear(todayKey, getMeta(WRAPPED_SEEN_FINAL_KEY));
 
   return {
     upcoming,
@@ -301,7 +304,8 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
     popcornBest,
     wrappedMonth: monthNudge ? wrappedMonth : null,
     wrappedLabel: monthNudge ? formatPeriod(wrappedMonth, currentLocale()) : null,
-    wrappedYear: watchedInMonth(wrappedYear) > 0 ? wrappedYear : null,
+    wrappedYear: wrappedYearWorthNudge(watchedInPeriodSplit(wrappedYear)) ? wrappedYear : null,
+    wrappedFinalYear: finalYear != null && wrappedYearWorthNudge(watchedInPeriodSplit(finalYear)) ? finalYear : null,
   };
 }
 

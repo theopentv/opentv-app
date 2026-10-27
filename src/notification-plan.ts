@@ -101,6 +101,12 @@ export type PlanInput = {
    * the year's Wrapped is the one everybody posts, and it is free.
    */
   wrappedYear: string | null;
+  /**
+   * The year whose "is complete" notification on 1 January is still owed,
+   * 'YYYY', or null: too thin a year, or its final recap already opened.
+   * Sent even to people who opened December's: that one was "so far".
+   */
+  wrappedFinalYear: string | null;
 };
 
 /** iOS allows 64 pending; leave room for the other kinds and for headroom. */
@@ -395,6 +401,12 @@ export function yearWrappedAt(year: string, hour = 12): number {
   return new Date(Number(year), 11, 1, hour, 0, 0, 0).getTime();
 }
 
+/** 1 January after `year`, at noon: the year's Wrapped is final. Noon for
+ *  the reason December's is; a morning after New Year's Eve is a late one. */
+export function yearCompleteAt(year: string, hour = 12): number {
+  return new Date(Number(year) + 1, 0, 1, hour, 0, 0, 0).getTime();
+}
+
 /**
  * Everything to schedule, in one pass.
  *
@@ -570,6 +582,20 @@ export function planNotifications(
       bodyKey: 'wrappedYear.notifyBody',
       at: yearWrappedAt(input.wrappedYear),
       data: { kind: 'wrapped', year: input.wrappedYear },
+    });
+  }
+
+  // ---- the year, complete, on 1 January ---------------------------------
+  // Its own id, so it never replaces December's, and the same `at > now` rule.
+  if (enabled.wrapped && input.wrappedFinalYear) {
+    out.push({
+      id: `wrapped-final-${input.wrappedFinalYear}`,
+      kind: 'wrapped',
+      title: 'wrappedFinal.notifyTitle',
+      titleParams: { year: input.wrappedFinalYear },
+      bodyKey: 'wrappedFinal.notifyBody',
+      at: yearCompleteAt(input.wrappedFinalYear),
+      data: { kind: 'wrapped', year: input.wrappedFinalYear },
     });
   }
 

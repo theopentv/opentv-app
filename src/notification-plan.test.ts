@@ -57,6 +57,7 @@ const input = (over: Partial<PlanInput> = {}): PlanInput => ({
   wrappedMonth: null,
   wrappedLabel: null,
   wrappedYear: null,
+  wrappedFinalYear: null,
   ...over,
 });
 

@@ -4204,5 +4204,13 @@
     "paywallTitle": "Masz Plus, za darmo",
     "paywallUntil": "Do {{date}}. Nic nie odnawia się samo: aby zachować Plus później, wybierz plan poniżej.",
     "paywallNoDate": "Nic nie odnawia się samo: aby zachować Plus później, wybierz plan poniżej."
+  },
+  "wrappedFinal": {
+    "soFar": "{{year}} do tej pory",
+    "soFarTag": "do tej pory",
+    "bannerTitle": "Twój rok {{year}} jest kompletny",
+    "bannerBody": "Cały rok, razem z grudniem. Za darmo do stworzenia i udostępnienia",
+    "notifyTitle": "Twój rok {{year}} jest kompletny",
+    "notifyBody": "Wszystkie seriale i filmy roku, razem ze świętami. Stuknij, aby otworzyć."
   }
 }

@@ -13,12 +13,14 @@ import { useState } from 'react';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { currentLocale, t } from '@/i18n';
 import { formatPeriod } from '@/locale-resolve';
-import { periodOptions } from '@/pure';
+import { periodOptions, wrappedSoFar } from '@/pure';
 import { todayISO } from '@/components/heatmap';
 import { watchYears } from '@/stats-calc';
 
-/** 'July 2026' for a month, '2025' for a year, in the app's language. */
-export function periodLabel(key: string): string {
+/** 'July 2026' for a month, '2025' for a year, in the app's language, and
+ *  '2026 so far' for a year `today` is still inside (2.0.3). */
+export function periodLabel(key: string, today?: string): string {
+  if (today != null && wrappedSoFar(key, today)) return t('wrappedFinal.soFar', { year: key });
   return formatPeriod(key, currentLocale());
 }
 
@@ -37,10 +39,11 @@ export function PeriodSheet({
   // The LOCAL day (2.0.3): a UTC one kept the year off the list for the first
   // hours of 1 December east of Greenwich, while the Profile card, which reads
   // the local day, was already offering it.
-  const [options] = useState(() => periodOptions(todayISO(), watchYears()));
+  const [today] = useState(todayISO);
+  const [options] = useState(() => periodOptions(today, watchYears()));
 
   const actions: SheetAction[] = options.map((key) => ({
-    text: periodLabel(key),
+    text: periodLabel(key, today),
     icon: key.length === 4 ? 'calendar-outline' : 'calendar-clear-outline',
     onPress: () => onPick(key),
   }));

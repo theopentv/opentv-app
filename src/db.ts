@@ -4223,6 +4223,18 @@ export function watchedInMonth(month: string): number {
   );
 }
 
+/** `watchedInMonth`, split: episodes and films counted apart, for a rule
+ *  that weighs them differently (`wrappedYearWorthNudge`). */
+export function watchedInPeriodSplit(key: string): { episodes: number; films: number } {
+  return (
+    db.getFirstSync<{ episodes: number; films: number }>(
+      'SELECT (SELECT COUNT(*) FROM watches WHERE substr(watchedAt, 1, length(?1)) = ?1) AS episodes,' +
+        ' (SELECT COUNT(*) FROM movies WHERE substr(watchedAt, 1, length(?1)) = ?1) AS films',
+      [key],
+    ) ?? { episodes: 0, films: 0 }
+  );
+}
+
 /** The most episodes ever watched in one day, and which day that was. */
 export function longestBinge(): { n: number; day: string } | null {
   const row = db.getFirstSync<{ n: number; d: string }>(
