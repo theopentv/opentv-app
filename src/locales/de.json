@@ -3923,5 +3923,8 @@
     "endedAnnual": "Jahresabo, {{price}} pro Jahr",
     "endedMonthly": "Monatsabo, {{price}} pro Monat",
     "signInLede": "Melde dich an, um deinen Gratismonat Plus zu starten. Keine Karte, nichts verlängert sich."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "Nur in deinem eigenen Profil, wird nie veröffentlicht."
   }
 }

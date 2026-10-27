@@ -3923,5 +3923,8 @@
     "endedAnnual": "Annual plan, {{price}} a year",
     "endedMonthly": "Monthly plan, {{price}} a month",
     "signInLede": "Sign in to start your free month of Plus. No card, nothing renews."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "Your own profile only, never published."
   }
 }

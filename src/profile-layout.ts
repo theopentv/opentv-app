@@ -252,6 +252,19 @@ const CLASSIC = (shelfKeys: readonly string[]): string[] => [
   // them wherever they like.
   'stats',
   'lists',
+  /*
+   * THE ONE WIDGET THAT JOINED THE CLASSIC PAGE (27 Oct), and the exception to
+   * "added since = opt-in". Everything I watch is a door, not a decoration:
+   * it is the only way into the page that lists shows, anime and films
+   * together, and behind the Plus-only picker a free member had no door at
+   * all. So it is part of every profile, free included, between Lists and the
+   * shelves it summarises. Being in this list is also what delivers it to
+   * layouts saved before it existed: `normalise` appends what `known` has
+   * never held -- once, so taking it off while arranging keeps it off. Own
+   * profile only (`private`); Edit profile's "Everything I watch" switch
+   * hides it on this phone.
+   */
+  'everything',
   ...shelfKeys.map((k) => `${SHELF_PREFIX}${k}`),
   'extra',
 ];
@@ -280,7 +293,7 @@ const CATALOGUE = (shelfKeys: readonly string[]): string[] => [
   'together',
   'topRated',
   'nowWatching',
-  'everything',
+  // `everything` comes in with the classic page above (27 Oct), once.
   'artwork',
   'gif',
   'links',

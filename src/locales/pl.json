@@ -4227,5 +4227,8 @@
     "endedAnnual": "Plan roczny, {{price}} za rok",
     "endedMonthly": "Plan miesięczny, {{price}} za miesiąc",
     "signInLede": "Zaloguj się, aby zacząć darmowy miesiąc Plus. Bez karty, nic się nie odnawia."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "Tylko na twoim profilu, nigdy nie jest publikowane."
   }
 }

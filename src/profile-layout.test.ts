@@ -91,3 +91,29 @@ describe('widget gallery (2.0.3)', () => {
     expect(galleryRows(['since', 'topRated', 'streak'])).toEqual([['since', 'streak'], ['topRated']]);
   });
 });
+
+describe('Everything I watch on the classic page (27 Oct)', () => {
+  const { defaultLayout, normalise, parseLayout, serialise } = require('./profile-layout') as typeof import('./profile-layout');
+  const keys = ['shows', 'movies'];
+  const c = (id: string) => ({ uid: id, id, span: '2x1' as const });
+
+  it('is on every default profile, after Lists and before the shelves', () => {
+    const ids = defaultLayout(keys).map((p) => p.id);
+    expect(ids.slice(ids.indexOf('lists'), ids.indexOf('lists') + 3)).toEqual(['lists', 'everything', 'shelf:shows']);
+  });
+
+  it('arrives once on a layout saved before it existed', () => {
+    const old = parseLayout(serialise([c('banners'), c('counts'), c('lists'), c('extra')], null))!;
+    const once = normalise(old, keys);
+    expect(once.filter((p) => p.id === 'everything')).toHaveLength(1);
+    // Saved and read back, it is not appended a second time.
+    expect(normalise(parseLayout(serialise(once, serialise(old.items, null))), keys).filter((p) => p.id === 'everything')).toHaveLength(1);
+  });
+
+  it('stays off once the owner removes it', () => {
+    const placed = normalise(parseLayout(serialise([c('banners'), c('lists')], null)), keys);
+    const removed = placed.filter((p) => p.id !== 'everything');
+    const raw = serialise(removed, serialise(placed, null));
+    expect(normalise(parseLayout(raw), keys).some((p) => p.id === 'everything')).toBe(false);
+  });
+});
