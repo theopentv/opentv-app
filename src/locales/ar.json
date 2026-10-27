@@ -4534,5 +4534,16 @@
   },
   "everythingSection": {
     "profileSwitchSub": "في ملفك أنت فقط، ولا يُنشر أبدًا."
+  },
+  "everythingFilters": {
+    "typeTitle": "النوع",
+    "result": {
+      "zero": "{{n}} من {{count}} عنوان",
+      "one": "{{n}} من عنوان واحد",
+      "two": "{{n}} من عنوانين",
+      "few": "{{n}} من {{count}} عناوين",
+      "many": "{{n}} من {{count}} عنواناً",
+      "other": "{{n}} من {{count}} عنوان"
+    }
   }
 }

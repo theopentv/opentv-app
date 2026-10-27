@@ -6128,7 +6128,16 @@ export function wrappedYearWorthNudge(c: { episodes: number; films: number }): b
  * tests lean on hardest.
  */
 
-export type FilterKind = 'show' | 'movie';
+/** 'everything' (2.0.3) is the Everything I watch page: shows and films in
+ *  one list, filtered by the same sheet with a Type axis added on top. */
+export type FilterKind = 'show' | 'movie' | 'everything';
+
+/**
+ * The Type axis of the Everything sheet. Anime is TheTVDB's own genre on a show
+ * and so a subset of Shows: an anime carries both, which is why ticking Shows
+ * keeps it and ticking Anime alone keeps only it.
+ */
+export const EVERYTHING_TYPES = ['show', 'anime', 'movie'] as const;
 
 export const RUNTIME_BANDS = ['short', 'standard', 'long'] as const;
 export type RuntimeBand = (typeof RUNTIME_BANDS)[number];
@@ -6216,6 +6225,9 @@ export type TitleFacts = {
   /** ['mine'] when the title is on one of the user's streaming services
    *  (2.0.0, `availability.ts`); absent or empty otherwise. */
   services?: readonly string[];
+  /** EVERYTHING_TYPES, on the Everything page only; absent on the two
+   *  single-kind pages, whose sets never carry a type. */
+  types?: readonly string[];
 };
 
 export type FilterSort = 'lastWatched' | 'lastAdded' | 'alpha';
@@ -6235,6 +6247,8 @@ export type FilterSet = {
   rating: number | null;
   /** 'mine' = on one of my streaming services (Plus). */
   services: string[];
+  /** Everything page only: EVERYTHING_TYPES. Free, like progress. */
+  types: string[];
 };
 
 export const DEFAULT_FILTERS: FilterSet = {
@@ -6248,12 +6262,13 @@ export const DEFAULT_FILTERS: FilterSet = {
   years: [],
   rating: null,
   services: [],
+  types: [],
 };
 
 const FILTER_SORTS: readonly FilterSort[] = ['lastWatched', 'lastAdded', 'alpha'];
 
 /** Every multi-select axis, so nothing has to list them twice. */
-export const FILTER_AXES = ['progress', 'aired', 'genres', 'networks', 'decades', 'runtimes', 'years', 'services'] as const;
+export const FILTER_AXES = ['progress', 'aired', 'genres', 'networks', 'decades', 'runtimes', 'years', 'services', 'types'] as const;
 export type FilterAxis = (typeof FILTER_AXES)[number];
 
 /** The axes that are Plus: everything beyond sort, progress and aired, which
@@ -6290,6 +6305,7 @@ export function matchesFilters(f: TitleFacts, s: FilterSet): boolean {
   if (s.runtimes.length > 0 && (f.runtime == null || !s.runtimes.includes(f.runtime))) return false;
   if (s.years.length > 0 && !f.watchedYears.some((y) => s.years.includes(y))) return false;
   if (s.services.length > 0 && !(f.services ?? []).some((v) => s.services.includes(v))) return false;
+  if (s.types.length > 0 && !(f.types ?? []).some((v) => s.types.includes(v))) return false;
   if (s.rating != null) {
     if (s.rating === 0) return f.stars == null;
     if (f.stars == null || f.stars < s.rating) return false;
@@ -6353,7 +6369,7 @@ export function filterOptions(facts: readonly TitleFacts[], s: FilterSet, kind: 
   return {
     progress: inOrder(
       tally('progress', (f) => [f.progress]),
-      kind === 'show' ? SHOW_PROGRESS : MOVIE_PROGRESS,
+      kind === 'show' ? SHOW_PROGRESS : kind === 'movie' ? MOVIE_PROGRESS : [...SHOW_PROGRESS, ...MOVIE_PROGRESS],
     ),
     aired: inOrder(
       tally('aired', (f) => (f.aired == null ? [] : [f.aired])),
@@ -6368,6 +6384,10 @@ export function filterOptions(facts: readonly TitleFacts[], s: FilterSet, kind: 
     ),
     years: newestFirst(tally('years', (f) => f.watchedYears)),
     services: byCount(tally('services', (f) => f.services ?? [])),
+    types: inOrder(
+      tally('types', (f) => f.types ?? []),
+      EVERYTHING_TYPES,
+    ),
     ratings,
   };
 }
@@ -6436,6 +6456,7 @@ export function normaliseFilterSet(value: unknown): FilterSet {
     runtimes: stringsOf(v.runtimes).filter((r): r is RuntimeBand => (RUNTIME_BANDS as readonly string[]).includes(r)),
     years: stringsOf(v.years),
     services: stringsOf(v.services),
+    types: stringsOf(v.types).filter((x) => (EVERYTHING_TYPES as readonly string[]).includes(x)),
   };
 }
 
@@ -6468,7 +6489,7 @@ export function parsePresets(raw: string | null | undefined): FilterPreset[] {
     const name = typeof p.name === 'string' ? p.name.trim() : '';
     const id = typeof p.id === 'string' ? p.id : '';
     if (!name || !id) continue; // a nameless preset is unreachable in the UI
-    out.push({ id, name, kind: p.kind === 'movie' ? 'movie' : 'show', filters: normaliseFilterSet(p.filters) });
+    out.push({ id, name, kind: p.kind === 'movie' || p.kind === 'everything' ? p.kind : 'show', filters: normaliseFilterSet(p.filters) });
   }
   return out;
 }

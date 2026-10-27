@@ -41,7 +41,7 @@ import {
   withTogetherBlock,
 } from '@/profile-layout';
 import { profileTogetherSnapshot } from '@/community-together';
-import { sortableDate } from '@/everything-view';
+import { sortableDate, watchedFilms } from '@/everything-view';
 import { widgetValue } from '@/components/profile-widgets';
 import { pushWidgets } from '@/community-profiles';
 
@@ -690,7 +690,7 @@ export default function ProfileScreen() {
   const movieClock = movieClockNow();
   const totals = getTotals();
   const tvClock = clockOf(totals.minutes);
-  const recentMovies = getMovies().filter((m) => m.watchedAt != null);
+  const recentMovies = watchedFilms(getMovies());
   // Everything I watch: the Shows and Films shelves' own rows, one rail, most
   // recently watched first. Keys say which screen a poster opens.
   const everythingShelf = useMemo(
@@ -698,7 +698,7 @@ export default function ProfileScreen() {
       everythingOn
         ? [
             ...recentShows.map((sp) => ({ key: `s:${sp.tvdbId}`, name: sp.name, uri: sp.posterUrl, last: sortableDate(sp.lastWatchedAt ?? sp.addedAt) })),
-            ...recentMovies.map((m) => ({ key: `m:${m.name}`, name: m.name, uri: m.poster, last: lastWatchedKey(m) })),
+            ...recentMovies.map((m) => ({ key: `m:${m.name}`, name: m.title, uri: m.poster, last: lastWatchedKey(m) })),
           ].sort((a, b) => b.last.localeCompare(a.last))
         : [],
     [everythingOn, recentShows, recentMovies],
@@ -764,7 +764,9 @@ export default function ProfileScreen() {
   const favShows = seedLib
     ? seed.favoriteShows
     : getFavoriteShows().map((s) => ({ tvdbId: s.tvdbId, name: s.name, poster: s.posterUrl }));
-  type PosterItem = { name: string; poster: string | null };
+  // `title` is the name in the reader's language (see `displayTitle`); the
+  // seed library has none, and `name` stands in.
+  type PosterItem = { name: string; poster: string | null; title?: string };
   const favMovies: PosterItem[] = seedLib ? seed.favoriteMovies.items : getFavoriteMovies();
   // EVERY list, in the order the Lists screen shows them — the band is a pager.
   // PINNED FIRST, here too. The band draws the first list, and a pin that only
@@ -1738,7 +1740,7 @@ export default function ProfileScreen() {
         {
           key: 'movies',
           title: t('stats.headers.movies'),
-          items: recentMovies.map((m) => ({ key: m.name, name: m.name, uri: m.poster })),
+          items: recentMovies.map((m) => ({ key: m.name, name: m.title, uri: m.poster })),
           onTitlePress: () => router.push('/all-movies'),
           onItemPress: (k: string) => router.push(`/movie/${encodeURIComponent(k)}`),
         },
@@ -1746,7 +1748,7 @@ export default function ProfileScreen() {
           key: 'fav-movies',
           title: t('profile.sectionFavoriteMovies'),
           heart: true,
-          items: favMovies.map((m, i) => ({ key: `${m.name}-${i}`, name: m.name, uri: m.poster })),
+          items: favMovies.map((m, i) => ({ key: `${m.name}-${i}`, name: m.title ?? m.name, uri: m.poster })),
           onTitlePress: () => router.push('/favorites/movies'),
           onItemPress: (k: string) => router.push(`/movie/${encodeURIComponent(k.replace(/-\d+$/, ''))}`),
         },

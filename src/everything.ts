@@ -4,18 +4,19 @@
  * tested; this file only turns the library into its input.
  *
  * THE SAME READS AS THE TWO PAGES IT JOINS. `getShowProgress` is what the Shows
- * page lists and `getMovies` is what the Films page lists, so a title is on
- * this page exactly when it is on one of those — nothing is counted here that
- * the user could not find there too.
+ * page lists and `getMovies` is what the Films page lists — the films narrowed
+ * to the WATCHED ones (`watchedFilms`), because a watchlist is not something
+ * you watch. Nothing is counted here that the user could not find there too.
  */
-import db, { getMovies, getShowProgress, type ShowProgress } from '@/db';
-import { lastWatchedKey } from '@/pure';
+import db, { getMovies, getShowProgress, type MovieRow, type ShowProgress } from '@/db';
+import { movieFacts, showFacts } from '@/filter-facts';
+import { lastWatchedKey, type TitleFacts } from '@/pure';
 import { showMeta } from '@/metadata';
-import { sortableDate, type EverythingItem } from '@/everything-view';
+import { sortableDate, watchedFilms, type EverythingItem } from '@/everything-view';
 
 /** A row, plus the show's progress so its poster can carry the same bar the
- *  Shows page draws. */
-export type LibraryItem = EverythingItem & { show?: ShowProgress };
+ *  Shows page draws, and the source row the filter facts are built from. */
+export type LibraryItem = EverythingItem & { show?: ShowProgress; movie?: MovieRow };
 
 export function everythingItems(): LibraryItem[] {
   const shows: LibraryItem[] = getShowProgress().map((sp) => ({
@@ -31,7 +32,7 @@ export function everythingItems(): LibraryItem[] {
     anime: showMeta(sp.tvdbId)?.genres?.includes('Anime') ?? false,
     show: sp,
   }));
-  const movies: LibraryItem[] = getMovies().map((m) => ({
+  const movies: LibraryItem[] = watchedFilms(getMovies()).map((m) => ({
     kind: 'movie',
     key: `m:${m.name}`,
     name: m.title,
@@ -41,8 +42,25 @@ export function everythingItems(): LibraryItem[] {
     // The Films page's own "last added": in-app adds, else when it was watched.
     added: sortableDate(m.addedAt ?? m.watchedAt),
     anime: false,
+    movie: m,
   }));
   return [...shows, ...movies];
+}
+
+/**
+ * The filter sheet's facts for these rows, in the same order — the Shows and
+ * Films builders as they are, plus the Type axis. So every axis means on this
+ * page exactly what it means on the page the title comes from.
+ */
+export function everythingFacts(items: readonly LibraryItem[]): TitleFacts[] {
+  const shows = items.filter((it) => it.show);
+  const films = items.filter((it) => it.movie);
+  const sf = showFacts(shows.map((it) => it.show!));
+  const mf = movieFacts(films.map((it) => it.movie!));
+  const byKey = new Map<string, TitleFacts>();
+  shows.forEach((it, i) => byKey.set(it.key, { ...sf[i], key: it.key, types: it.anime ? ['show', 'anime'] : ['show'] }));
+  films.forEach((it, i) => byKey.set(it.key, { ...mf[i], key: it.key, types: ['movie'] }));
+  return items.map((it) => byKey.get(it.key)!);
 }
 
 /**
@@ -62,10 +80,10 @@ export function everythingSummary(posters = 4): { shows: number; movies: number;
               (SELECT MAX(watchedAt) FROM watches WHERE showId = s.tvdbId) AS last
          FROM shows s
        UNION ALL
-       SELECT 'm:' || name, name, poster, watchedAt FROM movies
+       SELECT 'm:' || name, name, poster, watchedAt FROM movies WHERE watchedAt IS NOT NULL
      ) WHERE uri IS NOT NULL AND uri <> '' AND last IS NOT NULL
      ORDER BY REPLACE(last, ' ', 'T') DESC LIMIT ?`,
     [posters],
   );
-  return { shows: n('SELECT COUNT(*) AS n FROM shows'), movies: n('SELECT COUNT(*) AS n FROM movies'), posters: rows };
+  return { shows: n('SELECT COUNT(*) AS n FROM shows'), movies: n('SELECT COUNT(*) AS n FROM movies WHERE watchedAt IS NOT NULL'), posters: rows };
 }

@@ -1,7 +1,8 @@
 /**
- * The library filter sheet -- one component, two routes (`/filters` for shows,
- * `/movie-filters` for films), because the two sheets drifting apart is exactly
- * how "network" ends up offered on a films screen.
+ * The library filter sheet -- one component, three routes (`/filters` for
+ * shows, `/movie-filters` for films, `/everything-filters` for Everything I
+ * watch), because the sheets drifting apart is exactly how "network" ends up
+ * offered on a films screen.
  *
  * WHAT THE USER SEES, top to bottom: their saved presets, then one section per
  * axis, then the actions. Every section is derived from THEIR library -- a
@@ -25,6 +26,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { PromptModal } from '@/components/prompt-modal';
 import { getMovies, getShowProgress } from '@/db';
+import { everythingFacts, everythingItems } from '@/everything';
 import { movieFacts, showFacts } from '@/filter-facts';
 import {
   deletePreset,
@@ -65,8 +67,13 @@ const SORTS: { value: FilterSort; key: 'filters.sortLastWatched' | 'filters.sort
 /** Values that have a translation; networks are data, not copy, and genres
  *  go through the same table as the show page's. */
 function labelOf(axis: FilterAxis, value: string, kind: FilterKind): string {
+  if (axis === 'types') {
+    if (value === 'anime') return t('everything.chipAnime');
+    return value === 'movie' ? t('allMovies.title') : t('allShows.title');
+  }
   if (axis === 'progress') {
-    if (kind === 'movie') return value === 'watched' ? t('movieFilters.progressWatched') : t('movieFilters.progressNotWatched');
+    // a film's two values are its own on the Everything sheet too
+    if (kind === 'movie' || value === 'watched' || value === 'notWatched') return value === 'watched' ? t('movieFilters.progressWatched') : t('movieFilters.progressNotWatched');
     if (value === 'watching') return t('filters.progressWatching');
     if (value === 'notStarted') return t('filters.progressNotStarted');
     if (value === 'upToDate') return t('filters.progressUpToDate');
@@ -183,7 +190,15 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
   // the library, resolved once per open. showMeta() caches per show, so this is
   // a couple of grouped queries plus a map lookup per title -- cheap enough to
   // do on mount, far too expensive to repeat per chip tap, hence the memo.
-  const facts = useMemo(() => (kind === 'show' ? showFacts(getShowProgress()) : movieFacts(getMovies())), [kind]);
+  const facts = useMemo(
+    () =>
+      kind === 'show'
+        ? showFacts(getShowProgress())
+        : kind === 'movie'
+          ? movieFacts(getMovies())
+          : everythingFacts(everythingItems()),
+    [kind],
+  );
   const options = useMemo(() => filterOptions(facts, draft, kind), [facts, draft, kind]);
   const shown = useMemo(() => facts.filter((f) => matchesFilters(f, draft)).length, [facts, draft]);
 
@@ -240,7 +255,9 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
   const resultLine =
     kind === 'show'
       ? t('filters.resultShows', { n: shown, count: facts.length })
-      : t('filters.resultMovies', { n: shown, count: facts.length });
+      : kind === 'movie'
+        ? t('filters.resultMovies', { n: shown, count: facts.length })
+        : t('everythingFilters.result', { n: shown, count: facts.length });
 
   return (
     <Pressable accessible={false} importantForAccessibility="no" style={styles.backdrop} onPress={() => router.back()}>
@@ -289,6 +306,20 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
             </Section>
             )}
 
+            {/* EVERYTHING I WATCH: the chips the page used to carry (All, Shows,
+                Anime, Movies) are this axis now, free like progress. Nothing
+                ticked is "All", the same as every other axis here. */}
+            {kind === 'everything' ? (
+              <AxisSection
+                axis="types"
+                title={t('everythingFilters.typeTitle')}
+                options={options.types}
+                selected={draft.types}
+                kind={kind}
+                onToggle={toggle('types')}
+              />
+            ) : null}
+
             <Section title={t('filters.sortByTitle')}>
               {SORTS.map((s) => (
                 <Pressable accessibilityRole="button" accessibilityState={{ selected: draft.sort === s.value }}
@@ -315,7 +346,7 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
             />
             {/* FREE, LIKE PROGRESS: it is the same question — where am I with
                 this — asked of the season instead of the show. */}
-            {kind === 'show' ? (
+            {kind !== 'movie' ? (
               <AxisSection
                 axis="aired"
                 title={t('filters.airedTitle')}
@@ -343,7 +374,7 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
               kind={kind}
               onToggle={toggle('genres')}
             />
-            {kind === 'show' ? (
+            {kind !== 'movie' ? (
               <AxisSection
                 axis="networks"
                 title={t('filters.networkTitle')}
@@ -361,14 +392,19 @@ export function FiltersSheet({ kind }: { kind: FilterKind }) {
               kind={kind}
               onToggle={toggle('decades')}
             />
-            <AxisSection
-              axis="runtimes"
-              title={kind === 'show' ? t('filters.runtimeTitleShow') : t('filters.runtimeTitleMovie')}
-              options={options.runtimes}
-              selected={draft.runtimes}
-              kind={kind}
-              onToggle={toggle('runtimes')}
-            />
+            {/* Not on Everything: "Short" is a short episode on one half of
+                the list and a short film on the other, two different bands
+                under one chip. */}
+            {kind !== 'everything' ? (
+              <AxisSection
+                axis="runtimes"
+                title={kind === 'show' ? t('filters.runtimeTitleShow') : t('filters.runtimeTitleMovie')}
+                options={options.runtimes}
+                selected={draft.runtimes}
+                kind={kind}
+                onToggle={toggle('runtimes')}
+              />
+            ) : null}
             <AxisSection
               axis="years"
               title={t('filters.watchedYearTitle')}

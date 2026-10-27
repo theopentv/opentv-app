@@ -3926,5 +3926,12 @@
   },
   "everythingSection": {
     "profileSwitchSub": "Solo sul tuo profilo, mai pubblicato."
+  },
+  "everythingFilters": {
+    "typeTitle": "Tipo",
+    "result": {
+      "one": "{{n}} di {{count}} titolo",
+      "other": "{{n}} di {{count}} titoli"
+    }
   }
 }
