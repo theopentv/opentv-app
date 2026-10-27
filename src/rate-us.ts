@@ -14,9 +14,10 @@
  * directly, with no "do you like it?" in front of it. A build without the
  * module falls back to the old Alert that opens the store's review composer.
  *
- * THE MOMENT MATTERS MORE THAN THE WORDING, and there is exactly one good one
- * here: the import has just finished and a decade of history is back on screen.
- * Anywhere else is an interruption. Never on a failure, never mid-task, and
+ * THE MOMENT MATTERS MORE THAN THE WORDING. The best one is the import that
+ * has just finished with a decade of history back on screen; the others are
+ * the 10th episode marked here, a fresh library's 25th, and a shared Wrapped
+ * card. Anywhere else is an interruption. Never on a failure, never mid-task, and
  * never before the library has anything in it.
  *
  * ASKED ONCE PER VERSION, AT MOST, and it is a question with a No in it. A
@@ -30,6 +31,7 @@ import { Alert, Linking, Platform } from 'react-native';
 import { getMeta, libraryOwner, setMeta, watchCount } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
+import { FRESH_EPISODES, rateMomentAfterMark } from '@/rate-moment';
 import { SIDELOADED } from '@/sideload';
 
 type StoreReview = { isAvailableAsync(): Promise<boolean>; hasAction(): Promise<boolean>; requestReview(): Promise<void> };
@@ -110,20 +112,26 @@ export function maybeAskForRating(episodesRecovered: number): void {
   }
 }
 
-/** A fresh library's good moment: enough marked by hand to be worth rating. */
-const FRESH_EPISODES = 25;
+const MARKS_KEY = 'rateMarkCount';
+const MARKS_DONE_KEY = 'rateMarksMomentUsed';
 
 /**
- * THE FRESH START'S MOMENT. The import is the only other ask, so somebody who
- * started over was never asked at all. Here the history is theirs, typed in
- * one tick at a time, and the 25th is where the app has clearly earned a
- * place. Called after a mark; once per version, sharing the import's stamp.
+ * THE MOMENTS AFTER A TAP. Called once per mark from `mark.ts`, after any
+ * "mark the earlier ones too?" alert has closed, so never on top of a dialog.
+ * Counts the tap (the catch-up episodes that alert adds are setup, not use),
+ * then asks if `rateMomentAfterMark` says this is the moment — the 10th
+ * episode marked here, or a fresh library reaching 25. Once per version,
+ * sharing the import's stamp.
  */
-export function maybeAskForRatingFresh(): void {
+export function maybeAskForRatingAfterMark(): void {
   try {
-    if (libraryOwner() !== 'fresh' || ratePromptAlreadyShown()) return;
+    const marks = (Number(getMeta(MARKS_KEY)) || 0) + 1;
+    setMeta(MARKS_KEY, String(marks));
+    if (SIDELOADED || ratePromptAlreadyShown()) return;
     const n = watchCount();
-    if (n < FRESH_EPISODES) return;
+    const moment = rateMomentAfterMark({ owner: libraryOwner(), total: n, marks, marksDone: getMeta(MARKS_DONE_KEY) === '1' });
+    if (!moment) return;
+    if (moment === 'marks') setMeta(MARKS_DONE_KEY, '1');
     setMeta(KEY, Constants.expoConfig?.version ?? '');
     ask(t('rate.freshTitle'), t('rate.freshBody', { count: formatCount(n, currentLocale()) }));
   } catch {
