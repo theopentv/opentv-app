@@ -3825,5 +3825,30 @@
     "title": "Votre historique",
     "firstDay": "Première partie le {{date}}",
     "locked": "Les titres de plus d'une semaine font partie de Plus."
+  },
+  "freeMonth": {
+    "cardTitle": "Connectez-vous et recevez un mois de Plus offert",
+    "cardBody": "Connectez-vous avec Apple, Google ou un e-mail et toutes les fonctions Plus sont à vous pendant 30 jours, sauvegarde dans le cloud comprise.",
+    "cardNoRenew": "Aucun paiement, aucun essai à résilier : rien ne se renouvelle, le mois se termine simplement. Le compte reste facultatif, et OpenTV fonctionne entièrement sans.",
+    "cardCta": "Se connecter",
+    "cardNo": "Non merci",
+    "grantedTitle": "Un mois de Plus pour vous",
+    "grantedUntil": "Toutes les fonctions Plus sont actives jusqu'au {{date}}. Aucun paiement, et rien ne se renouvelle : le mois se termine simplement.",
+    "grantedNoDate": "Toutes les fonctions Plus sont actives pendant 30 jours. Aucun paiement, et rien ne se renouvelle : le mois se termine simplement.",
+    "heardTitle": "Comment avez-vous connu OpenTV ?",
+    "heardOptional": "Facultatif. Cela nous dit ce qui marche.",
+    "heard": {
+      "reddit": "Reddit",
+      "store": "Recherche App Store ou Play",
+      "friend": "Un ami",
+      "creator": "Un créateur",
+      "other": "Autre"
+    },
+    "done": "Terminé",
+    "reminderTitle": "Votre mois offert se termine dans 5 jours",
+    "reminderBody": "Gardez Plus avec la formule annuelle, le prix mensuel le plus bas. Ou ne faites rien : OpenTV reste gratuit.",
+    "paywallTitle": "Vous avez Plus, offert",
+    "paywallUntil": "Jusqu'au {{date}}. Rien ne se renouvelle tout seul : pour garder Plus ensuite, choisissez une formule ci-dessous.",
+    "paywallNoDate": "Rien ne se renouvelle tout seul : pour garder Plus ensuite, choisissez une formule ci-dessous."
   }
 }

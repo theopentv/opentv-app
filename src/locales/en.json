@@ -3825,5 +3825,30 @@
     "title": "Your history",
     "firstDay": "First played {{date}}",
     "locked": "Titles from more than a week ago are part of Plus."
+  },
+  "freeMonth": {
+    "cardTitle": "Sign in and get a month of Plus free",
+    "cardBody": "Sign in with Apple, Google or email and every Plus feature is yours for 30 days, Cloud Backup included.",
+    "cardNoRenew": "No payment and no trial to cancel: nothing renews, the month simply ends. An account stays optional, and OpenTV works fully without one.",
+    "cardCta": "Sign in",
+    "cardNo": "No thanks",
+    "grantedTitle": "A month of Plus is yours",
+    "grantedUntil": "Every Plus feature is on until {{date}}. No payment, and nothing renews: it simply ends.",
+    "grantedNoDate": "Every Plus feature is on for 30 days. No payment, and nothing renews: it simply ends.",
+    "heardTitle": "Where did you hear about OpenTV?",
+    "heardOptional": "Optional. It tells us what works.",
+    "heard": {
+      "reddit": "Reddit",
+      "store": "App Store or Play search",
+      "friend": "A friend",
+      "creator": "A creator",
+      "other": "Other"
+    },
+    "done": "Done",
+    "reminderTitle": "Your free month ends in 5 days",
+    "reminderBody": "Keep Plus with the annual plan, the lowest price per month. Or do nothing: OpenTV stays free.",
+    "paywallTitle": "You have Plus, free",
+    "paywallUntil": "Until {{date}}. Nothing renews by itself: to keep Plus after that, choose a plan below.",
+    "paywallNoDate": "Nothing renews by itself: to keep Plus afterwards, choose a plan below."
   }
 }

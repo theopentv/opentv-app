@@ -751,6 +751,9 @@ export default function RootLayout() {
         <Stack.Screen name="notifications" />
         <Stack.Screen name="inbox" />
         <Stack.Screen name="sign-in" />
+        {/* The free month, just granted (2.0.3): opened by `claimFreeMonth`
+            after any sign-in, so it lives beside sign-in, outside the guard. */}
+        <Stack.Screen name="free-month" />
         <Stack.Screen name="cloud-backup" />
         <Stack.Screen name="devices" />
         <Stack.Screen name="support" />

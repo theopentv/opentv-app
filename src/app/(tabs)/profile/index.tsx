@@ -63,6 +63,7 @@ import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
 import { enableEpisodeNotifications, notificationsEnabled } from '@/notifications';
 import { ACTIVITY_BANNER_CLOSED, ACTIVITY_INTRO_ANSWERED, activityBannerShown } from '@/activity-intro';
 import { closePuzzleBanner, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute, puzzleStreakOnProfile, streakInfo, todaysArt } from '@/puzzle-data';
+import { FreeMonthCard } from '@/components/free-month-card';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
@@ -1178,6 +1179,9 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       )}
+      {/* THE FREE MONTH (2.0.3), for somebody already here with no account.
+          After the Plus card, never beside it: one invitation at a time. */}
+      {!(plusUi && !plus && !plusSeen && !emptyLibrary) && <FreeMonthCard from="profile" style={styles.freeMonth} />}
       {signedOutBanner && (
         <Pressable
           style={styles.cloudBanner}
@@ -1723,6 +1727,8 @@ const styles = StyleSheet.create({
   cloudBannerText: { color: colors.onBrand, fontSize: 13, fontWeight: '700', flex: 1 },
   // Card, not yellow: a recap is an invitation, and the yellow banners above
   // it are all "something on this phone needs fixing".
+  // Inset like the Wrapped card: an invitation, not a bar.
+  freeMonth: { marginHorizontal: space.lg, marginVertical: 10 },
   wrappedBanner: {
     flexDirection: 'row',
     alignItems: 'center',

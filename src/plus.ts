@@ -327,6 +327,11 @@ let storePlus: boolean | null = null;
 /** Called by the purchases module with the store's answer. See `plusDecision`. */
 export function setStorePlus(on: boolean): void {
   storePlus = on;
+  // Bought before day 25 of a free month: its "ends in 5 days" would be wrong.
+  if (on) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    (require('@/free-month') as typeof import('@/free-month')).cancelFreeMonthReminder();
+  }
   decidePlus();
 }
 
@@ -362,6 +367,15 @@ export function setServerPlus(on: boolean | null): void {
   // Only once the store has spoken: before that, `/v1/me` granting is handled
   // by its caller, and a server 'no' alone revokes nothing.
   if (storePlus !== null) decidePlus();
+}
+
+/**
+ * Plus from a grant alone — a gift or the free month — with the store having
+ * said nothing was bought. The paywall then offers the plans instead of a
+ * thank-you for a payment nobody made.
+ */
+export function onlyGrantedPlus(): boolean {
+  return serverPlus === true && storePlus === false;
 }
 
 /** True only when the server has actually been asked, and said yes. */
