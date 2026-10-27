@@ -44,6 +44,8 @@ Play Console record rather than per-change.
 
 ## 2.0.4 — the plan
 
+- **CommsUni notifications** (CommsUni API update 27 Oct; docs in `commsuni/partner-feeds-guide-261027.md` and `partner-api-integration-261027.md` §3). One server-side poller (cron, every 1–5 min, never per user/device) on `GET /v1/feed/notifications`: replies, mentions and likes on our users' shared comments FROM ANY APP, plus moderation (`visibility`: hide/unhide/delete/quarantine/restore/redact). Map `recipientAuthorId` to our profiles → push + inbox row ("X replied to your comment on Show S2E5"); drop events whose actor is our own user (we already notify those); apply `visibility` to our cached copies. Traversal rules: store `since` per feed, follow `nextCursor` until `complete`, then save `nextSince`; de-dupe on event id; `503 feed_unavailable` = not live, retry hours later; `429 poll_too_frequent` if <30 s apart; `invalid_cursor` → restart from `since`; `invalid_parameter` on an old `since` → walk from null. Check whether the shipped inbox/push renders a new kind without an app update. `GET /v1/feed/recent` only if we build an activity/digest surface. We never polled author/reply pages (forbidden), so nothing to remove.
+
 - **PLUS: a website (Mahmood, 27 Oct: ships WITH the MCP in 2.0.4).** A web version of OpenTV for Plus
   members only: open your library, rate, mark watched, add to the watchlist, much as
   in the app. It needs the user's history on the server, so it shares the **per-user
