@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
@@ -33,11 +33,15 @@ import {
   type Placed,
   type WidgetSpan,
   defaultLayout,
+  EVERYTHING_ON_PROFILE_KEY,
+  EVERYTHING_SHELF,
+  withEverythingShelf,
   withGoalBlock,
   withPuzzleBlock,
   withTogetherBlock,
 } from '@/profile-layout';
 import { profileTogetherSnapshot } from '@/community-together';
+import { sortableDate } from '@/everything-view';
 import { widgetValue } from '@/components/profile-widgets';
 import { pushWidgets } from '@/community-profiles';
 
@@ -67,7 +71,7 @@ import { FreeMonthCard } from '@/components/free-month-card';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
-import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, WRAPPED_SEEN_FINAL_KEY, wrappedToOffer, wrappedYearToOffer, wrappedFinalToOffer, wrappedYearWorthNudge, mixHex } from '@/pure';
+import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, lastWatchedKey, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, WRAPPED_SEEN_FINAL_KEY, wrappedToOffer, wrappedYearToOffer, wrappedFinalToOffer, wrappedYearWorthNudge, mixHex } from '@/pure';
 import { lastFriendMatches } from '@/community-seed';
 import { appLinks } from '@/links';
 import { colors, onAccent, radius, space, ls } from '@/theme';
@@ -256,9 +260,8 @@ export default function ProfileScreen() {
   const [activityHidden, setActivityHidden] = useState(() =>
     sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'activity'),
   );
-  const [everythingHidden, setEverythingHidden] = useState(() =>
-    sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'everything'),
-  );
+  // Everything I watch: off until switched on in Edit profile (27 Oct).
+  const [everythingOn, setEverythingOn] = useState(() => getMeta(EVERYTHING_ON_PROFILE_KEY) === '1');
   // Only for a joined profile: without an account there is no joining date to
   // state, and the local library's age is a different fact.
   // THE JOIN DATE IS REMEMBERED: it never changes, and waiting for the server
@@ -418,7 +421,7 @@ export default function ProfileScreen() {
        */
       setArrangement(normalise(parseLayout(savedArrangement()), SHELF_KEYS));
       setActivityHidden(sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'activity'));
-      setEverythingHidden(sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'everything'));
+      setEverythingOn(getMeta(EVERYTHING_ON_PROFILE_KEY) === '1');
       setFriendState({ matches: lastFriendMatches(), seen: getMeta(RECONNECT_SEEN_KEY) });
       setTvdbFailed(tvdbKeyFailed() && !userTvdbKey() && getMeta('tvdbNudgeDismissed') !== '1');
       setNotifOff(!notificationsEnabled() && getMeta('notifyNudgeDismissed') !== '1');
@@ -688,6 +691,18 @@ export default function ProfileScreen() {
   const totals = getTotals();
   const tvClock = clockOf(totals.minutes);
   const recentMovies = getMovies().filter((m) => m.watchedAt != null);
+  // Everything I watch: the Shows and Films shelves' own rows, one rail, most
+  // recently watched first. Keys say which screen a poster opens.
+  const everythingShelf = useMemo(
+    () =>
+      everythingOn
+        ? [
+            ...recentShows.map((sp) => ({ key: `s:${sp.tvdbId}`, name: sp.name, uri: sp.posterUrl, last: sortableDate(sp.lastWatchedAt ?? sp.addedAt) })),
+            ...recentMovies.map((m) => ({ key: `m:${m.name}`, name: m.name, uri: m.poster, last: lastWatchedKey(m) })),
+          ].sort((a, b) => b.last.localeCompare(a.last))
+        : [],
+    [everythingOn, recentShows, recentMovies],
+  );
   // a locally-created profile name overrides the imported one
   const username = getMeta('username') ?? profile.username;
   // seed content stays in the bundle; imported libraries carry their own
@@ -1376,9 +1391,8 @@ export default function ProfileScreen() {
       ? withTogetherBlock(puzzled ?? defaultLayout(SHELF_KEYS), base && togetherRemoved ? ['together'] : [])
       : puzzled;
     const goal = goalOnPage ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
-    // Everything I watch is on every profile (27 Oct); its Edit profile switch
-    // takes it off this one drawing, never out of the saved arrangement.
-    const out = everythingHidden ? (goal ?? defaultLayout(SHELF_KEYS)).filter((p) => p.id !== 'everything') : goal;
+    // Everything I watch: its switch puts the shelf above Shows, or takes it off.
+    const out = everythingOn || goal ? withEverythingShelf(goal ?? defaultLayout(SHELF_KEYS), everythingOn) : goal;
     return out?.map((p) =>
       p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p.id === 'together' ? { ...p, data: togetherSnap } : p,
     );
@@ -1420,6 +1434,12 @@ export default function ProfileScreen() {
       arrangement={drawnArrangement}
       onArrange={(next: Placed[]) => {
         setArrangement(next);
+        // The − on the Everything shelf is its switch going off: one control,
+        // or the shelf would come straight back on the next draw.
+        if (everythingOn && !next.some((p) => p.id === EVERYTHING_SHELF)) {
+          setMeta(EVERYTHING_ON_PROFILE_KEY, '0');
+          setEverythingOn(false);
+        }
         // ALIASED ON IMPORT: this screen already has a `setProfileLayout`, and
         // it means the theme (classic / cards / poster). Two different things
         // called the same name in one file is a bug waiting for a tired evening.
@@ -1685,6 +1705,21 @@ export default function ProfileScreen() {
         onSeeAll: () => router.push('/lists'),
       }}
       shelves={[
+        // FIRST, so it sits above Shows (27 Oct). Own profile only: published
+        // shelves come from `community-publish`'s own reads, never this array,
+        // and the place it holds is `private` (see `specOf`).
+        ...(everythingOn
+          ? [
+              {
+                key: 'everything',
+                title: t('everything.title'),
+                items: everythingShelf,
+                onTitlePress: () => router.push('/everything'),
+                onItemPress: (k: string) =>
+                  router.push(k.startsWith('s:') ? `/show/${k.slice(2)}` : `/movie/${encodeURIComponent(k.slice(2))}`),
+              },
+            ]
+          : []),
         {
           key: 'shows',
           title: t('stats.headers.shows'),

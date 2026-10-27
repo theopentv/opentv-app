@@ -122,11 +122,6 @@ export const WIDGETS: Record<string, WidgetSpec> = {
   together: { spans: ['2x1', '2x2'], span: '2x1', sized: true, single: true },
   topRated: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
   nowWatching: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
-  /** Everything I watch (2.0.3): totals and the latest posters, opening the
-   *  page that lists shows, anime and films together. Private because that
-   *  page is this phone's library — the server holds no full copy to show a
-   *  visitor, only the capped shelves. */
-  everything: { spans: ['2x1', '2x2'], span: '2x1', sized: true, private: true },
   /**
    * A POSTER FROM YOUR OWN LIBRARY — the only widget that is not a fact.
    *
@@ -160,8 +155,21 @@ export const WIDGETS: Record<string, WidgetSpec> = {
 
 export const SHELF_PREFIX = 'shelf:';
 
+/**
+ * EVERYTHING I WATCH IS A SHELF (27 Oct), not a widget: Mahmood tried the
+ * block with its totals on his phone and wanted it to look exactly like the
+ * Shows and Films shelves under it. OFF until the owner turns it on in Edit
+ * profile -- a free switch, kept on this phone (`EVERYTHING_ON_PROFILE_KEY`),
+ * because the shelf is this phone's whole library and is never published.
+ */
+export const EVERYTHING_SHELF = `${SHELF_PREFIX}everything`;
+export const EVERYTHING_ON_PROFILE_KEY = 'everythingOnProfile';
+
 /** A shelf is a poster rail whatever its key, so it is never in `WIDGETS`. */
 export function specOf(id: string): WidgetSpec {
+  // Private: `publishableWidgets` must never send its place to a visitor,
+  // who has no such shelf to draw.
+  if (id === EVERYTHING_SHELF) return { spans: ['2x2'], span: '2x2', private: true };
   if (id.startsWith(SHELF_PREFIX)) return { spans: ['2x2'], span: '2x2' };
   return WIDGETS[id] ?? { spans: ['2x1'], span: '2x1' };
 }
@@ -252,19 +260,7 @@ const CLASSIC = (shelfKeys: readonly string[]): string[] => [
   // them wherever they like.
   'stats',
   'lists',
-  /*
-   * THE ONE WIDGET THAT JOINED THE CLASSIC PAGE (27 Oct), and the exception to
-   * "added since = opt-in". Everything I watch is a door, not a decoration:
-   * it is the only way into the page that lists shows, anime and films
-   * together, and behind the Plus-only picker a free member had no door at
-   * all. So it is part of every profile, free included, between Lists and the
-   * shelves it summarises. Being in this list is also what delivers it to
-   * layouts saved before it existed: `normalise` appends what `known` has
-   * never held -- once, so taking it off while arranging keeps it off. Own
-   * profile only (`private`); Edit profile's "Everything I watch" switch
-   * hides it on this phone.
-   */
-  'everything',
+  // Everything I watch is NOT here: its switch places it (`withEverythingShelf`).
   ...shelfKeys.map((k) => `${SHELF_PREFIX}${k}`),
   'extra',
 ];
@@ -293,7 +289,6 @@ const CATALOGUE = (shelfKeys: readonly string[]): string[] => [
   'together',
   'topRated',
   'nowWatching',
-  // `everything` comes in with the classic page above (27 Oct), once.
   'artwork',
   'gif',
   'links',
@@ -436,7 +431,7 @@ export function availableToAdd(_layout: readonly Placed[], shelfKeys: readonly s
 export type GalleryGroup = 'profile' | 'shelves' | 'stats' | 'activity' | 'photos';
 const GALLERY: Record<GalleryGroup, readonly string[]> = {
   profile: ['banners', 'intro', 'counts', 'stats', 'lists'],
-  shelves: ['everything', 'nowWatching', 'topRated', 'watchlist'],
+  shelves: ['nowWatching', 'topRated', 'watchlist'],
   stats: ['since', 'streak', 'thisYear', 'goal', 'binge', 'finished', 'rated', 'genre', 'character', 'primeTime', 'firstEver'],
   activity: ['activity', 'timeline', 'emotions', 'emotionCalendar', 'puzzle', 'together'],
   photos: ['artwork', 'gif', 'links'],
@@ -568,7 +563,6 @@ export const WIDGET_NAME: Record<string, string> = {
   together: 'together.title',
   topRated: 'profile.widgetTopRated',
   nowWatching: 'profile.widgetNowWatching',
-  everything: 'everything.title',
   artwork: 'profile.widgetPhoto',
   gif: 'profile.widgetGif',
   links: 'profile.widgetLinks',
@@ -748,5 +742,25 @@ export function withTogetherBlock(items: readonly Placed[], known: readonly stri
   const at =
     stats >= 0 ? stats + (out[stats + 1]?.id === 'puzzle' ? 2 : 1) : lists >= 0 ? lists : extra >= 0 ? extra : out.length;
   out.splice(at, 0, block);
+  return out;
+}
+
+/**
+ * EVERYTHING I WATCH, PLACED BY ITS SWITCH (27 Oct). On: right above the Shows
+ * shelf -- under Lists, where the shelves begin -- or, on a page without one,
+ * after Lists, before `extra`, or at the end. A shelf the owner moved while
+ * arranging is left where they put it. Off: gone from the drawing, wherever
+ * it was. The switch is its one control, so it is never in the saved
+ * arrangement's defaults and `normalise` never delivers it on its own.
+ */
+export function withEverythingShelf(items: readonly Placed[], on: boolean): Placed[] {
+  if (!on) return items.filter((p) => p.id !== EVERYTHING_SHELF);
+  if (items.some((p) => p.id === EVERYTHING_SHELF)) return [...items];
+  const out = [...items];
+  const shows = out.findIndex((p) => p.id === `${SHELF_PREFIX}shows`);
+  const lists = out.findIndex((p) => p.id === 'lists');
+  const extra = out.findIndex((p) => p.id === 'extra');
+  const at = shows >= 0 ? shows : lists >= 0 ? lists + 1 : extra >= 0 ? extra : out.length;
+  out.splice(at, 0, { uid: EVERYTHING_SHELF, id: EVERYTHING_SHELF, span: '2x2' });
   return out;
 }

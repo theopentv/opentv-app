@@ -290,8 +290,6 @@ function sampleValue(id: string): unknown {
       return { eps: posters.map((p, i) => ({ showId: i, show: p.name, poster: p.uri, season: 1, episode: i + 1, stars: 5 - (i % 2), ten: 10 - i })) };
     case 'nowWatching':
       return { shows: posters.map((p, i) => ({ tvdbId: i, name: p.name || SAMPLE_SHOWS[i % SAMPLE_SHOWS.length], poster: p.uri })) };
-    case 'everything':
-      return { shows: 48, movies: 112, posters: posters.filter((p) => p.uri) };
     case 'artwork':
       return posters[0]?.uri ? { uri: posters[0].uri, name: posters[0].name } : undefined;
     default:

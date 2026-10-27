@@ -72,7 +72,6 @@ const ICONS: Record<string, string> = {
   emotions: 'happy-outline',
   topRated: 'trophy-outline',
   nowWatching: 'tv-outline',
-  everything: 'albums-outline',
   together: 'people-outline',
   artwork: 'image-outline',
   gif: 'film-outline',

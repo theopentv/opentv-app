@@ -2544,10 +2544,6 @@ export const PROFILE_SECTIONS = [
   'stats',
   'activity',
   'lists',
-  // Own profile only, like `activity` (27 Oct): the block is never published,
-  // so hiding it hides it from the owner. Sent with the rest so one array
-  // stays the whole answer; a server that predates the key just drops it.
-  'everything',
   'favourite_shows',
   'favourite_movies',
   'shows',

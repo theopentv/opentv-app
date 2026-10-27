@@ -54,7 +54,7 @@ import Animated, {
 
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
-import { colors } from '@/theme';
+import { colors, onAccent } from '@/theme';
 
 /** The corner the remove badge occupies: 24pt of badge, its overhang, and a
  *  little slack, measured from the block's own top-left. */
@@ -129,6 +129,13 @@ export type ArrangeProps = {
   badgeLeft?: number;
   /** Lifts the badge clear of a block whose first line is a title. */
   badgeTop?: number;
+  /**
+   * The badges' fill: the profile's theme colour, else yellow (27 Oct). They
+   * were `colors.raise` with a black glyph, which on a dark page is a dark
+   * disc nobody can see -- the − was there and invisible. The glyph takes
+   * `onAccent`, so it stays readable whichever colour the owner picked.
+   */
+  accent?: string;
   /** Content-sized blocks report their height so the layout can use it. */
   onMeasure?: (h: number) => void;
   children: ReactNode;
@@ -164,6 +171,7 @@ export function ArrangeableBlock({
   onTap,
   badgeLeft = -6,
   badgeTop = -6,
+  accent = colors.yellow,
   scrollRef,
   scrollY,
   children,
@@ -416,15 +424,15 @@ export function ArrangeableBlock({
         {editing && canRemove && (
           /* Top-LEFT, where a home screen puts it — less a design choice than a
              place people's thumbs already go. */
-          <Pressable style={[s.minus, { left: badgeLeft, top: badgeTop }]} hitSlop={10} onPress={onRemove} accessibilityRole="button" accessibilityLabel={t('a11y.removeWidget')}>
-            <Ionicons name="remove" size={16} color="#000" />
+          <Pressable style={[s.minus, { left: badgeLeft, top: badgeTop, backgroundColor: accent }]} hitSlop={10} onPress={onRemove} accessibilityRole="button" accessibilityLabel={t('a11y.removeWidget')}>
+            <Ionicons name="remove" size={16} color={onAccent(accent)} />
           </Pressable>
         )}
         {/* TOP-RIGHT, opposite the minus, so remove and edit can never be
             confused for one another under a moving thumb. */}
         {editing && onEdit != null && (
-          <Pressable style={[s.pencil, { right: badgeLeft, top: badgeTop }]} hitSlop={10} onPress={onEdit} accessibilityRole="button" accessibilityLabel={t('a11y.editWidget')}>
-            <Ionicons name="pencil" size={13} color="#000" />
+          <Pressable style={[s.pencil, { right: badgeLeft, top: badgeTop, backgroundColor: accent }]} hitSlop={10} onPress={onEdit} accessibilityRole="button" accessibilityLabel={t('a11y.editWidget')}>
+            <Ionicons name="pencil" size={13} color={onAccent(accent)} />
           </Pressable>
         )}
       </Animated.View>
@@ -467,7 +475,6 @@ const s = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: colors.raise,
     alignItems: 'center',
     justifyContent: 'center',
     // Above the block it belongs to, and above its neighbour's edge.
@@ -480,7 +487,6 @@ const s = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: colors.raise,
     alignItems: 'center',
     justifyContent: 'center',
     // Above the block it belongs to, and above its neighbour's edge.

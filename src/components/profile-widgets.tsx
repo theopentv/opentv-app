@@ -45,7 +45,6 @@ import {
 } from '@/db';
 import { fmtDecimal, genreText, t } from '@/i18n';
 import { documentFileUri } from '@/library';
-import { everythingSummary } from '@/everything';
 import { currentLocale } from '@/i18n';
 import { formatCount, intlTag } from '@/locale-resolve';
 import { countOf, emotionKey, specOf, type WidgetSpan } from '@/profile-layout';
@@ -711,42 +710,6 @@ export function renderWidget(
           <AddSlot id={id} slots={slots} n={n} />
         </View>
         )}
-      </WidgetBox>
-    );
-  }
-
-  /*
-   * EVERYTHING I WATCH (2.0.3) — the door to the one page that lists shows,
-   * anime and films together. Two totals and the latest posters, so the block
-   * says what is behind it. Own profile only (`private` in the catalogue): the
-   * page reads this phone's library, and a visitor has no such page to open.
-   */
-  if (id === 'everything') {
-    if (!own) return null;
-    const sum = isVisitor
-      ? ((pub as ReturnType<typeof everythingSummary> | undefined) ?? { shows: 0, movies: 0, posters: [] })
-      : everythingSummary(span === '2x2' ? 6 : 4);
-    if (sum.shows + sum.movies === 0) return null;
-    const open = () => router.push('/everything');
-    return (
-      <WidgetBox label={t('everything.title')} span={span} onLabelPress={slots?.editing ? undefined : open}>
-        <Pressable
-          style={{ flex: 1, gap: 6 }}
-          disabled={slots?.editing}
-          onPress={open}
-          accessibilityRole="button"
-          accessibilityLabel={`${t('everything.title')}: ${t('everything.shows', { count: sum.shows })}, ${t('everything.movies', { count: sum.movies })}`}>
-          <Text style={s.name} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {`${t('everything.shows', { count: sum.shows })} · ${t('everything.movies', { count: sum.movies })}`}
-          </Text>
-          <View style={[s.posterRow, span === '2x2' && { flexWrap: 'wrap' }]}>
-            {sum.posters.map((p) => (
-              <View key={p.key} style={[s.posterCell, span === '2x2' && { flexBasis: '30%' }]}>
-                <Image source={{ uri: p.uri }} style={s.poster} contentFit="cover" />
-              </View>
-            ))}
-          </View>
-        </Pressable>
       </WidgetBox>
     );
   }
