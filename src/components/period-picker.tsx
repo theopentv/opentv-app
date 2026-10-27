@@ -14,6 +14,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { currentLocale, t } from '@/i18n';
 import { formatPeriod } from '@/locale-resolve';
 import { periodOptions } from '@/pure';
+import { todayISO } from '@/components/heatmap';
 import { watchYears } from '@/stats-calc';
 
 /** 'July 2026' for a month, '2025' for a year, in the app's language. */
@@ -33,7 +34,10 @@ export function PeriodSheet({
   // In an initialiser, not in render: `watchYears()` is a database read, and
   // the React Compiler would memoise a render-time one against its (empty)
   // arguments. Which years have watches in them changes about once a year.
-  const [options] = useState(() => periodOptions(new Date().toISOString().slice(0, 10), watchYears()));
+  // The LOCAL day (2.0.3): a UTC one kept the year off the list for the first
+  // hours of 1 December east of Greenwich, while the Profile card, which reads
+  // the local day, was already offering it.
+  const [options] = useState(() => periodOptions(todayISO(), watchYears()));
 
   const actions: SheetAction[] = options.map((key) => ({
     text: periodLabel(key),
