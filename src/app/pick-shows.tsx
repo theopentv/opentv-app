@@ -25,7 +25,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, TextInput, View } f
 import { Text } from '@/components/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { addMovieToWatchlist, addShow, markWatched, setMovieWatched } from '@/db';
+import { addMovieToWatchlist, addShow, markWatchedMany, setMovieWatched } from '@/db';
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { TVDB_LANG, artworkUrl, gridGeometry, tvdbLangChain } from '@/pure';
@@ -292,7 +292,12 @@ function WhereStep({ picks, onDone }: { picks: Pick[]; onDone: () => void }) {
       if (!w || w.mode === 'none' || !list) continue;
       const n = w.mode === 'all' ? list.length : w.at;
       // ponytail: watched "now", like the show screen's Mark all — real dates are unknown.
-      for (const x of list.slice(0, n)) markWatched(p.tvdbId, x.seasonNumber, x.number);
+      // One transaction for the lot (2.0.3): S17 E06 of Grey's Anatomy is ~370
+      // episodes, and one commit each froze Done for seconds on Android.
+      markWatchedMany(
+        p.tvdbId,
+        list.slice(0, n).map((x) => ({ season: x.seasonNumber, episode: x.number })),
+      );
     }
     onDone();
   };

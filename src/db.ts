@@ -910,6 +910,62 @@ export function markWatched(
   queueOp({ t: 'watch', show: showId, s: season, e: episode, at: watchedAt });
 }
 
+/**
+ * MARK MANY EPISODES OF ONE SHOW AT ONCE (2.0.3).
+ *
+ * "Where are you?" at S17 E06 of Grey's Anatomy is ~370 episodes, and calling
+ * `markWatched` for each was ~370 separate commits, each re-reading and
+ * re-writing the whole tombstone list and recounting the show: the Done button
+ * froze for long seconds on Android (Arabic channel admin, 26 Oct).
+ *
+ * One transaction, one tracking check, one tombstone write, one recount. The
+ * rows and the sync ops are exactly the ones the per-episode loop wrote — one
+ * `watch` op each, in order — so another device cannot tell the difference.
+ * `queueOp`'s listeners only (re)start debounce timers, so firing them per op
+ * inside the transaction costs nothing.
+ */
+export function markWatchedMany(
+  showId: number,
+  episodes: readonly { season: number; episode: number }[],
+  watchedAt: string = new Date().toISOString().slice(0, 19).replace('T', ' '),
+): void {
+  if (episodes.length === 0) return;
+  db.withTransactionSync(() => {
+    const meta = showMetaForTracking(showId);
+    ensureShowTracked(showId, meta?.name ?? '', meta?.poster ?? null);
+    const keys = unmarkedEpisodeKeys();
+    let cleared = false;
+    for (const { season, episode } of episodes) {
+      db.runSync('INSERT INTO watches (showId, season, episode, watchedAt, rewatch) VALUES (?, ?, ?, ?, 0)', [
+        showId,
+        season,
+        episode,
+        watchedAt,
+      ]);
+      if (keys.delete(episodeKey(showId, season, episode))) cleared = true;
+    }
+    if (cleared) saveUnmarkedEpisodes(keys);
+    recountShow(showId, { neverLower: true });
+    for (const { season, episode } of episodes) queueOp({ t: 'watch', show: showId, s: season, e: episode, at: watchedAt });
+  });
+}
+
+/** The un-check of many episodes of one show, for the same reason and with the
+ *  same promise as `markWatchedMany`: one commit, identical rows and ops. */
+export function unmarkWatchedMany(showId: number, episodes: readonly { season: number; episode: number }[]): void {
+  if (episodes.length === 0) return;
+  db.withTransactionSync(() => {
+    const keys = unmarkedEpisodeKeys();
+    for (const { season, episode } of episodes) {
+      db.runSync('DELETE FROM watches WHERE showId = ? AND season = ? AND episode = ?', [showId, season, episode]);
+      keys.add(episodeKey(showId, season, episode));
+    }
+    saveUnmarkedEpisodes(keys);
+    recountShow(showId);
+    for (const { season, episode } of episodes) queueOp({ t: 'unwatch', show: showId, s: season, e: episode });
+  });
+}
+
 /** Remove all watch records of an episode (un-check). */
 export function unmarkWatched(showId: number, season: number, episode: number): void {
   db.runSync('DELETE FROM watches WHERE showId = ? AND season = ? AND episode = ?', [showId, season, episode]);
