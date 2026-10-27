@@ -2865,6 +2865,14 @@
       "ipad": "iPad : les affiches et les cartes utilisent maintenant toute la largeur de l'écran",
       "devices": "Plus : Vos appareils — tous les téléphones et tablettes de ton compte, et la possibilité d'en retirer un — Réglages → Bibliothèque → Sauvegarde",
       "fixes": "Corrigé : Masquer les épisodes vus reste activé, et la ligne Ce soir peut être fermée"
+    },
+    "v203": {
+      "imports": "Vous venez de Sofa Time ou Bingers ? Importez toute votre bibliothèque : Réglages → Importer tes données",
+      "freeMonth": "Connectez-vous et recevez un mois de Plus offert. Rien ne se renouvelle, rien à annuler",
+      "everything": "Plus : une galerie de widgets avec de vrais aperçus, et « Tout ce que je regarde » : séries, animés et films sur une seule page",
+      "puzzle": "Énigme du jour : un rappel quand elle est prête et un dernier rappel à 22:00, même sans ouvrir l'app",
+      "classic": "Vous préférez la barre d'onglets plate d'avant iOS 26 ? Réglages → Barre d’onglets classique",
+      "fixes": "Corrigé : l'app s'ouvre sur l'onglet choisi, les longues saisons s'ouvrent plus vite et les affiches manquantes apparaissent"
     }
   },
   "pickShows": {

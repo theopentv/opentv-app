@@ -2865,6 +2865,14 @@
       "ipad": "iPad: los pósteres y las tarjetas ahora usan todo el ancho de la pantalla",
       "devices": "Plus: Tus dispositivos — ve cada teléfono y tableta de tu cuenta y quita el que quieras — Ajustes → Biblioteca → Copia de seguridad",
       "fixes": "Corregido: Ocultar episodios vistos ahora se mantiene activado, y la fila Esta noche se puede cerrar"
+    },
+    "v203": {
+      "imports": "¿Vienes de Sofa Time o Bingers? Trae toda tu biblioteca: Ajustes → Importar tus datos",
+      "freeMonth": "Inicia sesión y recibe un mes de Plus gratis. No se renueva, no hay nada que cancelar",
+      "everything": "Plus: una galería de widgets con vistas previas reales, y \"Todo lo que veo\": series, anime y películas en una sola página",
+      "puzzle": "Reto diario: un aviso cuando está listo y un último aviso a las 22:00, aunque no abras la app",
+      "classic": "¿Prefieres la barra de pestañas plana de antes de iOS 26? Ajustes → Barra de pestañas clásica",
+      "fixes": "Corregido: la app abre en la pestaña que elegiste, las temporadas largas abren más rápido y aparecen los pósteres que faltaban"
     }
   },
   "pickShows": {

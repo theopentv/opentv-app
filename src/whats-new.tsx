@@ -13,7 +13,7 @@
 import Constants from 'expo-constants';
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getMeta, setMeta } from '@/db';
 import { tapLight } from '@/haptics';
@@ -25,7 +25,18 @@ import { ACCENTS, colors, space, ls } from '@/theme';
 const KEY = 'whatsNewSeen';
 
 /** Each item's own tint: a list of five identical rows reads as small print. */
-const NOTES: Record<string, { icon: string; tint: string; key: LocaleKey }[]> = {
+const NOTES: Record<string, { icon: string; tint: string; key: LocaleKey; iosOnly?: boolean }[]> = {
+  // 2.0.0–2.0.2 shipped with no row here, so nobody who updated was told
+  // anything (Mahmood noticed on 27 Oct). Every release gets a row.
+  '2.0.3': [
+    { icon: '📥', tint: '#3E8BFF', key: 'whatsNew.v203.imports' },
+    { icon: '🎁', tint: ACCENTS.yellow, key: 'whatsNew.v203.freeMonth' },
+    { icon: '🧩', tint: '#9B7BFF', key: 'whatsNew.v203.everything' },
+    { icon: '🔔', tint: '#FF7A1A', key: 'whatsNew.v203.puzzle' },
+    // The setting exists only on iOS (`classic-tab-bar`): Android has no glass bar to opt out of.
+    { icon: '📱', tint: '#FF4D8D', key: 'whatsNew.v203.classic', iosOnly: true },
+    { icon: '🛠️', tint: '#78BE3D', key: 'whatsNew.v203.fixes' },
+  ],
   '1.7.0': [
     { icon: '🎯', tint: ACCENTS.yellow, key: 'whatsNew.v170.goal' },
     { icon: '📲', tint: '#3E8BFF', key: 'whatsNew.v170.moving' },
@@ -76,7 +87,7 @@ export function WhatsNew() {
       // Shown again next launch — harmless.
     }
     tapLight();
-    return NOTES[version()] ?? null;
+    return NOTES[version()]?.filter((n) => !n.iosOnly || Platform.OS === 'ios') ?? null;
   });
   if (!notes) return null;
   const close = () => setNotes(null);

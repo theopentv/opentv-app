@@ -3083,6 +3083,14 @@
       "ipad": "iPad: plakaty i karty zajmują teraz całą szerokość ekranu",
       "devices": "Plus: Twoje urządzenia — zobacz każdy telefon i tablet na koncie i usuń wybrany — Ustawienia → Biblioteka → Kopia zapasowa",
       "fixes": "Naprawiono: Ukrywanie obejrzanych odcinków zostaje włączone, a wiersz Dziś wieczorem da się zamknąć"
+    },
+    "v203": {
+      "imports": "Przechodzisz z Sofa Time albo Bingers? Przenieś całą bibliotekę: Ustawienia → Importuj swoje dane",
+      "freeMonth": "Zaloguj się i odbierz miesiąc Plus za darmo. Nic się nie odnawia, nie trzeba niczego anulować",
+      "everything": "Plus: galeria widżetów z prawdziwymi podglądami i „Wszystko, co oglądam”: seriale, anime i filmy na jednej stronie",
+      "puzzle": "Codzienna zagadka: przypomnienie, gdy jest gotowa, i ostatnie o 22:00, nawet bez otwierania aplikacji",
+      "classic": "Wolisz płaski pasek kart sprzed iOS 26? Ustawienia → Klasyczny pasek kart",
+      "fixes": "Naprawione: aplikacja otwiera się na wybranej karcie, długie sezony otwierają się szybciej, a brakujące plakaty się pojawiają"
     }
   },
   "pickShows": {
