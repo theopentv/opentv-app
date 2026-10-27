@@ -519,6 +519,10 @@ export async function refreshSession(): Promise<void> {
       email?: string;
       email_verified?: boolean;
       is_plus?: boolean;
+      plus_until?: string | null;
+      free_month_open?: boolean;
+      free_month_at?: string | null;
+      free_month_via?: string | null;
       session?: { token?: string; expires_at?: string };
     }>('/v1/me', { token });
     /*
@@ -583,9 +587,7 @@ export async function refreshSession(): Promise<void> {
     notify();
     // After the session is renewed and Plus read, so the claim uses both.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const fm = require('@/free-month') as typeof import('@/free-month');
-    fm.offerFreeMonthToExistingAccountOnce();
-    if (fm.freeMonthPending()) void fm.claimFreeMonth();
+    (require('@/free-month') as typeof import('@/free-month')).freeMonthAfterRefresh(me);
   } catch (e) {
     // 401 already signed out through the handler; `not_found` means the same
     // thing from an older server. Everything else is left alone.

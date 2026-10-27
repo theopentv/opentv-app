@@ -20,7 +20,7 @@ import { track } from '@/analytics';
 import { api, ApiError } from '@/api';
 import { getToken, hasAccount, lastAccount, refreshSession } from '@/community-session';
 import { getMeta, setMeta } from '@/db';
-import { freeMonthInviteDue, freeMonthReminderAt } from '@/free-month-rules';
+import { freeMonthGiftDue, freeMonthInviteDue, freeMonthReminderAt } from '@/free-month-rules';
 import { isPlus, PLUS_AVAILABLE } from '@/plus';
 import { isCustomServer } from '@/server-url';
 
@@ -30,23 +30,12 @@ const DECLINED_KEY = 'freeMonthDeclined';
 /** The end of the month this phone was granted, for the paywall's sentence. */
 export const FREE_MONTH_UNTIL_KEY = 'freeMonthUntil';
 const REMINDER_KEY = 'freeMonthReminder';
+/** The `free_month_at` of the dashboard gift this phone has already announced. */
+const GIFT_SEEN_KEY = 'freeMonthGiftSeen';
 
 /** Called by `signIn`: the next `refreshSession` asks for the month. */
 export function markFreeMonthPending(): void {
   setMeta(PENDING_KEY, '1');
-}
-
-/**
- * ACCOUNTS THAT EXISTED BEFORE 2.0.3 GET THE MONTH TOO (Mahmood, 27 Oct):
- * the claim otherwise follows a sign-in, so people who had already joined,
- * the ones who trusted the app first, were the only ones left out. Once per
- * phone; the server still decides (once per person, never for a payer).
- */
-const EXISTING_KEY = 'freeMonthExistingOffered';
-export function offerFreeMonthToExistingAccountOnce(): void {
-  if (getMeta(EXISTING_KEY) === '1') return;
-  setMeta(EXISTING_KEY, '1');
-  markFreeMonthPending();
 }
 
 export function freeMonthPending(): boolean {
@@ -70,6 +59,46 @@ export function freeMonthInviteShown(): boolean {
 export function declineFreeMonth(from: 'import' | 'profile'): void {
   setMeta(DECLINED_KEY, 'no');
   track('free_month_invite', { from, answer: 'no' });
+}
+
+/**
+ * WHAT `refreshSession` HEARD, on the `/v1/me` every launch asks.
+ *
+ * THE SWITCH. `free_month_open: false` is the dashboard saying the offer is
+ * off: the pending claim is dropped rather than asked and refused. Absent (a
+ * server from before the switch) keeps the old behaviour, ask and listen.
+ *
+ * THE GIFT. Accounts that existed before 2.0.3 are given their month from the
+ * dashboard ("Give everyone a month", `free_month_via: 'gift'`), not claimed
+ * from here — this replaced a once-per-phone claim on the first 2.0.3 launch
+ * (Mahmood, 27 Oct), so the offer can be timed and counted in one place. A
+ * month nobody asked for is a month nobody knows about, so the same "A month
+ * of Plus is yours" screen opens once for it, with the heard-from question.
+ */
+export function freeMonthAfterRefresh(me: {
+  free_month_open?: boolean;
+  free_month_at?: string | null;
+  free_month_via?: string | null;
+  plus_until?: string | null;
+}): void {
+  if (me.free_month_open === false) setMeta(PENDING_KEY, '');
+  else if (freeMonthPending()) void claimFreeMonth();
+
+  const due = freeMonthGiftDue({
+    via: me.free_month_via,
+    at: me.free_month_at,
+    seen: getMeta(GIFT_SEEN_KEY) ?? '',
+    plusUntil: me.plus_until,
+    nowMs: Date.now(),
+    available: PLUS_AVAILABLE,
+    customServer: isCustomServer(),
+  });
+  if (!due || !me.free_month_at || !me.plus_until) return;
+  setMeta(GIFT_SEEN_KEY, me.free_month_at);
+  setMeta(FREE_MONTH_UNTIL_KEY, me.plus_until);
+  track('free_month_granted');
+  void scheduleFreeMonthReminder(me.plus_until);
+  router.push('/free-month');
 }
 
 let claiming = false;

@@ -40,3 +40,24 @@ export function freeMonthReminderAt(untilIso: string, nowMs: number): Date | nul
   const at = until - FREE_MONTH_REMIND_DAYS_BEFORE * 86_400_000;
   return at > nowMs ? new Date(at) : null;
 }
+
+/**
+ * WHETHER A DASHBOARD GIFT IS ANNOUNCED. A gift (`via: 'gift'`) this phone has
+ * not shown yet (`seen` is the `free_month_at` it last announced), on a build
+ * that sells Plus, from our own server, and STILL RUNNING: somebody who
+ * updates from 2.0.2 after their gifted month ended must not be told
+ * "A month of Plus is yours" about a month that is over.
+ */
+export function freeMonthGiftDue(s: {
+  via: string | null | undefined;
+  at: string | null | undefined;
+  seen: string;
+  plusUntil: string | null | undefined;
+  nowMs: number;
+  available: boolean;
+  customServer: boolean;
+}): boolean {
+  if (s.via !== 'gift' || !s.at || s.at === s.seen || !s.available || s.customServer) return false;
+  const until = Date.parse(s.plusUntil ?? '');
+  return Number.isFinite(until) && until > s.nowMs;
+}

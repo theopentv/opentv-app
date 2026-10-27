@@ -1,4 +1,4 @@
-import { freeMonthInviteDue, freeMonthReminderAt } from '@/free-month-rules';
+import { freeMonthGiftDue, freeMonthInviteDue, freeMonthReminderAt } from '@/free-month-rules';
 
 const base = { signedIn: false, hadAccount: false, plus: false, available: true, customServer: false, declined: false };
 
@@ -26,5 +26,32 @@ describe('freeMonthReminderAt', () => {
   it('is nothing when that moment has passed, or the date is not one', () => {
     expect(freeMonthReminderAt('2026-10-30T10:00:00.000Z', now)).toBeNull();
     expect(freeMonthReminderAt('soon', now)).toBeNull();
+  });
+});
+
+describe('freeMonthGiftDue', () => {
+  const now = Date.parse('2026-11-01T00:00:00.000Z');
+  const gift = {
+    via: 'gift',
+    at: '2026-10-30T00:00:00.000Z',
+    seen: '',
+    plusUntil: '2026-11-29T00:00:00.000Z',
+    nowMs: now,
+    available: true,
+    customServer: false,
+  };
+  it('announces a running dashboard gift once', () => {
+    expect(freeMonthGiftDue(gift)).toBe(true);
+    expect(freeMonthGiftDue({ ...gift, seen: gift.at })).toBe(false);
+  });
+  it('a later gift is announced again', () => {
+    expect(freeMonthGiftDue({ ...gift, seen: '2026-01-01T00:00:00.000Z' })).toBe(true);
+  });
+  it('never for a month the app claimed itself, one that is over, or a custom server', () => {
+    expect(freeMonthGiftDue({ ...gift, via: null })).toBe(false);
+    expect(freeMonthGiftDue({ ...gift, plusUntil: '2026-10-31T00:00:00.000Z' })).toBe(false);
+    expect(freeMonthGiftDue({ ...gift, plusUntil: null })).toBe(false);
+    expect(freeMonthGiftDue({ ...gift, customServer: true })).toBe(false);
+    expect(freeMonthGiftDue({ ...gift, available: false })).toBe(false);
   });
 });
