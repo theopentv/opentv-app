@@ -3825,5 +3825,11 @@
     "title": "La tua cronologia",
     "firstDay": "Prima partita il {{date}}",
     "locked": "I titoli di più di una settimana fa fanno parte di Plus."
+  },
+  "wrappedYear": {
+    "bannerTitle": "Il tuo {{year}} è pronto",
+    "bannerBody": "Il tuo anno in poche card, gratis da creare e condividere",
+    "notifyTitle": "Il tuo {{year}} è pronto",
+    "notifyBody": "Il tuo anno di serie e film, in poche card. Tocca per aprirlo."
   }
 }

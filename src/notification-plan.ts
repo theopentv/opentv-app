@@ -95,6 +95,12 @@ export type PlanInput = {
   wrappedMonth: string | null;
   /** That month as a person reads it ('July 2026'), already localised. */
   wrappedLabel: string | null;
+  /**
+   * The year running, 'YYYY', for the year-end nudge on 1 December. Null when
+   * nothing has been watched in it. NOT Plus-gated, unlike `wrappedMonth`:
+   * the year's Wrapped is the one everybody posts, and it is free.
+   */
+  wrappedYear: string | null;
 };
 
 /** iOS allows 64 pending; leave room for the other kinds and for headroom. */
@@ -379,6 +385,17 @@ export function firstOfNextMonth(now: number, hour = 10): number {
 }
 
 /**
+ * 1 December of `year`, at noon: the day the year's Wrapped opens.
+ *
+ * NOON, not the month nudge's 10:00. On 1 December a Plus user is owed both
+ * "your November is ready" and "your 2026 is ready", and two notifications in
+ * the same second read as one app shouting.
+ */
+export function yearWrappedAt(year: string, hour = 12): number {
+  return new Date(Number(year), 11, 1, hour, 0, 0, 0).getTime();
+}
+
+/**
  * Everything to schedule, in one pass.
  *
  * Specials (season 0) never notify — they air erratically and are not what
@@ -527,7 +544,7 @@ export function planNotifications(
   // ONE, and only for the month currently running: re-planning happens on
   // every app open, and a fixed id over a re-planned list is what keeps this
   // from stacking a second copy. Anyone who is not Plus arrives here with
-  // `wrappedMonth: null` and hears nothing.
+  // `wrappedMonth: null` and hears nothing (gated in notifications.ts).
   if (enabled.wrapped && input.wrappedMonth && input.wrappedLabel) {
     out.push({
       id: `wrapped-${input.wrappedMonth}`,
@@ -537,6 +554,22 @@ export function planNotifications(
       bodyKey: 'localNotifications.wrappedBody',
       at: firstOfNextMonth(now),
       data: { kind: 'wrapped', month: input.wrappedMonth },
+    });
+  }
+
+  // ---- the year, on 1 December -------------------------------------------
+  // Planned from any launch before then, so it arrives on the day even for
+  // somebody who does not open the app that week. A fixed id per year, for
+  // the reason the month's has one; `at > now` below drops it once it is past.
+  if (enabled.wrapped && input.wrappedYear) {
+    out.push({
+      id: `wrapped-year-${input.wrappedYear}`,
+      kind: 'wrapped',
+      title: 'wrappedYear.notifyTitle',
+      titleParams: { year: input.wrappedYear },
+      bodyKey: 'wrappedYear.notifyBody',
+      at: yearWrappedAt(input.wrappedYear),
+      data: { kind: 'wrapped', year: input.wrappedYear },
     });
   }
 

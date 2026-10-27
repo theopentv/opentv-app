@@ -4149,12 +4149,15 @@ export function filmsInYear(year: number): number {
  *
  * `substr` on a NULL returns NULL and matches nothing, so unwatched films and
  * dateless watches drop out without a clause of their own.
+ *
+ * A YEAR works too ('2026'): the prefix is as long as the key, which is what
+ * the year-end prompt and the 1 December notification ask with (2.0.3).
  */
 export function watchedInMonth(month: string): number {
   return (
     db.getFirstSync<{ n: number }>(
-      'SELECT (SELECT COUNT(*) FROM watches WHERE substr(watchedAt, 1, 7) = ?1)' +
-        ' + (SELECT COUNT(*) FROM movies WHERE substr(watchedAt, 1, 7) = ?1) AS n',
+      'SELECT (SELECT COUNT(*) FROM watches WHERE substr(watchedAt, 1, length(?1)) = ?1)' +
+        ' + (SELECT COUNT(*) FROM movies WHERE substr(watchedAt, 1, length(?1)) = ?1) AS n',
       [month],
     )?.n ?? 0
   );

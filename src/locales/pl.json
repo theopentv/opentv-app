@@ -4125,5 +4125,11 @@
     "title": "Twoja historia",
     "firstDay": "Pierwsza gra: {{date}}",
     "locked": "Tytuły sprzed ponad tygodnia są w Plus."
+  },
+  "wrappedYear": {
+    "bannerTitle": "Twoje podsumowanie {{year}} jest gotowe",
+    "bannerBody": "Twój rok w kilku kartach, za darmo do zrobienia i udostępnienia",
+    "notifyTitle": "Twoje podsumowanie {{year}} jest gotowe",
+    "notifyBody": "Twój rok z serialami i filmami, w kilku kartach. Dotknij, aby otworzyć."
   }
 }

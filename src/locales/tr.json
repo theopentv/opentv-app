@@ -3825,5 +3825,11 @@
     "title": "Geçmişin",
     "firstDay": "İlk oyun: {{date}}",
     "locked": "Bir haftadan eski başlıklar Plus'a dahil."
+  },
+  "wrappedYear": {
+    "bannerTitle": "{{year}} özetin hazır",
+    "bannerBody": "Yılın birkaç kartta, oluşturması ve paylaşması ücretsiz",
+    "notifyTitle": "{{year}} özetin hazır",
+    "notifyBody": "Dizilerle ve filmlerle geçen yılın, birkaç kartta. Açmak için dokun."
   }
 }

@@ -3825,5 +3825,11 @@
     "title": "Tu historial",
     "firstDay": "Primera partida el {{date}}",
     "locked": "Los títulos de hace más de una semana son parte de Plus."
+  },
+  "wrappedYear": {
+    "bannerTitle": "Tu {{year}} está listo",
+    "bannerBody": "Tu año en unas pocas tarjetas, gratis para crear y compartir",
+    "notifyTitle": "Tu {{year}} está listo",
+    "notifyBody": "Tu año de series y películas, en unas pocas tarjetas. Toca para abrirlo."
   }
 }

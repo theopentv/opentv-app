@@ -3825,5 +3825,11 @@
     "title": "Dein Verlauf",
     "firstDay": "Zuerst gespielt am {{date}}",
     "locked": "Titel, die älter als eine Woche sind, gehören zu Plus."
+  },
+  "wrappedYear": {
+    "bannerTitle": "Dein {{year}} ist fertig",
+    "bannerBody": "Dein Jahr in ein paar Karten, kostenlos zum Erstellen und Teilen",
+    "notifyTitle": "Dein {{year}} ist fertig",
+    "notifyBody": "Dein Jahr mit Serien und Filmen, in ein paar Karten. Tippe, um es zu öffnen."
   }
 }

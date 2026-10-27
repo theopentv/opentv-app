@@ -66,7 +66,7 @@ import { closePuzzleBanner, puzzleBannerNow, puzzleBlockValue, puzzleEntryRoute,
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
-import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, wrappedToOffer, mixHex } from '@/pure';
+import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, wrappedToOffer, wrappedYearToOffer, mixHex } from '@/pure';
 import { lastFriendMatches } from '@/community-seed';
 import { appLinks } from '@/links';
 import { colors, onAccent, radius, space, ls } from '@/theme';
@@ -216,6 +216,7 @@ export default function ProfileScreen() {
   // In state rather than read during render: the lint rule against reading the
   // clock in render is right, and the grid only has to be correct per focus.
   const [today, setToday] = useState(todayISO);
+  const [yearSeen, setYearSeen] = useState(() => getMeta(WRAPPED_SEEN_YEAR_KEY));
   // Which month the grid is showing. Starts at the current one and is NOT
   // reset on focus — coming back from a show should not throw away the month
   // somebody navigated to.
@@ -850,6 +851,23 @@ export default function ProfileScreen() {
   };
 
   /**
+   * THE YEAR, from 1 December (2.0.3), for everybody. Its own key, so
+   * answering November's card does not silence the year's, and the other way
+   * round: on 1 December both are owed, and they are two different recaps.
+   *
+   * The answered year is held in STATE, not read from `meta` in render: the
+   * Compiler memoises that read and `setTick` cannot invalidate it, so the
+   * card would outlive its own ✕ (see CLAUDE.md).
+   */
+  const dueYear = wrappedYearToOffer(today, yearSeen);
+  const offerYear = dueYear != null && watchedInMonth(dueYear) >= WRAPPED_MIN_ITEMS ? dueYear : null;
+  const dismissWrappedYear = () => {
+    if (offerYear == null) return;
+    setMeta(WRAPPED_SEEN_YEAR_KEY, offerYear);
+    setYearSeen(offerYear);
+  };
+
+  /**
    * FRIENDS FROM TV TIME WHO ARE HERE NOW.
    *
    * Counted, not flagged: dismissing at two matches must not silence the news
@@ -939,6 +957,29 @@ export default function ProfileScreen() {
           {/* Its own hit area, like Wrapped's: dismissing must not open the
               thing being dismissed. */}
           <Pressable onPress={dismissReconnect} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={18} color={colors.dim} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/* The year above the month: it is the rarer and bigger of the two,
+          and on 1 December the one people came to post. */}
+      {offerYear != null && (
+        <Pressable
+          style={[styles.wrappedBanner, themedNotice]}
+          accessibilityRole="button"
+          accessibilityLabel={`${t('wrappedYear.bannerTitle', { year: offerYear })}, ${t('wrappedYear.bannerBody')}`}
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissWrappedYear)}
+          onPress={() => {
+            tapLight();
+            dismissWrappedYear();
+            router.push(`/wrapped?year=${offerYear}`);
+          }}>
+          <Text style={styles.wrappedEmoji}>🎉</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.wrappedTitle}>{t('wrappedYear.bannerTitle', { year: offerYear })}</Text>
+            <Text style={styles.wrappedBody}>{t('wrappedYear.bannerBody')}</Text>
+          </View>
+          <Pressable onPress={dismissWrappedYear} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
             <Ionicons name="close" size={18} color={colors.dim} />
           </Pressable>
         </Pressable>
