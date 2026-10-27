@@ -1140,8 +1140,12 @@ export default function EpisodePagerScreen() {
 
   // pager length: the real season length from metadata when we have it; for
   // shows without metadata, at least every episode you've watched is reachable
-  const watchedMax = show ? Math.max(0, ...getSeasonEpisodes(show.tvdbId, season).map((e) => e.episode)) : 0;
-  const watchedZero = show ? getSeasonEpisodes(show.tvdbId, season).some((e) => e.episode === 0) : false;
+  // ONE read of the season's watches, not two: this runs on every swipe (the
+  // index is state here), and on a 293-episode anime season each read groups
+  // every watch row of it.
+  const seasonWatches = show ? getSeasonEpisodes(show.tvdbId, season) : [];
+  const watchedMax = Math.max(0, ...seasonWatches.map((e) => e.episode));
+  const watchedZero = seasonWatches.some((e) => e.episode === 0);
   const total = Math.max(show ? (seasonTotal(show.tvdbId, season) ?? 0) : 0, watchedMax, startEp);
   /**
    * A SEASON CAN START AT ZERO.

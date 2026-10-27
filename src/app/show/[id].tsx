@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated as RNAnimated, Easing as RNEasing, FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { GestureType } from 'react-native-gesture-handler';
 import { Gesture, GestureDetector, LegacyScrollView as ScrollView } from 'react-native-gesture-handler';
@@ -27,11 +27,11 @@ import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
 import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
-import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatched, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatched } from '@/db';
+import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatchedMany, type EpisodeWatch } from '@/db';
 import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
 import { showTvdbIdForTmdb } from '@/catalog';
-import { absoluteEpisode, episodeMeta, onShowMetaChange, seasonTotal, showMeta, tvdbIdForTmdb, type SimilarMeta, orderedEpisodes } from '@/metadata';
+import { absoluteEpisode, episodeMeta, onShowMetaChange, seasonTotal, showMeta, tvdbIdForTmdb, type EpisodeMeta, type ShowMeta, type SimilarMeta, orderedEpisodes } from '@/metadata';
 import { airCountdown, communityScore, communityScoreFromCounts, ratingSeries, characterFace } from '@/pure';
 import { filledStarText } from '@/star-rating';
 import { readSeasonAggregates, useSeasonAggregates } from '@/community-ratings';
@@ -223,6 +223,9 @@ export default function ShowScreen() {
   // re-read the database whenever this screen regains focus (e.g. after
   // the Mark as… sheet changes a watch)
   const [tick, setTick] = useState(0);
+  // The one "something changed, re-read" the episode rows are handed. Stable,
+  // so a memoised row is not redrawn just because its parent was.
+  const bump = useCallback(() => setTick((t) => t + 1), []);
   /* An episode ticked on the other device must appear here without leaving
      and coming back — see `onRemoteChange`. Same `setTick` every in-screen
      action already uses, so nothing new has to be kept in step. */
@@ -738,14 +741,16 @@ export default function ShowScreen() {
             if (m) {
               const today = new Date().toISOString().slice(0, 10);
               const seen = getWatchedSet(show.tvdbId);
+              const todo: { season: number; episode: number }[] = [];
               for (const [sn, sv] of Object.entries(m.seasons)) {
                 const s = Number(sn);
                 if (s < 1) continue;
                 for (let e = 1; e <= (sv?.count ?? 0); e++) {
                   const air = m.episodes[`${s}-${e}`]?.air;
-                  if ((!air || air <= today) && !seen.has(`${s}-${e}`)) markWatched(show.tvdbId, s, e);
+                  if ((!air || air <= today) && !seen.has(`${s}-${e}`)) todo.push({ season: s, episode: e });
                 }
               }
+              markWatchedMany(show.tvdbId, todo);
             }
           }
           // flag it too, so returning shows / off-TMDB shows (nothing
@@ -1730,6 +1735,11 @@ export default function ShowScreen() {
             decelerationRate="fast"
             initialScrollIndex={Math.min(carouselStart, Math.max(carousel.length - 1, 0))}
             getItemLayout={(_, i) => ({ length: CARD_W + 10, offset: (CARD_W + 10) * i, index: i })}
+            // Every episode of the show is in this rail — 293 on Boruto — and
+            // the default window keeps ten screens either side mounted, ~60
+            // cards redrawn on every return to the page. Two either side is
+            // more than a fling reaches before the next batch lands.
+            windowSize={5}
             onScrollBeginDrag={() => {
               carouselTouched.current = true;
             }}
@@ -1855,7 +1865,7 @@ export default function ShowScreen() {
                     {
                       text: t('show.markAll'),
                       onPress: () => {
-                        for (const x of missing) markWatched(show.tvdbId, x.s, x.e);
+                        markWatchedMany(show.tvdbId, missing.map((x) => ({ season: x.s, episode: x.e })));
                         setTick((t) => t + 1);
                       },
                     },
@@ -1867,7 +1877,7 @@ export default function ShowScreen() {
                       text: t('show.unmarkAll'),
                       style: 'destructive',
                       onPress: () => {
-                        for (const x of all) unmarkWatched(show.tvdbId, x.s, x.e);
+                        unmarkWatchedMany(show.tvdbId, all.map((x) => ({ season: x.s, episode: x.e })));
                         setTick((t) => t + 1);
                       },
                     },
@@ -1954,7 +1964,7 @@ export default function ShowScreen() {
                             {
                               text: t('show.unmarkSeason'),
                               onPress: () => {
-                                for (let e = 1; e <= total; e++) unmarkWatched(show.tvdbId, sr.season, e);
+                                unmarkWatchedMany(show.tvdbId, Array.from({ length: total }, (_, i) => ({ season: sr.season, episode: i + 1 })));
                                 setTick((t) => t + 1);
                               },
                             },
@@ -2030,7 +2040,7 @@ export default function ShowScreen() {
                             {
                               text: t('show.markSeason'),
                               onPress: () => {
-                                for (const e of pending) markWatched(show.tvdbId, sr.season, e);
+                                markWatchedMany(show.tvdbId, pending.map((e) => ({ season: sr.season, episode: e })));
                                 finish();
                               },
                             },
@@ -2039,8 +2049,7 @@ export default function ShowScreen() {
                             buttons.push({
                               text: t('show.markThrough', { count: earlier.length + pending.length }),
                               onPress: () => {
-                                for (const w of earlier) markWatched(show.tvdbId, w.season, w.episode);
-                                for (const e of pending) markWatched(show.tvdbId, sr.season, e);
+                                markWatchedMany(show.tvdbId, [...earlier, ...pending.map((e) => ({ season: sr.season, episode: e }))]);
                                 finish();
                               },
                             });
@@ -2075,98 +2084,17 @@ export default function ShowScreen() {
                   />
                 </Pressable>
                 {isOpen && watchedMap && (
-                  <Animated.View entering={FadeIn.duration(200).delay(40)} exiting={FadeOut.duration(130)}>
-                  {Array.from({ length: Math.min(epCount, epLimit) }, (_, i) => i + 1).map((epNum) => {
-                    const w = watchedMap.get(epNum);
-                    if (hideWatched && w) return null;
-                    const em = episodeMeta(show.tvdbId, sr.season, epNum);
-                    // overall number only where fans count that way (anime) and
-                    // only when it differs — "(E05)" next to E05 is just noise
-                    const absRaw = absoluteEpisode(show.tvdbId, sr.season, epNum);
-                    const abs = absRaw != null && absRaw !== epNum && (meta?.genres ?? []).includes('Animation') ? absRaw : undefined;
-                    // not out yet — TV Time shows the wait, not a checkbox you
-                    // could tick by accident. Already-watched rows keep their
-                    // control regardless (a date can be wrong; history isn't).
-                    const soon = w ? null : airCountdown(em?.air, Date.now());
-                    return (
-                      // The same shape as every card with a circle in it: the
-                      // row is not an element, the text block is the button.
-                      <Pressable
-                        key={epNum}
-                        style={styles.epRow}
-                        accessible={false} importantForAccessibility="no"
-                        onPress={() => router.push(`/episode/${show.tvdbId}-s${sr.season}e${epNum}`)}>
-                        <View style={styles.epThumb} {...a11yHidden()}>
-                          {em?.still ? (
-                            <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
-                          ) : (
-                            <Text style={{ color: colors.faint, fontWeight: '800', fontSize: 11 }}>
-                              E{String(epNum).padStart(2, '0')}
-                            </Text>
-                          )}
-                        </View>
-                        <View
-                          style={{ flex: 1, paddingVertical: 13 }}
-                          accessible
-                          accessibilityRole="button"
-                          accessibilityLabel={[
-                            t('a11y.seasonEpisode', { season: sr.season, episode: epNum }),
-                            em?.title ?? t('show.episodeFallbackTitle', { n: epNum }),
-                            w ? t('show.watchedOnDate', { date: shortDate(w.watchedAt) }) : em?.air ? shortDate(em.air) : null,
-                            w?.rewatch ? t('a11y.rewatches', { count: w.rewatches ?? 1 }) : null,
-                            soon != null ? (soon.key === 'airIn.days' ? t('a11y.airsInDays', { count: soon.count }) : t(soon.key, { count: soon.count })) : null,
-                          ]
-                            .filter(Boolean)
-                            .join(', ')}>
-                          <Text style={styles.epCode}>
-                            S{String(sr.season).padStart(2, '0')} | E{String(epNum).padStart(2, '0')}
-                            {abs != null ? ` (E${String(abs).padStart(2, '0')})` : ''}
-                            {w?.rewatch ? `  ↻${(w.rewatches ?? 0) > 1 ? ` ${w.rewatches}` : ''}` : ''}
-                          </Text>
-                          <Text style={styles.epTitle} numberOfLines={2}>
-                            {em?.title ?? t('show.episodeFallbackTitle', { n: epNum })}
-                          </Text>
-                          <Text style={[styles.epWatched, soon != null && styles.epUpcoming]}>
-                            {w ? t('show.watchedOnDate', { date: shortDate(w.watchedAt) }) : em?.air ? shortDate(em.air) : ' '}
-                          </Text>
-                        </View>
-                        {soon != null ? (
-                          // Said in the row's label, in words; the bare number here is not.
-                          <View style={styles.epCountdown} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-                            <Text style={styles.epCountdownText} numberOfLines={2}>
-                              {t(soon.key, { count: soon.count })}
-                            </Text>
-                          </View>
-                        ) : (
-                          <CheckCircle
-                            size={43}
-                            iconSize={22}
-                            watched={w != null}
-                            opensMarkAs
-                            what={t('a11y.seasonEpisode', { season: sr.season, episode: epNum })}
-                            onPress={() => {
-                              if (w) {
-                                router.push(`/mark-as?show=${show.tvdbId}&s=${sr.season}&e=${epNum}`);
-                              } else {
-                                markWatchedWithPrompt(show.tvdbId, sr.season, epNum, () => setTick((t) => t + 1));
-                              }
-                            }}
-                          />
-                        )}
-                      </Pressable>
-                    );
-                  })}
-                  {epCount > epLimit && (
-                    <Pressable
-                      onPress={() => setEpLimits((prev) => ({ ...prev, [sr.season]: epLimit + 200 }))}
-                      accessibilityRole="button"
-                      style={{ paddingVertical: 14, alignItems: 'center' }}>
-                      <Text style={{ color: colors.yellow, fontWeight: '800', fontSize: 13.5 }}>
-                        {t('show.showMoreLeft', { count: epCount - epLimit })}
-                      </Text>
-                    </Pressable>
-                  )}
-                  </Animated.View>
+                  <SeasonEpisodes
+                    tvdbId={show.tvdbId}
+                    season={sr.season}
+                    meta={meta}
+                    watched={watchedMap}
+                    count={epCount}
+                    limit={epLimit}
+                    hideWatched={hideWatched}
+                    onMarked={bump}
+                    onShowMore={() => setEpLimits((prev) => ({ ...prev, [sr.season]: epLimit + 200 }))}
+                  />
                 )}
               </View>
             );
@@ -2214,6 +2142,198 @@ export default function ShowScreen() {
  */
 /** How far apart two neighbouring episodes sit on the chart. One place, so
  *  the touch layer and the line can never disagree about it. */
+/**
+ * AN OPEN SEASON'S EPISODES, MOUNTED A FEW AT A TIME (2.0.3).
+ *
+ * Boruto is one season of 293 episodes, and opening it mounted 120 full rows
+ * in one frame — the tap that "does nothing" for a second on Android (Arabic
+ * channel admin, 26 Oct). The rows now arrive `SEASON_STEP` per frame up to the
+ * same cap, so the first screenful is drawn at once and the rest, which is
+ * below the fold anyway, follows. Nothing on screen differs once it settles.
+ *
+ * The cap itself and "Show more" are unchanged: the page is one ScrollView
+ * (the swipe-down and the carousel both depend on that), so this is not a
+ * virtualised list, and the cap is still what keeps a 1207-episode season from
+ * mounting a thousand rows.
+ */
+const SEASON_STEP = 30;
+
+function SeasonEpisodes({
+  tvdbId,
+  season,
+  meta,
+  watched,
+  count,
+  limit,
+  hideWatched,
+  onMarked,
+  onShowMore,
+}: {
+  tvdbId: number;
+  season: number;
+  meta: ShowMeta | undefined;
+  watched: ReadonlyMap<number, EpisodeWatch>;
+  count: number;
+  limit: number;
+  hideWatched: boolean;
+  onMarked: () => void;
+  onShowMore: () => void;
+}) {
+  const cap = Math.min(count, limit);
+  const [shown, setShown] = useState(() => Math.min(cap, SEASON_STEP));
+  // "Now" for the air countdowns, taken when the season opens: a clock read
+  // while rendering is impure to the React Compiler, and a per-render one
+  // would also hand every memoised row a new prop on every tick.
+  const [now] = useState(() => Date.now());
+  useEffect(() => {
+    if (shown >= cap) return;
+    const raf = requestAnimationFrame(() => setShown((n) => Math.min(cap, n + SEASON_STEP)));
+    return () => cancelAnimationFrame(raf);
+  }, [shown, cap]);
+  // overall number only where fans count that way (anime). Worked out once for
+  // the season — `absoluteEpisode` walks every earlier season, and calling it
+  // per row did that walk 120 times on every render.
+  const absBase = (meta?.genres ?? []).includes('Animation') ? absoluteEpisode(tvdbId, season, 1) : undefined;
+  return (
+    <Animated.View entering={FadeIn.duration(200).delay(40)} exiting={FadeOut.duration(130)}>
+      {Array.from({ length: Math.min(shown, cap) }, (_, i) => i + 1).map((epNum) => {
+        const w = watched.get(epNum);
+        if (hideWatched && w) return null;
+        // only when it differs — "(E05)" next to E05 is just noise
+        const absRaw = absBase != null ? absBase - 1 + epNum : undefined;
+        return (
+          <EpisodeRow
+            key={epNum}
+            tvdbId={tvdbId}
+            season={season}
+            ep={epNum}
+            em={meta?.episodes[`${season}-${epNum}`]}
+            abs={absRaw != null && absRaw !== epNum ? absRaw : undefined}
+            watchedAt={w?.watchedAt ?? null}
+            rewatch={w?.rewatch ?? 0}
+            rewatches={w?.rewatches ?? 0}
+            now={now}
+            onMarked={onMarked}
+          />
+        );
+      })}
+      {shown >= cap && count > limit && (
+        <Pressable onPress={onShowMore} accessibilityRole="button" style={{ paddingVertical: 14, alignItems: 'center' }}>
+          <Text style={{ color: colors.yellow, fontWeight: '800', fontSize: 13.5 }}>
+            {t('show.showMoreLeft', { count: count - limit })}
+          </Text>
+        </Pressable>
+      )}
+    </Animated.View>
+  );
+}
+
+/**
+ * ONE EPISODE ROW, AND ONLY PRIMITIVES IN.
+ *
+ * `memo` by hand, because the React Compiler memoises a `.map` as one block:
+ * any change to the season — one tick — rebuilt every row's element and
+ * re-rendered all 120. That is what left the page blank for seconds when
+ * coming back from an episode: the focus re-read re-rendered the whole open
+ * season to change one checkmark. With the watch passed as its three fields
+ * (the row object is new on every read) only the row that changed redraws.
+ */
+const EpisodeRow = memo(function EpisodeRow({
+  tvdbId,
+  season,
+  ep,
+  em,
+  abs,
+  watchedAt,
+  rewatch,
+  rewatches,
+  now,
+  onMarked,
+}: {
+  tvdbId: number;
+  season: number;
+  ep: number;
+  em: EpisodeMeta | undefined;
+  abs: number | undefined;
+  watchedAt: string | null;
+  rewatch: number;
+  rewatches: number;
+  now: number;
+  onMarked: () => void;
+}) {
+  const w = watchedAt != null;
+  // not out yet — TV Time shows the wait, not a checkbox you
+  // could tick by accident. Already-watched rows keep their
+  // control regardless (a date can be wrong; history isn't).
+  const soon = w ? null : airCountdown(em?.air, now);
+  return (
+    // The same shape as every card with a circle in it: the
+    // row is not an element, the text block is the button.
+    <Pressable
+      style={styles.epRow}
+      accessible={false} importantForAccessibility="no"
+      onPress={() => router.push(`/episode/${tvdbId}-s${season}e${ep}`)}>
+      <View style={styles.epThumb} {...a11yHidden()}>
+        {em?.still ? (
+          <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
+        ) : (
+          <Text style={{ color: colors.faint, fontWeight: '800', fontSize: 11 }}>
+            E{String(ep).padStart(2, '0')}
+          </Text>
+        )}
+      </View>
+      <View
+        style={{ flex: 1, paddingVertical: 13 }}
+        accessible
+        accessibilityRole="button"
+        accessibilityLabel={[
+          t('a11y.seasonEpisode', { season, episode: ep }),
+          em?.title ?? t('show.episodeFallbackTitle', { n: ep }),
+          watchedAt != null ? t('show.watchedOnDate', { date: shortDate(watchedAt) }) : em?.air ? shortDate(em.air) : null,
+          rewatch ? t('a11y.rewatches', { count: rewatches || 1 }) : null,
+          soon != null ? (soon.key === 'airIn.days' ? t('a11y.airsInDays', { count: soon.count }) : t(soon.key, { count: soon.count })) : null,
+        ]
+          .filter(Boolean)
+          .join(', ')}>
+        <Text style={styles.epCode}>
+          S{String(season).padStart(2, '0')} | E{String(ep).padStart(2, '0')}
+          {abs != null ? ` (E${String(abs).padStart(2, '0')})` : ''}
+          {rewatch ? `  ↻${rewatches > 1 ? ` ${rewatches}` : ''}` : ''}
+        </Text>
+        <Text style={styles.epTitle} numberOfLines={2}>
+          {em?.title ?? t('show.episodeFallbackTitle', { n: ep })}
+        </Text>
+        <Text style={[styles.epWatched, soon != null && styles.epUpcoming]}>
+          {watchedAt != null ? t('show.watchedOnDate', { date: shortDate(watchedAt) }) : em?.air ? shortDate(em.air) : ' '}
+        </Text>
+      </View>
+      {soon != null ? (
+        // Said in the row's label, in words; the bare number here is not.
+        <View style={styles.epCountdown} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <Text style={styles.epCountdownText} numberOfLines={2}>
+            {t(soon.key, { count: soon.count })}
+          </Text>
+        </View>
+      ) : (
+        <CheckCircle
+          size={43}
+          iconSize={22}
+          watched={w}
+          opensMarkAs
+          what={t('a11y.seasonEpisode', { season, episode: ep })}
+          onPress={() => {
+            if (w) {
+              router.push(`/mark-as?show=${tvdbId}&s=${season}&e=${ep}`);
+            } else {
+              markWatchedWithPrompt(tvdbId, season, ep, onMarked);
+            }
+          }}
+        />
+      )}
+    </Pressable>
+  );
+});
+
 function stepOf(count: number, plotW: number): number {
   return count > 1 ? plotW / (count - 1) : plotW;
 }
