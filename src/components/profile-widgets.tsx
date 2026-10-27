@@ -504,7 +504,9 @@ export function renderWidget(
 
   if (id === 'primeTime') {
     if (!own) return null;
-    const p = primeHour();
+    // `pub` past the `own` check can only be the Add sheet's sample (2.0.3):
+    // a visitor stops above, so nothing private is ever read from a published value.
+    const p = isVisitor ? ((pub as { hour: number; pct: number } | undefined) ?? null) : primeHour();
     if (!p) return null;
     return (
       <WidgetBox label={t('profile.widgetPrimeTime')} span={span}>
@@ -538,7 +540,7 @@ export function renderWidget(
 
   if (id === 'firstEver') {
     if (!own) return null;
-    const f = firstWatch();
+    const f = isVisitor ? ((pub as { show: string; day: string } | undefined) ?? null) : firstWatch();
     if (!f) return null;
     return (
       <WidgetBox label={t('profile.widgetFirstEver')} span={span}>
@@ -554,7 +556,7 @@ export function renderWidget(
 
   if (id === 'watchlist') {
     if (!own) return null;
-    const n = watchlistCount();
+    const n = isVisitor ? Number(pub?.n ?? 0) : watchlistCount();
     if (n === 0) return null;
     return (
       <WidgetBox label={t('profile.widgetWatchlist')} span={span}>
@@ -721,7 +723,9 @@ export function renderWidget(
    */
   if (id === 'everything') {
     if (!own) return null;
-    const sum = everythingSummary(span === '2x2' ? 6 : 4);
+    const sum = isVisitor
+      ? ((pub as ReturnType<typeof everythingSummary> | undefined) ?? { shows: 0, movies: 0, posters: [] })
+      : everythingSummary(span === '2x2' ? 6 : 4);
     if (sum.shows + sum.movies === 0) return null;
     const open = () => router.push('/everything');
     return (

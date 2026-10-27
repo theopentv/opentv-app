@@ -16,12 +16,19 @@
  * wiring is absent.
  */
 
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Text } from '@/components/text';
 
 import { Poster } from '@/components/poster';
 import { StatsRail, type RailItem } from '@/components/profile-sections';
+import { renderWidget } from '@/components/profile-widgets';
+import { MenuRow } from '@/components/ui';
+import { everythingSummary } from '@/everything';
+import { serialiseProfileLinks } from '@/pure';
 import { getCustomLists, getFavoriteMovies, getFavoriteShows, getMovies, getShowProgress, getTotals } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
@@ -196,6 +203,172 @@ export function previewSlot(id: string, span: WidgetSpan, width: number): ReactN
         {items.slice(0, 4).map((it) => (
           <View key={it.key} style={{ width: w, height: h }}>
             <Poster name={it.name} uri={it.uri} />
+          </View>
+        ))}
+      </View>
+    );
+  }
+  return null;
+}
+
+/*
+ * ── SAMPLES (2.0.3) ─────────────────────────────────────────────────────────
+ *
+ * THE GALLERY SHOWS EVERY WIDGET AS A PICTURE, and a widget with nothing to say
+ * collapses to nothing — which on a new library is most of them. So when the
+ * real one is empty, the picker draws it with made-up numbers, the way the iOS
+ * gallery shows a weather widget for a city you have never been to.
+ *
+ * THROUGH THE SAME DRAWING. A sample is handed to `renderWidget` as a published
+ * value — the path a visitor's copy takes — so it is the real widget with other
+ * numbers in it, never a lookalike that can drift. Posters are the library's
+ * own when it has any; a library with none gets the blank poster card.
+ */
+
+/** The library's latest posters, for the samples that need pictures. */
+function samplePosters(): { key: string; name: string; uri: string | null }[] {
+  const real = everythingSummary(4).posters;
+  if (real.length > 0) return real;
+  return [0, 1, 2, 3].map((i) => ({ key: String(i), name: '', uri: null }));
+}
+
+const isoDaysAgo = (n: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+/** Titles for a sample when the library has none of its own. Show names are
+ *  names, the same in every language, so they are not in the locale files. */
+const SAMPLE_SHOWS = ['Severance', 'The Bear', 'Frieren', 'Slow Horses'];
+
+/** Made-up but plausible values, in exactly the shapes `widgetValue` publishes. */
+function sampleValue(id: string): unknown {
+  const year = new Date().getFullYear();
+  const posters = samplePosters();
+  switch (id) {
+    case 'since':
+      return { year: String(year - 6) };
+    case 'character':
+      return { name: 'Leslie Knope', show: 'Parks and Recreation' };
+    case 'genre':
+      return { name: 'Drama', pct: 41 };
+    case 'thisYear':
+      return { year, n: 214 };
+    case 'binge':
+      return { n: 9, day: isoDaysAgo(40) };
+    case 'finished':
+      return { n: 12 };
+    case 'rated':
+      return { n: 86, avg: 4.1 };
+    case 'primeTime':
+      return { hour: 21, pct: 34 };
+    case 'firstEver':
+      return { show: 'Friends', day: `${year - 9}-09-22` };
+    case 'watchlist':
+      return { n: 17 };
+    case 'emotions':
+      return { total: 40, top: [{ emotion: 5, n: 18 }, { emotion: 9, n: 12 }, { emotion: 2, n: 6 }] };
+    case 'emotionCalendar':
+      return { days: Array.from({ length: 60 }, (_, i) => [isoDaysAgo(i * 3), i % 12]) };
+    case 'puzzle':
+      return {
+        days: Array.from({ length: 18 }, (_, i) => [isoDaysAgo(i), (i % 5) + 1]),
+        stats: { played: 18, win: 89, avg: 3.4 },
+      };
+    case 'goal':
+      return {
+        year,
+        cells: [
+          { kind: 'films', target: 52, done: 38, delta: 3 },
+          { kind: 'episodes', target: 500, done: 410, delta: -12 },
+        ],
+      };
+    case 'together':
+      return { shows: [0, 1].map((i) => ({ title: posters[i]?.name || SAMPLE_SHOWS[i], members: i + 2 })) };
+    case 'topRated':
+      return { eps: posters.map((p, i) => ({ showId: i, show: p.name, poster: p.uri, season: 1, episode: i + 1, stars: 5 - (i % 2), ten: 10 - i })) };
+    case 'nowWatching':
+      return { shows: posters.map((p, i) => ({ tvdbId: i, name: p.name || SAMPLE_SHOWS[i % SAMPLE_SHOWS.length], poster: p.uri })) };
+    case 'everything':
+      return { shows: 48, movies: 112, posters: posters.filter((p) => p.uri) };
+    case 'artwork':
+      return posters[0]?.uri ? { uri: posters[0].uri, name: posters[0].name } : undefined;
+    default:
+      return undefined;
+  }
+}
+
+const SAMPLE_LINKS = serialiseProfileLinks([
+  { service: 'instagram', url: 'https://www.instagram.com/' },
+  { service: 'letterboxd', url: 'https://letterboxd.com/' },
+  { service: 'youtube', url: 'https://www.youtube.com/' },
+]);
+
+/** A widget drawn with sample numbers, or null when there is no sensible one. */
+export function sampleWidget(id: string, span: WidgetSpan): ReactNode {
+  // A GIF is a picture in the box, so its sample is the Photo widget's.
+  if (id === 'gif') return sampleWidget('artwork', span);
+  if (id === 'links') return renderWidget('links', span, true, SAMPLE_LINKS);
+  const value = sampleValue(id);
+  if (value === undefined) return null;
+  return renderWidget(id, span, true, undefined, undefined, { value });
+}
+
+/**
+ * Samples for the page's own sections that have no live preview: the banner,
+ * the bio, the counts band, the timeline row, and Lists with no lists yet.
+ * Drawn plainly from the same pieces the page uses, unwired.
+ */
+export function sampleSlot(id: string, width: number): ReactNode {
+  const posters = samplePosters();
+  if (id === 'banners') {
+    const uri = posters[0]?.uri;
+    return (
+      <View style={{ width, height: Math.round(width * 0.42), borderRadius: 12, overflow: 'hidden', backgroundColor: colors.raise, justifyContent: 'flex-end', padding: 12 }}>
+        {uri ? <Image source={{ uri }} style={StyleSheet.absoluteFill} contentFit="cover" /> : null}
+        <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="person" size={22} color={colors.dim} />
+        </View>
+      </View>
+    );
+  }
+  if (id === 'intro') {
+    // The bio is somebody's own words, so the sample is the SHAPE of a
+    // paragraph rather than a sentence put in their mouth.
+    return (
+      <View style={{ gap: 7, paddingVertical: 4 }}>
+        {[0.92, 0.78, 0.55].map((f) => (
+          <View key={f} style={{ width: width * f, height: 9, borderRadius: 5, backgroundColor: colors.line }} />
+        ))}
+      </View>
+    );
+  }
+  if (id === 'counts') {
+    const cells = [
+      { n: 128, label: t('profile.statFollowing') },
+      { n: 96, label: t('profile.statFollowers') },
+      { n: 412, label: t('profile.statComments') },
+    ];
+    return (
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 6 }}>
+        {cells.map((c) => (
+          <View key={c.label} style={{ alignItems: 'center' }}>
+            <Text style={{ color: colors.text, fontSize: 20, fontWeight: '800' }}>{formatCount(c.n, currentLocale())}</Text>
+            <Text style={{ color: colors.dim, fontSize: 12 }}>{c.label}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  }
+  if (id === 'timeline') return <MenuRow title={t('timeline.entry')} sub={t('timeline.entrySub')} />;
+  if (id === 'lists') {
+    const cell = (width - 3 * 2) / 4;
+    return (
+      <View style={{ flexDirection: 'row', gap: 2 }}>
+        {posters.map((it) => (
+          <View key={it.key} style={{ width: cell, height: cell / 0.78 }}>
+            <Poster name={it.name} uri={it.uri} aspect={0.78} />
           </View>
         ))}
       </View>

@@ -412,6 +412,64 @@ export function availableToAdd(_layout: readonly Placed[], shelfKeys: readonly s
   return CATALOGUE(shelfKeys);
 }
 
+/**
+ * THE PICKER'S HEADINGS (2.0.3), the way the iOS widget gallery groups what it
+ * offers. Order inside a heading is this list's, so the gallery reads the same
+ * every time it opens — the rule `availableToAdd` already keeps.
+ *
+ * A widget nobody put under a heading lands in Stats rather than vanishing:
+ * a new widget missing from the picker is a feature nobody can add.
+ */
+export type GalleryGroup = 'profile' | 'shelves' | 'stats' | 'activity' | 'photos';
+const GALLERY: Record<GalleryGroup, readonly string[]> = {
+  profile: ['banners', 'intro', 'counts', 'stats', 'lists'],
+  shelves: ['everything', 'nowWatching', 'topRated', 'watchlist'],
+  stats: ['since', 'streak', 'thisYear', 'goal', 'binge', 'finished', 'rated', 'genre', 'character', 'primeTime', 'firstEver'],
+  activity: ['activity', 'timeline', 'emotions', 'emotionCalendar', 'puzzle', 'together'],
+  photos: ['artwork', 'gif', 'links'],
+};
+
+export function galleryGroups(ids: readonly string[]): { group: GalleryGroup; ids: string[] }[] {
+  const offered = new Set(ids);
+  const placed = new Set<string>();
+  const out = (Object.keys(GALLERY) as GalleryGroup[]).map((group) => {
+    const listed = GALLERY[group].filter((id) => offered.has(id));
+    // Shelves are keyed by the library, so they are taken in the caller's order.
+    const extra = group === 'shelves' ? ids.filter((id) => id.startsWith(SHELF_PREFIX)) : [];
+    const mine = [...extra, ...listed];
+    mine.forEach((id) => placed.add(id));
+    return { group, ids: mine };
+  });
+  const stray = ids.filter((id) => !placed.has(id));
+  out.find((g) => g.group === 'stats')!.ids.push(...stray);
+  return out.filter((g) => g.ids.length > 0);
+}
+
+/**
+ * Rows of the gallery: two small squares side by side, everything wider on its
+ * own — the profile's own grid, so a tile is drawn at the size it lands at.
+ * A lone small square waits for the next one in its heading rather than
+ * leaving half a row empty.
+ */
+export function galleryRows(ids: readonly string[]): string[][] {
+  const rows: string[][] = [];
+  let open: string[] | null = null;
+  for (const id of ids) {
+    if (specOf(id).spans[0] !== '1x1') {
+      rows.push([id]);
+      continue;
+    }
+    if (open) {
+      open.push(id);
+      open = null;
+    } else {
+      open = [id];
+      rows.push(open);
+    }
+  }
+  return rows;
+}
+
 /** How many items an instance shows: its stored choice, or the widget's most
  *  generous default. */
 export function countOf(id: string, data: string | undefined): number {
