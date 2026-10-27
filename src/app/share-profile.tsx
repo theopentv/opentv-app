@@ -69,6 +69,7 @@ export default function ShareProfileScreen() {
   const fit = Math.min(1, (useScreenWidth() - 32) / CARD_W);
   const cardRef = useRef<ViewInstance>(null);
   const username = getMeta('username') ?? seed.profile.username;
+  const handle = getHandle();
   const totals = getTotals();
   const movies = getMovieTotals();
 
@@ -158,9 +159,15 @@ export default function ShareProfileScreen() {
             <Text style={styles.name} numberOfLines={1}>
               {username}
             </Text>
-            <Text style={styles.handle} numberOfLines={1}>
-              @{username.toLowerCase()}
-            </Text>
+            {/* THE REAL HANDLE, OR NONE (27 Oct). This line was the display name
+                lower-cased with an @ in front, so changing your username never
+                reached the card (Mahmood still saw "mahmoodbashar08"), and
+                somebody with no account was shown a handle nobody can find. */}
+            {handle != null && (
+              <Text style={styles.handle} numberOfLines={1}>
+                @{handle}
+              </Text>
+            )}
             <View style={styles.dash} />
             <Text style={styles.tracked}>{t('shareCard.tracked')}</Text>
             <View style={styles.grid}>
