@@ -51,6 +51,10 @@ Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 
 - [ ] App closed for 2–3 days: both still arrive; reminder off → none; episode reminders unaffected
 
 ### Free month (backend deployed, switch ON)
+- [x] (sim, live server, 27 Oct) Email account → Try it free → "A month of Plus is yours" until 26 Nov; heard_from=reddit, plus_until +30 in D1; PLUS badge; card gone; both reminders booked
+- [x] (sim) End date moved to the past → "Your free month has ended" once (used: Cloud Backup), annual above monthly, No thanks → never again, Plus off
+- [~] (sim) The season-icon alert landed on top of the end screen → fixed df2a67b (only over the tabs); re-check
+- [ ] (sim) After "Create account" → "Not now" on Confirm your email, the phone was NOT signed in (communityProfileId empty) → check on device whether that is intended
 - [ ] Dashboard: switch + stats, no give button; OFF → signed-in card hidden after relaunch, ON → back
 - [ ] No account: import → "Try Plus free for a month" → Try it free → sign in → "A month of Plus is yours", date +30; D1 free_month_at, plus_until, heard_from
 - [ ] Signing in WITHOUT tapping the card claims nothing
