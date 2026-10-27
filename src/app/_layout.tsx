@@ -101,6 +101,9 @@ const PRE_ONBOARDING = new Set([
   'import', 'moving', 'join', 'notify-optin', 'seed', 'pick-shows', 'paywall', 'devices',
 ]);
 
+/** The first route segment on screen, for launch prompts that must not cover another screen. */
+let topRoute = '';
+
 export default function RootLayout() {
   // Runs exactly once, before the first paint: a lazy useState initialiser
   // executes during render but only on mount, unlike a bare function call
@@ -304,6 +307,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (segments.length > 0) trackScreen(segments.join('/'));
+    topRoute = (segments as string[])[0] ?? '';
   }, [segments]);
 
   /*
@@ -481,7 +485,12 @@ export default function RootLayout() {
             }
             // The season's icon: offered once, put back when it ends — after the
             // first screen has settled, never over the launch.
-            setTimeout(() => void offerSeasonIcon().catch(() => {}), 4000);
+            // ONLY OVER THE TABS (27 Oct): it landed on top of "Your free month
+            // has ended" on the simulator. Anything else on screen means the
+            // offer waits for a later launch; it is once a season, not now or never.
+            setTimeout(() => {
+              if (topRoute === '(tabs)') void offerSeasonIcon().catch(() => {});
+            }, 4000);
           })
           .catch(() => {});
         await syncArchiveIfNeeded();
