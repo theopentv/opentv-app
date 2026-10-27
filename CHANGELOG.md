@@ -109,6 +109,8 @@ Play Console record rather than per-change.
 - **Puzzle reminders**: "today's puzzle is ready" at the chosen hour (default now 09:00) and a 22:00 last call if unplayed, booked seven days ahead and re-planned every launch.
 - **A free month of Plus for signing in** (server-granted into `plus_until`, once per person by a keyed hash of each sign-in, never shortening a running grant, never for a payer). Cards after an import and on Profile with a No thanks that never returns; accounts made before 2.0.3 get it once on first launch; day-25 reminder; optional "Where did you hear about OpenTV?" stored as one of five channel names.
 - **Wrapped 2026 opens on 1 December, free for everyone**: the picker offers the current year in December, a Profile card and a noon notification on 1 Dec. theopentv.com is drawn inside every share image.
+- **Wrapped 2026 is "so far" in December and complete on 1 January** (research 27 Oct: Spotify ~2 Dec, Trakt 18 Dec, Letterboxd ~2 Jan; Christmas viewing matters). Computed live to 31 Dec; header, picker and every year card read "2026 so far" in December; a "Your 2026 is complete" card and noon notification on 1 Jan, even for people who opened December's. Both nudges need 10 episodes or 3 films in the year.
+- **Bingers ratings** are read on one scale per file: halves kept, and out of ten when any score passes five.
 - **Small fixes**: a rating ask at the 10th episode ticked by hand; the Shows tab's sort and grid buttons belong to the WATCH NEXT row; missing posters fill four at a time with a TMDB fallback; Stats shows "Including rewatches"; the app opens on the tab chosen in Settings again (broken since native tabs in 2.0.1).
 - **What's New** for 2.0.3 in nine languages (2.0.0 to 2.0.2 had none).
 

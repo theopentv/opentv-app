@@ -58,6 +58,10 @@ Before testing the free month: deploy backend `2.0.3` (migration 0063 BEFORE the
 - [ ] Noon 1 Dec notification opens /wrapped?year=2026
 - [ ] Share year hero, a month card, Deep Stats, show card, profile card, badge: theopentv.com in each image, nothing clipped (Arabic, German)
 
+- [ ] 3 Dec: Wrapped header, picker and shared year card read "2026 so far"; mark an episode, the count grows
+- [ ] 1 Jan 00:05: "Your 2026 is complete" card even after opening December's; noon notification; no "so far"
+- [ ] Library with 4 episodes and 1 film in 2026: no year card or notification in Dec or Jan
+
 ### Small fixes
 - [ ] 10th episode ticked by hand → rating sheet; 9th and 11th nothing
 - [ ] Shows tab (Duo inner upright, light): ⇅ and grid on the WATCH NEXT row, never over a check
