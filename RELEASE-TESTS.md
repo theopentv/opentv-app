@@ -17,18 +17,23 @@ failure written next to it, not in a commit message.
 Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 BEFORE the Worker).
 
 ### Opening tab and What's New
-- [ ] Settings → Opening tab → Profile; close and reopen: opens on Profile (also Movies, Explore)
-- [ ] Update from 2.0.2: What's New shows six rows on iPhone (classic tab bar row), five on Android; Arabic
+- [x] Settings → Opening tab → Profile; close and reopen: opens on Profile (also Movies, Explore)
+- [x] Update from 2.0.2: What's New shows six rows on iPhone (classic tab bar row), five on Android; Arabic
 
 ### Everything I watch
+- [x] (iPhone 13 Pro Max, 27 Oct) Off by default; Edit profile switch (free) → shelf under Lists above Shows, same look as Shows/Movies, no counts
+- [x] Page uses the library FILTERS pill + sheet with a Type section; no unwatched films on page or shelf
+- [x] Wolf Children shows its English name after the background fetch
+- [x] Arranging: + and ✓ above the tab bar; ends when leaving the tab; − and pencil badges visible
+- [x] Share profile card shows the real @handle
 - [ ] Profile ⋯ → Everything I watch, on a FREE account: chips add up, search a show and a film (shown and original name), three sorts, back keeps the scroll
 - [ ] Anime chip appears only with anime in the library
 - [ ] Plus: + widget → Shelves → Everything 2x1; block shows counts and posters; not on the other account's public profile
 - [ ] Arabic RTL and plurals (1, 2, 3, 11, 100); German/Polish chip overflow
 
 ### Widget gallery (Plus)
-- [ ] Five headings, every tile drawn, no dashed outlines; smooth on an old Android
-- [ ] Tap a tile → size pager → Add lands on the profile; empty library shows sample tiles
+- [x] Five headings, every tile drawn, no dashed outlines; smooth on an old Android
+- [x] Tap a tile → size pager → Add lands on the profile; empty library shows sample tiles
 
 ### Imports
 - [ ] Bingers ZIP (~/Downloads/bingers-export-2026-10-26.zip) fresh: ~110 shows, 304 films (~154 watched), Arcane S1E1 rewatch, list "avenger" 22, favourites 9/23
