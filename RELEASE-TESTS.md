@@ -12,6 +12,60 @@ failure written next to it, not in a commit message.
 
 ---
 
+## 2.0.3 — merged 27 Oct 2026, not yet on a device
+
+Before testing the free month: deploy backend `2.0.3` (migration 0063 BEFORE the Worker).
+
+### Opening tab and What's New
+- [ ] Settings → Opening tab → Profile; close and reopen: opens on Profile (also Movies, Explore)
+- [ ] Update from 2.0.2: What's New shows six rows on iPhone (classic tab bar row), five on Android; Arabic
+
+### Everything I watch
+- [ ] Profile ⋯ → Everything I watch, on a FREE account: chips add up, search a show and a film (shown and original name), three sorts, back keeps the scroll
+- [ ] Anime chip appears only with anime in the library
+- [ ] Plus: + widget → Shelves → Everything 2x1; block shows counts and posters; not on the other account's public profile
+- [ ] Arabic RTL and plurals (1, 2, 3, 11, 100); German/Polish chip overflow
+
+### Widget gallery (Plus)
+- [ ] Five headings, every tile drawn, no dashed outlines; smooth on an old Android
+- [ ] Tap a tile → size pager → Add lands on the profile; empty library shows sample tiles
+
+### Imports
+- [ ] Bingers ZIP (~/Downloads/bingers-export-2026-10-26.zip) fresh: ~110 shows, 304 films (~154 watched), Arcane S1E1 rewatch, list "avenger" 22, favourites 9/23
+- [ ] Re-import Bingers: all zeros
+- [ ] Sofa Time ZIP fresh, online: ~214 shows, 46 archived, ~10.5k episodes; check an anime's numbering
+- [ ] TV Time, Trakt, Simkl, Letterboxd still import
+
+### Long seasons and "Where are you?" (Android emulator + iPhone)
+- [ ] Onboarding Grey's Anatomy → S17 E06 → Done moves on within ~1 s, ~370 ticked; synced to a second device
+- [ ] Boruto season opens at once, Show more works, back from an episode does not blank the page
+- [ ] Untick a season, merge re-import does not restore it; Mark all / Unmark all; Mark finished
+
+### Puzzle reminders
+- [ ] Reminder at the chosen hour (fresh default 09:00), last call at 22:00 only if unplayed
+- [ ] App closed for 2–3 days: both still arrive; reminder off → none; episode reminders unaffected
+
+### Free month (backend deployed)
+- [ ] No account: import → card → Sign in → "A month of Plus is yours", date +30; heard_from saved
+- [ ] Paywall shows plans and "You have Plus, free · Until …"
+- [ ] Sign out/in: no second month; delete account + same Google: no month
+- [ ] An account signed in before 2.0.3 gets the month on first 2.0.3 launch; a paying account does not
+- [ ] No thanks on Profile → never again, not after an import either
+- [ ] Unconfirmed email: no month until confirmed
+
+### Wrapped (set the device date)
+- [ ] 30 Nov: no 2026 in the picker; 1 Dec 00:05 relaunch: "Your 2026 is ready" card, picker lists 2026, free account too
+- [ ] Noon 1 Dec notification opens /wrapped?year=2026
+- [ ] Share year hero, a month card, Deep Stats, show card, profile card, badge: theopentv.com in each image, nothing clipped (Arabic, German)
+
+### Small fixes
+- [ ] 10th episode ticked by hand → rating sheet; 9th and 11th nothing
+- [ ] Shows tab (Duo inner upright, light): ⇅ and grid on the WATCH NEXT row, never over a check
+- [ ] Fresh big import: initials on the Profile shelf turn into posters within a launch
+- [ ] +1 Rewatched → Stats "Including rewatches"
+
+---
+
 ## 2.0.1 — built 25 Oct 2026 (iOS 93)
 
 Simulator ticks are marked (sim); none of these has run on a real phone yet.

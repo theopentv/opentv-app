@@ -101,6 +101,18 @@ Play Console record rather than per-change.
 
 ## 2.0.3 — the plan
 
+**BUILT 27 Oct 2026 (merged into `2.0.3`; backend `2.0.3` holds migration 0063, NOT deployed):**
+- **Everything I watch.** One page for every show, anime and film: chips All / Shows / Anime / Movies with counts, three sorts, search by shown or stored film name. Anime only when TheTVDB's own "Anime" genre is there, never guessed. Free from the Profile ⋯ menu; also a Plus profile block (own profile only, the server has no whole library).
+- **Widget gallery like iOS's.** Five headings, every widget drawn as its real preview; empty ones drawn with sample values so no tile is a grey box.
+- **Sofa Time and Bingers imports**, through the same door as Simkl: ids only, never titles; Bingers plays become rewatches, for_later the watchlist, ratings, emotions, favourites and lists come across. Sofa Time numbers episodes the TMDB way, so anime with absolute numbering may misalign.
+- **"Where are you?" no longer freezes**: `markWatchedMany` marks hundreds of episodes in one transaction with the same sync ops; Mark all, season ticks and "mark the earlier ones" use it. Long seasons mount 30 rows a frame, rows are memoised, and coming back from an episode no longer blanks the page.
+- **Puzzle reminders**: "today's puzzle is ready" at the chosen hour (default now 09:00) and a 22:00 last call if unplayed, booked seven days ahead and re-planned every launch.
+- **A free month of Plus for signing in** (server-granted into `plus_until`, once per person by a keyed hash of each sign-in, never shortening a running grant, never for a payer). Cards after an import and on Profile with a No thanks that never returns; accounts made before 2.0.3 get it once on first launch; day-25 reminder; optional "Where did you hear about OpenTV?" stored as one of five channel names.
+- **Wrapped 2026 opens on 1 December, free for everyone**: the picker offers the current year in December, a Profile card and a noon notification on 1 Dec. theopentv.com is drawn inside every share image.
+- **Small fixes**: a rating ask at the 10th episode ticked by hand; the Shows tab's sort and grid buttons belong to the WATCH NEXT row; missing posters fill four at a time with a TMDB fallback; Stats shows "Including rewatches"; the app opens on the tab chosen in Settings again (broken since native tabs in 2.0.1).
+- **What's New** for 2.0.3 in nine languages (2.0.0 to 2.0.2 had none).
+
+
 
 - **"Everything I watch" in one page, as a profile widget** (Mahmood, 26 Oct, from
   the Arabic channel admin's question: "is there no way to see all the films, series
