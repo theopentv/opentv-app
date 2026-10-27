@@ -3846,5 +3846,26 @@
   "importSources": {
     "sofatime": "Votre export depuis les réglages de Sofa Time : un fichier ZIP contenant des fichiers JSON.",
     "bingers": "Votre export depuis les réglages de Bingers : un fichier ZIP contenant quatre fichiers CSV."
+  },
+  "everything": {
+    "title": "Tout ce que je regarde",
+    "searchPlaceholder": "Rechercher séries et films",
+    "chipAll": "Tout",
+    "chipAnime": "Animés",
+    "noMatches": "Rien ne correspond à « {{query}} ».",
+    "empty": "Rien ici pour l’instant.",
+    "shows": {
+      "one": "{{count}} série",
+      "other": "{{count}} séries"
+    },
+    "movies": {
+      "one": "{{count}} film",
+      "other": "{{count}} films"
+    },
+    "groupProfile": "Votre page",
+    "groupShelves": "Étagères",
+    "groupStats": "Statistiques",
+    "groupActivity": "Activité",
+    "groupPhotos": "Photos et texte"
   }
 }

@@ -4146,5 +4146,30 @@
   "importSources": {
     "sofatime": "Eksport z ustawień Sofa Time: plik ZIP z plikami JSON w środku.",
     "bingers": "Eksport z ustawień Bingers: plik ZIP z czterema plikami CSV w środku."
+  },
+  "everything": {
+    "title": "Wszystko, co oglądam",
+    "searchPlaceholder": "Szukaj seriali i filmów",
+    "chipAll": "Wszystko",
+    "chipAnime": "Anime",
+    "noMatches": "Nic nie pasuje do „{{query}}”.",
+    "empty": "Na razie nic tu nie ma.",
+    "shows": {
+      "one": "{{count}} serial",
+      "few": "{{count}} seriale",
+      "many": "{{count}} seriali",
+      "other": "{{count}} serialu"
+    },
+    "movies": {
+      "one": "{{count}} film",
+      "few": "{{count}} filmy",
+      "many": "{{count}} filmów",
+      "other": "{{count}} filmu"
+    },
+    "groupProfile": "Twoja strona",
+    "groupShelves": "Półki",
+    "groupStats": "Statystyki",
+    "groupActivity": "Aktywność",
+    "groupPhotos": "Zdjęcia i tekst"
   }
 }

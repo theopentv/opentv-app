@@ -122,6 +122,11 @@ export const WIDGETS: Record<string, WidgetSpec> = {
   together: { spans: ['2x1', '2x2'], span: '2x1', sized: true, single: true },
   topRated: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
   nowWatching: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
+  /** Everything I watch (2.0.3): totals and the latest posters, opening the
+   *  page that lists shows, anime and films together. Private because that
+   *  page is this phone's library — the server holds no full copy to show a
+   *  visitor, only the capped shelves. */
+  everything: { spans: ['2x1', '2x2'], span: '2x1', sized: true, private: true },
   /**
    * A POSTER FROM YOUR OWN LIBRARY — the only widget that is not a fact.
    *
@@ -275,6 +280,7 @@ const CATALOGUE = (shelfKeys: readonly string[]): string[] => [
   'together',
   'topRated',
   'nowWatching',
+  'everything',
   'artwork',
   'gif',
   'links',
@@ -406,6 +412,64 @@ export function availableToAdd(_layout: readonly Placed[], shelfKeys: readonly s
   return CATALOGUE(shelfKeys);
 }
 
+/**
+ * THE PICKER'S HEADINGS (2.0.3), the way the iOS widget gallery groups what it
+ * offers. Order inside a heading is this list's, so the gallery reads the same
+ * every time it opens — the rule `availableToAdd` already keeps.
+ *
+ * A widget nobody put under a heading lands in Stats rather than vanishing:
+ * a new widget missing from the picker is a feature nobody can add.
+ */
+export type GalleryGroup = 'profile' | 'shelves' | 'stats' | 'activity' | 'photos';
+const GALLERY: Record<GalleryGroup, readonly string[]> = {
+  profile: ['banners', 'intro', 'counts', 'stats', 'lists'],
+  shelves: ['everything', 'nowWatching', 'topRated', 'watchlist'],
+  stats: ['since', 'streak', 'thisYear', 'goal', 'binge', 'finished', 'rated', 'genre', 'character', 'primeTime', 'firstEver'],
+  activity: ['activity', 'timeline', 'emotions', 'emotionCalendar', 'puzzle', 'together'],
+  photos: ['artwork', 'gif', 'links'],
+};
+
+export function galleryGroups(ids: readonly string[]): { group: GalleryGroup; ids: string[] }[] {
+  const offered = new Set(ids);
+  const placed = new Set<string>();
+  const out = (Object.keys(GALLERY) as GalleryGroup[]).map((group) => {
+    const listed = GALLERY[group].filter((id) => offered.has(id));
+    // Shelves are keyed by the library, so they are taken in the caller's order.
+    const extra = group === 'shelves' ? ids.filter((id) => id.startsWith(SHELF_PREFIX)) : [];
+    const mine = [...extra, ...listed];
+    mine.forEach((id) => placed.add(id));
+    return { group, ids: mine };
+  });
+  const stray = ids.filter((id) => !placed.has(id));
+  out.find((g) => g.group === 'stats')!.ids.push(...stray);
+  return out.filter((g) => g.ids.length > 0);
+}
+
+/**
+ * Rows of the gallery: two small squares side by side, everything wider on its
+ * own — the profile's own grid, so a tile is drawn at the size it lands at.
+ * A lone small square waits for the next one in its heading rather than
+ * leaving half a row empty.
+ */
+export function galleryRows(ids: readonly string[]): string[][] {
+  const rows: string[][] = [];
+  let open: string[] | null = null;
+  for (const id of ids) {
+    if (specOf(id).spans[0] !== '1x1') {
+      rows.push([id]);
+      continue;
+    }
+    if (open) {
+      open.push(id);
+      open = null;
+    } else {
+      open = [id];
+      rows.push(open);
+    }
+  }
+  return rows;
+}
+
 /** How many items an instance shows: its stored choice, or the widget's most
  *  generous default. */
 export function countOf(id: string, data: string | undefined): number {
@@ -491,6 +555,7 @@ export const WIDGET_NAME: Record<string, string> = {
   together: 'together.title',
   topRated: 'profile.widgetTopRated',
   nowWatching: 'profile.widgetNowWatching',
+  everything: 'everything.title',
   artwork: 'profile.widgetPhoto',
   gif: 'profile.widgetGif',
   links: 'profile.widgetLinks',

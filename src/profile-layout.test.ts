@@ -62,3 +62,32 @@ describe('withTogetherBlock', () => {
     expect(withTogetherBlock(saved.items, saved.known).map((p) => p.id)).toEqual(['stats']);
   });
 });
+
+describe('widget gallery (2.0.3)', () => {
+  const { availableToAdd, galleryGroups, galleryRows, WIDGET_NAME, specOf } = require('./profile-layout') as typeof import('./profile-layout');
+  const keys = ['shows', 'fav-shows', 'movies', 'fav-movies'];
+  const all = availableToAdd([], keys);
+
+  it('offers Everything I watch, named, own profile only', () => {
+    expect(all).toContain('everything');
+    expect(WIDGET_NAME.everything).toBe('everything.title');
+    expect(specOf('everything')).toMatchObject({ sized: true, private: true });
+  });
+
+  it('puts every widget the picker offers under exactly one heading', () => {
+    const grouped = galleryGroups(all).flatMap((g) => g.ids);
+    expect([...grouped].sort()).toEqual([...all].sort());
+    expect(new Set(grouped).size).toBe(grouped.length);
+  });
+
+  it('shelves sit under Shelves, in the library order; an unknown id falls into Stats', () => {
+    const groups = galleryGroups([...all, 'fromTheFuture']);
+    expect(groups.find((g) => g.group === 'shelves')!.ids.slice(0, 2)).toEqual(['shelf:shows', 'shelf:fav-shows']);
+    expect(groups.find((g) => g.group === 'stats')!.ids).toContain('fromTheFuture');
+  });
+
+  it('pairs small squares and gives wide ones a row each', () => {
+    expect(galleryRows(['since', 'genre', 'topRated', 'streak'])).toEqual([['since', 'genre'], ['topRated'], ['streak']]);
+    expect(galleryRows(['since', 'topRated', 'streak'])).toEqual([['since', 'streak'], ['topRated']]);
+  });
+});

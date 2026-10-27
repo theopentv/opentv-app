@@ -12,12 +12,12 @@
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useMemo, useState, type ReactNode } from 'react';
+import { Alert, Pressable, ScrollView, SectionList, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 import { WidgetBox, renderWidget, widgetValue } from '@/components/profile-widgets';
 import { pushWidgets } from '@/community-profiles';
-import { previewSlot } from '@/components/widget-previews';
+import { previewSlot, sampleSlot, sampleWidget } from '@/components/widget-previews';
 import { PROFILE_MAX_WIDTH, gridMetrics, useScreenWidth } from '@/components/ui';
 import db, { getMeta, getProfileLayout, isStorageFull, setProfileLayout } from '@/db';
 import { TEMPLATE_LAYOUT, TEMPLATE_NAME } from '@/profile-templates';
@@ -27,6 +27,9 @@ import {
   WIDGET_NAME,
   alreadyPlaced,
   availableToAdd,
+  galleryGroups,
+  galleryRows,
+  type GalleryGroup,
   newUid,
   normalise,
   notifyLayoutSaved,
@@ -69,10 +72,23 @@ const ICONS: Record<string, string> = {
   emotions: 'happy-outline',
   topRated: 'trophy-outline',
   nowWatching: 'tv-outline',
+  everything: 'albums-outline',
   together: 'people-outline',
   artwork: 'image-outline',
   gif: 'film-outline',
 };
+
+/** The gallery's headings, in the locale files under `everything` with the
+ *  page they arrived with. */
+const GROUP_NAME: Record<GalleryGroup, 'everything.groupProfile' | 'everything.groupShelves' | 'everything.groupStats' | 'everything.groupActivity' | 'everything.groupPhotos'> = {
+  profile: 'everything.groupProfile',
+  shelves: 'everything.groupShelves',
+  stats: 'everything.groupStats',
+  activity: 'everything.groupActivity',
+  photos: 'everything.groupPhotos',
+};
+
+const nameOf = (id: string): string => (WIDGET_NAME[id] ? t(WIDGET_NAME[id] as never) : id);
 
 export default function AddWidgetSheet() {
   /*
@@ -86,8 +102,13 @@ export default function AddWidgetSheet() {
    * to the wrong place and the dots below report a page nobody is looking at.
    */
   const win = useWindowDimensions();
-  /** As much of the screen as a bottom sheet can take without becoming a page. */
-  const SHEET_MAX = win.height * 0.62;
+  /*
+   * TALLER THAN IT WAS (2.0.3). The list was rows of names and 62% of the
+   * screen held plenty of them; it is a gallery of real previews now, and a
+   * 2x2 preview alone is most of that. The profile still shows above it, which
+   * is what keeps this a drawer rather than a page.
+   */
+  const SHEET_MAX = win.height * 0.82;
   const W = Math.min(useScreenWidth(), PROFILE_MAX_WIDTH);
   const keys = useMemo(() => shelfKeys(), []);
   const [layout, setLayout] = useState<Placed[]>(() => normalise(parseLayout(getProfileLayout()), keys));
@@ -109,6 +130,19 @@ export default function AddWidgetSheet() {
    * fixed order can be remembered; a helpful one cannot.
    */
   const rows = availableToAdd(layout, keys);
+  /*
+   * THE GALLERY (2.0.3): headings, and under each the widgets themselves, two
+   * small squares to a row and anything wider on its own — the iOS "Add
+   * Widget" gallery. Memoised on the list it is built from, so a re-render of
+   * the sheet does not rebuild every section.
+   */
+  // From `keys` and not `rows`: the catalogue ignores the layout, and `rows`
+  // is a new array every render, which would rebuild this on every one.
+  const sections = useMemo(
+    () =>
+      galleryGroups(availableToAdd([], keys)).map((g) => ({ key: g.group, title: t(GROUP_NAME[g.group]), data: galleryRows(g.ids) })),
+    [keys],
+  );
   /** REPLACE MODE (8 Oct): opened from a block's options, the new one takes its place. */
   const { replace } = useLocalSearchParams<{ replace?: string }>();
 
@@ -228,21 +262,38 @@ export default function AddWidgetSheet() {
    * positioned with a height; here the parent was content-sized, the basis won,
    * and every preview collapsed to a black sliver.
    */
+  /**
+   * One widget, drawn for the picker: live when the library has something to
+   * say, a sample when it does not (see `sampleWidget`), and the named outline
+   * only when neither exists. The gallery tiles and the size pager both come
+   * through here, so what is tapped is what the pager then shows.
+   */
+  const drawWidget = (id: string, sp: WidgetSpan) => {
+    const m = gridMetrics(W);
+    const w = sp === '1x1' ? m.col : m.block;
+    const boxed = (node: ReactNode) =>
+      node != null ? (
+        <WidgetBox label={nameOf(id)} span={sp} hug>
+          {node}
+        </WidgetBox>
+      ) : null;
+    return (
+      renderWidget(id, sp, true) ??
+      boxed(previewSlot(id, sp, w - 24)) ??
+      sampleWidget(id, sp) ??
+      boxed(sampleSlot(id, w - 24))
+    );
+  };
+
   const stage = (id: string, sp: WidgetSpan) => {
     const m = gridMetrics(W);
     /*
-     * NOT EVERYTHING CAN BE DRAWN HERE.
-     *
-     * The widgets are drawn by `renderWidget`, which this sheet can call. The
-     * page's own sections -- the heatmap, Lists, Stats, the shelves -- are built
-     * by the Profile screen and handed to the template as slots, because they
-     * need that screen's data and its navigation. There is nothing this sheet
-     * could call to produce one.
-     *
-     * So they get a card of the right SIZE with their name in it. That is not a
-     * preview of the content and does not pretend to be -- but the pager's
-     * question is "how big", and an outline answers it honestly. A blank
-     * rectangle answered nothing at all.
+     * THE OUTLINE IS THE LAST RESORT NOW (2.0.3). It used to be what every
+     * page section got, because those are built by the Profile screen with its
+     * navigation and this sheet could not call them. `widget-previews.tsx`
+     * draws them from the same components unwired, and samples cover what an
+     * empty library cannot — so the named outline only appears for something
+     * with neither, a card of the right SIZE that at least answers "how big".
      */
     /*
      * ONE LANGUAGE FOR BOTH KINDS.
@@ -256,15 +307,7 @@ export default function AddWidgetSheet() {
      * promise is "this shape, this big", and now every page keeps it the same
      * way.
      */
-    const w = sp === '1x1' ? m.col : m.block;
-    const slot = previewSlot(id, sp, w - 24);
-    const live =
-      renderWidget(id, sp, true) ??
-      (slot != null ? (
-        <WidgetBox label={WIDGET_NAME[id] ? t(WIDGET_NAME[id] as never) : id} span={sp} hug>
-          {slot}
-        </WidgetBox>
-      ) : null);
+    const live = drawWidget(id, sp);
     return (
       /* A fifth again taller than the widget it holds, so the thing being
          judged has air round it instead of touching the dots. */
@@ -363,30 +406,63 @@ export default function AddWidgetSheet() {
           /* Tall. A short sheet over a stripped profile left a slab of empty
              page above it, and the void read as the app being broken rather
              than as a profile with nothing on it yet. */
-          <ScrollView style={{ maxHeight: SHEET_MAX }}>
-            {rows.map((id) => {
-              // Only the banner and the bio; everything else may be repeated.
-              const placed = alreadyPlaced(id, layout);
-              return (
-                <View key={id}>
-                  <Pressable accessibilityRole="button" accessibilityState={{ disabled: placed }} style={s.row} disabled={placed} onPress={() => add(id)}>
-                    <Ionicons
-                      name={(ICONS[id] ?? 'apps-outline') as never}
-                      size={20}
-                      color={placed ? colors.faint : colors.text}
-                    />
-                    <Text style={[s.label, placed && { color: colors.faint }]} numberOfLines={1}>
-                      {WIDGET_NAME[id] ? t(WIDGET_NAME[id] as never) : id}
-                    </Text>
-                    {/* A tick rather than a missing row: somebody looking for
-                        the banner needs to be told it is already there, not
-                        left wondering where the feature went. */}
-                    {placed && <Ionicons name="checkmark" size={18} color={colors.faint} />}
-                  </Pressable>
-                </View>
-              );
-            })}
-          </ScrollView>
+          <SectionList
+            style={{ maxHeight: SHEET_MAX }}
+            sections={sections}
+            keyExtractor={(row) => row.join('|')}
+            stickySectionHeadersEnabled={false}
+            initialNumToRender={6}
+            windowSize={5}
+            contentContainerStyle={{ paddingBottom: 12 }}
+            renderSectionHeader={({ section }) => (
+              <Text accessibilityRole="header" style={s.group}>
+                {section.title}
+              </Text>
+            )}
+            renderItem={({ item: row }) => (
+              <View style={[s.galleryRow, { width: gridMetrics(W).block }]}>
+                {row.map((id) => {
+                  // Only the banner and the bio; everything else may be repeated.
+                  const placed = alreadyPlaced(id, layout);
+                  const sp = specOf(id).spans[0]!;
+                  const m = gridMetrics(W);
+                  return (
+                    <Pressable
+                      key={id}
+                      accessibilityRole="button"
+                      accessibilityLabel={nameOf(id)}
+                      accessibilityState={{ disabled: placed }}
+                      disabled={placed}
+                      onPress={() => add(id)}
+                      style={{ width: sp === '1x1' ? m.col : m.block, opacity: placed ? 0.45 : 1 }}>
+                      {/* NOTHING INSIDE A TILE TAKES A TOUCH. The preview is a
+                          picture of the widget; a poster or a link in it that
+                          answered a tap would be a preview somebody falls out of. */}
+                      <View
+                        pointerEvents="none"
+                        // Explicit height for the grid's own widgets: their box is
+                        // `flex: 1` and collapses in a content-sized parent (see `stage`).
+                        style={specOf(id).sized ? { height: m.height(sp === '2x2' ? 2 : 1) } : null}>
+                        {drawWidget(id, sp) ?? (
+                          <View style={[s.outline, { height: m.row }]}>
+                            <Ionicons name={(ICONS[id] ?? 'apps-outline') as never} size={26} color={colors.faint} />
+                          </View>
+                        )}
+                      </View>
+                      <View style={s.tileName}>
+                        <Text style={s.tileLabel} numberOfLines={1}>
+                          {nameOf(id)}
+                        </Text>
+                        {/* A tick rather than a missing tile: somebody looking for
+                            the banner needs to be told it is already there. */}
+                        {placed && <Ionicons name="checkmark" size={14} color={colors.faint} />}
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
+          />
         )}
       </View>
 
@@ -518,6 +594,10 @@ const s = StyleSheet.create({
     borderBottomColor: '#333338',
   },
   label: { color: colors.text, fontSize: 16, fontWeight: '600', flex: 1 },
+  group: { color: colors.text, fontSize: 17, fontWeight: '800', paddingHorizontal: space.xl, paddingTop: 18, paddingBottom: 10 },
+  galleryRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, alignSelf: 'center', marginBottom: 14 },
+  tileName: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingTop: 6 },
+  tileLabel: { color: colors.dim, fontSize: 12.5, fontWeight: '700', flexShrink: 1 },
   sizes: {
     flexDirection: 'row',
     gap: 10,

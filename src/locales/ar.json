@@ -4446,5 +4446,34 @@
   "importSources": {
     "sofatime": "ملف التصدير من إعدادات Sofa Time: ملف ZIP بداخله ملفات JSON.",
     "bingers": "ملف التصدير من إعدادات Bingers: ملف ZIP بداخله أربعة ملفات CSV."
+  },
+  "everything": {
+    "title": "كل ما أشاهده",
+    "searchPlaceholder": "ابحث في المسلسلات والأفلام",
+    "chipAll": "الكل",
+    "chipAnime": "أنمي",
+    "noMatches": "لا شيء يطابق «{{query}}».",
+    "empty": "لا شيء هنا بعد.",
+    "shows": {
+      "zero": "لا مسلسلات",
+      "one": "مسلسل واحد",
+      "two": "مسلسلان",
+      "few": "{{count}} مسلسلات",
+      "many": "{{count}} مسلسلاً",
+      "other": "{{count}} مسلسل"
+    },
+    "movies": {
+      "zero": "لا أفلام",
+      "one": "فيلم واحد",
+      "two": "فيلمان",
+      "few": "{{count}} أفلام",
+      "many": "{{count}} فيلماً",
+      "other": "{{count}} فيلم"
+    },
+    "groupProfile": "صفحتك",
+    "groupShelves": "الرفوف",
+    "groupStats": "الإحصاءات",
+    "groupActivity": "النشاط",
+    "groupPhotos": "صور ونصوص"
   }
 }
