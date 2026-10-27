@@ -151,8 +151,15 @@ export function setPuzzleStreakOnProfile(on: boolean): void {
 }
 
 /** Same default and same parsing as the episode reminders' hour. */
+/**
+ * 09:00 unless the user picked an hour (27 Oct). The 2.0.3 reminders are a
+ * morning "today's puzzle is ready" plus a 22:00 last call; the episode
+ * reminders' 20:00 default put the two two hours apart, which reads as nagging.
+ */
+export const PUZZLE_DEFAULT_HOUR = 9;
 export function puzzleReminderHour(): number {
-  return reminderHourOf(getMeta(K.remindHour));
+  const raw = getMeta(K.remindHour);
+  return raw ? reminderHourOf(raw) : PUZZLE_DEFAULT_HOUR;
 }
 export function setPuzzleReminderHour(hour: number): void {
   setMeta(K.remindHour, String(reminderHourOf(String(hour))));

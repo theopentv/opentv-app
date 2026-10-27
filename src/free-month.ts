@@ -36,6 +36,19 @@ export function markFreeMonthPending(): void {
   setMeta(PENDING_KEY, '1');
 }
 
+/**
+ * ACCOUNTS THAT EXISTED BEFORE 2.0.3 GET THE MONTH TOO (Mahmood, 27 Oct):
+ * the claim otherwise follows a sign-in, so people who had already joined,
+ * the ones who trusted the app first, were the only ones left out. Once per
+ * phone; the server still decides (once per person, never for a payer).
+ */
+const EXISTING_KEY = 'freeMonthExistingOffered';
+export function offerFreeMonthToExistingAccountOnce(): void {
+  if (getMeta(EXISTING_KEY) === '1') return;
+  setMeta(EXISTING_KEY, '1');
+  markFreeMonthPending();
+}
+
 export function freeMonthPending(): boolean {
   return getMeta(PENDING_KEY) === '1';
 }

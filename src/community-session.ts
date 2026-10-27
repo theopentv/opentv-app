@@ -584,6 +584,7 @@ export async function refreshSession(): Promise<void> {
     // After the session is renewed and Plus read, so the claim uses both.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fm = require('@/free-month') as typeof import('@/free-month');
+    fm.offerFreeMonthToExistingAccountOnce();
     if (fm.freeMonthPending()) void fm.claimFreeMonth();
   } catch (e) {
     // 401 already signed out through the handler; `not_found` means the same
