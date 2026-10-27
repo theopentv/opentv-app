@@ -233,6 +233,15 @@ export default function StatsScreen() {
                 <View key="total">
                   <Text style={styles.bigNum}>{formatCount(s.totals.episodes, currentLocale())}</Text>
                   <Text style={styles.sub}>{t('stats.countLast7Days', { count: s.last7dEpisodes })}</Text>
+                  {/* REWATCHES BESIDE THE TOTAL, NOT IN IT. The big number stays
+                      distinct episodes, as TV Time counts and as every other
+                      screen and the published profile read it; a rewatch is a
+                      second viewing, said here only when there is one. */}
+                  {s.totals.rewatches > 0 && (
+                    <Text style={styles.sub}>
+                      {t('rewatchTotal.including', { n: formatCount(s.totals.episodes + s.totals.rewatches, currentLocale()) })}
+                    </Text>
+                  )}
                 </View>,
                 <Bars key="chart" values={s.weekly} labels={s.weekLabels} axis={t('stats.axis.perWeek')} />,
               ]}

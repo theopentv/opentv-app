@@ -3825,5 +3825,8 @@
     "title": "La tua cronologia",
     "firstDay": "Prima partita il {{date}}",
     "locked": "I titoli di più di una settimana fa fanno parte di Plus."
+  },
+  "rewatchTotal": {
+    "including": "Riviste incluse: {{n}}"
   }
 }

@@ -3825,5 +3825,8 @@
     "title": "Dein Verlauf",
     "firstDay": "Zuerst gespielt am {{date}}",
     "locked": "Titel, die älter als eine Woche sind, gehören zu Plus."
+  },
+  "rewatchTotal": {
+    "including": "Mit erneut gesehenen: {{n}}"
   }
 }

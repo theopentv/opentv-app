@@ -3825,5 +3825,8 @@
     "title": "Seu histórico",
     "firstDay": "Primeiro jogo em {{date}}",
     "locked": "Títulos de mais de uma semana atrás fazem parte do Plus."
+  },
+  "rewatchTotal": {
+    "including": "Incluindo reassistidos: {{n}}"
   }
 }

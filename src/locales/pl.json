@@ -4125,5 +4125,8 @@
     "title": "Twoja historia",
     "firstDay": "Pierwsza gra: {{date}}",
     "locked": "Tytuły sprzed ponad tygodnia są w Plus."
+  },
+  "rewatchTotal": {
+    "including": "Z powtórkami: {{n}}"
   }
 }

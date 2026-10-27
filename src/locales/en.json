@@ -3825,5 +3825,8 @@
     "title": "Your history",
     "firstDay": "First played {{date}}",
     "locked": "Titles from more than a week ago are part of Plus."
+  },
+  "rewatchTotal": {
+    "including": "Including rewatches: {{n}}"
   }
 }

@@ -3825,5 +3825,8 @@
     "title": "Geçmişin",
     "firstDay": "İlk oyun: {{date}}",
     "locked": "Bir haftadan eski başlıklar Plus'a dahil."
+  },
+  "rewatchTotal": {
+    "including": "Tekrar izlenenler dahil: {{n}}"
   }
 }

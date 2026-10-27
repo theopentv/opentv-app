@@ -3825,5 +3825,8 @@
     "title": "Tu historial",
     "firstDay": "Primera partida el {{date}}",
     "locked": "Los títulos de hace más de una semana son parte de Plus."
+  },
+  "rewatchTotal": {
+    "including": "Con revisionados: {{n}}"
   }
 }

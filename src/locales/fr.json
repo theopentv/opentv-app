@@ -3825,5 +3825,8 @@
     "title": "Votre historique",
     "firstDay": "Première partie le {{date}}",
     "locked": "Les titres de plus d'une semaine font partie de Plus."
+  },
+  "rewatchTotal": {
+    "including": "Revisionnages inclus : {{n}}"
   }
 }

@@ -3704,10 +3704,11 @@ export function getHistory(): HistoryRow[] {
 }
 
 /** Totals for stats: episodes watched, shows tracked, minutes where known. */
-export function getTotals(): { episodes: number; shows: number; minutes: number } {
-  const row = db.getFirstSync<{ episodes: number; shows: number; seconds: number }>(
+export function getTotals(): { episodes: number; shows: number; minutes: number; rewatches: number } {
+  const row = db.getFirstSync<{ episodes: number; shows: number; seconds: number; rewatches: number }>(
     `SELECT
        (SELECT COUNT(*) FROM (SELECT DISTINCT showId, season, episode FROM watches)) AS episodes,
+       (SELECT COUNT(*) FROM watches WHERE rewatch = 1) AS rewatches,
        (SELECT COUNT(*) FROM shows) AS shows,
        (SELECT COALESCE(SUM(runtime), 0) FROM watches WHERE runtime > 0) AS seconds`,
   );
@@ -3753,6 +3754,9 @@ export function getTotals(): { episodes: number; shows: number; minutes: number 
     episodes: row?.episodes ?? 0,
     shows: row?.shows ?? 0,
     minutes: Math.round((row?.seconds ?? 0) / 60) + fillMinutes,
+    // Every "+1 rewatch" row, so Stats can say "including rewatches" beside the
+    // distinct total without changing what that total means (u/azz922, 26 Oct).
+    rewatches: row?.rewatches ?? 0,
   };
 }
 
