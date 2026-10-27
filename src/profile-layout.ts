@@ -122,6 +122,11 @@ export const WIDGETS: Record<string, WidgetSpec> = {
   together: { spans: ['2x1', '2x2'], span: '2x1', sized: true, single: true },
   topRated: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
   nowWatching: { spans: ['2x1', '2x2'], span: '2x2', sized: true, counts: [1, 2, 3, 4] },
+  /** Everything I watch (2.0.3): totals and the latest posters, opening the
+   *  page that lists shows, anime and films together. Private because that
+   *  page is this phone's library — the server holds no full copy to show a
+   *  visitor, only the capped shelves. */
+  everything: { spans: ['2x1', '2x2'], span: '2x1', sized: true, private: true },
   /**
    * A POSTER FROM YOUR OWN LIBRARY — the only widget that is not a fact.
    *
@@ -275,6 +280,7 @@ const CATALOGUE = (shelfKeys: readonly string[]): string[] => [
   'together',
   'topRated',
   'nowWatching',
+  'everything',
   'artwork',
   'gif',
   'links',
@@ -491,6 +497,7 @@ export const WIDGET_NAME: Record<string, string> = {
   together: 'together.title',
   topRated: 'profile.widgetTopRated',
   nowWatching: 'profile.widgetNowWatching',
+  everything: 'everything.title',
   artwork: 'profile.widgetPhoto',
   gif: 'profile.widgetGif',
   links: 'profile.widgetLinks',

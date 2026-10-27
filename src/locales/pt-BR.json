@@ -3825,5 +3825,26 @@
     "title": "Seu histórico",
     "firstDay": "Primeiro jogo em {{date}}",
     "locked": "Títulos de mais de uma semana atrás fazem parte do Plus."
+  },
+  "everything": {
+    "title": "Tudo o que eu assisto",
+    "searchPlaceholder": "Buscar séries e filmes",
+    "chipAll": "Tudo",
+    "chipAnime": "Animes",
+    "noMatches": "Nada corresponde a “{{query}}”.",
+    "empty": "Nada aqui ainda.",
+    "shows": {
+      "one": "{{count}} série",
+      "other": "{{count}} séries"
+    },
+    "movies": {
+      "one": "{{count}} filme",
+      "other": "{{count}} filmes"
+    },
+    "groupProfile": "Sua página",
+    "groupShelves": "Prateleiras",
+    "groupStats": "Estatísticas",
+    "groupActivity": "Atividade",
+    "groupPhotos": "Fotos e texto"
   }
 }

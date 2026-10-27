@@ -3825,5 +3825,26 @@
     "title": "Dein Verlauf",
     "firstDay": "Zuerst gespielt am {{date}}",
     "locked": "Titel, die älter als eine Woche sind, gehören zu Plus."
+  },
+  "everything": {
+    "title": "Alles, was ich schaue",
+    "searchPlaceholder": "Serien und Filme durchsuchen",
+    "chipAll": "Alle",
+    "chipAnime": "Anime",
+    "noMatches": "Nichts passt zu „{{query}}“.",
+    "empty": "Hier ist noch nichts.",
+    "shows": {
+      "one": "{{count}} Serie",
+      "other": "{{count}} Serien"
+    },
+    "movies": {
+      "one": "{{count}} Film",
+      "other": "{{count}} Filme"
+    },
+    "groupProfile": "Deine Seite",
+    "groupShelves": "Regale",
+    "groupStats": "Statistiken",
+    "groupActivity": "Aktivität",
+    "groupPhotos": "Fotos und Text"
   }
 }

@@ -3825,5 +3825,26 @@
     "title": "Geçmişin",
     "firstDay": "İlk oyun: {{date}}",
     "locked": "Bir haftadan eski başlıklar Plus'a dahil."
+  },
+  "everything": {
+    "title": "İzlediğim her şey",
+    "searchPlaceholder": "Dizi ve film ara",
+    "chipAll": "Tümü",
+    "chipAnime": "Anime",
+    "noMatches": "“{{query}}” ile eşleşen bir şey yok.",
+    "empty": "Burada henüz bir şey yok.",
+    "shows": {
+      "one": "{{count}} dizi",
+      "other": "{{count}} dizi"
+    },
+    "movies": {
+      "one": "{{count}} film",
+      "other": "{{count}} film"
+    },
+    "groupProfile": "Sayfan",
+    "groupShelves": "Raflar",
+    "groupStats": "İstatistikler",
+    "groupActivity": "Etkinlik",
+    "groupPhotos": "Fotoğraf ve metin"
   }
 }

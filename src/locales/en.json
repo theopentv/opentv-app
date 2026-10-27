@@ -3825,5 +3825,26 @@
     "title": "Your history",
     "firstDay": "First played {{date}}",
     "locked": "Titles from more than a week ago are part of Plus."
+  },
+  "everything": {
+    "title": "Everything I watch",
+    "searchPlaceholder": "Search shows and movies",
+    "chipAll": "All",
+    "chipAnime": "Anime",
+    "noMatches": "Nothing matches “{{query}}”.",
+    "empty": "Nothing here yet.",
+    "shows": {
+      "one": "{{count}} show",
+      "other": "{{count}} shows"
+    },
+    "movies": {
+      "one": "{{count}} movie",
+      "other": "{{count}} movies"
+    },
+    "groupProfile": "Your page",
+    "groupShelves": "Shelves",
+    "groupStats": "Stats",
+    "groupActivity": "Activity",
+    "groupPhotos": "Photos & text"
   }
 }

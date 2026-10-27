@@ -3825,5 +3825,26 @@
     "title": "La tua cronologia",
     "firstDay": "Prima partita il {{date}}",
     "locked": "I titoli di più di una settimana fa fanno parte di Plus."
+  },
+  "everything": {
+    "title": "Tutto ciò che guardo",
+    "searchPlaceholder": "Cerca serie e film",
+    "chipAll": "Tutti",
+    "chipAnime": "Anime",
+    "noMatches": "Nessun risultato per “{{query}}”.",
+    "empty": "Ancora niente qui.",
+    "shows": {
+      "one": "{{count}} serie",
+      "other": "{{count}} serie"
+    },
+    "movies": {
+      "one": "{{count}} film",
+      "other": "{{count}} film"
+    },
+    "groupProfile": "La tua pagina",
+    "groupShelves": "Scaffali",
+    "groupStats": "Statistiche",
+    "groupActivity": "Attività",
+    "groupPhotos": "Foto e testo"
   }
 }
