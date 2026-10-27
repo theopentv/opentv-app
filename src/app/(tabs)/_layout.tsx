@@ -11,11 +11,26 @@ import { runAfterInteractions } from '@/after-interactions';
 import { offerBackupIfDue } from '@/backup-prompt';
 import { classicTabBarOn } from '@/classic-tab-bar';
 import { offerCommunityIfDue } from '@/community-prompt';
+import { getMeta } from '@/db';
 import { tapSelection } from '@/haptics';
 import { isNotifyScreenOwed } from '@/session-store';
 import { remountOnLocale, t, useLocale } from '@/i18n';
 import { colors } from '@/theme';
 import { WhatsNew } from '@/whats-new';
+
+/*
+ * THE OPENING TAB WAS IGNORED (27 Oct): native tabs never render a hidden
+ * trigger, so `index`'s redirect never ran and every launch landed on the first
+ * visible tab, Shows. The router falls back to this anchor instead — a getter,
+ * so it reads the Settings choice at launch rather than at import.
+ */
+const TAB_NAMES = ['profile', 'shows', 'movies', 'explore'];
+export const unstable_settings = {
+  get anchor() {
+    const pref = getMeta('startTab');
+    return pref && TAB_NAMES.includes(pref) ? pref : 'profile';
+  },
+};
 
 /** TV Time's tab icons are about a third larger than the library's 24. */
 const TAB_ICON = 30;
