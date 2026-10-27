@@ -3825,5 +3825,13 @@
     "title": "La tua cronologia",
     "firstDay": "Prima partita il {{date}}",
     "locked": "I titoli di più di una settimana fa fanno parte di Plus."
+  },
+  "puzzleReminders": {
+    "readyTitle": "Il puzzle di oggi è pronto",
+    "readyBody": "Un nuovo titolo da indovinare, sei tentativi.",
+    "lastChanceTitle": "Ultima occasione per il puzzle di oggi",
+    "lastChanceBody": "Finisce a mezzanotte e non hai ancora giocato.",
+    "sub": "Ogni giorno a quest'ora, e un ultimo promemoria alle {{last}} se non hai ancora giocato.",
+    "offerBody": "Una notifica ogni giorno alle {{time}}, e un ultimo promemoria alle {{last}} se non hai ancora giocato."
   }
 }

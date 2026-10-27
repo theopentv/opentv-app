@@ -23,6 +23,7 @@ import { ContentColumn, MenuRow, NavHeader, Screen } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { setPuzzleReminder } from '@/notifications';
+import { PUZZLE_LAST_CHANCE_HOUR } from '@/puzzle';
 import { markPuzzleReminderOffered, setPuzzleStreakOnProfile } from '@/puzzle-data';
 import { colors, ls, radius, space } from '@/theme';
 
@@ -78,7 +79,7 @@ export default function PuzzleIntroScreen() {
             <MenuRow
               trackId="puzzle.intro.remind"
               title={t('puzzleIntro.remind')}
-              sub={t('puzzlePolish.remindSub')}
+              sub={t('puzzleReminders.sub', { last: `${PUZZLE_LAST_CHANCE_HOUR}:00` })}
               right={<Switch value={remind} onValueChange={setRemind} trackColor={{ true: colors.green }} />}
             />
           </View>

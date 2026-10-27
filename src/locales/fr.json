@@ -3825,5 +3825,13 @@
     "title": "Votre historique",
     "firstDay": "Première partie le {{date}}",
     "locked": "Les titres de plus d'une semaine font partie de Plus."
+  },
+  "puzzleReminders": {
+    "readyTitle": "Le puzzle du jour est prêt",
+    "readyBody": "Un nouveau titre à deviner, six essais.",
+    "lastChanceTitle": "Dernière chance pour le puzzle du jour",
+    "lastChanceBody": "Il se termine à minuit, et vous n'avez pas encore joué.",
+    "sub": "Chaque jour à cette heure, et un dernier rappel à {{last}} si vous n'avez pas encore joué.",
+    "offerBody": "Une notification chaque jour à {{time}}, et un dernier rappel à {{last}} si vous n'avez pas encore joué."
   }
 }

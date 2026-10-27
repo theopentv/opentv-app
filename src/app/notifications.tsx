@@ -34,6 +34,7 @@ import {
 import { MenuRow, NavHeader, PlusChip, Screen } from '@/components/ui';
 import { t } from '@/i18n';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
+import { PUZZLE_LAST_CHANCE_HOUR } from '@/puzzle';
 import { puzzleOn, puzzleReminderHour, puzzleReminderOn } from '@/puzzle-data';
 import { colors, space } from '@/theme';
 
@@ -208,7 +209,7 @@ export default function NotificationsScreen() {
         {puzzleOn() && (
           <MenuRow trackId="puzzle.settings.remind"
             title={t('puzzle.settings.title')}
-            sub={t('puzzlePolish.offerBody', { time: `${String(puzzleReminderHour()).padStart(2, '0')}:00` })}
+            sub={t('puzzleReminders.offerBody', { time: `${String(puzzleReminderHour()).padStart(2, '0')}:00`, last: `${PUZZLE_LAST_CHANCE_HOUR}:00` })}
             right={
               <Switch
                 value={puzzle}
