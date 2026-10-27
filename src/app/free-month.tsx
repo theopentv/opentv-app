@@ -1,6 +1,7 @@
 /**
  * "A month of Plus is yours" (2.0.3) — opened once, by `claimFreeMonth`, the
- * moment the server grants the month.
+ * moment the server grants the month, or by `freeMonthAfterRefresh` the first
+ * time this phone sees a month the dashboard gave.
  *
  * AND THE ONE SIGN-UP QUESTION: "Where did you hear about OpenTV?". Here
  * because a granted month is the first sign-in of an account, which is what
