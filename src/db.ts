@@ -2584,6 +2584,23 @@ export function getShowBrief(tvdbId: number): { name: string; poster: string | n
   return r ? { name: r.name, poster: r.posterUrl, addedAt: r.addedAt } : null;
 }
 
+/**
+ * A film's name in the app's language — see `displayTitle`. The locale is
+ * required lazily because `i18n.ts` imports this file; by the time any screen
+ * reads a film, both are loaded. English if that ever fails, which is what
+ * every film showed before 2.0.3.
+ */
+function filmTitle(name: string, altTitles: string | null): string {
+  let locale = 'en';
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    locale = (require('@/i18n') as typeof import('@/i18n')).currentLocale();
+  } catch {
+    // tests and early startup: English
+  }
+  return displayTitle(name, altTitles, locale);
+}
+
 /** Favorite movies from the library itself, in TV Time order. */
 export function getFavoriteMovies(): { name: string; poster: string | null; title: string }[] {
   // `title` alongside `name`, not instead of it: `name` is the key every other
@@ -2594,7 +2611,7 @@ export function getFavoriteMovies(): { name: string; poster: string | null; titl
     .getAllSync<{ name: string; poster: string | null; altTitles: string | null }>(
       'SELECT name, poster, altTitles FROM movies WHERE favorited = 1 ORDER BY (favoriteRank IS NULL), favoriteRank, name',
     )
-    .map((r) => ({ name: r.name, poster: r.poster, title: displayTitle(r.name, r.altTitles) }));
+    .map((r) => ({ name: r.name, poster: r.poster, title: filmTitle(r.name, r.altTitles) }));
 }
 
 /**
@@ -2631,7 +2648,7 @@ export function getRecentMovies(): { name: string; poster: string | null; title:
          FROM movies WHERE watchedAt IS NOT NULL
         ORDER BY watchedAt DESC LIMIT 40`,
     )
-    .map((r) => ({ name: r.name, poster: r.poster, title: displayTitle(r.name, r.altTitles), watchedOn: r.watchedOn }));
+    .map((r) => ({ name: r.name, poster: r.poster, title: filmTitle(r.name, r.altTitles), watchedOn: r.watchedOn }));
 }
 
 /**
@@ -2872,7 +2889,7 @@ export function setMovieFavorite(name: string, favorited: boolean): void {
  * one decision.
  */
 function withTitle(row: MovieRow): MovieRow {
-  return { ...row, title: displayTitle(row.name, row.altTitles) };
+  return { ...row, title: filmTitle(row.name, row.altTitles) };
 }
 
 /** All movies, most recently watched first, unwatched last. */

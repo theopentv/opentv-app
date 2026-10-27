@@ -7908,7 +7908,16 @@ export function ratingBand(value: number, max = 5): number {
  * name is which is knowable at fetch time, so it is recorded rather than
  * inferred later.
  */
-export type AltTitles = { en?: string; orig?: string; loc?: string };
+export type AltTitles = {
+  en?: string;
+  orig?: string;
+  loc?: string;
+  /** The language `loc` was asked for in (2.0.3). Rows fetched before it was
+   *  recorded do not have it, and their `loc` is never displayed. */
+  lang?: string;
+  /** The film's original language, TMDB's `original_language` (2.0.3). */
+  ol?: string;
+};
 
 /**
  * Read a stored value, tolerating the older array shape that shipped first.
@@ -7933,33 +7942,39 @@ export function parseAltTitles(raw: string | null | undefined): AltTitles {
 }
 
 /**
- * WHICH OF THE NAMES TO SHOW: English, then whatever is stored.
+ * WHICH OF THE NAMES TO SHOW: the reader's language, then English, then
+ * whatever is stored.
  *
  * `name` is the key — the row's primary key and the route parameter — so it is
  * whatever the import or the first match happened to write, which for a film
  * whose TV Time entry carried the original title is the original title. That
  * is how a library ends up listing `\u5929\u4f7f\u306e\u305f\u307e\u3054` and `La Tortue rouge` to a
- * reader who has never read either script, and 1.6.3 only half fixed it: those
- * films became FINDABLE under their other names, through `altTitles` in search
- * and in Siri, and went on being unreadable on the screen that shows them.
+ * reader who has never read either script.
  *
- * ENGLISH, NOT THE READER'S LANGUAGE, and that is deliberate. The obvious
- * design is to follow the UI language, and it is wrong here for one reason:
- * A LIBRARY IMPORTED FROM TV TIME IS ALREADY IN ENGLISH. TMDB has a localised
- * title for some films and not others, so following the reader's language
- * would translate part of somebody's library and leave the rest, and half a
- * shelf in each language is worse than a whole shelf in one. TV Time was
- * English throughout, which is what these libraries were built in.
+ * THE READER'S LANGUAGE FIRST (27 Oct 2026, Mahmood). This used to be English
+ * only, on the argument that a TV Time library is English throughout and a
+ * shelf half-translated is worse than one in one language. It was overruled:
+ * an Arabic reader should see the Arabic name when one exists. Two guards keep
+ * the localised name honest:
  *
- * The localised name is still STORED and still searched — somebody who knows a
- * film only by its Arabic name finds it — it simply is not what the row says.
+ *   - it is used only when it was fetched IN the reader's language (`lang`).
+ *     Somebody who switches the app to English must not keep seeing names in
+ *     the language they left, and rows fetched before `lang` was recorded say
+ *     nothing about theirs, so they fall through to English.
+ *   - TMDB answers a film with no translation by handing back its ORIGINAL
+ *     title. A `loc` equal to `orig` is therefore no translation at all —
+ *     unless the film really was made in the reader's language (`ol`).
  *
  * DISPLAY ONLY. Nothing here renames a row: `name` is the key that `getMovie`,
- * the route and every list selection use, and rewriting it to suit a setting
- * would break every one of them the moment somebody changed it.
+ * the route, comments, sync and every list selection use, and rewriting it to
+ * suit a setting would break every one of them the moment somebody changed it.
  */
-export function displayTitle(name: string, raw: string | null | undefined): string {
-  return parseAltTitles(raw).en || name;
+export function displayTitle(name: string, raw: string | null | undefined, locale = 'en'): string {
+  const t = parseAltTitles(raw);
+  const reader = locale.slice(0, 2).toLowerCase();
+  const inReaders = (tag: string | undefined): boolean => !!tag && tag.slice(0, 2).toLowerCase() === reader;
+  if (t.loc && inReaders(t.lang) && (t.loc !== t.orig || inReaders(t.ol))) return t.loc;
+  return t.en || name;
 }
 
 /**

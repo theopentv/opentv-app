@@ -14,10 +14,10 @@ import { useJoined } from '@/community-session';
 import { tapLight } from '@/haptics';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
 import { avatarUri } from '@/community-comments';
-import { movieRoute, movieYear, type SearchHistoryEntry } from '@/pure';
+import { displayTitle, movieRoute, movieYear, type SearchHistoryEntry } from '@/pure';
 import { colors, space, ls } from '@/theme';
 import { a11yAction } from '@/a11y';
-import { t } from '@/i18n';
+import { currentLocale, t } from '@/i18n';
 import { oneAtATime } from '@/one-at-a-time';
 
 const TABS = ['Shows & Movies', 'Users', 'Groups'] as const;
@@ -44,6 +44,9 @@ type Result = {
   tmdbId: number | null;
   tvdbId: number | null; // known for library shows; resolved on add for TMDB ones
   inLibrary: boolean;
+  /** What the row SAYS, for a library film: its name in the reader's language
+   *  (`displayTitle`). `name` stays the key every action below uses. */
+  title?: string;
 };
 
 // library matches first, then live TMDB results for everything else
@@ -80,14 +83,15 @@ function searchLibrary(q: string): Result[] {
    * person would type.
    */
   const movies = db
-    .getAllSync<{ name: string; poster: string | null; year: string | null; tmdbId: number | null }>(
-      'SELECT name, poster, year, tmdbId FROM movies WHERE name LIKE ? OR altTitles LIKE ? LIMIT 10',
+    .getAllSync<{ name: string; poster: string | null; year: string | null; tmdbId: number | null; altTitles: string | null }>(
+      'SELECT name, poster, year, tmdbId, altTitles FROM movies WHERE name LIKE ? OR altTitles LIKE ? LIMIT 10',
       [like, like],
     )
     .map((m) => ({
       key: `lib-m-${m.name}`,
       kind: 'movie' as const,
       name: m.name,
+      title: displayTitle(m.name, m.altTitles, currentLocale()),
       poster: m.poster,
       year: m.year,
       tmdbId: m.tmdbId,
@@ -486,7 +490,7 @@ export default function SearchScreen() {
                 onPress={() => open(item)}
                 accessibilityRole="button"
                 accessibilityLabel={[
-                  item.name,
+                  item.title ?? item.name,
                   `${item.kind === 'show' ? t('search.kindSeries') : t('search.kindMovie')}${item.year ? ` · ${item.year}` : ''}`,
                   inLib ? t('a11y.inLibrary') : null,
                 ]
@@ -505,7 +509,7 @@ export default function SearchScreen() {
                 )}
                 <View style={{ flex: 1 }}>
                   <Text style={styles.name} numberOfLines={1}>
-                    {item.name}
+                    {item.title ?? item.name}
                   </Text>
                   <Text style={styles.sub}>
                     {item.kind === 'show' ? t('search.kindSeries') : t('search.kindMovie')}
