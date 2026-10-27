@@ -3867,5 +3867,30 @@
     "groupStats": "Statistiken",
     "groupActivity": "Aktivität",
     "groupPhotos": "Fotos und Text"
+  },
+  "freeMonth": {
+    "cardTitle": "Anmelden und einen Monat Plus geschenkt bekommen",
+    "cardBody": "Melde dich mit Apple, Google oder E-Mail an, und alle Plus-Funktionen gehören 30 Tage lang dir, Cloud-Backup inklusive.",
+    "cardNoRenew": "Keine Zahlung und kein Probeabo zum Kündigen: Nichts verlängert sich, der Monat endet einfach. Ein Konto bleibt freiwillig, und OpenTV funktioniert auch ohne vollständig.",
+    "cardCta": "Anmelden",
+    "cardNo": "Nein danke",
+    "grantedTitle": "Ein Monat Plus gehört dir",
+    "grantedUntil": "Alle Plus-Funktionen sind bis zum {{date}} an. Keine Zahlung, und nichts verlängert sich: Er endet einfach.",
+    "grantedNoDate": "Alle Plus-Funktionen sind 30 Tage lang an. Keine Zahlung, und nichts verlängert sich: Er endet einfach.",
+    "heardTitle": "Wo hast du von OpenTV gehört?",
+    "heardOptional": "Freiwillig. So wissen wir, was funktioniert.",
+    "heard": {
+      "reddit": "Reddit",
+      "store": "Suche im App Store oder bei Play",
+      "friend": "Von Freunden",
+      "creator": "Von einem Creator",
+      "other": "Anderes"
+    },
+    "done": "Fertig",
+    "reminderTitle": "Dein Gratismonat endet in 5 Tagen",
+    "reminderBody": "Behalte Plus mit dem Jahresabo, dem günstigsten Preis pro Monat. Oder tu nichts: OpenTV bleibt kostenlos.",
+    "paywallTitle": "Du hast Plus, geschenkt",
+    "paywallUntil": "Bis zum {{date}}. Nichts verlängert sich von selbst: Um Plus danach zu behalten, wähle unten ein Abo.",
+    "paywallNoDate": "Nichts verlängert sich von selbst: Um Plus danach zu behalten, wähle unten ein Abo."
   }
 }

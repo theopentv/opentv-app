@@ -205,6 +205,10 @@ export async function signIn(token: string, profileId: string, handle: string): 
   // reached the app through `refreshSession`, which runs at startup, so an
   // account signed in on a new device — a Mac, 1 Oct — sat without its Plus,
   // and without sync, until the app happened to be quit and reopened.
+  // THE FREE MONTH (2.0.3) is asked for by that same refresh: marked here, so
+  // every door to an account counts and a claim that fails is retried.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  (require('@/free-month') as typeof import('@/free-month')).markFreeMonthPending();
   void refreshSession().catch(() => {});
   // And tell RevenueCat who this is NOW, so a purchase made before the next
   // launch is booked to this profile rather than to an anonymous id (3 Oct).
@@ -577,6 +581,10 @@ export async function refreshSession(): Promise<void> {
     // changed elsewhere reaches this phone here and nowhere else.
     if (me.email) rememberAccount(me.email, null);
     notify();
+    // After the session is renewed and Plus read, so the claim uses both.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fm = require('@/free-month') as typeof import('@/free-month');
+    if (fm.freeMonthPending()) void fm.claimFreeMonth();
   } catch (e) {
     // 401 already signed out through the handler; `not_found` means the same
     // thing from an older server. Everything else is left alone.

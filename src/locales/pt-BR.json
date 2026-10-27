@@ -3867,5 +3867,30 @@
     "groupStats": "Estatísticas",
     "groupActivity": "Atividade",
     "groupPhotos": "Fotos e texto"
+  },
+  "freeMonth": {
+    "cardTitle": "Entre e ganhe um mês de Plus grátis",
+    "cardBody": "Entre com Apple, Google ou e-mail e todos os recursos do Plus são seus por 30 dias, backup na nuvem incluído.",
+    "cardNoRenew": "Sem pagamento e sem teste para cancelar: nada é renovado, o mês simplesmente acaba. A conta continua opcional, e o OpenTV funciona por completo sem ela.",
+    "cardCta": "Entrar",
+    "cardNo": "Não, obrigado",
+    "grantedTitle": "Um mês de Plus é seu",
+    "grantedUntil": "Todos os recursos do Plus estão ativos até {{date}}. Sem pagamento, e nada é renovado: simplesmente acaba.",
+    "grantedNoDate": "Todos os recursos do Plus estão ativos por 30 dias. Sem pagamento, e nada é renovado: simplesmente acaba.",
+    "heardTitle": "Onde você ouviu falar do OpenTV?",
+    "heardOptional": "Opcional. Isso nos mostra o que funciona.",
+    "heard": {
+      "reddit": "Reddit",
+      "store": "Busca na App Store ou Play",
+      "friend": "Um amigo",
+      "creator": "Um criador",
+      "other": "Outro"
+    },
+    "done": "Pronto",
+    "reminderTitle": "Seu mês grátis acaba em 5 dias",
+    "reminderBody": "Fique com o Plus no plano anual, o menor preço por mês. Ou não faça nada: o OpenTV continua grátis.",
+    "paywallTitle": "Você tem Plus, grátis",
+    "paywallUntil": "Até {{date}}. Nada é renovado sozinho: para manter o Plus depois, escolha um plano abaixo.",
+    "paywallNoDate": "Nada é renovado sozinho: para manter o Plus depois, escolha um plano abaixo."
   }
 }

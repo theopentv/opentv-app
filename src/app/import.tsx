@@ -16,6 +16,7 @@ import { PopcornGame } from '@/components/popcorn-game';
 import type { ImportResult, Progress } from '@/importer';
 import { libraryRestored } from '@/community-publish';
 import { leaveOnboarding } from '@/session-store';
+import { FreeMonthCard } from '@/components/free-month-card';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -344,6 +345,11 @@ function Summary({ result, onDone }: { result: ImportResult; onDone: () => void 
           <Text style={styles.ownNote}>{t('import.summary.yourPrivateNote')}</Text>
         </View>
       )}
+
+      {/* THE FREE MONTH (2.0.3): their library has just landed, the moment an
+          account that keeps it safe makes most sense. Hides itself once
+          answered, or once they are signed in. */}
+      <FreeMonthCard from="import" />
 
       <Pressable accessibilityRole="button" style={styles.cta} onPress={onDone}>
         <Text style={styles.ctaText}>{t('import.summary.letsGo')}</Text>

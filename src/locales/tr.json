@@ -3867,5 +3867,30 @@
     "groupStats": "İstatistikler",
     "groupActivity": "Etkinlik",
     "groupPhotos": "Fotoğraf ve metin"
+  },
+  "freeMonth": {
+    "cardTitle": "Giriş yap, bir ay Plus ücretsiz",
+    "cardBody": "Apple, Google veya e-posta ile giriş yap; bulut yedekleme dahil tüm Plus özellikleri 30 gün boyunca senin.",
+    "cardNoRenew": "Ödeme yok, iptal edilecek deneme yok: hiçbir şey yenilenmez, ay sadece biter. Hesap isteğe bağlı kalır ve OpenTV hesapsız da tamamen çalışır.",
+    "cardCta": "Giriş yap",
+    "cardNo": "Hayır, teşekkürler",
+    "grantedTitle": "Bir ay Plus senin",
+    "grantedUntil": "Tüm Plus özellikleri {{date}} tarihine kadar açık. Ödeme yok ve hiçbir şey yenilenmez: sadece biter.",
+    "grantedNoDate": "Tüm Plus özellikleri 30 gün boyunca açık. Ödeme yok ve hiçbir şey yenilenmez: sadece biter.",
+    "heardTitle": "OpenTV'yi nereden duydun?",
+    "heardOptional": "İsteğe bağlı. Neyin işe yaradığını bize söyler.",
+    "heard": {
+      "reddit": "Reddit",
+      "store": "App Store veya Play araması",
+      "friend": "Bir arkadaş",
+      "creator": "Bir içerik üreticisi",
+      "other": "Diğer"
+    },
+    "done": "Tamam",
+    "reminderTitle": "Ücretsiz ayın 5 gün sonra bitiyor",
+    "reminderBody": "Plus'ı yıllık planla koru, aylık en düşük fiyat. Ya da hiçbir şey yapma: OpenTV ücretsiz kalır.",
+    "paywallTitle": "Plus'ın var, ücretsiz",
+    "paywallUntil": "{{date}} tarihine kadar. Hiçbir şey kendiliğinden yenilenmez: sonrasında Plus'ı korumak için aşağıdan bir plan seç.",
+    "paywallNoDate": "Hiçbir şey kendiliğinden yenilenmez: sonrasında Plus'ı korumak için aşağıdan bir plan seç."
   }
 }

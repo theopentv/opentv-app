@@ -32,7 +32,9 @@ import { tapLight } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { formatCount, intlTag } from '@/locale-resolve';
 import { formatCountdown, offerSecondsLeft, planOffer, type ShownOffer } from '@/offers';
-import { FREE_PUBLISHED_FAVOURITES, FREE_PUBLISHED_LISTS, setPlusEntitled, usePlus } from '@/plus';
+import { FREE_PUBLISHED_FAVOURITES, FREE_PUBLISHED_LISTS, onlyGrantedPlus, setPlusEntitled, usePlus } from '@/plus';
+import { getMeta } from '@/db';
+import { FREE_MONTH_UNTIL_KEY } from '@/free-month';
 import {
   annualSaving,
   appleExtras,
@@ -146,6 +148,15 @@ export default function PaywallScreen() {
   // Re-read on focus: sign-in is a push away, and coming back should drop the card.
   const [signedIn, setSignedIn] = useState(() => getProfileId() != null);
   useFocusEffect(useCallback(() => setSignedIn(getProfileId() != null), []));
+  /*
+   * PLUS THAT NOBODY PAID FOR (2.0.3): the free month, or a gift. "Thank you,
+   * you're paying for the servers" was the wrong sentence, and the plans were
+   * hidden from exactly the person the day-25 reminder sends here to keep
+   * Plus. State, re-read on focus and after a purchase or restore (which turns
+   * a grant into a subscription without `plus` changing), never in render.
+   */
+  const [granted, setGranted] = useState(onlyGrantedPlus);
+  useFocusEffect(useCallback(() => setGranted(onlyGrantedPlus()), []));
   const { from } = useLocalSearchParams<{ from?: string }>();
   const [plans, setPlans] = useState<Plans | null>(null);
   const [selected, setSelected] = useState<'annual' | 'monthly' | 'special'>('annual');
@@ -154,6 +165,10 @@ export default function PaywallScreen() {
   const [extras, setExtras] = useState<{ annual: AppleExtras; monthly: AppleExtras } | null>(null);
   const [personal, setPersonal] = useState<PersonalOffer | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const grantedUntil = (() => {
+    const v = granted ? getMeta(FREE_MONTH_UNTIL_KEY) : null;
+    return v && Date.parse(v) > now ? v : null;
+  })();
   /*
    * WHAT A SUBSCRIBER IS ACTUALLY PAYING FOR, and when it happens again.
    *
@@ -282,6 +297,7 @@ export default function PaywallScreen() {
       personal: plan === 'special' ? personal : null,
     });
     setBusy(false);
+    setGranted(onlyGrantedPlus());
     if (r.ok && r.value) {
       // The package TYPE, never a price or a product id — shape, not content.
       track('plus_purchased', { plan, from: from ?? 'unknown', code: discounted ? 1 : 0 });
@@ -297,6 +313,7 @@ export default function PaywallScreen() {
     tapLight();
     const r = await restore();
     setBusy(false);
+    setGranted(onlyGrantedPlus());
     if (r.ok && r.value) {
       track('plus_restored');
       Alert.alert(t('plus.restoredTitle'), t('plus.restoredBody'));
@@ -342,7 +359,22 @@ export default function PaywallScreen() {
             </Text>
           </Pressable>
 
-          {plus ? (
+          {plus && granted ? (
+            <>
+              <Text style={styles.thanksTitle}>{t('freeMonth.paywallTitle')}</Text>
+              <Text style={styles.sub}>
+                {grantedUntil
+                  ? t('freeMonth.paywallUntil', {
+                      date: new Date(grantedUntil).toLocaleDateString(intlTag(currentLocale()), {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      }),
+                    })
+                  : t('freeMonth.paywallNoDate')}
+              </Text>
+            </>
+          ) : plus ? (
             <>
               <Text style={styles.thanksTitle}>{t('plus.thanksTitle')}</Text>
               <Text style={styles.sub}>{t('plus.thanksBody')}</Text>
@@ -410,7 +442,7 @@ export default function PaywallScreen() {
             )}
           </View>
 
-          {plus ? null : plans && (plans.annual || plans.monthly) ? (
+          {plus && !granted ? null : plans && (plans.annual || plans.monthly) ? (
             <View style={styles.plans}>
               {specialLive && personal && (
                 <PlanCard
