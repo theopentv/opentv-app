@@ -256,6 +256,9 @@ export default function ProfileScreen() {
   const [activityHidden, setActivityHidden] = useState(() =>
     sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'activity'),
   );
+  const [everythingHidden, setEverythingHidden] = useState(() =>
+    sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'everything'),
+  );
   // Only for a joined profile: without an account there is no joining date to
   // state, and the local library's age is a different fact.
   // THE JOIN DATE IS REMEMBERED: it never changes, and waiting for the server
@@ -415,6 +418,7 @@ export default function ProfileScreen() {
        */
       setArrangement(normalise(parseLayout(savedArrangement()), SHELF_KEYS));
       setActivityHidden(sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'activity'));
+      setEverythingHidden(sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'everything'));
       setFriendState({ matches: lastFriendMatches(), seen: getMeta(RECONNECT_SEEN_KEY) });
       setTvdbFailed(tvdbKeyFailed() && !userTvdbKey() && getMeta('tvdbNudgeDismissed') !== '1');
       setNotifOff(!notificationsEnabled() && getMeta('notifyNudgeDismissed') !== '1');
@@ -1371,7 +1375,10 @@ export default function ProfileScreen() {
     const together = togetherSnap
       ? withTogetherBlock(puzzled ?? defaultLayout(SHELF_KEYS), base && togetherRemoved ? ['together'] : [])
       : puzzled;
-    const out = goalOnPage ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
+    const goal = goalOnPage ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
+    // Everything I watch is on every profile (27 Oct); its Edit profile switch
+    // takes it off this one drawing, never out of the saved arrangement.
+    const out = everythingHidden ? (goal ?? defaultLayout(SHELF_KEYS)).filter((p) => p.id !== 'everything') : goal;
     return out?.map((p) =>
       p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p.id === 'together' ? { ...p, data: togetherSnap } : p,
     );

@@ -66,6 +66,7 @@ const SECTION_LABEL: Record<ProfileSection, LocaleKey> = {
   stats: 'stats.title',
   activity: 'plus.activity.title',
   lists: 'profile.sectionLists',
+  everything: 'everything.title',
   favourite_shows: 'profile.sectionFavoriteShows',
   favourite_movies: 'profile.sectionFavoriteMovies',
   shows: 'stats.headers.shows',
@@ -417,6 +418,7 @@ export default function EditProfileScreen() {
                         your own profile and nobody else's, and saying so is the
                         difference between a control and a false promise. */}
                     {s === 'activity' && <Text style={styles.switchSub}>{t('editProfile.visibility.activitySub')}</Text>}
+                    {s === 'everything' && <Text style={styles.switchSub}>{t('everythingSection.profileSwitchSub')}</Text>}
                     {s === 'feed' && <Text style={styles.switchSub}>{t('feed.optOutSub')}</Text>}
                   </View>
                   <Switch

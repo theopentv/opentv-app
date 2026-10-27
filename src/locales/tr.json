@@ -3923,5 +3923,8 @@
     "endedAnnual": "Yıllık plan, yılda {{price}}",
     "endedMonthly": "Aylık plan, ayda {{price}}",
     "signInLede": "Ücretsiz Plus ayını başlatmak için giriş yap. Kart yok, yenilenmez."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "Yalnızca kendi profilinde, asla yayınlanmaz."
   }
 }

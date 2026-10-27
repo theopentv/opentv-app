@@ -4531,5 +4531,8 @@
     "endedAnnual": "الخطة السنوية، {{price}} في السنة",
     "endedMonthly": "الخطة الشهرية، {{price}} في الشهر",
     "signInLede": "سجّل الدخول لتبدأ شهر Plus المجاني. بلا بطاقة، ولا تجديد."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "في ملفك أنت فقط، ولا يُنشر أبدًا."
   }
 }

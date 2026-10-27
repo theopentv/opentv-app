@@ -3923,5 +3923,8 @@
     "endedAnnual": "Formule annuelle, {{price}} par an",
     "endedMonthly": "Formule mensuelle, {{price}} par mois",
     "signInLede": "Connectez-vous pour commencer votre mois de Plus offert. Sans carte, rien ne se renouvelle."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "Votre profil uniquement, jamais publié."
   }
 }

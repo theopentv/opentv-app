@@ -298,6 +298,12 @@ describe('withSectionHidden', () => {
     expect(withSectionHidden(['stats'], 'stats', true)).toEqual(['stats']);
     expect(withSectionHidden([], 'stats', false)).toEqual([]);
   });
+
+  it('keeps Everything I watch (27 Oct) through the switch and the stored echo', () => {
+    const next = withSectionHidden(['comments'], 'everything', true);
+    expect(next).toEqual(['everything', 'comments']);
+    expect(parseHiddenSections(JSON.stringify(next))).toEqual(next);
+  });
 });
 
 describe('parseHiddenSections', () => {

@@ -3923,5 +3923,8 @@
     "endedAnnual": "Piano annuale, {{price}} all'anno",
     "endedMonthly": "Piano mensile, {{price}} al mese",
     "signInLede": "Accedi per iniziare il tuo mese di Plus gratis. Nessuna carta, nessun rinnovo."
+  },
+  "everythingSection": {
+    "profileSwitchSub": "Solo sul tuo profilo, mai pubblicato."
   }
 }

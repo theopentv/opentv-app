@@ -29,10 +29,6 @@ const ITEMS = [
    * page inside the public one is how a thing ends up shown to people it was
    * never meant for.
    */
-  // EVERYTHING I WATCH, FREE (27 Oct): the page was reachable only from its
-  // profile widget, and widgets are Plus, so the Arabic channel admin who
-  // asked for "all my shows and films in one page" could not open it.
-  { name: 'Everything', icon: 'albums-outline', labelKey: 'everything.title' as const, to: '/everything' },
   { name: 'Memories', icon: 'time-outline', labelKey: 'profileMenu.memories' as const, to: '/memories' },
   { name: 'Share', icon: 'share-outline', labelKey: 'profileMenu.share' as const, to: '/share-profile' },
   { name: 'Help center', icon: 'help-circle-outline', labelKey: 'profileMenu.helpCenter' as const, to: null },
