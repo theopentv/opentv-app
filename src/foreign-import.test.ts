@@ -1,4 +1,4 @@
-import { classifyForeignJson, cp1252, detectForeignSource, imdbRemoteHit, imdbRows, imdbTvRows, isImdbCsv, type ImdbTvHit, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRecords, serializdRows, simklRows, traktRows } from '@/foreign-import';
+import { bingersRows, bingersTable, bingersTableKind, bingersTmdbOnlyShows, classifyForeignJson, cp1252, detectForeignSource, imdbRemoteHit, imdbRows, imdbTvRows, isImdbCsv, type ImdbTvHit, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRecords, serializdRows, simklRows, sofaTimeItems, sofaTimeRows, traktRows } from '@/foreign-import';
 
 /**
  * Real Letterboxd export headers, from their own documented format. The
@@ -807,5 +807,179 @@ describe('isSimklCsv', () => {
     expect(isSimklCsv('\uFEFF"SIMKL_ID","Title"')).toBe(true);
     expect(isSimklCsv('Date,Name,Year,Letterboxd URI,Rating')).toBe(false);
     expect(isSimklCsv('Const,Your Rating,Date Rated,Title')).toBe(false);
+  });
+});
+
+describe('Sofa Time', () => {
+  // Invented, in the real export's shape: arrays of items carrying `tmdb`.
+  const files = {
+    'watchedShow_(2026_10_26).json': [
+      {
+        title: 'Dark',
+        tmdb: 70523,
+        type: 'tv',
+        runtime: 55,
+        addedDate: '2026-01-05T00:00:00Z',
+        seasons: [
+          { number: 1, episodes: [{ number: 1, addedDate: '2026-01-01T20:00:00Z' }, { number: 2, addedDate: '2026-01-02T20:00:00Z', rating: 8 }] },
+          { number: 0, episodes: [{ number: 1, addedDate: '' }] },
+        ],
+      },
+    ],
+    'stopWatchingShow_(2026_10_26).json': [
+      { title: 'Lost', tmdb: 4607, type: 'tv', archive_type: 'hold', addedDate: '2026-02-01T00:00:00Z', seasons: [{ number: 1, episodes: [{ number: 1, addedDate: '2020-01-01T00:00:00Z' }] }] },
+    ],
+    'watchlistShow_(2026_10_26).json': [{ title: 'The Shield', tmdb: 1414, type: 'tv', addedDate: '2026-03-01T00:00:00Z' }],
+    'watchedMovie_(2026_10_26).json': [{ title: 'Heat', tmdb: 949, type: 'movie', release_date: '1995-12-15T00:00:00Z', addedDate: '2026-04-01T00:00:00Z', rating: 9 }],
+    'watchlistMovie_(2026_10_26).json': [{ title: 'Ran', tmdb: 11645, type: 'movie', addedDate: '2026-05-01T00:00:00Z' }],
+    'stopWatchingMovie_(2026_10_26).json': [{ title: 'Cats', tmdb: 536869, type: 'movie', archive_type: 'dropped', addedDate: '2026-06-01T00:00:00Z' }],
+  };
+  const link = new Map([
+    [70523, { tvdbId: 334824, name: 'Dark (TheTVDB)' }],
+    [4607, { tvdbId: 73739, name: 'Lost' }],
+    [1414, { tvdbId: 78261, name: 'The Shield' }],
+  ]);
+
+  it('knows its files by their items, and nobody else claims them', () => {
+    expect(sofaTimeItems(files)).toHaveLength(6);
+    expect(classifyForeignJson(Object.values(files))).toBeNull();
+    // A Trakt history is not Sofa Time's.
+    expect(sofaTimeItems({ 'x.json': [{ watched_at: '2026-01-02T00:00:00Z', movie: { title: 'Heat', ids: { tmdb: 949 } }, type: 'movie' }] })).toEqual([]);
+  });
+
+  it('maps watched, stopped and watchlist shows onto TheTVDB ids, with dates and the rare rating', () => {
+    const out = sofaTimeRows(sofaTimeItems(files), link);
+    expect(out.showRows).toEqual([
+      { tv_show_id: '334824', tv_show_name: 'Dark', is_followed: '1', is_favorited: '0', archived: '0' },
+      { tv_show_id: '73739', tv_show_name: 'Lost', is_followed: '1', is_favorited: '0', archived: '1' },
+      { tv_show_id: '78261', tv_show_name: 'The Shield', is_followed: '1', is_favorited: '0', archived: '0' },
+    ]);
+    expect(out.episodeRows.map((r) => [r.s_id, r.season_number, r.episode_number, r.created_at])).toEqual([
+      ['334824', '1', '1', '2026-01-01T20:00:00Z'],
+      ['334824', '1', '2', '2026-01-02T20:00:00Z'],
+      // A special with no date of its own takes the show's.
+      ['334824', '0', '1', '2026-01-05T00:00:00Z'],
+      ['73739', '1', '1', '2020-01-01T00:00:00Z'],
+    ]);
+    expect(out.episodeRows[0].runtime).toBe('55');
+    expect(out.episodeRatings).toEqual([{ name: 'Dark', season: 1, episode: 2, ten: 8 }]);
+  });
+
+  it('brings films by TMDB id, leaves out a film you stopped, and drops a show it cannot place', () => {
+    const out = sofaTimeRows(sofaTimeItems(files), new Map());
+    expect(out.showRows).toEqual([]);
+    expect(out.movieRows.map((r) => [r.type, r.movie_name, r.movie_year])).toEqual([
+      ['watch', 'Heat', '1995'],
+      ['towatch', 'Ran', ''],
+    ]);
+    expect(out.movieRatings).toEqual([{ name: 'Heat', ten: 9 }]);
+    expect(out.movieTmdb).toEqual([{ name: 'Heat', tmdbId: 949 }, { name: 'Ran', tmdbId: 11645 }]);
+  });
+
+  it('says each episode once, when a show sits in two of the files', () => {
+    const twice = { ...files, 'watchedShow_copy.json': files['watchedShow_(2026_10_26).json'] };
+    expect(sofaTimeRows(sofaTimeItems(twice), link).episodeRows).toHaveLength(4);
+  });
+});
+
+describe('Bingers', () => {
+  // Invented rows under the real header rows, BOM and all.
+  const csv = (header: string, ...rows: string[][]) =>
+    bingersTable(rows.map((r) => Object.fromEntries(header.split(',').map((h, i) => [h, r[i] ?? '']))));
+  const LIB = '﻿type,title,original_title,year,tvdb_id,tmdb_id,favorite,list_status,added_at,for_later_at,stopped_watching_at,hidden_at';
+  const WATCH = '﻿type,title,tvdb_id,tmdb_id,season_number,episode_number,first_watched_at,last_watched_at,plays';
+  const RATE = '﻿type,title,tvdb_id,tmdb_id,season_number,episode_number,rating,favorite_character,emotions';
+  const LISTS = '﻿list_name,list_description,title,type,tvdb_id,tmdb_id';
+  const t = {
+    library: csv(
+      LIB,
+      ['show', 'Arcane', 'Arcane', '2021', '371028', '94605', 'yes', 'watching', '2021-11-01T00:00:00.000Z', '', '', ''],
+      ['show', 'Lost', 'Lost', '2004', '73739', '4607', 'no', 'watching', '2020-01-01T00:00:00.000Z', '', '2021-01-01T00:00:00.000Z', ''],
+      ['show', 'Only TMDB', 'Only TMDB', '2020', '', '555', 'no', 'for_later', '2022-01-01T00:00:00.000Z', '2022-01-01T00:00:00.000Z', '', ''],
+      ['movie', 'Thor', 'Thor', '2011', '', '10195', 'yes', 'following', '2021-12-01T00:00:00.000Z', '', '', ''],
+      ['movie', 'Ran', '乱', '1985', '', '11645', 'no', 'for_later', '2026-06-08T00:00:00.000Z', '2026-06-08T00:00:00.000Z', '', ''],
+    ),
+    watches: csv(
+      WATCH,
+      ['episode', 'Arcane', '371028', '94605', '1', '1', '2021-11-13T14:52:59.000Z', '2025-09-27T00:11:45.000Z', '3'],
+      ['episode', 'Arcane', '371028', '94605', '1', '2', '2021-11-13T17:44:04.000Z', '2021-11-13T17:44:04.000Z', '1'],
+      ['movie', 'Thor', '', '10195', '', '', '2021-12-11T00:57:28.000Z', '2023-01-01T00:00:00.000Z', '2'],
+    ),
+    ratings: csv(
+      RATE,
+      ['episode', 'Arcane', '371028', '94605', '1', '1', '5', 'Jinx|Vi', 'shocked|thrilled'],
+      ['episode', 'Arcane', '371028', '94605', '1', '2', '', 'Vi', 'grumpy'],
+      ['movie', 'Thor', '', '10195', '', '', '4', 'Loki', 'amused'],
+    ),
+    lists: csv(LISTS, ['avenger', '', 'Thor', 'movie', '', '10195'], ['avenger', '', 'Iron Man', 'movie', '', '1726'], ['avenger', '', 'Arcane', 'show', '371028', '94605']),
+  };
+
+  it('knows its four files by their header rows, BOM and all', () => {
+    expect(bingersTableKind(LIB.split(','))).toBe('library');
+    expect(bingersTableKind(WATCH.split(','))).toBe('watches');
+    expect(bingersTableKind(RATE.split(','))).toBe('ratings');
+    expect(bingersTableKind(LISTS.split(','))).toBe('lists');
+    // Letterboxd and IMDb headers are not Bingers'.
+    expect(bingersTableKind(['Date', 'Name', 'Year', 'Letterboxd URI', 'Rating'])).toBeNull();
+    expect(bingersTableKind(['Const', 'Your Rating', 'Title', 'Title Type'])).toBeNull();
+    expect(t.library[0].type).toBe('show');
+  });
+
+  it('asks the link only for shows that have no TheTVDB id', () => {
+    expect(bingersTmdbOnlyShows(t)).toEqual([{ showId: 555, showName: 'Only TMDB' }]);
+  });
+
+  it('maps follows, stops and favourites, and turns extra plays into rewatches', () => {
+    const out = bingersRows(t, new Map([[555, { tvdbId: 999, name: 'Linked' }]]));
+    expect(out.showRows).toEqual([
+      { tv_show_id: '371028', tv_show_name: 'Arcane', is_followed: '1', is_favorited: '1', archived: '0' },
+      { tv_show_id: '73739', tv_show_name: 'Lost', is_followed: '1', is_favorited: '0', archived: '1' },
+      { tv_show_id: '999', tv_show_name: 'Only TMDB', is_followed: '1', is_favorited: '0', archived: '0' },
+    ]);
+    expect(out.episodeRows.map((r) => [r.episode_number, r.created_at, r.rewatch_count ?? ''])).toEqual([
+      ['1', '2021-11-13T14:52:59.000Z', ''],
+      ['1', '2025-09-27T00:11:45.000Z', '1'],
+      ['1', '2025-09-27T00:11:45.000Z', '1'],
+      ['2', '2021-11-13T17:44:04.000Z', ''],
+    ]);
+    const films = out.movieRows.map((r) => [r.type, r.movie_name, r.rewatch_count ?? '']);
+    expect(films).toEqual([
+      ['watch', 'Thor', '1'],
+      ['towatch', 'Ran', ''],
+      // On a list and nowhere else: named for the list, not put in the library.
+      ['list', 'Iron Man', ''],
+    ]);
+    expect(out.movieTmdb).toEqual([
+      { name: 'Thor', tmdbId: 10195 },
+      { name: 'Ran', tmdbId: 11645 },
+      { name: 'Iron Man', tmdbId: 1726 },
+    ]);
+  });
+
+  it('maps ratings, the emotions the app has, and the first favourite character', () => {
+    const out = bingersRows(t, new Map());
+    expect(out.episodeRatings).toEqual([{ name: 'Arcane', season: 1, episode: 1, ten: 10 }]);
+    expect(out.movieRatings).toEqual([{ name: 'Thor', ten: 8 }]);
+    // shocked = 0, thrilled = 9 in EMOTION_NAMES; "grumpy" is not one of the twelve.
+    expect(out.episodeEmotions).toEqual([
+      { name: 'Arcane', season: 1, episode: 1, emotion: 0 },
+      { name: 'Arcane', season: 1, episode: 1, emotion: 9 },
+    ]);
+    expect(out.movieEmotions).toEqual([{ name: 'Thor', value: 5 + 28 }]);
+    expect(out.episodeCharacters).toEqual([
+      { name: 'Arcane', season: 1, episode: 1, character: 'Jinx' },
+      { name: 'Arcane', season: 1, episode: 2, character: 'Vi' },
+    ]);
+    expect(out.movieCharacters).toEqual([{ movie: 'Thor', character: 'Loki' }]);
+  });
+
+  it('writes favourites and lists as TV Time list rows the importer already reads', () => {
+    const { listEntries, movieNamesByUuid, readFavorites } = jest.requireActual('../packages/tvtime-export/src') as typeof import('../packages/tvtime-export/src');
+    const out = bingersRows(t, new Map());
+    const names = movieNamesByUuid(out.movieRows);
+    expect(readFavorites(out.listRows!, names)).toEqual({ showIds: [371028], movieNames: ['Thor'] });
+    const list = out.listRows!.find((r) => r.name === 'avenger')!;
+    const entries = listEntries(list.objects);
+    expect(entries.map((e) => (e.kind === 'show' ? e.tvdbId : names.get(e.uuid!)))).toEqual(['Thor', 'Iron Man', 371028]);
   });
 });

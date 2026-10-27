@@ -3842,5 +3842,9 @@
     "bannerBody": "Yılın birkaç kartta, oluşturması ve paylaşması ücretsiz",
     "notifyTitle": "{{year}} özetin hazır",
     "notifyBody": "Dizilerle ve filmlerle geçen yılın, birkaç kartta. Açmak için dokun."
+  },
+  "importSources": {
+    "sofatime": "Sofa Time ayarlarından aldığın dışa aktarım: içinde JSON dosyaları olan bir ZIP dosyası.",
+    "bingers": "Bingers ayarlarından aldığın dışa aktarım: içinde dört CSV dosyası olan bir ZIP dosyası."
   }
 }

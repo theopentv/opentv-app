@@ -3842,5 +3842,9 @@
     "bannerBody": "Your year in a few cards, free to make and share",
     "notifyTitle": "Your {{year}} is ready",
     "notifyBody": "Your year of shows and films, in a few cards. Tap to open it."
+  },
+  "importSources": {
+    "sofatime": "Your export from Sofa Time's settings: a ZIP file with JSON files inside.",
+    "bingers": "Your export from Bingers' settings: a ZIP file with four CSV files inside."
   }
 }
