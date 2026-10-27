@@ -14,7 +14,7 @@ failure written next to it, not in a commit message.
 
 ## 2.0.3 — merged 27 Oct 2026, not yet on a device
 
-Before testing the free month: deploy backend `2.0.3` (migration 0063 BEFORE the Worker).
+Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 BEFORE the Worker).
 
 ### Opening tab and What's New
 - [ ] Settings → Opening tab → Profile; close and reopen: opens on Profile (also Movies, Explore)
@@ -49,7 +49,9 @@ Before testing the free month: deploy backend `2.0.3` (migration 0063 BEFORE the
 - [ ] No account: import → card → Sign in → "A month of Plus is yours", date +30; heard_from saved
 - [ ] Paywall shows plans and "You have Plus, free · Until …"
 - [ ] Sign out/in: no second month; delete account + same Google: no month
-- [ ] An account signed in before 2.0.3 gets the month on first 2.0.3 launch; a paying account does not
+- [ ] Dashboard: Free month OFF after deploy; sign in fresh → no month; turn ON → fresh sign-in gets it
+- [ ] Dashboard "Give everyone a month": count in confirm, then "Given to N"; existing phone relaunch shows the screen once; press again gives 0; paying account untouched
+- [ ] heard_from answer shows on the dashboard; turning OFF keeps months already given
 - [ ] No thanks on Profile → never again, not after an import either
 - [ ] Unconfirmed email: no month until confirmed
 
