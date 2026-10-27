@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { getMeta, getWatchedSet, markWatched, setMeta, unmarkWatched } from '@/db';
 import { t } from '@/i18n';
 import { showMeta } from '@/metadata';
-import { maybeAskForRatingFresh } from '@/rate-us';
+import { maybeAskForRatingAfterMark } from '@/rate-us';
 
 /**
  * Mark an episode watched, then — like the real app — offer to mark every
@@ -15,7 +15,7 @@ export function markWatchedWithPrompt(showId: number, season: number, episode: n
   // After any alert below has closed, never on top of it.
   const onDone = () => {
     refresh();
-    maybeAskForRatingFresh();
+    maybeAskForRatingAfterMark();
   };
 
   if (getMeta(`noPrevPrompt:${showId}`) === '1') {

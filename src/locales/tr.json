@@ -3833,5 +3833,8 @@
     "lastChanceBody": "Gece yarısı bitiyor ve henüz oynamadın.",
     "sub": "Her gün bu saatte, henüz oynamadıysan saat {{last}} için de son bir hatırlatma.",
     "offerBody": "Her gün saat {{time}} için bir bildirim, henüz oynamadıysan saat {{last}} için de son bir hatırlatma."
+  },
+  "rewatchTotal": {
+    "including": "Tekrar izlenenler dahil: {{n}}"
   }
 }

@@ -3833,5 +3833,8 @@
     "lastChanceBody": "It ends at midnight, and you haven't played yet.",
     "sub": "Each day at this hour, and a last call at {{last}} if you haven't played yet.",
     "offerBody": "A notification each day at {{time}}, and a last call at {{last}} if you haven't played yet."
+  },
+  "rewatchTotal": {
+    "including": "Including rewatches: {{n}}"
   }
 }

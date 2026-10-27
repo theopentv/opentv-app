@@ -562,13 +562,45 @@ export default function ShowsScreen() {
               onPress={() => router.push('/pick-shows')}
             />
           }
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             if (item.type === 'pill') {
               return (
                 <View style={styles.pillRow}>
                   <Text style={styles.sectionPill} accessibilityRole="header">
                     {item.label.toLocaleUpperCase(currentLocale())}
                   </Text>
+                  {/*
+                    PART OF THE FIRST HEADER, NOT FLOATING OVER THE LIST (2.0.3).
+                    They were an absolute overlay at a fixed top, which is only the
+                    WATCH NEXT line while the list sits exactly at its anchor; with
+                    the watched history scrolled into view they drew on top of a
+                    row, over its green check (seen 25 Oct on iPhone Duo, inner
+                    display upright). Inside the first pill's row they scroll with
+                    the heading they belong to, at any width. The sort turns yellow
+                    while it is not the default.
+                  */}
+                  {index === 0 && (
+                    <View style={styles.gridToggle}>
+                      <Pressable
+                        hitSlop={10}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('watchListSort.a11y', { sort: t(`watchListSort.${sort}`) })}
+                        onPress={() => setSortOpen(true)}>
+                        <Ionicons name="swap-vertical" size={22} color={sort === 'recent' ? colors.text : colors.yellow} />
+                      </Pressable>
+                      <Pressable
+                        hitSlop={10}
+                        accessibilityRole="button"
+                        accessibilityLabel={t(view === 'list' ? 'a11y.showAsGrid' : 'a11y.showAsList')}
+                        onPress={() => {
+                          const next = view === 'list' ? 'grid' : 'list';
+                          setView(next);
+                          setMeta('showsView', next);
+                        }}>
+                        <Ionicons name={view === 'list' ? 'grid' : 'list'} size={22} color={colors.text} />
+                      </Pressable>
+                    </View>
+                  )}
                 </View>
               );
             }
@@ -702,29 +734,6 @@ export default function ShowsScreen() {
             );
           }}
         />
-        {/* the list/grid toggle floats at the top right, like the real app;
-            the sort sits beside it and turns yellow while it is not the default */}
-        {/* below the floating Tonight card, not under it */}
-        <View style={[styles.gridToggle, { top: 16 + tonightPad }]}>
-          <Pressable
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel={t('watchListSort.a11y', { sort: t(`watchListSort.${sort}`) })}
-            onPress={() => setSortOpen(true)}>
-            <Ionicons name="swap-vertical" size={22} color={sort === 'recent' ? colors.text : colors.yellow} />
-          </Pressable>
-          <Pressable
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel={t(view === 'list' ? 'a11y.showAsGrid' : 'a11y.showAsList')}
-            onPress={() => {
-              const next = view === 'list' ? 'grid' : 'list';
-              setView(next);
-              setMeta('showsView', next);
-            }}>
-            <Ionicons name={view === 'list' ? 'grid' : 'list'} size={22} color={colors.text} />
-          </Pressable>
-        </View>
         <ActionSheet
           visible={sortOpen}
           title={t('filters.sortByTitle')}
@@ -895,7 +904,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     overflow: 'hidden',
   },
-  gridToggle: { position: 'absolute', end: 14, top: 16, flexDirection: 'row', gap: 18 },
+  gridToggle: { position: 'absolute', end: 14, top: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', gap: 18 },
   // history cards read as "done": dimmed like the real app
   histCard: { opacity: 0.55 },
   card: {

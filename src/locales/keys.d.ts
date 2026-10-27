@@ -1921,6 +1921,7 @@ export type LocaleKey =
   | "reviewMovies.matchedToYear"
   | "reviewMovies.title"
   | "reviewMovies.wrong"
+  | "rewatchTotal.including"
   | "room.block"
   | "room.closedBody"
   | "room.closedTitle"

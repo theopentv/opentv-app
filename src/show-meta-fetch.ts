@@ -564,32 +564,76 @@ export async function fillMissingListPosters(): Promise<void> {
   if (changed) saveCustomLists(lists);
 }
 
+/**
+ * A poster for every show that has none — the name card ("H", "3R", "TB") on
+ * the Profile's Series shelf otherwise.
+ *
+ * REWRITTEN IN 2.0.3 from u/azz922's screenshot: a fresh import with a dozen
+ * shows still on letters, not just for a minute. Three causes, three fixes:
+ * - ONE AT A TIME, two TheTVDB requests a show, so a 200-show library took
+ *   many launches to fill. Now four at once through `pool()`.
+ * - A TheTVDB "no image" was remembered for ever and TMDB was never asked,
+ *   though the app already talks to it. Now TMDB is asked before giving up,
+ *   and the miss is only remembered when BOTH answered with nothing. The key
+ *   is new (`showPosterMiss:`, was `tvdbShowPosterMiss:`) so a show given up
+ *   on by 2.0.0–2.0.2 without TMDB gets its one TMDB question.
+ * - One throw ended the whole loop until the next launch. Now each show has
+ *   its own try/catch (`pool()` swallows per item), so one bad answer costs
+ *   one show.
+ * Only an ANSWER is remembered: a failed request throws or returns null, and
+ * a failure must be asked again next launch.
+ */
 export async function fillMissingShowPosters(): Promise<void> {
   const missing = getShowsMissingPoster();
   if (!missing.length) return;
+  let tvdb: typeof import('@/tvdb');
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { tvdbSeries, tvdbSeriesBackground } = require('@/tvdb') as typeof import('@/tvdb');
-    for (const s of missing) {
-      // TheTVDB ANSWERED, with no poster: asked again on every launch for ever
-      // (two requests a show, one after another) until this marker. Only an
-      // answer is remembered — `tvdbSeries` is null on a failed request, and
-      // a failure must be asked again.
-      const missKey = `tvdbShowPosterMiss:${s.tvdbId}`;
-      if (getMeta(missKey)) continue;
-      const hit = await tvdbSeries(s.tvdbId);
-      const img = hit?.image;
-      if (img && !img.includes('/images/missing/')) setShowPoster(s.tvdbId, img);
-      else if (hit) setMeta(missKey, '1');
+    tvdb = require('@/tvdb') as typeof import('@/tvdb');
+  } catch {
+    return;
+  }
+  await pool(
+    missing,
+    async (s) => {
+      const missKey = `showPosterMiss:${s.tvdbId}`;
+      if (getMeta(missKey)) return;
+      // free first: metadata already cached (TMDB-sourced) may carry one
+      const cached = showMeta(s.tvdbId)?.poster;
+      if (cached) {
+        setShowPoster(s.tvdbId, cached);
+      } else {
+        const hit = await tvdb.tvdbSeries(s.tvdbId);
+        const art = hit?.image;
+        if (art && !art.includes('/images/missing/')) setShowPoster(s.tvdbId, art);
+        else if (hit) {
+          const poster = await tmdbShowPoster(s.tvdbId);
+          if (poster) setShowPoster(s.tvdbId, poster);
+          else if (poster === null) setMeta(missKey, '1');
+        }
+      }
       // a landscape background for the detail banner, if TheTVDB has one (many
       // obscure titles only have a poster — the banner falls back to that)
       if (!getMeta(`backdropOverride:${s.tvdbId}`)) {
-        const bg = await tvdbSeriesBackground(s.tvdbId);
+        const bg = await tvdb.tvdbSeriesBackground(s.tvdbId);
         if (bg) setShowBackdrop(s.tvdbId, bg);
       }
-    }
+    },
+    4,
+  );
+}
+
+/** TMDB's poster for a show by its TheTVDB id: the known TMDB id first, else
+ *  `/find` (whose result already carries `poster_path`). Null = TMDB answered
+ *  and has none; undefined = it could not be asked (offline, no token). */
+async function tmdbShowPoster(tvdbId: number): Promise<string | null | undefined> {
+  try {
+    const id = showMeta(tvdbId)?.tmdbId ?? (Number(getMeta(`showTmdbHint:${tvdbId}`)) || null);
+    if (id) return img((await tmdb<TmdbShow>(`/tv/${id}`)).poster_path, 'w500');
+    const found = await tmdb<{ tv_results: { poster_path?: string | null }[] }>(`/find/${tvdbId}?external_source=tvdb_id`);
+    return img(found.tv_results?.[0]?.poster_path, 'w500');
   } catch {
-    // offline or TheTVDB unreachable — retry next launch
+    return undefined;
   }
 }
 

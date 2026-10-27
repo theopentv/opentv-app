@@ -3833,5 +3833,8 @@
     "lastChanceBody": "Termina a medianoche y aún no has jugado.",
     "sub": "Cada día a esta hora, y un último aviso a las {{last}} si aún no has jugado.",
     "offerBody": "Una notificación cada día a las {{time}}, y un último aviso a las {{last}} si aún no has jugado."
+  },
+  "rewatchTotal": {
+    "including": "Con revisionados: {{n}}"
   }
 }
