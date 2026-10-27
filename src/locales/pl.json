@@ -4212,5 +4212,19 @@
     "bannerBody": "Cały rok, razem z grudniem. Za darmo do stworzenia i udostępnienia",
     "notifyTitle": "Twój rok {{year}} jest kompletny",
     "notifyBody": "Wszystkie seriale i filmy roku, razem ze świętami. Stuknij, aby otworzyć."
+  },
+  "freeMonthOptIn": {
+    "cardTitle": "Wypróbuj Plus za darmo przez miesiąc",
+    "cardBody": "Bez karty i nic się nie odnawia. Wszystkie funkcje Plus przez 30 dni, z kopią w chmurze, a potem miesiąc po prostu się kończy.",
+    "cardAccount": "Potrzebne jest konto: zaloguj się przez Apple, Google lub e-mail. Cała reszta OpenTV działa bez niego.",
+    "cardCta": "Wypróbuj za darmo",
+    "claimFailed": "Nie udało się połączyć z OpenTV. Darmowy miesiąc zostanie aktywowany przy następnym otwarciu aplikacji.",
+    "endsTodayTitle": "Twój darmowy miesiąc kończy się dzisiaj",
+    "endedTitle": "Twój darmowy miesiąc się skończył",
+    "endedUsed": "W swoim miesiącu korzystałeś z",
+    "endedIncludes": "Plus obejmuje",
+    "endedSafe": "Wszystkie Twoje dane wciąż tu są. Nic nie zostało usunięte, a śledzenie pozostaje darmowe.",
+    "endedAnnual": "Plan roczny, {{price}} za rok",
+    "endedMonthly": "Plan miesięczny, {{price}} za miesiąc"
   }
 }

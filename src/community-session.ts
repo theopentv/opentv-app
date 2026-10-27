@@ -205,10 +205,8 @@ export async function signIn(token: string, profileId: string, handle: string): 
   // reached the app through `refreshSession`, which runs at startup, so an
   // account signed in on a new device — a Mac, 1 Oct — sat without its Plus,
   // and without sync, until the app happened to be quit and reopened.
-  // THE FREE MONTH (2.0.3) is asked for by that same refresh: marked here, so
-  // every door to an account counts and a claim that fails is retried.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  (require('@/free-month') as typeof import('@/free-month')).markFreeMonthPending();
+  // THE FREE MONTH (2.0.3) is claimed by that same refresh, but only when the
+  // invitation card marked it pending: a sign-in by itself never claims it.
   void refreshSession().catch(() => {});
   // And tell RevenueCat who this is NOW, so a purchase made before the next
   // launch is booked to this profile rather than to an anonymous id (3 Oct).
@@ -522,7 +520,6 @@ export async function refreshSession(): Promise<void> {
       plus_until?: string | null;
       free_month_open?: boolean;
       free_month_at?: string | null;
-      free_month_via?: string | null;
       session?: { token?: string; expires_at?: string };
     }>('/v1/me', { token });
     /*
