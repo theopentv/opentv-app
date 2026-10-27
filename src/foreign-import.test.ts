@@ -956,6 +956,23 @@ describe('Bingers', () => {
     ]);
   });
 
+  it('keeps half stars, and reads a file with any score above five as out of ten', () => {
+    const half = { ...t, ratings: csv(RATE, ['movie', 'Thor', '', '10195', '', '', '4.5', '', '']) };
+    expect(bingersRows(half, new Map()).movieRatings).toEqual([{ name: 'Thor', ten: 9 }]);
+    const tens = {
+      ...t,
+      ratings: csv(
+        RATE,
+        ['episode', 'Arcane', '371028', '94605', '1', '1', '7', '', ''],
+        ['movie', 'Thor', '', '10195', '', '', '4', '', ''],
+      ),
+    };
+    const out = bingersRows(tens, new Map());
+    expect(out.episodeRatings).toEqual([{ name: 'Arcane', season: 1, episode: 1, ten: 7 }]);
+    // Same file, so the 4 is four out of ten, not four stars.
+    expect(out.movieRatings).toEqual([{ name: 'Thor', ten: 4 }]);
+  });
+
   it('maps ratings, the emotions the app has, and the first favourite character', () => {
     const out = bingersRows(t, new Map());
     expect(out.episodeRatings).toEqual([{ name: 'Arcane', season: 1, episode: 1, ten: 10 }]);

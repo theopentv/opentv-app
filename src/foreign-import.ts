@@ -1333,8 +1333,16 @@ export function bingersRows(t: BingersTables, link: ReadonlyMap<number, Serializ
   }));
 
   // ---- ratings, emotions, favourite characters ------------------------------
-  for (const r of t.ratings) {
-    const ten = ratingFromStars(intOf(r.rating));
+  /*
+   * ONE SCALE PER FILE (27 Oct). Bingers rates out of five, but Mahmood notes
+   * it also offers ten stars, and the only sample we have is whole 1–5. A
+   * score above five anywhere in the file means the file is out of ten;
+   * otherwise it is stars, halves kept (`intOf` dropped a 4.5 to 4).
+   */
+  const scores = t.ratings.map((r) => numOf(r.rating));
+  const outOfTen = scores.some((n) => n != null && n > 5);
+  for (const [i, r] of t.ratings.entries()) {
+    const ten = outOfTen ? ratingFromTen(scores[i]) : ratingFromStars(scores[i]);
     const emotions = (r.emotions ?? '')
       .split('|')
       .map((e) => (EMOTION_NAMES as readonly string[]).indexOf(e.trim().toLowerCase()))
