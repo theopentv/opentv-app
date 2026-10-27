@@ -3921,6 +3921,7 @@
     "endedIncludes": "Plus comprend",
     "endedSafe": "Toutes vos données sont toujours là. Rien n'a été supprimé, et le suivi reste gratuit.",
     "endedAnnual": "Formule annuelle, {{price}} par an",
-    "endedMonthly": "Formule mensuelle, {{price}} par mois"
+    "endedMonthly": "Formule mensuelle, {{price}} par mois",
+    "signInLede": "Connectez-vous pour commencer votre mois de Plus offert. Sans carte, rien ne se renouvelle."
   }
 }

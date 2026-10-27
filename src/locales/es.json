@@ -3921,6 +3921,7 @@
     "endedIncludes": "Plus incluye",
     "endedSafe": "Todos tus datos siguen aquí. No se ha borrado nada, y el seguimiento sigue siendo gratis.",
     "endedAnnual": "Plan anual, {{price}} al año",
-    "endedMonthly": "Plan mensual, {{price}} al mes"
+    "endedMonthly": "Plan mensual, {{price}} al mes",
+    "signInLede": "Inicia sesión para empezar tu mes de Plus gratis. Sin tarjeta, no se renueva."
   }
 }

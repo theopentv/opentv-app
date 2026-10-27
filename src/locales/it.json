@@ -3921,6 +3921,7 @@
     "endedIncludes": "Plus include",
     "endedSafe": "Tutti i tuoi dati sono ancora qui. Non è stato cancellato nulla, e il tracciamento resta gratis.",
     "endedAnnual": "Piano annuale, {{price}} all'anno",
-    "endedMonthly": "Piano mensile, {{price}} al mese"
+    "endedMonthly": "Piano mensile, {{price}} al mese",
+    "signInLede": "Accedi per iniziare il tuo mese di Plus gratis. Nessuna carta, nessun rinnovo."
   }
 }

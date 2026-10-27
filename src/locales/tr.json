@@ -3921,6 +3921,7 @@
     "endedIncludes": "Plus şunları içerir",
     "endedSafe": "Tüm verilerin hâlâ burada. Hiçbir şey silinmedi ve takip ücretsiz kalıyor.",
     "endedAnnual": "Yıllık plan, yılda {{price}}",
-    "endedMonthly": "Aylık plan, ayda {{price}}"
+    "endedMonthly": "Aylık plan, ayda {{price}}",
+    "signInLede": "Ücretsiz Plus ayını başlatmak için giriş yap. Kart yok, yenilenmez."
   }
 }

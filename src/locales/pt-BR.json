@@ -3921,6 +3921,7 @@
     "endedIncludes": "O Plus inclui",
     "endedSafe": "Todos os seus dados continuam aqui. Nada foi apagado, e acompanhar o que você assiste continua grátis.",
     "endedAnnual": "Plano anual, {{price}} por ano",
-    "endedMonthly": "Plano mensal, {{price}} por mês"
+    "endedMonthly": "Plano mensal, {{price}} por mês",
+    "signInLede": "Entre para começar seu mês de Plus grátis. Sem cartão, nada é renovado."
   }
 }

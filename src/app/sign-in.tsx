@@ -36,7 +36,7 @@ import { colors, radius, space, ls } from '@/theme';
 type SessionResponse = { token: string; profile: { id: string; handle: string; email?: string | null } };
 
 export default function SignInScreen() {
-  const { next } = useLocalSearchParams<{ next?: string }>();
+  const { next, for: forWhat } = useLocalSearchParams<{ next?: string; for?: string }>();
   const [busy, setBusy] = useState<'apple' | 'google' | null>(null);
   /* Runtime, not build time — an old dev client without the native module
      hides the button instead of crashing. Same check `/join` makes. */
@@ -127,6 +127,7 @@ export default function SignInScreen() {
     <Screen>
       <NavHeader title={t('signIn.title')} close />
       <ScrollView contentContainerStyle={{ paddingBottom: space.xxl }}>
+        {forWhat === 'free-month' && <Text style={s.freeMonth}>{t('freeMonthOptIn.signInLede')}</Text>}
         <Text style={s.lede}>{t('signIn.lede')}</Text>
 
         {known && (
@@ -219,6 +220,14 @@ const s = StyleSheet.create({
   tvtimeLabel: { color: colors.faint, fontSize: 12, letterSpacing: ls(0.3), textTransform: 'uppercase', fontWeight: '700' },
   tvtimeValue: { color: colors.text, fontSize: 15, fontWeight: '700', textAlign: 'center' },
   tvtimeHint: { color: colors.dim, fontSize: 13, lineHeight: 18, textAlign: 'center' },
+  freeMonth: {
+    color: colors.text,
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 23,
+    paddingHorizontal: space.lg,
+    paddingTop: space.md,
+  },
   lede: {
     color: colors.dim,
     fontSize: 15,

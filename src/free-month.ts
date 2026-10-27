@@ -76,7 +76,9 @@ export async function acceptFreeMonth(from: 'import' | 'profile'): Promise<void>
   setMeta(PENDING_KEY, '1');
   if (!hasAccount()) {
     track('free_month_invite', { from, answer: 'sign_in' });
-    router.push('/sign-in');
+    // `for` puts the month on the sign-in page: tapping "Try it free" and
+    // landing on a page that never mentions it read as a bait (27 Oct sim run).
+    router.push('/sign-in?for=free-month');
     return;
   }
   track('free_month_invite', { from, answer: 'claim' });

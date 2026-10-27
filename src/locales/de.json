@@ -3921,6 +3921,7 @@
     "endedIncludes": "Plus enthält",
     "endedSafe": "Alle deine Daten sind noch da. Nichts wurde gelöscht, und das Tracking bleibt kostenlos.",
     "endedAnnual": "Jahresabo, {{price}} pro Jahr",
-    "endedMonthly": "Monatsabo, {{price}} pro Monat"
+    "endedMonthly": "Monatsabo, {{price}} pro Monat",
+    "signInLede": "Melde dich an, um deinen Gratismonat Plus zu starten. Keine Karte, nichts verlängert sich."
   }
 }

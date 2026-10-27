@@ -4225,6 +4225,7 @@
     "endedIncludes": "Plus obejmuje",
     "endedSafe": "Wszystkie Twoje dane wciąż tu są. Nic nie zostało usunięte, a śledzenie pozostaje darmowe.",
     "endedAnnual": "Plan roczny, {{price}} za rok",
-    "endedMonthly": "Plan miesięczny, {{price}} za miesiąc"
+    "endedMonthly": "Plan miesięczny, {{price}} za miesiąc",
+    "signInLede": "Zaloguj się, aby zacząć darmowy miesiąc Plus. Bez karty, nic się nie odnawia."
   }
 }

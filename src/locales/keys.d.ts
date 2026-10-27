@@ -940,6 +940,7 @@ export type LocaleKey =
   | "freeMonthOptIn.endedTitle"
   | "freeMonthOptIn.endedUsed"
   | "freeMonthOptIn.endsTodayTitle"
+  | "freeMonthOptIn.signInLede"
   | "group.defaultName"
   | "group.discussWith"
   | "group.join"
