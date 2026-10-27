@@ -417,16 +417,48 @@ export function isOver(g: Game): boolean {
 }
 
 /**
- * When the daily reminder should next fire: today at `hour` while today is
- * unplayed and the hour is still ahead, otherwise TOMORROW at `hour` — a day
- * not yet begun cannot have been played. Returning null for the second case
- * (before 2.0.0) left nothing scheduled after a game, so the reminder only
- * came on a day the app had been opened before the hour.
+ * TWO REMINDERS A DAY, BOOKED A WEEK AHEAD (2.0.3, Mahmood 26 Oct).
+ *
+ * Before 2.0.3 exactly ONE future reminder was ever pending, re-planned on
+ * every launch, so two days without opening the app and it went silent: the
+ * one booked notification fired, and nothing was left behind it. Now each day
+ * in the window gets a "today's puzzle is ready" at the player's hour and a
+ * "last chance" at `PUZZLE_LAST_CHANCE_HOUR`, so a week away still hears from
+ * it every day; opening the app, or finishing the game, re-plans from scratch.
+ *
+ * TODAY is the only day the planner can know about. Once it is played both of
+ * today's go (finishing re-plans, so a booked "last chance" is cancelled), and
+ * anything already past is skipped. A FUTURE day cannot have been played, and
+ * playing it means opening the app, which re-plans; so its pair is booked
+ * unconditionally and is never wrong when it fires.
+ *
+ * THE LAST CHANCE ONLY WHEN IT IS A SECOND, LATER CALL. A chosen hour of 22
+ * or 23 would put the "ready" on or after the warning, so from
+ * `PUZZLE_LAST_CHANCE_HOUR` on the day has one reminder, the one the player
+ * chose; the settings line promising "a last call at 22:00" is then moot,
+ * because their own reminder already is one.
+ *
+ * Budget: 2 × PUZZLE_REMINDER_DAYS = 14 pending, beside the planner's 30
+ * episodes and the handful of one-offs, under iOS's 64; the sum is pinned by
+ * a test in `puzzle-reminder.test.ts` so raising either side trips it.
  */
-export function nextPuzzleReminder(now: Date, hour: number, playedToday: boolean): number {
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour);
-  if (!playedToday && today.getTime() > now.getTime()) return today.getTime();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, hour).getTime();
+export const PUZZLE_REMINDER_DAYS = 7;
+export const PUZZLE_LAST_CHANCE_HOUR = 22;
+
+export type PuzzleReminder = { at: number; kind: 'ready' | 'lastChance' };
+
+export function planPuzzleReminders(now: Date, hour: number, playedToday: boolean, days = PUZZLE_REMINDER_DAYS): PuzzleReminder[] {
+  const out: PuzzleReminder[] = [];
+  const lastChance = hour < PUZZLE_LAST_CHANCE_HOUR;
+  for (let d = 0; d < days; d++) {
+    if (d === 0 && playedToday) continue;
+    // Local wall-clock per day, so a DST change moves nothing off the hour.
+    const at = (h: number) => new Date(now.getFullYear(), now.getMonth(), now.getDate() + d, h).getTime();
+    const day: PuzzleReminder[] = [{ at: at(hour), kind: 'ready' }];
+    if (lastChance) day.push({ at: at(PUZZLE_LAST_CHANCE_HOUR), kind: 'lastChance' });
+    out.push(...day.filter((r) => r.at > now.getTime()));
+  }
+  return out;
 }
 
 /** One try. A finished game ignores further guesses rather than growing.

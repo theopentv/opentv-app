@@ -3825,5 +3825,13 @@
     "title": "Geçmişin",
     "firstDay": "İlk oyun: {{date}}",
     "locked": "Bir haftadan eski başlıklar Plus'a dahil."
+  },
+  "puzzleReminders": {
+    "readyTitle": "Bugünün bulmacası hazır",
+    "readyBody": "Tahmin edilecek yeni bir başlık, altı deneme.",
+    "lastChanceTitle": "Bugünün bulmacası için son şans",
+    "lastChanceBody": "Gece yarısı bitiyor ve henüz oynamadın.",
+    "sub": "Her gün bu saatte, henüz oynamadıysan saat {{last}} için de son bir hatırlatma.",
+    "offerBody": "Her gün saat {{time}} için bir bildirim, henüz oynamadıysan saat {{last}} için de son bir hatırlatma."
   }
 }

@@ -7,8 +7,8 @@
  * reminders — but NOT from `meta`. The history, the stats and the squares
  * stay, so switching it back on is not a fresh start.
  *
- * THE REMINDER IS OFF BY DEFAULT and fires at the chosen hour only while
- * today's puzzle is unplayed (`puzzleReminderAt`). Turning it on asks for notification permission
+ * THE REMINDER IS OFF BY DEFAULT and fires at the chosen hour, and again at 22:00, only while
+ * today's puzzle is unplayed (`puzzleRemindersFrom`). Turning it on asks for notification permission
  * through the same door as every other reminder: `notifications.ts` plans
  * nothing while its master switch is off, so the switch has to open that too.
  *
@@ -22,6 +22,7 @@ import { Alert, ScrollView, StyleSheet, Switch, Text } from 'react-native';
 import { MenuRow, NavHeader, Screen } from '@/components/ui';
 import { t } from '@/i18n';
 import { setPuzzleReminder, syncEpisodeNotifications } from '@/notifications';
+import { PUZZLE_LAST_CHANCE_HOUR } from '@/puzzle';
 import {
   puzzleOn,
   puzzlePublicOn,
@@ -78,7 +79,7 @@ export default function PuzzleSettingsScreen() {
             <MenuRow
               trackId="puzzle.settings.remind"
               title={t('puzzlePolish.remind')}
-              sub={t('puzzlePolish.remindSub')}
+              sub={t('puzzleReminders.sub', { last: `${PUZZLE_LAST_CHANCE_HOUR}:00` })}
               right={<Switch value={remind} onValueChange={toggleRemind} trackColor={{ true: colors.green }} />}
             />
             {remind && (

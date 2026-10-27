@@ -3825,5 +3825,13 @@
     "title": "Dein Verlauf",
     "firstDay": "Zuerst gespielt am {{date}}",
     "locked": "Titel, die älter als eine Woche sind, gehören zu Plus."
+  },
+  "puzzleReminders": {
+    "readyTitle": "Das heutige Rätsel ist da",
+    "readyBody": "Ein neuer Titel zum Raten, sechs Versuche.",
+    "lastChanceTitle": "Letzte Chance für das heutige Rätsel",
+    "lastChanceBody": "Es endet um Mitternacht, und du hast noch nicht gespielt.",
+    "sub": "Jeden Tag zu dieser Uhrzeit, und eine letzte Erinnerung um {{last}}, wenn du noch nicht gespielt hast.",
+    "offerBody": "Eine Mitteilung jeden Tag um {{time}}, und eine letzte Erinnerung um {{last}}, wenn du noch nicht gespielt hast."
   }
 }

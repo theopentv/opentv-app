@@ -4125,5 +4125,13 @@
     "title": "Twoja historia",
     "firstDay": "Pierwsza gra: {{date}}",
     "locked": "Tytuły sprzed ponad tygodnia są w Plus."
+  },
+  "puzzleReminders": {
+    "readyTitle": "Dzisiejsza zagadka jest gotowa",
+    "readyBody": "Nowy tytuł do odgadnięcia, sześć prób.",
+    "lastChanceTitle": "Ostatnia szansa na dzisiejszą zagadkę",
+    "lastChanceBody": "Kończy się o północy, a zagadka jeszcze czeka.",
+    "sub": "Codziennie o tej godzinie i ostatnie przypomnienie o {{last}}, jeśli zagadka jeszcze czeka.",
+    "offerBody": "Powiadomienie codziennie o {{time}} i ostatnie przypomnienie o {{last}}, jeśli zagadka jeszcze czeka."
   }
 }

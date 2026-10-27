@@ -30,7 +30,7 @@ import {
   type UpcomingEpisode,
 } from '@/notification-plan';
 import { memoryFor, memoryNotificationAt, memorySentence } from '@/on-this-day';
-import { puzzleReminderAt, setPuzzleReminderOn } from '@/puzzle-data';
+import { puzzleRemindersFrom, setPuzzleReminderOn } from '@/puzzle-data';
 import { shouldResync } from '@/pure';
 import { GOAL_NUDGED_AT_KEY, goalNudgeAt, goalNudgeOn, goalStatus, mostBehind } from '@/yearly-goal';
 import type { LocaleKey } from '@/locales/keys';
@@ -417,24 +417,24 @@ export async function syncEpisodeNotifications(force = false): Promise<void> {
     }
 
     /*
-     * TODAY'S PUZZLE, NOT PLAYED YET (10 Oct; a streak warning until the
-     * streak went on 14 Oct). Same shape as the memory above — it reads
-     * `meta`, so it is scheduled here rather than planned. `puzzleReminderAt`
-     * is null unless the reminder is on, and otherwise the next unplayed
-     * day's hour — today's, or tomorrow's once today is played or past; and
-     * the trigger is one DATE, so "once a day" is the shape of the thing
-     * rather than a counter. Finishing the puzzle re-plans, which moves it on.
+     * THE DAILY PUZZLE (10 Oct; two a day, a week ahead since 2.0.3). Same
+     * shape as the memory above: it reads `meta`, so it is scheduled here
+     * rather than planned. `puzzleRemindersFrom` is empty unless the reminder
+     * is on, and otherwise a week of "ready" at the player's hour and "last
+     * chance" at 22:00, today's dropped once today is played; finishing the
+     * game re-plans, which is what cancels tonight's warning. Booking a week
+     * rather than one is what keeps it going for someone who has not opened
+     * the app for days; 14 fit beside the planner's budget under iOS's 64.
      */
-    const puzzle = puzzleReminderAt(new Date(now));
-    if (puzzle) {
+    for (const r of puzzleRemindersFrom(new Date(now))) {
       await Notifications.scheduleNotificationAsync({
         content: {
-          title: t('puzzlePolish.notifyTitle'),
-          body: t('puzzlePolish.notifyBody'),
+          title: t(r.kind === 'ready' ? 'puzzleReminders.readyTitle' : 'puzzleReminders.lastChanceTitle'),
+          body: t(r.kind === 'ready' ? 'puzzleReminders.readyBody' : 'puzzleReminders.lastChanceBody'),
           data: { kind: 'puzzle' },
           ...(Platform.OS === 'android' ? { channelId: 'new-episodes' } : {}),
         },
-        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(puzzle.at) },
+        trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(r.at) },
       });
     }
 

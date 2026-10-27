@@ -3825,5 +3825,13 @@
     "title": "Your history",
     "firstDay": "First played {{date}}",
     "locked": "Titles from more than a week ago are part of Plus."
+  },
+  "puzzleReminders": {
+    "readyTitle": "Today's puzzle is ready",
+    "readyBody": "A new title to guess, six tries.",
+    "lastChanceTitle": "Last chance for today's puzzle",
+    "lastChanceBody": "It ends at midnight, and you haven't played yet.",
+    "sub": "Each day at this hour, and a last call at {{last}} if you haven't played yet.",
+    "offerBody": "A notification each day at {{time}}, and a last call at {{last}} if you haven't played yet."
   }
 }
