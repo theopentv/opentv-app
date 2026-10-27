@@ -23,6 +23,7 @@
  * headers rather than discovered on a user's phone.
  */
 
+import { EMOTION_NAMES } from '@/pure';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
 
 /** The GDPR-shaped rows the importer consumes. Strings throughout, as CSV. */
@@ -52,6 +53,18 @@ export type ForeignRows = {
    *  for that film instead of searching its title: Simkl names anime films in
    *  romaji ("Sen to Chihiro no Kamikakushi"), which no title search finds. */
   movieTmdb?: { name: string; tmdbId: number }[];
+  /** Episode emotions as the app's own index, `EMOTION_NAMES` order, keyed by
+   *  show NAME like the ratings. Bingers only. */
+  episodeEmotions?: { name: string; season: number; episode: number; emotion: number }[];
+  /** A film's emotions as the `emotions` table holds them: that index + 28. */
+  movieEmotions?: { name: string; value: number }[];
+  /** "Who was your favourite?" by the character's NAME (Bingers). One per
+   *  episode and one per film, because that is all the app's tables hold. */
+  episodeCharacters?: { name: string; season: number; episode: number; character: string }[];
+  movieCharacters?: { movie: string; character: string }[];
+  /** Rows in the shape of TV Time's `lists-prod-lists.csv` — custom lists and
+   *  the two favourites rows — so the importer's own list code places them. */
+  listRows?: Record<string, string>[];
 };
 
 export const NO_ROWS: ForeignRows = { showRows: [], episodeRows: [], movieRows: [], movieRatings: [] };
@@ -1016,4 +1029,367 @@ export function serializdRows(records: readonly SerializdRecord[], link: Readonl
   }));
 
   return { showRows, episodeRows, movieRows: [], movieRatings: [], episodeRatings, comments };
+}
+
+/**
+ * SOFA TIME — asked for by a user in Saudi Arabia, who sent his real export on
+ * 26 Oct 2026. A ZIP of six JSON arrays: `watchedShow_…`, `stopWatchingShow_…`,
+ * `watchlistShow_…` and the same three for films.
+ *
+ * EVERY ITEM CARRIES ITS TMDB ID (`tmdb`, a number), so nothing is matched by
+ * title — but it is a TMDB id, and this app keys shows by TheTVDB id. So it is
+ * the Serializd shape again: `sofaTimeItems` reads the files, the importer
+ * resolves the distinct show ids, and `sofaTimeRows` maps through that link.
+ *
+ * WHICH PILE AN ITEM IS IN is known by its content where the content says:
+ * `archive_type` ("dropped" / "hold") is a stopped show, and `seasons` with
+ * episodes in them is a watched one. A FILM carries neither, and only the file
+ * name tells a watched film from a wanted one -- the one place this reads a
+ * name, and only to sort an item already known to be Sofa Time's by its shape.
+ *
+ * The film files were empty in the only real export seen, so their shape is
+ * ASSUMED: the show fields without `seasons`, and `rating` out of ten like an
+ * episode's.
+ */
+export type SofaItem = {
+  kind: 'show' | 'movie';
+  list: 'watched' | 'stopped' | 'watchlist';
+  tmdb: number;
+  title: string;
+  year: string;
+  /** `addedDate`: when it went on the list, or when a film was marked seen. */
+  at: string;
+  runtime: number | null;
+  rating: number | null;
+  episodes: { season: number; episode: number; at: string; rating: number | null }[];
+};
+
+const isSofaItem = (v: unknown): v is Record<string, unknown> =>
+  isObject(v) && typeof v.tmdb === 'number' && (v.type === 'tv' || v.type === 'movie') && typeof v.addedDate === 'string';
+
+/** Every Sofa Time item in a set of parsed JSON files, keyed by file path.
+ *  Empty means the files are not Sofa Time's. */
+export function sofaTimeItems(files: Readonly<Record<string, unknown>>): SofaItem[] {
+  const out: SofaItem[] = [];
+  for (const [path, json] of Object.entries(files)) {
+    if (!Array.isArray(json) || !json.some(isSofaItem)) continue;
+    const base = (path.split('/').pop() ?? '').toLowerCase();
+    for (const v of json) {
+      if (!isSofaItem(v)) continue;
+      const episodes: SofaItem['episodes'] = [];
+      for (const s of Array.isArray(v.seasons) ? v.seasons : []) {
+        const season = isObject(s) ? numOf(s.number) : null;
+        if (season == null || !isObject(s)) continue;
+        for (const e of Array.isArray(s.episodes) ? s.episodes : []) {
+          const episode = isObject(e) ? numOf(e.number) : null;
+          if (episode == null || !isObject(e)) continue;
+          episodes.push({ season, episode, at: strOf(e.addedDate), rating: numOf(e.rating) });
+        }
+      }
+      const list: SofaItem['list'] =
+        v.archive_type != null || base.startsWith('stopwatching')
+          ? 'stopped'
+          : episodes.length > 0 || base.startsWith('watched')
+            ? 'watched'
+            : 'watchlist';
+      out.push({
+        kind: v.type === 'tv' ? 'show' : 'movie',
+        list,
+        tmdb: v.tmdb as number,
+        title: strOf(v.title),
+        year: strOf(v.release_date).slice(0, 4),
+        at: strOf(v.addedDate),
+        runtime: numOf(v.runtime),
+        rating: numOf(v.rating),
+        episodes,
+      });
+    }
+  }
+  return out;
+}
+
+export function sofaTimeRows(items: readonly SofaItem[], link: ReadonlyMap<number, SerializdLink>): ForeignRows {
+  const rows: ForeignRows = { showRows: [], episodeRows: [], movieRows: [], movieRatings: [], episodeRatings: [], movieTmdb: [] };
+  const shows = new Map<number, { name: string; archived: boolean }>();
+  const seenEp = new Set<string>();
+
+  for (const item of items) {
+    if (item.kind === 'movie') {
+      /* A FILM YOU STOPPED WATCHING has nowhere to go: it is neither seen nor
+         still wanted, and this app has no "abandoned" for films. Left out
+         rather than guessed into one or the other. */
+      if (item.list === 'stopped' || !item.title) continue;
+      rows.movieTmdb!.push({ name: item.title, tmdbId: item.tmdb });
+      const watched = item.list === 'watched';
+      rows.movieRows.push({ type: watched ? 'watch' : 'towatch', entity_type: 'movie', movie_name: item.title, movie_year: item.year, created_at: item.at });
+      const ten = watched ? ratingFromTen(item.rating) : null;
+      if (ten != null) rows.movieRatings.push({ name: item.title, ten });
+      continue;
+    }
+
+    // No TheTVDB id: reported by the importer's link step, never matched by name.
+    const hit = link.get(item.tmdb);
+    if (!hit) continue;
+    const cur = shows.get(hit.tvdbId) ?? { name: '', archived: false };
+    cur.name ||= item.title || hit.name;
+    // "dropped" and "hold" both: off the Watch Next list, history kept — TV Time's "stopped".
+    cur.archived ||= item.list === 'stopped';
+    shows.set(hit.tvdbId, cur);
+
+    for (const ep of item.episodes) {
+      const key = `${hit.tvdbId}-${ep.season}-${ep.episode}`;
+      if (seenEp.has(key)) continue;
+      seenEp.add(key);
+      rows.episodeRows.push({
+        s_id: String(hit.tvdbId),
+        season_number: String(ep.season),
+        episode_number: String(ep.episode),
+        // An episode's own `addedDate` is the day it was ticked; the show's is a fallback.
+        created_at: ep.at || item.at,
+        series_name: cur.name,
+        runtime: item.runtime ? String(item.runtime) : '',
+      });
+      // Rare in the real file, and out of ten as the app's own scale is.
+      const ten = ratingFromTen(ep.rating);
+      if (ten != null && cur.name) rows.episodeRatings!.push({ name: cur.name, season: ep.season, episode: ep.episode, ten });
+    }
+  }
+
+  // A watchlist show arrives followed with nothing seen, as Simkl's "plan to watch" does.
+  rows.showRows = [...shows].map(([tvdbId, s]) => ({
+    tv_show_id: String(tvdbId),
+    tv_show_name: s.name,
+    is_followed: '1',
+    is_favorited: '0',
+    archived: s.archived ? '1' : '0',
+  }));
+  return rows;
+}
+
+/**
+ * BINGERS — the biggest of TV Time's successors, asked for on r/TVTime on 26
+ * Oct 2026, the same day Mahmood exported his own library from it.
+ *
+ * FOUR UTF-8 CSVs WITH A BOM: `library.csv` (what you follow, favourite, keep
+ * for later or stopped), `watches.csv` (one row per episode or film, with
+ * `plays`), `ratings.csv` (one to five, a favourite character, emotions) and
+ * `lists.csv`. Known by their header rows, never by their names.
+ *
+ * EVERY ROW CARRIES A TheTVDB ID, A TMDB ID, OR BOTH, so nothing is matched by
+ * title. A show with only a TMDB id goes through the same link step as
+ * Serializd's; a film is looked up by its TMDB id, as Simkl's are.
+ *
+ * WHAT MAPS, and onto what the app already has:
+ *   - `plays` above one is rewatches: the first play is the watch, every
+ *     further play a rewatch row dated `last_watched_at` (the plays in between
+ *     have no date in the file); a film's become its rewatch count;
+ *   - `for_later` is the watchlist, `stopped_watching_at` is archived;
+ *   - the seven emotions are all among the app's twelve;
+ *   - `favorite_character` can name several, and the app keeps ONE favourite
+ *     per episode: the first is kept;
+ *   - `favorite` and `lists.csv` become the favourites rows and custom lists,
+ *     in TV Time's own list shape so the importer's list code places them.
+ * NOT MAPPED: `hidden_at`, which has no meaning here, and list descriptions,
+ * which the app's lists do not have.
+ */
+export type BingersTables = {
+  library: Record<string, string>[];
+  watches: Record<string, string>[];
+  ratings: Record<string, string>[];
+  lists: Record<string, string>[];
+};
+
+/** The BOM rides on the first header ("﻿type"), and `parseCsv` keeps it. */
+const csvKey = (h: string): string => h.replace(/^﻿/, '').trim().toLowerCase();
+
+/** Which of the four Bingers files this header row is, if any. */
+export function bingersTableKind(header: readonly string[]): keyof BingersTables | null {
+  const k = new Set(header.map(csvKey));
+  if (!k.has('type') || !k.has('tvdb_id') || !k.has('tmdb_id')) return null;
+  if (k.has('list_status')) return 'library';
+  if (k.has('plays')) return 'watches';
+  if (k.has('favorite_character') || k.has('emotions')) return 'ratings';
+  if (k.has('list_name')) return 'lists';
+  return null;
+}
+
+/** One parsed Bingers CSV with its keys de-BOMed and lowercased, values trimmed. */
+export function bingersTable(rows: readonly Record<string, string>[]): Record<string, string>[] {
+  return rows.map((r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [csvKey(k), (v ?? '').trim()])));
+}
+
+const isBingersShow = (r: Record<string, string>): boolean => r.type === 'show' || r.type === 'episode';
+
+/** Shows (and episodes) that name only a TMDB id: the ones the link step must place. */
+export function bingersTmdbOnlyShows(t: BingersTables): { showId: number; showName: string }[] {
+  const out = new Map<number, string>();
+  for (const r of [...t.library, ...t.watches, ...t.ratings]) {
+    const tmdb = Number(r.tmdb_id);
+    if (isBingersShow(r) && !(Number(r.tvdb_id) > 0) && tmdb > 0 && !out.has(tmdb)) out.set(tmdb, r.title ?? '');
+  }
+  return [...out].map(([showId, showName]) => ({ showId, showName }));
+}
+
+/**
+ * A uuid for a film that TV Time's list rows can carry. Those rows name films
+ * ONLY by uuid (see `listEntries`), so a film on a Bingers list is given one
+ * made from its TMDB id, and its movie rows carry the same one for
+ * `movieNamesByUuid` to name it by. Same id, same uuid, every import.
+ */
+const filmUuid = (tmdb: number): string => `00000000-0000-4000-8000-${tmdb.toString(16).padStart(12, '0')}`;
+
+export function bingersRows(t: BingersTables, link: ReadonlyMap<number, SerializdLink>): ForeignRows {
+  const rows: ForeignRows = {
+    showRows: [],
+    episodeRows: [],
+    movieRows: [],
+    movieRatings: [],
+    episodeRatings: [],
+    movieTmdb: [],
+    episodeEmotions: [],
+    movieEmotions: [],
+    episodeCharacters: [],
+    movieCharacters: [],
+    listRows: [],
+  };
+  const tvdbOf = (r: Record<string, string>): number => Number(r.tvdb_id) || link.get(Number(r.tmdb_id))?.tvdbId || 0;
+  const intOf = (v: string | undefined): number | null => (/^\d+$/.test(v ?? '') ? Number(v) : null);
+
+  // ---- names: the library's, then any row's, then the link's ----------------
+  const showName = new Map<number, string>();
+  const filmName = new Map<number, string>();
+  const filmYear = new Map<number, string>();
+  for (const r of [...t.library, ...t.watches, ...t.ratings, ...t.lists]) {
+    if (!r.title) continue;
+    if (isBingersShow(r)) {
+      const id = tvdbOf(r);
+      if (id && !showName.has(id)) showName.set(id, r.title);
+    } else if (r.type === 'movie') {
+      const id = Number(r.tmdb_id);
+      if (id > 0 && !filmName.has(id)) filmName.set(id, r.title);
+      if (id > 0 && r.year && !filmYear.has(id)) filmYear.set(id, r.year);
+    }
+  }
+  for (const hit of link.values()) if (!showName.has(hit.tvdbId) && hit.name) showName.set(hit.tvdbId, hit.name);
+  const film = (r: Record<string, string>): { tmdb: number; name: string } | null => {
+    const tmdb = Number(r.tmdb_id);
+    const name = filmName.get(tmdb) ?? '';
+    return tmdb > 0 && name ? { tmdb, name } : null;
+  };
+
+  // ---- shows -----------------------------------------------------------------
+  const shows = new Map<number, { archived: boolean; favorite: boolean }>();
+  for (const r of t.library) {
+    const id = r.type === 'show' ? tvdbOf(r) : 0;
+    if (id) shows.set(id, { archived: !!r.stopped_watching_at, favorite: r.favorite === 'yes' });
+  }
+
+  // ---- watches ---------------------------------------------------------------
+  const films = new Map<number, string>();
+  const seenEp = new Set<string>();
+  for (const r of t.watches) {
+    const plays = Math.max(1, intOf(r.plays) ?? 1);
+    if (r.type === 'episode') {
+      const id = tvdbOf(r);
+      const season = intOf(r.season_number);
+      const episode = intOf(r.episode_number);
+      if (!id || season == null || episode == null) continue;
+      const key = `${id}-${season}-${episode}`;
+      if (seenEp.has(key)) continue;
+      seenEp.add(key);
+      if (!shows.has(id)) shows.set(id, { archived: false, favorite: false });
+      const row = { s_id: String(id), season_number: String(season), episode_number: String(episode), series_name: showName.get(id) ?? '' };
+      rows.episodeRows.push({ ...row, created_at: r.first_watched_at || r.last_watched_at || '' });
+      // The importer's rewatch flag, one row per extra play.
+      for (let i = 1; i < plays; i++) rows.episodeRows.push({ ...row, created_at: r.last_watched_at || r.first_watched_at || '', rewatch_count: '1' });
+      continue;
+    }
+    const f = r.type === 'movie' ? film(r) : null;
+    if (!f || films.has(f.tmdb)) continue;
+    films.set(f.tmdb, f.name);
+    rows.movieRows.push({
+      type: 'watch',
+      entity_type: 'movie',
+      movie_name: f.name,
+      movie_year: filmYear.get(f.tmdb) ?? '',
+      created_at: r.first_watched_at || r.last_watched_at || '',
+      rewatch_count: String(plays - 1),
+      uuid: filmUuid(f.tmdb),
+    });
+  }
+  for (const r of t.library) {
+    const f = r.type === 'movie' && r.list_status === 'for_later' ? film(r) : null;
+    if (!f) continue;
+    films.set(f.tmdb, f.name);
+    rows.movieRows.push({ type: 'towatch', entity_type: 'movie', movie_name: f.name, movie_year: filmYear.get(f.tmdb) ?? '', created_at: r.for_later_at || r.added_at || '', uuid: filmUuid(f.tmdb) });
+  }
+
+  rows.showRows = [...shows].map(([id, s]) => ({
+    tv_show_id: String(id),
+    tv_show_name: showName.get(id) ?? '',
+    is_followed: '1',
+    is_favorited: s.favorite ? '1' : '0',
+    archived: s.archived ? '1' : '0',
+  }));
+
+  // ---- ratings, emotions, favourite characters ------------------------------
+  for (const r of t.ratings) {
+    const ten = ratingFromStars(intOf(r.rating));
+    const emotions = (r.emotions ?? '')
+      .split('|')
+      .map((e) => (EMOTION_NAMES as readonly string[]).indexOf(e.trim().toLowerCase()))
+      .filter((i) => i >= 0);
+    const character = (r.favorite_character ?? '').split('|')[0].trim();
+    if (r.type === 'episode') {
+      const id = tvdbOf(r);
+      const name = showName.get(id);
+      const season = intOf(r.season_number);
+      const episode = intOf(r.episode_number);
+      if (!id || !name || season == null || episode == null) continue;
+      if (ten != null) rows.episodeRatings!.push({ name, season, episode, ten });
+      for (const emotion of emotions) rows.episodeEmotions!.push({ name, season, episode, emotion });
+      if (character) rows.episodeCharacters!.push({ name, season, episode, character });
+    } else if (r.type === 'movie') {
+      const f = film(r);
+      if (!f) continue;
+      if (ten != null) rows.movieRatings.push({ name: f.name, ten });
+      for (const i of emotions) rows.movieEmotions!.push({ name: f.name, value: i + 28 });
+      if (character) rows.movieCharacters!.push({ movie: f.name, character });
+    }
+  }
+
+  // ---- favourites and lists, as TV Time's list rows --------------------------
+  const seriesEntry = (id: number) => `map[id:${id} type:series]`;
+  const filmEntry = (tmdb: number) => `map[type:movie uuid:${filmUuid(tmdb)}]`;
+  const favShows = [...shows].filter(([, s]) => s.favorite).map(([id]) => seriesEntry(id));
+  const favFilms = t.library.filter((r) => r.type === 'movie' && r.favorite === 'yes' && films.has(Number(r.tmdb_id))).map((r) => filmEntry(Number(r.tmdb_id)));
+  if (favShows.length) rows.listRows!.push({ type: 'list', s_key: 'favorite-series', objects: `[${favShows.join(' ')}]` });
+  if (favFilms.length) rows.listRows!.push({ type: 'list', s_key: 'favorite-movies', objects: `[${favFilms.join(' ')}]` });
+
+  const lists = new Map<string, string[]>();
+  for (const r of t.lists) {
+    const name = r.list_name;
+    if (!name) continue;
+    const entries = lists.get(name) ?? [];
+    lists.set(name, entries);
+    if (isBingersShow(r)) {
+      const id = tvdbOf(r);
+      if (id) entries.push(seriesEntry(id));
+      continue;
+    }
+    const f = r.type === 'movie' ? film(r) : null;
+    if (!f) continue;
+    entries.push(filmEntry(f.tmdb));
+    /* A FILM ON A LIST AND NOWHERE ELSE still needs its name found by uuid.
+       A row of no type the importer counts — not a watch, not the watchlist —
+       names it without putting it in the library, as a TV Time list does. */
+    if (!films.has(f.tmdb)) {
+      films.set(f.tmdb, f.name);
+      rows.movieRows.push({ type: 'list', entity_type: 'movie', movie_name: f.name, uuid: filmUuid(f.tmdb) });
+    }
+  }
+  for (const [name, entries] of lists) rows.listRows!.push({ type: 'list', s_key: '', name, objects: `[${entries.join(' ')}]`, created_at: '' });
+
+  for (const [tmdbId, name] of films) rows.movieTmdb!.push({ name, tmdbId });
+  return rows;
 }
