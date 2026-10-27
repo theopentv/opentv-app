@@ -21,7 +21,7 @@
  * out as the centred name fades in, the three counts, the stats rail, the list
  * collage, the four shelves and their exact order — is written once, here.
  */
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   type ImageSourcePropType,
@@ -977,6 +977,33 @@ export function ProfileTemplate({
   const canArrange = onArrange != null && own;
   // Edit profile's "Arrange blocks" — see `requestArrange`.
   useEffect(() => (canArrange ? onArrangeRequested(startEditing) : undefined), [canArrange]); // eslint-disable-line react-hooks/exhaustive-deps
+  /** What the ✓ does. Every move was already saved as it happened. */
+  const finishArranging = () => {
+    setEditing(false);
+    setArrangeRun((n) => n + 1);
+  };
+  /*
+   * LEAVING THE TAB ENDS ARRANGING (27 Oct). It stayed on: off to Explore and
+   * back, and the profile was still covered in − badges. But a plain blur is
+   * also the + sheet, the pencil's picker and the links editor opening OVER
+   * this screen, and those must come back still arranging. So the question
+   * asked on blur is the tab bar's: is the tab focused now still the one this
+   * profile is in? `getParent()` is the tab navigator -- this screen sits in
+   * the Profile tab's own stack, and the sheets are pushed on the root.
+   */
+  const navigation = useNavigation();
+  useFocusEffect(
+    useCallback(() => {
+      if (!editing || !canArrange) return;
+      const tabs = navigation.getParent();
+      const at = tabs?.getState();
+      const mine = at?.routes[at.index]?.key;
+      return () => {
+        const now = tabs?.getState();
+        if (mine != null && now?.routes[now.index]?.key !== mine) finishArranging();
+      };
+    }, [editing, canArrange, navigation]), // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   /**
    * The measured heights of the CONTENT-SIZED blocks, by instance. The sized
@@ -1435,6 +1462,7 @@ export function ProfileTemplate({
                     index={b.at}
                     editing={editing}
                     canRemove={b.id !== LOCKED}
+                    accent={themeColor ?? colors.yellow}
                     rect={{ x: b.x, y: b.y, w: b.w, h: b.h }}
                     fixedHeight={b.fixed}
                     slotAt={slotAt}
@@ -1544,8 +1572,7 @@ export function ProfileTemplate({
           onAdd={() => onAddWidget?.()}
           onDone={() => {
             tapLight();
-            setEditing(false);
-            setArrangeRun((n) => n + 1);
+            finishArranging();
           }}
         />
       )}
