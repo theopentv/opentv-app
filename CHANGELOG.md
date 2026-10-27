@@ -44,6 +44,26 @@ Play Console record rather than per-change.
 
 ## 2.0.4 — the plan
 
+- **PLUS: a website (Mahmood, 27 Oct: ships WITH the MCP in 2.0.4).** A web version of OpenTV for Plus
+  members only: open your library, rate, mark watched, add to the watchlist, much as
+  in the app. It needs the user's history on the server, so it shares the **per-user
+  database planned for MCP in 2.0.4** (a Durable Object built from the user's backup,
+  only with consent, deleted when turned off) and writes back as `sync_ops` from a
+  "web" device so the phones apply them (the snapshot + ops design in
+  SYNC-RESEARCH.md; never per-record watch tables). Free users' history never leaves
+  the phone. Same web sign-in (OAuth) as MCP, so build them together.
+  - **Subscribe and renew on the website** to keep more than the store fee (15% under
+    Apple's/Google's small-business programs, 30% otherwise). RevenueCat Web Billing
+    (Stripe or Paddle) so web and store subscriptions are one entitlement. A merchant
+    of record (Paddle, Lemon Squeezy) handles VAT worldwide; plain Stripe means doing
+    VAT ourselves. Check that Insightfy LLC's country can use the chosen provider.
+  - **Store rules:** iOS may link to web checkout only on the US storefront (and the
+    EU under DMA terms); elsewhere the app must not mention the web price, but a
+    subscription bought on the web still unlocks Plus in the app. Google Play allows
+    external offers / alternative billing only in some regions, with a reduced fee.
+  - **Size:** SYNC-RESEARCH.md put a website at ~5 weeks; moved out of 2.0.3 so 2.0.3 still ships before 1 Dec.
+  - **Open question: how to take web payments from Iraq** (Stripe/Paddle/Lemon Squeezy do not serve Iraq). Depends on where Insightfy LLC is registered and banks.
+
 - **PLUS: OpenTV inside Claude and ChatGPT (an MCP server), built on a per-user
   database** (Mahmood, 26 Oct: "do B directly"). Bingers already sells this on its
   top plan ($4.99/mo, "Icon"). Replaces the 20 Oct sketch in "2.0.1 — the plan".
@@ -80,6 +100,7 @@ Play Console record rather than per-change.
 
 
 ## 2.0.3 — the plan
+
 
 - **"Everything I watch" in one page, as a profile widget** (Mahmood, 26 Oct, from
   the Arabic channel admin's question: "is there no way to see all the films, series
