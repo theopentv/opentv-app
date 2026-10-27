@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
 
-import { getMeta, getWatchedSet, markWatched, setMeta, unmarkWatched } from '@/db';
+import { getMeta, getWatchedSet, markWatched, markWatchedMany, setMeta, unmarkWatched } from '@/db';
 import { t } from '@/i18n';
 import { showMeta } from '@/metadata';
 import { maybeAskForRatingAfterMark } from '@/rate-us';
@@ -48,7 +48,7 @@ export function markWatchedWithPrompt(showId: number, season: number, episode: n
     {
       text: t('markPrevPrompt.yes'),
       onPress: () => {
-        for (const p of prev) markWatched(showId, p.s, p.e);
+        markWatchedMany(showId, prev.map((p) => ({ season: p.s, episode: p.e })));
         onDone();
       },
     },
