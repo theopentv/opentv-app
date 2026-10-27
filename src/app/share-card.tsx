@@ -14,7 +14,7 @@ import { colors, radius, ls } from '@/theme';
 import { tapSelection } from '@/haptics';
 import { currentLocale, statusText, t } from '@/i18n';
 import { runtimeLabel } from '@/duration';
-import { withLink } from '@/share-link';
+import { SITE_HOST, withLink } from '@/share-link';
 import { StarRow } from '@/components/half-stars';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
@@ -448,6 +448,7 @@ export default function ShareCardScreen() {
               <View style={styles.storyBrand}>
                 <Image source={require('@/assets/images/mark.png')} style={styles.storyBadge} contentFit="contain" />
                 <Text style={styles.storyBrandText}>OPENTV</Text>
+                <Text style={styles.storyBrandUrl}>{SITE_HOST}</Text>
               </View>
               <Text style={styles.storyBrandCta} numberOfLines={2}>
                 {t('shareCard.openSourceTagline')}
@@ -557,9 +558,14 @@ export default function ShareCardScreen() {
                 style={styles.otBadge}
                 contentFit="contain"
               />
-              <Text style={styles.brandText}>OPENTV</Text>
+              {/* The address under the name (2.0.3): the share sheet carries
+                  only this picture, so a link not drawn here never arrives. */}
+              <View>
+                <Text style={styles.brandText}>OPENTV</Text>
+                <Text style={styles.brandUrl}>{SITE_HOST}</Text>
+              </View>
             </View>
-            <Text style={styles.brandCta}>{t('shareCard.openSourceTagline')}</Text>
+            <Text style={styles.brandCta} numberOfLines={2}>{t('shareCard.openSourceTagline')}</Text>
           </View>
         </View>
         </View>
@@ -649,8 +655,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   otBadge: { width: 22, height: 22 },
-  brandText: { color: '#FFF', fontSize: fs(11.5), fontWeight: '800', letterSpacing: ls(0.8) },
-  brandCta: { color: '#C9C9CF', fontSize: fs(9.5) },
+  brandText: { color: '#FFF', fontSize: fs(11.5), lineHeight: fs(13.5), fontWeight: '800', letterSpacing: ls(0.8) },
+  brandUrl: { color: '#8A8A92', fontSize: fs(9), lineHeight: fs(11), fontWeight: '700' },
+  brandCta: { color: '#C9C9CF', fontSize: fs(9.5), flexShrink: 1, marginStart: 12 },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -731,5 +738,6 @@ const styles = StyleSheet.create({
   storyBrand: { flexDirection: 'row', alignItems: 'center', gap: ss(6), marginTop: ss(16) },
   storyBadge: { width: ss(18), height: ss(18) },
   storyBrandText: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '900', letterSpacing: ls(0.8) },
+  storyBrandUrl: { color: 'rgba(255,255,255,0.6)', fontSize: ss(10.5), fontWeight: '700', marginStart: ss(2) },
   storyBrandCta: { color: 'rgba(255,255,255,0.5)', fontSize: ss(10), fontWeight: '600', marginTop: ss(3) },
 });

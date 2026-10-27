@@ -44,7 +44,7 @@ import { getFavoriteMovies, getFavoriteShows, getRecentMovies, getRecentShows } 
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { profileImageUri } from '@/library';
-import { withLink } from '@/share-link';
+import { SITE_HOST, withLink } from '@/share-link';
 import { colors, radius, ls } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
@@ -831,6 +831,9 @@ export default function ShareFavoritesScreen() {
                   contentFit="contain"
                 />
                 <Text style={s.brandText}>OPENTV</Text>
+                {/* The address beside the name (2.0.3): the share sheet
+                    carries only this picture. */}
+                <Text style={s.brandUrl}>{SITE_HOST}</Text>
               </View>
               {/*
                 WHOSE CARD THIS IS.
@@ -1045,6 +1048,7 @@ const s = StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: ss(6), marginTop: ss(14) },
   mark: { width: ss(18), height: ss(18) },
   brandText: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '900', letterSpacing: ls(0.8) },
+  brandUrl: { color: 'rgba(255,255,255,0.6)', fontSize: ss(10.5), fontWeight: '700', marginStart: ss(2) },
   handle: { color: 'rgba(255,255,255,0.78)', fontSize: ss(11), fontWeight: '700', marginTop: ss(5) },
   tagline: {
     color: 'rgba(255,255,255,0.5)',

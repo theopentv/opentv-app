@@ -25,6 +25,7 @@ import { requirePlus, usePlus } from '@/plus';
 import { computeCrowdCompare, computeDeepStats, watchYears } from '@/stats-calc';
 import { colors, radius, space, ls } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
+import { SITE_HOST } from '@/share-link';
 
 /** How many of the crowd rows each half of the comparison shows. */
 const CROWD_ROWS = 5;
@@ -93,8 +94,13 @@ function ShareRow({ genres, score }: { genres: string[]; score: number | null })
           </Text>
         )}
         <View style={styles.cardBrand}>
-          <Text style={styles.cardBrandText}>OPENTV</Text>
-          <Text style={styles.cardBrandSub}>{t('plus.stats.cardTagline')}</Text>
+          {/* The address under the name (2.0.3): the share sheet carries only
+              this picture, so a link that is not drawn here never arrives. */}
+          <View>
+            <Text style={styles.cardBrandText}>OPENTV</Text>
+            <Text style={styles.cardBrandUrl}>{SITE_HOST}</Text>
+          </View>
+          <Text style={styles.cardBrandSub} numberOfLines={2}>{t('plus.stats.cardTagline')}</Text>
         </View>
       </View>
       <Pressable accessibilityRole="button" style={styles.shareBtn} onPress={() => void oneAtATime('share', share)}>
@@ -360,7 +366,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   cardBrandText: { color: colors.text, fontSize: 11.5, fontWeight: '800', letterSpacing: ls(0.8) },
-  cardBrandSub: { color: '#C9C9CF', fontSize: 9.5 },
+  cardBrandSub: { color: '#C9C9CF', fontSize: 9.5, flexShrink: 1, marginStart: 12 },
+  cardBrandUrl: { color: '#8A8A92', fontSize: 9.5, fontWeight: '700', marginTop: 1 },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',
