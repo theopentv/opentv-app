@@ -1037,6 +1037,15 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
+        <Stack.Screen
+          name="everything-filters"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+            animationDuration: 150,
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
         <Stack.Screen name="pick-artwork" options={{ presentation: 'card', animation: 'slide_from_right' }} />
         <Stack.Screen name="pick-gif" options={{ presentation: 'card', animation: 'slide_from_right' }} />
         <Stack.Screen

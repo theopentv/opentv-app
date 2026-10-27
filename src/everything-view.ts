@@ -6,12 +6,9 @@
  * channel admin, 26 Oct: "is there no way to see all the films, series and
  * anime I follow?") is about the whole library at once. Shows and Films each
  * already have a page; a third page that is the same two grids stacked would
- * answer nothing. So the rows are mixed and the chips split them back out.
+ * answer nothing. So the rows are mixed, and the filter sheet's Type axis splits them back out.
  */
-import { compareTitles } from '@/pure';
-
-export type EverythingKind = 'all' | 'shows' | 'anime' | 'movies';
-export type EverythingSort = 'recent' | 'alpha' | 'added';
+import { compareTitles, type FilterSort } from '@/pure';
 
 export type EverythingItem = {
   kind: 'show' | 'movie';
@@ -39,40 +36,34 @@ export type EverythingItem = {
 /** "2026-10-27 21:04:00" and "2026-10-27T21:04:00Z" sort together. */
 export const sortableDate = (v: string | null | undefined): string => (v ? v.replace(' ', 'T') : '');
 
-export function everythingView<T extends EverythingItem>(
-  items: readonly T[],
-  kind: EverythingKind,
-  sort: EverythingSort,
-  query: string,
-): T[] {
+/**
+ * EVERYTHING I WATCH MEANS WATCHED (27 Oct 2026). The first version took the
+ * Films page whole, so a watchlist film ("Not watched, added Oct 19") sat in a
+ * list named for what you watch. A film is in when it has a first watch — the
+ * same line the Films page draws between its Watched and Not watched sections.
+ *
+ * Shows are left as the Shows page has them (`getShowProgress`): a show you
+ * follow is one you are watching, whether or not an episode is ticked yet,
+ * and the Shows page is the definition of "your shows".
+ *
+ * The page and the profile shelf both go through here so they cannot differ.
+ */
+export function watchedFilms<T extends { watchedAt: string | null }>(movies: readonly T[]): T[] {
+  return movies.filter((m) => m.watchedAt != null);
+}
+
+/**
+ * Search and order. WHICH titles are in has already been decided by the
+ * shared filter sheet (`matchesFilters`, Type axis included); this is the
+ * part that sheet does not do.
+ */
+export function everythingView<T extends EverythingItem>(items: readonly T[], sort: FilterSort, query: string): T[] {
   const q = query.trim().toLowerCase();
-  const out = items.filter(
-    (it) =>
-      (kind === 'all' ||
-        (kind === 'shows' && it.kind === 'show') ||
-        (kind === 'anime' && it.kind === 'show' && it.anime) ||
-        (kind === 'movies' && it.kind === 'movie')) &&
-      (!q || it.search.includes(q)),
-  );
+  const out = q ? items.filter((it) => it.search.includes(q)) : [...items];
   // The same three orders the Shows and Films pages offer, with the same
   // tie-break: A-Z, so an import's undated rows still come out in an order.
   if (sort === 'alpha') out.sort((a, b) => compareTitles(a.name, b.name));
-  else if (sort === 'added') out.sort((a, b) => b.added.localeCompare(a.added) || compareTitles(a.name, b.name));
+  else if (sort === 'lastAdded') out.sort((a, b) => b.added.localeCompare(a.added) || compareTitles(a.name, b.name));
   else out.sort((a, b) => b.last.localeCompare(a.last) || compareTitles(a.name, b.name));
   return out;
-}
-
-/** Totals for the chips and the profile block. */
-export function everythingCounts(items: readonly EverythingItem[]): { shows: number; anime: number; movies: number } {
-  let shows = 0;
-  let anime = 0;
-  let movies = 0;
-  for (const it of items) {
-    if (it.kind === 'movie') movies += 1;
-    else {
-      shows += 1;
-      if (it.anime) anime += 1;
-    }
-  }
-  return { shows, anime, movies };
 }

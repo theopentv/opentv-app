@@ -17,12 +17,38 @@ describe('displayTitle', () => {
     expect(displayTitle('La Tortue rouge', RED_TURTLE)).toBe('The Red Turtle');
   });
 
-  it('shows English even when a localised title exists', () => {
-    // NOT the UI language. A library imported from TV Time is already English
-    // throughout, and TMDB has a localised title for some films and not others
-    // -- following the reader's language would translate half a shelf and
-    // leave the rest, which is worse than one language for all of it.
-    expect(displayTitle('La Tortue rouge', RED_TURTLE)).toBe('The Red Turtle');
+  it("prefers the reader's language when the name was fetched in it", () => {
+    // 27 Oct 2026: the reader's language first, English second.
+    const red = JSON.stringify({ ...JSON.parse(RED_TURTLE), lang: 'ar', ol: 'fr' });
+    expect(displayTitle('La Tortue rouge', red, 'ar')).toBe(
+      '\u0627\u0644\u0633\u0644\u062d\u0641\u0627\u0629 \u0627\u0644\u062d\u0645\u0631\u0627\u0621',
+    );
+    // ar-IQ is still Arabic
+    expect(displayTitle('La Tortue rouge', red, 'ar-IQ')).toBe(displayTitle('La Tortue rouge', red, 'ar'));
+    // the same row for somebody reading English: English
+    expect(displayTitle('La Tortue rouge', red, 'en')).toBe('The Red Turtle');
+  });
+
+  it('never shows a localised name in a language the reader left', () => {
+    const red = JSON.stringify({ ...JSON.parse(RED_TURTLE), lang: 'ar' });
+    expect(displayTitle('La Tortue rouge', red, 'fr')).toBe('The Red Turtle');
+    // and a row from before `lang` was recorded says nothing about its language
+    expect(displayTitle('La Tortue rouge', RED_TURTLE, 'ar')).toBe('The Red Turtle');
+  });
+
+  it("does not mistake TMDB's fallback to the original title for a translation", () => {
+    // No Arabic title on TMDB: it answers with the Japanese original.
+    const wolf = JSON.stringify({
+      en: 'Wolf Children',
+      orig: '\u304a\u304a\u304b\u307f\u3053\u3069\u3082\u306e\u96e8\u3068\u96ea',
+      loc: '\u304a\u304a\u304b\u307f\u3053\u3069\u3082\u306e\u96e8\u3068\u96ea',
+      lang: 'ar',
+      ol: 'ja',
+    });
+    expect(displayTitle('\u304a\u304a\u304b\u307f\u3053\u3069\u3082\u306e\u96e8\u3068\u96ea', wolf, 'ar')).toBe('Wolf Children');
+    // ...but a French film for a French reader is its own French title
+    const fr = JSON.stringify({ en: 'The Red Turtle', orig: 'La Tortue rouge', loc: 'La Tortue rouge', lang: 'fr', ol: 'fr' });
+    expect(displayTitle('The Red Turtle', fr, 'fr')).toBe('La Tortue rouge');
   });
 
   it('never returns nothing \u2014 an untranslated film keeps its stored name', () => {

@@ -6128,7 +6128,16 @@ export function wrappedYearWorthNudge(c: { episodes: number; films: number }): b
  * tests lean on hardest.
  */
 
-export type FilterKind = 'show' | 'movie';
+/** 'everything' (2.0.3) is the Everything I watch page: shows and films in
+ *  one list, filtered by the same sheet with a Type axis added on top. */
+export type FilterKind = 'show' | 'movie' | 'everything';
+
+/**
+ * The Type axis of the Everything sheet. Anime is TheTVDB's own genre on a show
+ * and so a subset of Shows: an anime carries both, which is why ticking Shows
+ * keeps it and ticking Anime alone keeps only it.
+ */
+export const EVERYTHING_TYPES = ['show', 'anime', 'movie'] as const;
 
 export const RUNTIME_BANDS = ['short', 'standard', 'long'] as const;
 export type RuntimeBand = (typeof RUNTIME_BANDS)[number];
@@ -6216,6 +6225,9 @@ export type TitleFacts = {
   /** ['mine'] when the title is on one of the user's streaming services
    *  (2.0.0, `availability.ts`); absent or empty otherwise. */
   services?: readonly string[];
+  /** EVERYTHING_TYPES, on the Everything page only; absent on the two
+   *  single-kind pages, whose sets never carry a type. */
+  types?: readonly string[];
 };
 
 export type FilterSort = 'lastWatched' | 'lastAdded' | 'alpha';
@@ -6235,6 +6247,8 @@ export type FilterSet = {
   rating: number | null;
   /** 'mine' = on one of my streaming services (Plus). */
   services: string[];
+  /** Everything page only: EVERYTHING_TYPES. Free, like progress. */
+  types: string[];
 };
 
 export const DEFAULT_FILTERS: FilterSet = {
@@ -6248,12 +6262,13 @@ export const DEFAULT_FILTERS: FilterSet = {
   years: [],
   rating: null,
   services: [],
+  types: [],
 };
 
 const FILTER_SORTS: readonly FilterSort[] = ['lastWatched', 'lastAdded', 'alpha'];
 
 /** Every multi-select axis, so nothing has to list them twice. */
-export const FILTER_AXES = ['progress', 'aired', 'genres', 'networks', 'decades', 'runtimes', 'years', 'services'] as const;
+export const FILTER_AXES = ['progress', 'aired', 'genres', 'networks', 'decades', 'runtimes', 'years', 'services', 'types'] as const;
 export type FilterAxis = (typeof FILTER_AXES)[number];
 
 /** The axes that are Plus: everything beyond sort, progress and aired, which
@@ -6290,6 +6305,7 @@ export function matchesFilters(f: TitleFacts, s: FilterSet): boolean {
   if (s.runtimes.length > 0 && (f.runtime == null || !s.runtimes.includes(f.runtime))) return false;
   if (s.years.length > 0 && !f.watchedYears.some((y) => s.years.includes(y))) return false;
   if (s.services.length > 0 && !(f.services ?? []).some((v) => s.services.includes(v))) return false;
+  if (s.types.length > 0 && !(f.types ?? []).some((v) => s.types.includes(v))) return false;
   if (s.rating != null) {
     if (s.rating === 0) return f.stars == null;
     if (f.stars == null || f.stars < s.rating) return false;
@@ -6353,7 +6369,7 @@ export function filterOptions(facts: readonly TitleFacts[], s: FilterSet, kind: 
   return {
     progress: inOrder(
       tally('progress', (f) => [f.progress]),
-      kind === 'show' ? SHOW_PROGRESS : MOVIE_PROGRESS,
+      kind === 'show' ? SHOW_PROGRESS : kind === 'movie' ? MOVIE_PROGRESS : [...SHOW_PROGRESS, ...MOVIE_PROGRESS],
     ),
     aired: inOrder(
       tally('aired', (f) => (f.aired == null ? [] : [f.aired])),
@@ -6368,6 +6384,10 @@ export function filterOptions(facts: readonly TitleFacts[], s: FilterSet, kind: 
     ),
     years: newestFirst(tally('years', (f) => f.watchedYears)),
     services: byCount(tally('services', (f) => f.services ?? [])),
+    types: inOrder(
+      tally('types', (f) => f.types ?? []),
+      EVERYTHING_TYPES,
+    ),
     ratings,
   };
 }
@@ -6436,6 +6456,7 @@ export function normaliseFilterSet(value: unknown): FilterSet {
     runtimes: stringsOf(v.runtimes).filter((r): r is RuntimeBand => (RUNTIME_BANDS as readonly string[]).includes(r)),
     years: stringsOf(v.years),
     services: stringsOf(v.services),
+    types: stringsOf(v.types).filter((x) => (EVERYTHING_TYPES as readonly string[]).includes(x)),
   };
 }
 
@@ -6468,7 +6489,7 @@ export function parsePresets(raw: string | null | undefined): FilterPreset[] {
     const name = typeof p.name === 'string' ? p.name.trim() : '';
     const id = typeof p.id === 'string' ? p.id : '';
     if (!name || !id) continue; // a nameless preset is unreachable in the UI
-    out.push({ id, name, kind: p.kind === 'movie' ? 'movie' : 'show', filters: normaliseFilterSet(p.filters) });
+    out.push({ id, name, kind: p.kind === 'movie' || p.kind === 'everything' ? p.kind : 'show', filters: normaliseFilterSet(p.filters) });
   }
   return out;
 }
@@ -7908,7 +7929,16 @@ export function ratingBand(value: number, max = 5): number {
  * name is which is knowable at fetch time, so it is recorded rather than
  * inferred later.
  */
-export type AltTitles = { en?: string; orig?: string; loc?: string };
+export type AltTitles = {
+  en?: string;
+  orig?: string;
+  loc?: string;
+  /** The language `loc` was asked for in (2.0.3). Rows fetched before it was
+   *  recorded do not have it, and their `loc` is never displayed. */
+  lang?: string;
+  /** The film's original language, TMDB's `original_language` (2.0.3). */
+  ol?: string;
+};
 
 /**
  * Read a stored value, tolerating the older array shape that shipped first.
@@ -7933,33 +7963,39 @@ export function parseAltTitles(raw: string | null | undefined): AltTitles {
 }
 
 /**
- * WHICH OF THE NAMES TO SHOW: English, then whatever is stored.
+ * WHICH OF THE NAMES TO SHOW: the reader's language, then English, then
+ * whatever is stored.
  *
  * `name` is the key — the row's primary key and the route parameter — so it is
  * whatever the import or the first match happened to write, which for a film
  * whose TV Time entry carried the original title is the original title. That
  * is how a library ends up listing `\u5929\u4f7f\u306e\u305f\u307e\u3054` and `La Tortue rouge` to a
- * reader who has never read either script, and 1.6.3 only half fixed it: those
- * films became FINDABLE under their other names, through `altTitles` in search
- * and in Siri, and went on being unreadable on the screen that shows them.
+ * reader who has never read either script.
  *
- * ENGLISH, NOT THE READER'S LANGUAGE, and that is deliberate. The obvious
- * design is to follow the UI language, and it is wrong here for one reason:
- * A LIBRARY IMPORTED FROM TV TIME IS ALREADY IN ENGLISH. TMDB has a localised
- * title for some films and not others, so following the reader's language
- * would translate part of somebody's library and leave the rest, and half a
- * shelf in each language is worse than a whole shelf in one. TV Time was
- * English throughout, which is what these libraries were built in.
+ * THE READER'S LANGUAGE FIRST (27 Oct 2026, Mahmood). This used to be English
+ * only, on the argument that a TV Time library is English throughout and a
+ * shelf half-translated is worse than one in one language. It was overruled:
+ * an Arabic reader should see the Arabic name when one exists. Two guards keep
+ * the localised name honest:
  *
- * The localised name is still STORED and still searched — somebody who knows a
- * film only by its Arabic name finds it — it simply is not what the row says.
+ *   - it is used only when it was fetched IN the reader's language (`lang`).
+ *     Somebody who switches the app to English must not keep seeing names in
+ *     the language they left, and rows fetched before `lang` was recorded say
+ *     nothing about theirs, so they fall through to English.
+ *   - TMDB answers a film with no translation by handing back its ORIGINAL
+ *     title. A `loc` equal to `orig` is therefore no translation at all —
+ *     unless the film really was made in the reader's language (`ol`).
  *
  * DISPLAY ONLY. Nothing here renames a row: `name` is the key that `getMovie`,
- * the route and every list selection use, and rewriting it to suit a setting
- * would break every one of them the moment somebody changed it.
+ * the route, comments, sync and every list selection use, and rewriting it to
+ * suit a setting would break every one of them the moment somebody changed it.
  */
-export function displayTitle(name: string, raw: string | null | undefined): string {
-  return parseAltTitles(raw).en || name;
+export function displayTitle(name: string, raw: string | null | undefined, locale = 'en'): string {
+  const t = parseAltTitles(raw);
+  const reader = locale.slice(0, 2).toLowerCase();
+  const inReaders = (tag: string | undefined): boolean => !!tag && tag.slice(0, 2).toLowerCase() === reader;
+  if (t.loc && inReaders(t.lang) && (t.loc !== t.orig || inReaders(t.ol))) return t.loc;
+  return t.en || name;
 }
 
 /**

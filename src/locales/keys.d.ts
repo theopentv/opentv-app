@@ -793,6 +793,8 @@ export type LocaleKey =
   | "everything.searchPlaceholder"
   | "everything.shows"
   | "everything.title"
+  | "everythingFilters.result"
+  | "everythingFilters.typeTitle"
   | "everythingSection.profileSwitchSub"
   | "explore.discoverCaption"
   | "explore.feedNeedsInternetCaption"

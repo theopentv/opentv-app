@@ -4230,5 +4230,14 @@
   },
   "everythingSection": {
     "profileSwitchSub": "Tylko na twoim profilu, nigdy nie jest publikowane."
+  },
+  "everythingFilters": {
+    "typeTitle": "Typ",
+    "result": {
+      "one": "{{n}} z {{count}} tytułu",
+      "few": "{{n}} z {{count}} tytułów",
+      "many": "{{n}} z {{count}} tytułów",
+      "other": "{{n}} z {{count}} tytułu"
+    }
   }
 }

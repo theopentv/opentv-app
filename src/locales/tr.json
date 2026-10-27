@@ -3926,5 +3926,12 @@
   },
   "everythingSection": {
     "profileSwitchSub": "Yalnızca kendi profilinde, asla yayınlanmaz."
+  },
+  "everythingFilters": {
+    "typeTitle": "Tür",
+    "result": {
+      "one": "{{n}} / {{count}} yapım",
+      "other": "{{n}} / {{count}} yapım"
+    }
   }
 }

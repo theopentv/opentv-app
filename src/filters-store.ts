@@ -37,7 +37,7 @@ const listeners = new Set<() => void>();
 /** Cached so getSnapshot is cheap AND referentially stable between writes —
  *  and keyed by the entitlement it was read under, so losing Plus is a new
  *  answer rather than a stale one. */
-const cache: Record<FilterKind, { plus: boolean; f: FilterSet } | null> = { show: null, movie: null };
+const cache: Record<FilterKind, { plus: boolean; f: FilterSet } | null> = { show: null, movie: null, everything: null };
 let presetCache: FilterPreset[] | null = null;
 
 function notify(): void {
