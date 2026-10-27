@@ -40,6 +40,7 @@ import type { ReactNode } from 'react';
 import { useEffect, createContext } from 'react';
 import { I18nManager, Pressable, StyleSheet, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   scrollTo,
   useFrameCallback,
@@ -433,8 +434,15 @@ export function ArrangeableBlock({
 
 /** The bar that says you are arranging, and how to stop. */
 export function ArrangeBar({ onAdd, onDone }: { onAdd: () => void; onDone: () => void }) {
+  /*
+   * ABOVE THE TAB BAR (27 Oct). A fixed 28pt from the bottom was right while the
+   * tab bar sat below the screen; native tabs (2.0.1) draw over it, so + and ✓
+   * were hidden under Shows/Movies/Explore/Profile. The insets carry the bar
+   * (bottom on a phone, the side strip on the closed iPhone Duo).
+   */
+  const insets = useSafeAreaInsets();
   return (
-    <View style={s.bar}>
+    <View style={[s.bar, { bottom: 16 + insets.bottom, right: 16 + insets.right }]}>
       {/* ALWAYS, while arranging. It used to hide when nothing had been removed
           — technically honest, and it meant the one control people go looking
           for was missing exactly when they went looking for it. A sheet that
