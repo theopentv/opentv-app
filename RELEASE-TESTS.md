@@ -45,15 +45,17 @@ Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 
 - [ ] Reminder at the chosen hour (fresh default 09:00), last call at 22:00 only if unplayed
 - [ ] App closed for 2–3 days: both still arrive; reminder off → none; episode reminders unaffected
 
-### Free month (backend deployed)
-- [ ] No account: import → card → Sign in → "A month of Plus is yours", date +30; heard_from saved
-- [ ] Paywall shows plans and "You have Plus, free · Until …"
+### Free month (backend deployed, switch ON)
+- [ ] Dashboard: switch + stats, no give button; OFF → signed-in card hidden after relaunch, ON → back
+- [ ] No account: import → "Try Plus free for a month" → Try it free → sign in → "A month of Plus is yours", date +30; D1 free_month_at, plus_until, heard_from
+- [ ] Signing in WITHOUT tapping the card claims nothing
+- [ ] Signed-in account with an old ended gift: card shows, Try it free grants at once
 - [ ] Sign out/in: no second month; delete account + same Google: no month
-- [ ] Dashboard: Free month OFF after deploy; sign in fresh → no month; turn ON → fresh sign-in gets it
-- [ ] Dashboard "Give everyone a month": count in confirm, then "Given to N"; existing phone relaunch shows the screen once; press again gives 0; paying account untouched
-- [ ] heard_from answer shows on the dashboard; turning OFF keeps months already given
-- [ ] No thanks on Profile → never again, not after an import either
-- [ ] Unconfirmed email: no month until confirmed
+- [ ] No thanks on the import card → hidden on Profile too, across relaunches
+- [ ] Airplane mode Try it free → "Could not reach OpenTV"; online relaunch claims
+- [ ] Day 25 and last-day notifications open the paywall; none after buying
+- [ ] After it ends: "Your free month has ended" once, lists features used, annual above monthly; never after buying
+- [ ] Android: claim, reminders, end screen
 
 ### Wrapped (set the device date)
 - [ ] 30 Nov: no 2026 in the picker; 1 Dec 00:05 relaunch: "Your 2026 is ready" card, picker lists 2026, free account too
