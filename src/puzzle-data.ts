@@ -46,7 +46,7 @@ import {
   isOver,
   libraryCandidates,
   newGame,
-  nextPuzzleReminder,
+  planPuzzleReminders,
   parseGame,
   parseHistory,
   puzzleBanner,
@@ -72,6 +72,7 @@ import {
   type PublicPuzzle,
   type PuzzleArt,
   type PuzzleId,
+  type PuzzleReminder,
   type Result,
   type Stats,
 } from '@/puzzle';
@@ -822,19 +823,18 @@ export async function republishPuzzleBlock(): Promise<void> {
 // ── the reminder ────────────────────────────────────────────────────────────
 
 /**
- * When the next reminder should fire, or null while the game or the reminder
- * is off. Today if today is unplayed and the hour is ahead, else tomorrow —
- * see `nextPuzzleReminder`. "You haven't played today's puzzle" — no streak
- * to threaten since 14 Oct. `notifications.ts` schedules it on every sync, so
- * "once a day" is the DATE trigger itself, and finishing the game re-plans,
- * which moves it to tomorrow.
+ * Every puzzle reminder to book from `now`: empty while the game or the
+ * reminder is off, otherwise `planPuzzleReminders` for the next week, which
+ * leaves today's out once today is played. `notifications.ts` books them on
+ * every sync after cancelling everything, so the list IS the schedule, and
+ * finishing the game re-plans, which drops today's.
  */
-export function puzzleReminderAt(now: Date): { at: number } | null {
-  if (!puzzleOn() || !puzzleReminderOn()) return null;
+export function puzzleRemindersFrom(now: Date): PuzzleReminder[] {
+  if (!puzzleOn() || !puzzleReminderOn()) return [];
   const day = localDayStamp(now);
   const g = loadGame(day);
   const played = (g != null && isOver(g)) || loadHistory().some((r) => r.d === day);
-  return { at: nextPuzzleReminder(now, puzzleReminderHour(), played) };
+  return planPuzzleReminders(now, puzzleReminderHour(), played);
 }
 
 /**
