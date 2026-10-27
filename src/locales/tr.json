@@ -3825,5 +3825,9 @@
     "title": "Geçmişin",
     "firstDay": "İlk oyun: {{date}}",
     "locked": "Bir haftadan eski başlıklar Plus'a dahil."
+  },
+  "importSources": {
+    "sofatime": "Sofa Time ayarlarından aldığın dışa aktarım: içinde JSON dosyaları olan bir ZIP dosyası.",
+    "bingers": "Bingers ayarlarından aldığın dışa aktarım: içinde dört CSV dosyası olan bir ZIP dosyası."
   }
 }

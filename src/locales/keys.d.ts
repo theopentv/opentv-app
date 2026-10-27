@@ -979,6 +979,8 @@ export type LocaleKey =
   | "import.summary.yourPrivateNote"
   | "import.titleImport"
   | "import.titleRestore"
+  | "importSources.bingers"
+  | "importSources.sofatime"
   | "jellyfin.connect"
   | "jellyfin.connecting"
   | "jellyfin.disconnectTitle"

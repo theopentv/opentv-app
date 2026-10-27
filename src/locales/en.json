@@ -3825,5 +3825,9 @@
     "title": "Your history",
     "firstDay": "First played {{date}}",
     "locked": "Titles from more than a week ago are part of Plus."
+  },
+  "importSources": {
+    "sofatime": "Your export from Sofa Time's settings: a ZIP file with JSON files inside.",
+    "bingers": "Your export from Bingers' settings: a ZIP file with four CSV files inside."
   }
 }

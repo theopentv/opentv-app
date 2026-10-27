@@ -3825,5 +3825,9 @@
     "title": "Dein Verlauf",
     "firstDay": "Zuerst gespielt am {{date}}",
     "locked": "Titel, die älter als eine Woche sind, gehören zu Plus."
+  },
+  "importSources": {
+    "sofatime": "Dein Export aus den Einstellungen von Sofa Time: eine ZIP-Datei mit JSON-Dateien darin.",
+    "bingers": "Dein Export aus den Einstellungen von Bingers: eine ZIP-Datei mit vier CSV-Dateien darin."
   }
 }

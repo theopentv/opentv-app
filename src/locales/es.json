@@ -3825,5 +3825,9 @@
     "title": "Tu historial",
     "firstDay": "Primera partida el {{date}}",
     "locked": "Los títulos de hace más de una semana son parte de Plus."
+  },
+  "importSources": {
+    "sofatime": "Tu exportación desde los ajustes de Sofa Time: un archivo ZIP con archivos JSON dentro.",
+    "bingers": "Tu exportación desde los ajustes de Bingers: un archivo ZIP con cuatro archivos CSV dentro."
   }
 }

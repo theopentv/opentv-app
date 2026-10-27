@@ -3825,5 +3825,9 @@
     "title": "La tua cronologia",
     "firstDay": "Prima partita il {{date}}",
     "locked": "I titoli di più di una settimana fa fanno parte di Plus."
+  },
+  "importSources": {
+    "sofatime": "La tua esportazione dalle impostazioni di Sofa Time: un file ZIP con dentro dei file JSON.",
+    "bingers": "La tua esportazione dalle impostazioni di Bingers: un file ZIP con dentro quattro file CSV."
   }
 }

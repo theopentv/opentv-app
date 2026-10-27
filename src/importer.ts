@@ -32,7 +32,7 @@ import {
   tvdbRescueUrl,
   unzipExport,
 } from '../packages/tvtime-export/src';
-import { classifyForeignJson, cp1252, detectForeignSource, imdbRows, imdbRemoteHit, imdbTvRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRows, simklRows, traktRows, type ImdbTvHit, type ImdbTvRef, type SerializdLink, type SerializdRecord } from '@/foreign-import';
+import { bingersRows, bingersTable, bingersTableKind, bingersTmdbOnlyShows, classifyForeignJson, cp1252, detectForeignSource, imdbRows, imdbRemoteHit, imdbTvRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRows, simklRows, sofaTimeItems, sofaTimeRows, traktRows, type BingersTables, type ForeignRows, type ImdbTvHit, type ImdbTvRef, type SerializdLink } from '@/foreign-import';
 import { importVerdict, pickTmdbMovieResult, type ImportDiagnosis } from '@/pure';
 
 import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, deletedShowIds, getMeta, hasLibrary, libraryOwner, mergeImportedCustomLists, recountShow, setMeta, unmarkedEpisodeKeys, wipeAllData } from '@/db';
@@ -676,9 +676,12 @@ export async function downloadPendingCommentImages(): Promise<void> {
  * A show neither source can place is reported and dropped, never matched by
  * name — the rule `traktRows` keeps, for the same reason. Nothing is lost by
  * it: re-importing is merge-safe and asks again.
+ *
+ * Sofa Time (every show) and Bingers (a show with no TheTVDB id) name shows by
+ * TMDB id too, so they come through here as well (2.0.3).
  */
-async function serializdLinks(
-  records: readonly SerializdRecord[],
+async function tmdbShowLinks(
+  records: readonly { showId: number; showName: string }[],
   onProgress: (p: Progress) => void,
   report: (item: NotImportedItem) => void,
 ): Promise<Map<number, SerializdLink>> {
@@ -917,6 +920,8 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   let foreignComments: { entity: string; text: string; date: string }[] = [];
   let foreignNotes: NonNullable<ReturnType<typeof simklRows>['notes']> = { shows: [], movies: [] };
   let foreignMovieTmdb = new Map<string, number>();
+  // Bingers alone brings these: emotions, favourite characters by name, lists.
+  let foreignExtra: Pick<ForeignRows, 'episodeEmotions' | 'movieEmotions' | 'episodeCharacters' | 'movieCharacters' | 'listRows'> = {};
   if (v2all.length === 0 && showRows.length === 0 && detectForeignSource(Object.keys(files)) === 'letterboxd') {
     const parsed: Record<string, Record<string, string>[]> = {};
     for (const k of Object.keys(files)) {
@@ -926,6 +931,37 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     const mapped = letterboxdRows(parsed);
     v1 = mapped.movieRows;
     foreignMovieRatings = mapped.movieRatings;
+  }
+
+  /*
+   * BINGERS (2.0.3): four CSVs known by their header rows, so a single one
+   * picked on its own (just `watches.csv`) reads as well as the ZIP. Ahead of
+   * IMDb and the Letterboxd import shape, neither of which would claim them,
+   * so that once this has rows those walks are skipped.
+   */
+  if (v2all.length === 0 && showRows.length === 0 && v1.length === 0) {
+    const tables: BingersTables = { library: [], watches: [], ratings: [], lists: [] };
+    let isBingers = false;
+    for (const k of Object.keys(files)) {
+      if (!k.toLowerCase().endsWith('.csv') || k.includes('__MACOSX')) continue;
+      const parsed = parseCsv(strFromU8(files[k]));
+      const kind = parsed.length > 0 ? bingersTableKind(Object.keys(parsed[0])) : null;
+      if (!kind) continue;
+      isBingers = true;
+      tables[kind].push(...bingersTable(parsed));
+    }
+    if (isBingers) {
+      const tmdbOnly = bingersTmdbOnlyShows(tables);
+      const link = tmdbOnly.length ? await tmdbShowLinks(tmdbOnly, onProgress, (item) => notImported.push(item)) : new Map<number, SerializdLink>();
+      const mapped = bingersRows(tables, link);
+      showRows = mapped.showRows;
+      v2all = mapped.episodeRows;
+      v1 = mapped.movieRows;
+      foreignMovieRatings = mapped.movieRatings;
+      foreignEpRatings = mapped.episodeRatings ?? [];
+      foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
+      foreignExtra = mapped;
+    }
   }
 
   /*
@@ -1005,24 +1041,37 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   }
 
   if (v2all.length === 0 && showRows.length === 0 && v1.length === 0) {
-    const jsons: unknown[] = [];
+    const jsons: Record<string, unknown> = {};
     for (const k of Object.keys(files)) {
       if (!k.toLowerCase().endsWith('.json') || k.includes('__MACOSX')) continue;
       try {
-        jsons.push(JSON.parse(strFromU8(files[k])));
+        jsons[k] = JSON.parse(strFromU8(files[k]));
       } catch {
         // One unreadable file must not refuse the export it came in.
       }
     }
-    const found = jsons.length > 0 ? classifyForeignJson(jsons) : null;
-    if (found) {
+    // SOFA TIME first (2.0.3): its items carry `tmdb` and `addedDate`, words
+    // none of the other three read, so nothing of theirs is claimed by it.
+    // Every show is a TMDB id and goes through the same link as Serializd's.
+    const sofa = sofaTimeItems(jsons);
+    const found = sofa.length === 0 && Object.keys(jsons).length > 0 ? classifyForeignJson(Object.values(jsons)) : null;
+    if (sofa.length > 0) {
+      const shows = sofa.filter((i) => i.kind === 'show').map((i) => ({ showId: i.tmdb, showName: i.title }));
+      const mapped = sofaTimeRows(sofa, await tmdbShowLinks(shows, onProgress, (item) => notImported.push(item)));
+      showRows = mapped.showRows;
+      v2all = mapped.episodeRows;
+      v1 = mapped.movieRows;
+      foreignMovieRatings = mapped.movieRatings;
+      foreignEpRatings = mapped.episodeRatings ?? [];
+      foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
+    } else if (found) {
       // Serializd's rows are keyed by TMDB id and need the one networked step
       // first — see `serializdLinks`. The other two arrive already on TheTVDB ids.
       const mapped =
         found.source === 'simkl'
           ? simklRows(found.json)
           : found.source === 'serializd'
-            ? serializdRows(found.records, await serializdLinks(found.records, onProgress, (item) => notImported.push(item)))
+            ? serializdRows(found.records, await tmdbShowLinks(found.records, onProgress, (item) => notImported.push(item)))
             : traktRows(found.payload);
       showRows = mapped.showRows;
       v2all = mapped.episodeRows;
@@ -1167,7 +1216,11 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     // A foreign export's are already out of ten, and carry no TV Time row id.
     ...foreignEpRatings.map((r) => ({ ...r, epId: null })),
   ];
-  const epEmotions = readEpisodeEmotions(csv('emotions-3-prod-episode_votes.csv'));
+  const epEmotions = [
+    ...readEpisodeEmotions(csv('emotions-3-prod-episode_votes.csv')),
+    // Already the app's own index (Bingers), with no TV Time row id.
+    ...(foreignExtra.episodeEmotions ?? []).map((e) => ({ ...e, epId: null })),
+  ];
   // "where did you watch" per episode — source id 3 is TV Time's Computer
   // bucket; anything else lands on Other (see the write below)
   const epWatchedOn = readEpisodeWatchedOn(csv('watched_on_episode.csv'));
@@ -1184,14 +1237,15 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     : readMovieRatings(csv('ratings-live-votes.csv'))
         .map((r) => ({ name: r.name, ten: ratingFromStars(r.stars) }))
         .filter((r): r is typeof r & { ten: number } => r.ten != null);
-  const movieEmotions = readMovieEmotions(csv('emotions-live-votes.csv'));
+  const movieEmotions = [...readMovieEmotions(csv('emotions-live-votes.csv')), ...(foreignExtra.movieEmotions ?? [])];
 
   // ---- favorites: shows also live in the favorite-series list (with order),
   // movies only in favorite-movies as tracking uuids -----------------------------
   // uuid → movie name, from BOTH tracking eras — a list movie whose uuid only
   // appears in v2 would otherwise be dropped from the list
   const uuidToMovie = movieNamesByUuid(v1, v2all);
-  const listRows = csvLoose('lists-prod-lists');
+  // A foreign export's lists and favourites arrive already in this shape (Bingers).
+  const listRows = [...csvLoose('lists-prod-lists'), ...(foreignExtra.listRows ?? [])];
   const { showIds: favShowIds, movieNames: favMovieNames } = readFavorites(listRows, uuidToMovie);
 
   // ---- profile + the TV Time ids that reconnect the social graph later ----------
@@ -2301,6 +2355,16 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     for (const n of foreignNotes.movies) {
       db.runSync('INSERT OR IGNORE INTO movie_notes (movie, text, updatedAt) VALUES (?, ?, ?)', [n.movie, n.text, at]);
     }
+  }
+  // Bingers' favourite characters, by name. Never over a vote already on this
+  // phone in a merge; `charId` stays empty, so the name backfill leaves them be.
+  for (const c of foreignExtra.episodeCharacters ?? []) {
+    const id = byName.get(nameKey(c.name));
+    if (id == null) continue;
+    db.runSync(`INSERT OR ${merge ? 'IGNORE' : 'REPLACE'} INTO character_votes (showId, season, episode, name, charId) VALUES (?, ?, ?, ?, NULL)`, [id, c.season, c.episode, c.character]);
+  }
+  for (const c of foreignExtra.movieCharacters ?? []) {
+    db.runSync(`INSERT OR ${merge ? 'IGNORE' : 'REPLACE'} INTO movie_character_votes (movie, name, charId) VALUES (?, ?, NULL)`, [c.movie, c.character]);
   }
   for (const ex of extras.epCharVotes ?? []) {
     // exact OpenTV votes (with character names) beat the id-only CSV rows

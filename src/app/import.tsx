@@ -41,11 +41,15 @@ const FROM = [
   // says it exists — nobody guessed that "TV Time" was the row for it.
   { id: 'opentv', name: 'OpenTV', icon: 'phone-portrait-outline' },
   { id: 'serializd', name: 'Serializd', icon: 'journal-outline' },
+  { id: 'sofatime', name: 'Sofa Time', icon: 'bed-outline' },
+  { id: 'bingers', name: 'Bingers', icon: 'play-circle-outline' },
 ] as const;
 type From = (typeof FROM)[number]['id'];
 /** The line under each app. Serializd's key lives in its own namespace at the
- *  end of the locale files (the 2.0.0 rule for new keys), not under `import.from`. */
-const fromSub = (id: From): LocaleKey => (id === 'serializd' ? 'serializd.from' : `import.from.${id}`);
+ *  end of the locale files (the 2.0.0 rule for new keys), not under `import.from`;
+ *  Sofa Time's and Bingers' in `importSources` (2.0.3), for the same reason. */
+const fromSub = (id: From): LocaleKey =>
+  id === 'serializd' ? 'serializd.from' : id === 'sofatime' || id === 'bingers' ? `importSources.${id}` : `import.from.${id}`;
 
 /** Total / In-app / New / Issues grid for one category. "In app" = everything
  * from the file that's now in the library (new + already there); it splits

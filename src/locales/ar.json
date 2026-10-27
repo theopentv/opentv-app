@@ -4425,5 +4425,9 @@
     "title": "سجلّك",
     "firstDay": "أول لعبة: {{date}}",
     "locked": "عناوين ما قبل أكثر من أسبوع جزء من Plus."
+  },
+  "importSources": {
+    "sofatime": "ملف التصدير من إعدادات Sofa Time: ملف ZIP بداخله ملفات JSON.",
+    "bingers": "ملف التصدير من إعدادات Bingers: ملف ZIP بداخله أربعة ملفات CSV."
   }
 }

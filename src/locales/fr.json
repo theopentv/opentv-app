@@ -3825,5 +3825,9 @@
     "title": "Votre historique",
     "firstDay": "Première partie le {{date}}",
     "locked": "Les titres de plus d'une semaine font partie de Plus."
+  },
+  "importSources": {
+    "sofatime": "Votre export depuis les réglages de Sofa Time : un fichier ZIP contenant des fichiers JSON.",
+    "bingers": "Votre export depuis les réglages de Bingers : un fichier ZIP contenant quatre fichiers CSV."
   }
 }
