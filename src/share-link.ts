@@ -31,6 +31,14 @@
  */
 export const SITE = 'https://theopentv.com';
 
+/**
+ * The address as it is DRAWN on a share card: no scheme, because nobody types
+ * one. The share sheet carries only the picture (`expo-sharing` takes a file,
+ * no text), so an address that is not in the pixels never reaches the person
+ * looking at them (2.0.3).
+ */
+export const SITE_HOST = SITE.replace(/^https?:\/\//, '');
+
 /** The message somebody actually sends, with a way back on the end. */
 export function withLink(message: string, path = '/download'): string {
   return `${message}\n\n${SITE}${path}`;

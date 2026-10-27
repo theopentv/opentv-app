@@ -177,7 +177,7 @@ export default function RootLayout() {
     routedPush.current = id;
 
     const data = lastResponse.notification.request.content.data as
-      | { kind?: string; subjectId?: string | null; handle?: string | null; month?: string | null; route?: string | null }
+      | { kind?: string; subjectId?: string | null; handle?: string | null; month?: string | null; year?: string | null; route?: string | null }
       | undefined;
     if (data?.kind == null) return;
     // A MESSAGE THAT OPENS A PLACE (1.6.7): only from the closed list the server
@@ -190,6 +190,11 @@ export default function RootLayout() {
     // it must land on that month rather than on whatever Wrapped defaults to
     if (data.kind === 'wrapped' && data.month) {
       router.push(`/wrapped?month=${encodeURIComponent(data.month)}`);
+      return;
+    }
+    // ...and the 1 December one is about a YEAR (2.0.3)
+    if (data.kind === 'wrapped' && data.year) {
+      router.push(`/wrapped?year=${encodeURIComponent(data.year)}`);
       return;
     }
     // The evening memory. It opens the archive, not the show it names: the

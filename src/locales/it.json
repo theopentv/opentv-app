@@ -3836,5 +3836,11 @@
   },
   "rewatchTotal": {
     "including": "Riviste incluse: {{n}}"
+  },
+  "wrappedYear": {
+    "bannerTitle": "Il tuo {{year}} è pronto",
+    "bannerBody": "Il tuo anno in poche card, gratis da creare e condividere",
+    "notifyTitle": "Il tuo {{year}} è pronto",
+    "notifyBody": "Il tuo anno di serie e film, in poche card. Tocca per aprirlo."
   }
 }

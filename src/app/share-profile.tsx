@@ -11,7 +11,7 @@ import { colors, radius, ls } from '@/theme';
 import { compactCount } from '@/compact-count';
 import { currentLocale, t } from '@/i18n';
 import { getHandle } from '@/community-session';
-import { profilePath, withLink } from '@/share-link';
+import { profilePath, SITE_HOST, withLink } from '@/share-link';
 import { oneAtATime } from '@/one-at-a-time';
 
 const AVATAR = require('../../assets/profile/avatar.jpg');
@@ -194,9 +194,14 @@ export default function ShareProfileScreen() {
                 style={styles.otBadge}
                 contentFit="contain"
               />
-              <Text style={styles.brandText}>OPENTV</Text>
+              {/* The address under the name (2.0.3): the share sheet carries
+                  only this picture, so a link not drawn here never arrives. */}
+              <View>
+                <Text style={styles.brandText}>OPENTV</Text>
+                <Text style={styles.brandUrl}>{SITE_HOST}</Text>
+              </View>
             </View>
-            <Text style={styles.brandCta}>{t('shareCard.openSourceTagline')}</Text>
+            <Text style={styles.brandCta} numberOfLines={2}>{t('shareCard.openSourceTagline')}</Text>
           </View>
         </View>
         </View>
@@ -263,8 +268,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   otBadge: { width: 22, height: 22 },
-  brandText: { color: '#FFF', fontSize: fs(11.5), fontWeight: '800', letterSpacing: ls(0.8) },
-  brandCta: { color: '#C9C9CF', fontSize: fs(9.5) },
+  brandText: { color: '#FFF', fontSize: fs(11.5), lineHeight: fs(13.5), fontWeight: '800', letterSpacing: ls(0.8) },
+  brandUrl: { color: '#8A8A92', fontSize: fs(9), lineHeight: fs(11), fontWeight: '700' },
+  brandCta: { color: '#C9C9CF', fontSize: fs(9.5), flexShrink: 1, marginStart: 12 },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',

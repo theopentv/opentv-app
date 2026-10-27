@@ -19,6 +19,7 @@ import { StyleSheet, View, type TextStyle, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { ls } from '@/theme';
 import { intlTag } from '@/locale-resolve';
+import { SITE_HOST } from '@/share-link';
 
 export const WRAPPED_YELLOW = '#FFD400';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -205,16 +206,27 @@ export function Media({ uri, style, fade, dim = 0, focus = 'center' }: { uri: st
   );
 }
 
-/** The brand strip: yellow square + OPENTV on the left, a small line on the right. */
+/**
+ * The brand strip: the OT mark, OPENTV, and under it the ADDRESS, on the left;
+ * a small line on the right.
+ *
+ * THE ADDRESS IS IN THE PICTURE (2.0.3). Only the month closing card had
+ * `theopentv.com`; every other card, the year hero among them, said OPENTV and
+ * nothing a stranger could type. The handle became the address's path
+ * (`theopentv.com/@name`, the member's public page) rather than a separate
+ * `@name`, so it costs the strip one short line and no width.
+ */
 export function Brand({ right, handle }: { right?: string; handle?: string | null }) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingBottom: 16, paddingTop: 10 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 18, paddingBottom: 14, paddingTop: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, flexShrink: 1 }}>
         {/* The app's own OT mark, not a yellow dot: on a card shared to Reddit
             the logo is the only way a stranger recognises the app again. */}
         <Image source={APP_ICON} style={{ width: 18, height: 18, borderRadius: 4 }} />
-        <Text style={{ color: INK, fontSize: 11.5, fontWeight: '900', letterSpacing: ls(1.6) }}>OPENTV</Text>
-        {handle ? <Text style={{ color: FAINT, fontSize: 10.5, marginLeft: 4 }}>@{handle}</Text> : null}
+        <View style={{ flexShrink: 1 }}>
+          <Text style={{ color: INK, fontSize: 11.5, lineHeight: 13, fontWeight: '900', letterSpacing: ls(1.6) }}>OPENTV</Text>
+          <Text numberOfLines={1} style={{ color: FAINT, fontSize: 9.5, lineHeight: 12, fontWeight: '700' }}>{handle ? `${SITE_HOST}/@${handle}` : SITE_HOST}</Text>
+        </View>
       </View>
       {right ? <Text numberOfLines={1} style={{ color: FAINT, fontSize: 8.5, fontWeight: '800', letterSpacing: ls(1.2), textTransform: 'uppercase', flexShrink: 1, marginLeft: 14, textAlign: 'right' }}>{right}</Text> : null}
     </View>

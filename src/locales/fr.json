@@ -3836,5 +3836,11 @@
   },
   "rewatchTotal": {
     "including": "Revisionnages inclus : {{n}}"
+  },
+  "wrappedYear": {
+    "bannerTitle": "Votre {{year}} est prêt",
+    "bannerBody": "Votre année en quelques cartes, à créer et partager gratuitement",
+    "notifyTitle": "Votre {{year}} est prêt",
+    "notifyBody": "Votre année de séries et de films, en quelques cartes. Touchez pour l'ouvrir."
   }
 }

@@ -5566,16 +5566,39 @@ export function periodBounds(key: string): WrappedPeriod | null {
 }
 
 /**
+ * The year whose Wrapped is out on this day, or null: through DECEMBER of Y
+ * and JANUARY of Y+1, it is Y.
+ *
+ * DECEMBER, NOT JANUARY (2.0.3). Everybody shares a year-end recap in the
+ * first days of December, because that is when Spotify's lands; a year that
+ * only becomes a recap on 1 January arrives after the moment it was for. A
+ * December recap is eleven months and a few days, which is the year as far as
+ * anybody posting it is concerned. January still counts because somebody who
+ * did not open the app in December has not seen it yet.
+ *
+ * `today` is passed in rather than read, so the tests can stand on any day.
+ */
+export function wrappedYearOut(today: string): string | null {
+  const y = Number(today.slice(0, 4));
+  const m = today.slice(5, 7);
+  if (!Number.isInteger(y) || y < 1000) return null;
+  if (m === '12') return String(y);
+  if (m === '01') return String(y - 1);
+  return null;
+}
+
+/**
  * What the period picker offers: the last few COMPLETED months, newest first,
- * then the years that have a watch in them. The current month and the current
- * year are never listed — half a period is not a recap of it, and it would be
- * the first thing tapped.
+ * then the years that have a watch in them. The current month is never listed
+ * — half a month is not a recap of it, and it would be the first thing tapped.
+ * Nor is the current year, EXCEPT in December (`wrappedYearOut`).
  */
 export function periodOptions(today: string, years: readonly number[], months = 6): string[] {
   const out: string[] = [];
   for (let i = 1; i <= months; i++) out.push(shiftMonth(today.slice(0, 7), -i));
   const thisYear = Number(today.slice(0, 4));
-  for (const y of years) if (y < thisYear) out.push(String(y));
+  const december = wrappedYearOut(today) === String(thisYear);
+  for (const y of years) if (y < thisYear || (december && y === thisYear)) out.push(String(y));
   return out;
 }
 
@@ -6002,6 +6025,22 @@ export function wrappedToOffer(today: string, seen: string | null): string | nul
   const month = previousMonth(today);
   if (!/^\d{4}-\d{2}$/.test(month)) return null;
   return (seen ?? '') >= month ? null : month;
+}
+
+/** The last year whose "your year is ready" prompt was answered, 'YYYY'. */
+export const WRAPPED_SEEN_YEAR_KEY = 'wrappedSeenYear';
+
+/**
+ * The YEAR to offer on the profile, or null. The month prompt's rules, with
+ * the year's window: from 1 December until answered, and gone after January
+ * whether answered or not, because a "your 2026 is ready" in March is old news.
+ * Every user, not only Plus: Wrapped is free, and this is the one recap built
+ * to be posted.
+ */
+export function wrappedYearToOffer(today: string, seen: string | null): string | null {
+  const year = wrappedYearOut(today);
+  if (year == null) return null;
+  return (seen ?? '') >= year ? null : year;
 }
 
 /* -- Advanced library filters ----------------------------------------------

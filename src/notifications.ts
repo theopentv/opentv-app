@@ -12,7 +12,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import db, { getMeta, getSeasons, setMeta } from '@/db';
+import db, { getMeta, getSeasons, setMeta, watchedInMonth } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { formatPeriod } from '@/locale-resolve';
 import { isPlus } from '@/plus';
@@ -94,9 +94,10 @@ export function toggles(): NotifyToggles {
     movieNight: notifyKindEnabled('movieNight'),
     inactivity: notifyKindEnabled('inactivity'),
     popcorn: notifyKindEnabled('popcorn'),
-    // PLUS ONLY, and gated here rather than in the planner so there is one
-    // place it can be wrong: a free user's plan simply never contains it.
-    wrapped: isPlus() && notifyKindEnabled('wrapped'),
+    // The switch only. The MONTH nudge is Plus-only and gated where its input
+    // is built (`wrappedMonth` in `snapshot`); the YEAR nudge on 1 December is
+    // for everybody (2.0.3), so the switch itself can no longer carry Plus.
+    wrapped: notifyKindEnabled('wrapped'),
     // FREE, AND NEVER PLUS. It shows a person their own past, computed on their
     // own phone from marks they made years ago. Charging for that breaks the
     // rule the whole app stands on.
@@ -283,6 +284,14 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
       wrappedMonth,
     ])?.n ?? 0) > 0;
 
+  // PLUS ONLY, the month nudge — gated here, where it used to be gated on the
+  // toggle, so a free user's plan still never contains it.
+  const monthNudge = watchedThisMonth && isPlus();
+
+  // The year running, for 1 December. Episodes and films both count: a year
+  // of nothing but films is still a year with a recap in it.
+  const wrappedYear = todayKey.slice(0, 4);
+
   return {
     upcoming,
     catchUp,
@@ -290,8 +299,9 @@ function snapshot(now: number): Parameters<typeof planNotifications>[0] {
     unwatchedCount,
     lastOpenedAt: lastOpenedAt(),
     popcornBest,
-    wrappedMonth: watchedThisMonth ? wrappedMonth : null,
-    wrappedLabel: watchedThisMonth ? formatPeriod(wrappedMonth, currentLocale()) : null,
+    wrappedMonth: monthNudge ? wrappedMonth : null,
+    wrappedLabel: monthNudge ? formatPeriod(wrappedMonth, currentLocale()) : null,
+    wrappedYear: watchedInMonth(wrappedYear) > 0 ? wrappedYear : null,
   };
 }
 

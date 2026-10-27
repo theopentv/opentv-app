@@ -2,13 +2,14 @@ import { useLocalSearchParams } from 'expo-router';
 import { useRef } from 'react';
 import { type ViewInstance, Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
 
 import { NavHeader } from '@/components/ui';
 import badgesJson from '@/data/badges.json';
 import { colors, radius, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import type { LocaleKey } from '@/locales/keys';
-import { withLink } from '@/share-link';
+import { SITE_HOST, withLink } from '@/share-link';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
 
@@ -99,6 +100,14 @@ export default function BadgeScreen() {
         <Text accessibilityRole="header" style={styles.title}>{meta.title}</Text>
         {meta.desc !== '' && <Text style={styles.desc}>{meta.desc}</Text>}
         {longDate(meta.date) && <Text style={styles.date}>{longDate(meta.date)}</Text>}
+        {/* THE NAME AND THE ADDRESS (2.0.3). The badge left the app as a medal,
+            a title and a date, and nothing to say where it came from. Under
+            the date rather than at the foot, which the Share button covers. */}
+        <View style={styles.brand}>
+          <Image source={require('@/assets/images/mark.png')} style={styles.mark} contentFit="contain" />
+          <Text style={styles.brandText}>OPENTV</Text>
+          <Text style={styles.brandUrl}>{SITE_HOST}</Text>
+        </View>
       </View>
 
       <View style={{ position: 'absolute', bottom: insets.bottom + 24, alignSelf: 'center' }}>
@@ -123,6 +132,10 @@ const styles = StyleSheet.create({
   title: { color: colors.text, fontSize: 27, fontWeight: '800' },
   desc: { color: colors.text, fontSize: 17.5, textAlign: 'center', lineHeight: 25, marginTop: 10 },
   date: { color: colors.dim, fontSize: 12.5, fontWeight: '700', letterSpacing: ls(1), marginTop: 8 },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 28 },
+  mark: { width: 18, height: 18 },
+  brandText: { color: colors.text, fontSize: 12, fontWeight: '900', letterSpacing: ls(0.8) },
+  brandUrl: { color: colors.dim, fontSize: 11, fontWeight: '700', marginStart: 2 },
   shareBtn: {
     backgroundColor: colors.yellow,
     borderRadius: radius.pill,

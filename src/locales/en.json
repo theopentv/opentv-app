@@ -3836,5 +3836,11 @@
   },
   "rewatchTotal": {
     "including": "Including rewatches: {{n}}"
+  },
+  "wrappedYear": {
+    "bannerTitle": "Your {{year}} is ready",
+    "bannerBody": "Your year in a few cards, free to make and share",
+    "notifyTitle": "Your {{year}} is ready",
+    "notifyBody": "Your year of shows and films, in a few cards. Tap to open it."
   }
 }
