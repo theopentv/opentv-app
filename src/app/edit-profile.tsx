@@ -28,7 +28,7 @@ import {
   type ProfileSection,
 } from '@/pure';
 import { isSeedLibrary, profileImageUri, visibleCoverUri } from '@/library';
-import { parseLayout, publishableWidgets, requestArrange } from '@/profile-layout';
+import { EVERYTHING_ON_PROFILE_KEY, parseLayout, publishableWidgets, requestArrange } from '@/profile-layout';
 import { isPlus, requirePlus, usePlus } from '@/plus';
 import { availableSeasons, currentDecoration } from '@/season';
 import { colors, space, ls } from '@/theme';
@@ -66,7 +66,6 @@ const SECTION_LABEL: Record<ProfileSection, LocaleKey> = {
   stats: 'stats.title',
   activity: 'plus.activity.title',
   lists: 'profile.sectionLists',
-  everything: 'everything.title',
   favourite_shows: 'profile.sectionFavoriteShows',
   favourite_movies: 'profile.sectionFavoriteMovies',
   shows: 'stats.headers.shows',
@@ -138,6 +137,18 @@ export default function EditProfileScreen() {
         void pushWidgets(JSON.stringify(publishableWidgets(items, (id, span, data) => widgetValue(id, span, data)))).catch(() => {});
       }
     }
+  };
+  /*
+   * EVERYTHING I WATCH ON MY PROFILE (27 Oct). Off by default, free, and kept
+   * on this phone rather than in `hidden_sections`: the shelf is the whole
+   * local library and is never published, so there is nothing for the server
+   * to know. Outside the joined-only block for the same reason.
+   */
+  const [everythingOn, setEverythingOn] = useState(() => getMeta(EVERYTHING_ON_PROFILE_KEY) === '1');
+  const toggleEverything = (on: boolean) => {
+    tapLight();
+    setMeta(EVERYTHING_ON_PROFILE_KEY, on ? '1' : '0');
+    setEverythingOn(on);
   };
   // re-read meta when returning from the cover picker
   // State, re-read on focus: coming back from /handle must show the new name.
@@ -418,7 +429,6 @@ export default function EditProfileScreen() {
                         your own profile and nobody else's, and saying so is the
                         difference between a control and a false promise. */}
                     {s === 'activity' && <Text style={styles.switchSub}>{t('editProfile.visibility.activitySub')}</Text>}
-                    {s === 'everything' && <Text style={styles.switchSub}>{t('everythingSection.profileSwitchSub')}</Text>}
                     {s === 'feed' && <Text style={styles.switchSub}>{t('feed.optOutSub')}</Text>}
                   </View>
                   <Switch
@@ -446,6 +456,18 @@ export default function EditProfileScreen() {
               )}
             </>
           )}
+          <View style={styles.switchRow}>
+            <View style={styles.switchText}>
+              <Text style={styles.fieldLabel}>{t('everything.title')}</Text>
+              <Text style={styles.switchSub}>{t('everythingSection.profileSwitchSub')}</Text>
+            </View>
+            <Switch
+              value={everythingOn}
+              onValueChange={toggleEverything}
+              accessibilityLabel={t('everything.title')}
+              trackColor={{ true: colors.green }}
+            />
+          </View>
         </ContentColumn>
       </ScrollView>
       <PromptModal

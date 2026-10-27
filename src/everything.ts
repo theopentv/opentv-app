@@ -46,12 +46,13 @@ export function everythingItems(): LibraryItem[] {
 }
 
 /**
- * What the profile block shows: two totals and the most recently watched
- * posters, shows and films mixed.
+ * Two totals and the most recently watched posters, shows and films mixed.
+ * The profile block it was written for became a shelf (27 Oct), which reads
+ * the Profile tab's own rows; the widget gallery's samples still borrow the
+ * posters from here.
  *
  * NOT `everythingItems()`. That walks every show's metadata for the anime
- * flag, and the block is drawn on every visit to the Profile tab — two counts
- * and four posters are three small queries.
+ * flag — two counts and four posters are three small queries.
  */
 export function everythingSummary(posters = 4): { shows: number; movies: number; posters: { key: string; name: string; uri: string }[] } {
   const n = (sql: string) => db.getFirstSync<{ n: number }>(sql)?.n ?? 0;

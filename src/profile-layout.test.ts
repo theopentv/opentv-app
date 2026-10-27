@@ -68,10 +68,11 @@ describe('widget gallery (2.0.3)', () => {
   const keys = ['shows', 'fav-shows', 'movies', 'fav-movies'];
   const all = availableToAdd([], keys);
 
-  it('offers Everything I watch, named, own profile only', () => {
-    expect(all).toContain('everything');
-    expect(WIDGET_NAME.everything).toBe('everything.title');
-    expect(specOf('everything')).toMatchObject({ sized: true, private: true });
+  it('offers no Everything widget: there is one Everything, the shelf (27 Oct)', () => {
+    expect(all).not.toContain('everything');
+    expect(all).not.toContain('shelf:everything');
+    expect(WIDGET_NAME.everything).toBeUndefined();
+    expect(specOf('shelf:everything')).toMatchObject({ private: true });
   });
 
   it('puts every widget the picker offers under exactly one heading', () => {
@@ -92,28 +93,55 @@ describe('widget gallery (2.0.3)', () => {
   });
 });
 
-describe('Everything I watch on the classic page (27 Oct)', () => {
-  const { defaultLayout, normalise, parseLayout, serialise } = require('./profile-layout') as typeof import('./profile-layout');
-  const keys = ['shows', 'movies'];
+describe('Everything I watch is a shelf, placed by its switch (27 Oct)', () => {
+  const { EVERYTHING_SHELF, defaultLayout, normalise, parseLayout, publishableWidgets, serialise, withEverythingShelf } =
+    require('./profile-layout') as typeof import('./profile-layout');
+  const keys = ['shows', 'fav-shows', 'movies', 'fav-movies'];
   const c = (id: string) => ({ uid: id, id, span: '2x1' as const });
+  const ids = (xs: readonly { id: string }[]) => xs.map((p) => p.id);
 
-  it('is on every default profile, after Lists and before the shelves', () => {
-    const ids = defaultLayout(keys).map((p) => p.id);
-    expect(ids.slice(ids.indexOf('lists'), ids.indexOf('lists') + 3)).toEqual(['lists', 'everything', 'shelf:shows']);
+  it('is not on any profile until switched on', () => {
+    expect(ids(defaultLayout(keys))).not.toContain(EVERYTHING_SHELF);
+    expect(ids(withEverythingShelf(defaultLayout(keys), false))).not.toContain(EVERYTHING_SHELF);
   });
 
-  it('arrives once on a layout saved before it existed', () => {
-    const old = parseLayout(serialise([c('banners'), c('counts'), c('lists'), c('extra')], null))!;
-    const once = normalise(old, keys);
-    expect(once.filter((p) => p.id === 'everything')).toHaveLength(1);
-    // Saved and read back, it is not appended a second time.
-    expect(normalise(parseLayout(serialise(once, serialise(old.items, null))), keys).filter((p) => p.id === 'everything')).toHaveLength(1);
+  it('lands right above Shows, under Lists, on a fresh profile', () => {
+    const out = ids(withEverythingShelf(defaultLayout(keys), true));
+    const at = out.indexOf(EVERYTHING_SHELF);
+    expect(out.slice(at - 1, at + 2)).toEqual(['lists', EVERYTHING_SHELF, 'shelf:shows']);
   });
 
-  it('stays off once the owner removes it', () => {
-    const placed = normalise(parseLayout(serialise([c('banners'), c('lists')], null)), keys);
-    const removed = placed.filter((p) => p.id !== 'everything');
-    const raw = serialise(removed, serialise(placed, null));
-    expect(normalise(parseLayout(raw), keys).some((p) => p.id === 'everything')).toBe(false);
+  it('lands right above Shows on a saved layout that moved Shows', () => {
+    const saved = normalise(parseLayout(serialise([c('banners'), c('shelf:movies'), c('lists'), c('shelf:shows'), c('extra')], null)), keys);
+    const out = ids(withEverythingShelf(saved, true));
+    expect(out.indexOf(EVERYTHING_SHELF)).toBe(out.indexOf('shelf:shows') - 1);
+  });
+
+  it('goes after Lists when Shows was removed', () => {
+    const out = ids(withEverythingShelf([c('banners'), c('lists'), c('shelf:movies'), c('extra')], true));
+    expect(out).toEqual(['banners', 'lists', EVERYTHING_SHELF, 'shelf:movies', 'extra']);
+  });
+
+  it('off takes it away wherever it was; on brings it back above Shows', () => {
+    const moved = [c('banners'), c(EVERYTHING_SHELF), c('lists'), c('shelf:shows')];
+    expect(ids(withEverythingShelf(moved, true))).toEqual(ids(moved));
+    const off = withEverythingShelf(moved, false);
+    expect(ids(off)).toEqual(['banners', 'lists', 'shelf:shows']);
+    // Saved without it (the drawing is what gets saved), then switched back on.
+    const reread = normalise(parseLayout(serialise(off, serialise(moved, null))), keys);
+    expect(ids(reread)).not.toContain(EVERYTHING_SHELF);
+    const back = ids(withEverythingShelf(reread, true));
+    expect(back.indexOf(EVERYTHING_SHELF)).toBe(back.indexOf('shelf:shows') - 1);
+  });
+
+  it('is never published', () => {
+    const out = publishableWidgets(withEverythingShelf(defaultLayout(keys), true), () => 1);
+    expect(ids(out)).not.toContain(EVERYTHING_SHELF);
+    expect(ids(out)).toContain('shelf:shows');
+  });
+
+  it('drops the old Everything widget from layouts saved with it', () => {
+    const out = ids(normalise(parseLayout(serialise([c('banners'), c('everything'), c('lists')], null)), keys));
+    expect(out).not.toContain('everything');
   });
 });
