@@ -58,10 +58,11 @@ import {
   type CardProps,
 } from '@/components/wrapped/cards';
 import { MonthBookends, MonthClock, MonthSummary, MonthClosing, MonthContactSheet, MonthGenres, MonthGuide, MonthMarquee, MonthRewatch, MonthTicket, MonthTop, MonthType, MonthVerdict, MonthWeekday } from '@/components/wrapped/month-cards';
-import { SquareCorners } from '@/components/wrapped/primitives';
+import { SoFarTag, SquareCorners } from '@/components/wrapped/primitives';
+import { todayISO } from '@/components/heatmap';
 import { NavHeader, Screen, useScreenWidth, useTopInset } from '@/components/ui';
 import { getHandle } from '@/community-session';
-import { getMeta } from '@/db';
+import { getMeta, setMeta } from '@/db';
 import { tapLight } from '@/haptics';
 import { usePlus } from '@/plus';
 import { t } from '@/i18n';
@@ -69,6 +70,10 @@ import { t } from '@/i18n';
 import {
   periodBounds,
   shiftMonth,
+  WRAPPED_SEEN_FINAL_KEY,
+  WRAPPED_SEEN_YEAR_KEY,
+  wrappedOpenedStage,
+  wrappedSoFar,
   wrappedMonthSlides,
   wrappedSlides,
   wrappedTooQuiet,
@@ -137,7 +142,14 @@ export default function WrappedScreen() {
    * against its arguments and the screen would keep showing the first period
    * it ever opened. State React sets is the invalidation it understands.
    */
+  /*
+   * LIVE, NEVER A SNAPSHOT (2.0.3). Recomputed on every focus over the whole
+   * period, so a year opened on 1 December counts every watch up to 31
+   * December as it happens; nothing is frozen on the day it first opened.
+   */
   const [data, setData] = useState<Wrapped | null>(null);
+  // The local day, in state: "so far" and the seen stage both hang on it.
+  const [today, setToday] = useState(todayISO);
   useFocusEffect(
     useCallback(() => {
       const p = periodBounds(key);
@@ -145,7 +157,14 @@ export default function WrappedScreen() {
         setData(null);
         return;
       }
+      const now = todayISO();
+      setToday(now);
       setData(demoData(computeWrapped(p.start, p.end), __DEV__ ? params.demo : undefined));
+      // Opened from ANY door counts as answered, so the Profile card does not
+      // go on offering a recap that has been read. December and January are
+      // separate stages, so reading "so far" leaves the final one owed.
+      const stage = wrappedOpenedStage(p.key, now);
+      if (stage != null) setMeta(stage === 'year' ? WRAPPED_SEEN_YEAR_KEY : WRAPPED_SEEN_FINAL_KEY, p.key);
     }, [key, params.demo]),
   );
 
@@ -172,7 +191,12 @@ export default function WrappedScreen() {
     });
   const sheetStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }));
 
+  // The cards keep the bare year (the hero sets it across the whole width);
+  // "so far" reaches them through `SoFarTag`. The header and the quiet state
+  // read it in full.
   const label = period ? periodLabel(period.key) : '';
+  const soFar = period != null && wrappedSoFar(period.key, today);
+  const title = period ? periodLabel(period.key, today) : '';
   const isYear = period?.key.length === 4;
   const slides: (WrappedSlideId | WrappedMonthSlideId)[] =
     data && !wrappedTooQuiet(data) ? (isYear ? wrappedSlides(data) : wrappedMonthSlides(data)) : [];
@@ -210,7 +234,7 @@ export default function WrappedScreen() {
       <Screen>
         <NavHeader title={t('plus.wrapped.title')} close />
         <View style={s.quiet}>
-          <Text style={s.quietTitle}>{t('plus.wrapped.quietTitle', { period: label })}</Text>
+          <Text style={s.quietTitle}>{t('plus.wrapped.quietTitle', { period: title })}</Text>
           <Text style={s.quietBody}>
             {seen === 0 ? t('plus.wrapped.quietEmpty') : t('plus.wrapped.quietBody', { count: seen })}
           </Text>
@@ -242,7 +266,7 @@ export default function WrappedScreen() {
               reachable from the "too quiet" state, so a full month opened
               and could never be changed. */}
           <NavHeader
-            title={label}
+            title={title}
             close
             // A native item so iOS can move it into the iPhone Duo's strip.
             items={[
@@ -284,7 +308,9 @@ export default function WrappedScreen() {
                   PNG is the card alone. */}
               <View ref={cardRef} collapsable={false}>
                 <SquareCorners.Provider value={capturing}>
-                  <WrappedCard slide={slide} d={data} label={label} unit={period.key.length === 4 ? 'year' : 'month'} width={cardWidth} handle={handle} name={displayName} />
+                  <SoFarTag.Provider value={soFar ? t('wrappedFinal.soFarTag') : null}>
+                    <WrappedCard slide={slide} d={data} label={label} unit={period.key.length === 4 ? 'year' : 'month'} width={cardWidth} handle={handle} name={displayName} />
+                  </SoFarTag.Provider>
                 </SquareCorners.Provider>
               </View>
             </Animated.View>

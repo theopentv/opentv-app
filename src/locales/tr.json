@@ -3900,5 +3900,13 @@
     "paywallTitle": "Plus'ın var, ücretsiz",
     "paywallUntil": "{{date}} tarihine kadar. Hiçbir şey kendiliğinden yenilenmez: sonrasında Plus'ı korumak için aşağıdan bir plan seç.",
     "paywallNoDate": "Hiçbir şey kendiliğinden yenilenmez: sonrasında Plus'ı korumak için aşağıdan bir plan seç."
+  },
+  "wrappedFinal": {
+    "soFar": "{{year}} şimdiye kadar",
+    "soFarTag": "şimdiye kadar",
+    "bannerTitle": "{{year}} yılın tamamlandı",
+    "bannerBody": "Aralık dahil bütün yıl. Oluşturması ve paylaşması ücretsiz",
+    "notifyTitle": "{{year}} yılın tamamlandı",
+    "notifyBody": "Yılın tüm dizileri ve filmleri, yılbaşı dahil. Açmak için dokun."
   }
 }

@@ -3900,5 +3900,13 @@
     "paywallTitle": "Du hast Plus, geschenkt",
     "paywallUntil": "Bis zum {{date}}. Nichts verlängert sich von selbst: Um Plus danach zu behalten, wähle unten ein Abo.",
     "paywallNoDate": "Nichts verlängert sich von selbst: Um Plus danach zu behalten, wähle unten ein Abo."
+  },
+  "wrappedFinal": {
+    "soFar": "{{year}} bisher",
+    "soFarTag": "bisher",
+    "bannerTitle": "Dein {{year}} ist komplett",
+    "bannerBody": "Das ganze Jahr, Dezember inklusive. Kostenlos erstellen und teilen",
+    "notifyTitle": "Dein {{year}} ist komplett",
+    "notifyBody": "Jede Serie und jeder Film des Jahres, Weihnachten inklusive. Tippe zum Öffnen."
   }
 }

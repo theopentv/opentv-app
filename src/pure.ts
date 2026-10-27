@@ -6032,15 +6032,86 @@ export const WRAPPED_SEEN_YEAR_KEY = 'wrappedSeenYear';
 
 /**
  * The YEAR to offer on the profile, or null. The month prompt's rules, with
- * the year's window: from 1 December until answered, and gone after January
- * whether answered or not, because a "your 2026 is ready" in March is old news.
+ * the year's window: from 1 December until answered, and gone at the end of
+ * December whether answered or not. January belongs to the final card
+ * (`wrappedFinalToOffer`), which says the year is complete rather than ready.
  * Every user, not only Plus: Wrapped is free, and this is the one recap built
  * to be posted.
  */
 export function wrappedYearToOffer(today: string, seen: string | null): string | null {
   const year = wrappedYearOut(today);
-  if (year == null) return null;
+  if (year == null || today.slice(5, 7) !== '12') return null;
   return (seen ?? '') >= year ? null : year;
+}
+
+/*
+ * THE YEAR, LIVE AND THEN FINAL (2.0.3, 27 Oct).
+ *
+ * Wrapped opens on 1 December with the music apps, but film and TV trackers
+ * wait (Trakt 18 Dec, Letterboxd early January) because Christmas is when
+ * people watch the most. So the December recap is honest about it: it is
+ * computed from SQLite every time it opens, counts everything up to 31
+ * December, and says "so far" while the year is still running. On 1 January
+ * it becomes the final one, with a second card and notification of its own.
+ */
+
+/** True while `key` is a year that `today` is still inside: "2026 so far". */
+export function wrappedSoFar(key: string, today: string): boolean {
+  return /^\d{4}$/.test(key) && today.slice(0, 4) === key;
+}
+
+/** The last year whose "your year is complete" prompt was answered, 'YYYY'. */
+export const WRAPPED_SEEN_FINAL_KEY = 'wrappedSeenFinal';
+
+/**
+ * The year to offer as COMPLETE on the profile, or null: all of January for
+ * the year just ended, until answered. A separate stage from December's, so
+ * having opened "2026 so far" does not hide the finished 2026.
+ */
+export function wrappedFinalToOffer(today: string, seen: string | null): string | null {
+  const y = Number(today.slice(0, 4));
+  if (!Number.isInteger(y) || y < 1000 || today.slice(5, 7) !== '01') return null;
+  const year = String(y - 1);
+  return (seen ?? '') >= year ? null : year;
+}
+
+/**
+ * The year whose "complete" notification is still to come, for the planner:
+ * the running year, or on 1 January the one that just ended. The second case
+ * matters because every launch cancels and re-plans: a launch at 09:00 on
+ * 1 January would otherwise drop the noon notification it was planned for.
+ * The planner's `at > now` drops it once it is past.
+ */
+export function wrappedFinalNotifyYear(today: string, seen: string | null): string | null {
+  const y = Number(today.slice(0, 4));
+  if (!Number.isInteger(y) || y < 1000) return null;
+  const year = today.slice(5, 10) === '01-01' ? String(y - 1) : String(y);
+  return (seen ?? '') >= year ? null : year;
+}
+
+/**
+ * Which stage opening a year's Wrapped answers: 'year' in December of that
+ * year, 'final' in the January after, otherwise nothing. Opening it from any
+ * door (card, notification, picker) counts, so nobody is offered a recap they
+ * have already read.
+ */
+export function wrappedOpenedStage(key: string, today: string): 'year' | 'final' | null {
+  if (wrappedYearOut(today) !== key) return null;
+  return today.slice(5, 7) === '12' ? 'year' : 'final';
+}
+
+/**
+ * Enough of a year to nudge about: at least 10 episodes or 3 films.
+ *
+ * ONLY THE NUDGE. A thin year still opens from the picker (`wrappedTooQuiet`
+ * is one watch), but a card and a notification announcing "your year" to
+ * somebody who logged four episodes in it is a promise the recap cannot keep.
+ * Ten episodes is a season; three films is a habit rather than an accident.
+ */
+export const WRAPPED_NUDGE_EPISODES = 10;
+export const WRAPPED_NUDGE_FILMS = 3;
+export function wrappedYearWorthNudge(c: { episodes: number; films: number }): boolean {
+  return c.episodes >= WRAPPED_NUDGE_EPISODES || c.films >= WRAPPED_NUDGE_FILMS;
 }
 
 /* -- Advanced library filters ----------------------------------------------

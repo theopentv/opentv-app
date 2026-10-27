@@ -3900,5 +3900,13 @@
     "paywallTitle": "Vous avez Plus, offert",
     "paywallUntil": "Jusqu'au {{date}}. Rien ne se renouvelle tout seul : pour garder Plus ensuite, choisissez une formule ci-dessous.",
     "paywallNoDate": "Rien ne se renouvelle tout seul : pour garder Plus ensuite, choisissez une formule ci-dessous."
+  },
+  "wrappedFinal": {
+    "soFar": "{{year}} jusqu'ici",
+    "soFarTag": "jusqu'ici",
+    "bannerTitle": "Votre {{year}} est complet",
+    "bannerBody": "Toute l'année, décembre compris. Gratuit à créer et à partager",
+    "notifyTitle": "Votre {{year}} est complet",
+    "notifyBody": "Toutes les séries et tous les films de l'année, Noël compris. Touchez pour l'ouvrir."
   }
 }

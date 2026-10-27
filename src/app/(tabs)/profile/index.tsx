@@ -56,7 +56,7 @@ const snoozeStamp = () => String(Date.now());
  *  on phones whose export lives in iCloud — which is most of them. */
 const LIST_UUID_REV = '2';
 import seed from '@/seed';
-import { getCommentCount, getCustomLists, hasLibrary, getFavoriteMovies, getFavoriteShows, getMeta, getMovies, getProfileLayout as savedArrangement, getShowProgress, isStorageFull, getTotals, setMeta, setProfileLayout as saveArrangement, watchedInMonth } from '@/db';
+import { getCommentCount, getCustomLists, hasLibrary, getFavoriteMovies, getFavoriteShows, getMeta, getMovies, getProfileLayout as savedArrangement, getShowProgress, isStorageFull, getTotals, setMeta, setProfileLayout as saveArrangement, watchedInMonth, watchedInPeriodSplit } from '@/db';
 import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { documentFileUri, isSeedLibrary, profileImageUri } from '@/library';
 import { clockOf, computeMovieStats, watchDayCounts } from '@/stats-calc';
@@ -67,7 +67,7 @@ import { FreeMonthCard } from '@/components/free-month-card';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
-import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, wrappedToOffer, wrappedYearToOffer, mixHex } from '@/pure';
+import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, WRAPPED_SEEN_FINAL_KEY, wrappedToOffer, wrappedYearToOffer, wrappedFinalToOffer, wrappedYearWorthNudge, mixHex } from '@/pure';
 import { lastFriendMatches } from '@/community-seed';
 import { appLinks } from '@/links';
 import { colors, onAccent, radius, space, ls } from '@/theme';
@@ -218,6 +218,7 @@ export default function ProfileScreen() {
   // clock in render is right, and the grid only has to be correct per focus.
   const [today, setToday] = useState(todayISO);
   const [yearSeen, setYearSeen] = useState(() => getMeta(WRAPPED_SEEN_YEAR_KEY));
+  const [finalSeen, setFinalSeen] = useState(() => getMeta(WRAPPED_SEEN_FINAL_KEY));
   // Which month the grid is showing. Starts at the current one and is NOT
   // reset on focus — coming back from a show should not throw away the month
   // somebody navigated to.
@@ -397,6 +398,10 @@ export default function ProfileScreen() {
       setIsPrivate(getMeta(PRIVATE_PROFILE_KEY) === '1');
       setDayCounts(watchDayCounts());
       setToday(todayISO());
+      // Re-read: opening the year from a notification or the picker stamps
+      // these too (wrapped.tsx), and the card must not outlive that.
+      setYearSeen(getMeta(WRAPPED_SEEN_YEAR_KEY));
+      setFinalSeen(getMeta(WRAPPED_SEEN_FINAL_KEY));
       setProfileLayout(asProfileLayout(getMeta('profileThemeLayout')));
       /*
        * RE-READ THE ARRANGEMENT. It was held in state and initialised ONCE, so
@@ -860,12 +865,28 @@ export default function ProfileScreen() {
    * Compiler memoises that read and `setTick` cannot invalidate it, so the
    * card would outlive its own ✕ (see CLAUDE.md).
    */
+  /*
+   * Both year cards need a year WORTH announcing (`wrappedYearWorthNudge`):
+   * ten episodes or three films. Below that the picker still offers it.
+   */
   const dueYear = wrappedYearToOffer(today, yearSeen);
-  const offerYear = dueYear != null && watchedInMonth(dueYear) >= WRAPPED_MIN_ITEMS ? dueYear : null;
+  const offerYear = dueYear != null && wrappedYearWorthNudge(watchedInPeriodSplit(dueYear)) ? dueYear : null;
   const dismissWrappedYear = () => {
     if (offerYear == null) return;
     setMeta(WRAPPED_SEEN_YEAR_KEY, offerYear);
     setYearSeen(offerYear);
+  };
+  /*
+   * THE YEAR, COMPLETE, through January (2.0.3). A stage of its own: the
+   * December card was "so far", and Christmas is the busiest fortnight of a
+   * viewer's year, so the finished one is news even to somebody who opened it.
+   */
+  const dueFinal = wrappedFinalToOffer(today, finalSeen);
+  const offerFinal = dueFinal != null && wrappedYearWorthNudge(watchedInPeriodSplit(dueFinal)) ? dueFinal : null;
+  const dismissWrappedFinal = () => {
+    if (offerFinal == null) return;
+    setMeta(WRAPPED_SEEN_FINAL_KEY, offerFinal);
+    setFinalSeen(offerFinal);
   };
 
   /**
@@ -964,6 +985,27 @@ export default function ProfileScreen() {
       )}
       {/* The year above the month: it is the rarer and bigger of the two,
           and on 1 December the one people came to post. */}
+      {offerFinal != null && (
+        <Pressable
+          style={[styles.wrappedBanner, themedNotice]}
+          accessibilityRole="button"
+          accessibilityLabel={`${t('wrappedFinal.bannerTitle', { year: offerFinal })}, ${t('wrappedFinal.bannerBody')}`}
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissWrappedFinal)}
+          onPress={() => {
+            tapLight();
+            dismissWrappedFinal();
+            router.push(`/wrapped?year=${offerFinal}`);
+          }}>
+          <Text style={styles.wrappedEmoji}>🎆</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.wrappedTitle}>{t('wrappedFinal.bannerTitle', { year: offerFinal })}</Text>
+            <Text style={styles.wrappedBody}>{t('wrappedFinal.bannerBody')}</Text>
+          </View>
+          <Pressable onPress={dismissWrappedFinal} hitSlop={12} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={18} color={colors.dim} />
+          </Pressable>
+        </Pressable>
+      )}
       {offerYear != null && (
         <Pressable
           style={[styles.wrappedBanner, themedNotice]}

@@ -51,9 +51,23 @@ export function Label({ children, colour = WRAPPED_YELLOW, size = 11, style }: {
   return <Text style={[{ color: colour, fontSize: size, fontWeight: '900', letterSpacing: ls(size * 0.18), textTransform: 'uppercase' }, style]}>{children}</Text>;
 }
 
+/**
+ * "so far", set beside the period while its year is still running (2.0.3).
+ * A context rather than a prop so every year card's masthead carries it
+ * without each one being told: a card shared on 3 December that reads only
+ * "2026" looks like a year with no December in it.
+ */
+export const SoFarTag = createContext<string | null>(null);
+
 /** The period, as a masthead. */
 export function Period({ children, size = 26, style }: { children: ReactNode; size?: number; style?: TextStyle }) {
-  return <Text style={[{ color: INK, fontSize: size, fontWeight: '900', letterSpacing: ls(-size * 0.03), lineHeight: size * 1.05 }, style]}>{children}</Text>;
+  const soFar = useContext(SoFarTag);
+  return (
+    <Text style={[{ color: INK, fontSize: size, fontWeight: '900', letterSpacing: ls(-size * 0.03), lineHeight: size * 1.05 }, style]}>
+      {children}
+      {soFar ? <Text style={{ color: WRAPPED_YELLOW, fontSize: size * 0.6, letterSpacing: 0 }}>{` ${soFar}`}</Text> : null}
+    </Text>
+  );
 }
 
 /**
