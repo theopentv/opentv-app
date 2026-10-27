@@ -3908,5 +3908,19 @@
     "bannerBody": "O ano inteiro, dezembro incluído. Grátis para criar e compartilhar",
     "notifyTitle": "Seu {{year}} está completo",
     "notifyBody": "Todas as séries e filmes do ano, Natal incluído. Toque para abrir."
+  },
+  "freeMonthOptIn": {
+    "cardTitle": "Experimente o Plus grátis por um mês",
+    "cardBody": "Sem cartão e nada é renovado. Todos os recursos do Plus por 30 dias, Backup na nuvem incluído, e depois o mês simplesmente acaba.",
+    "cardAccount": "É preciso uma conta: entre com Apple, Google ou e-mail. Todo o resto do OpenTV funciona sem ela.",
+    "cardCta": "Experimentar grátis",
+    "claimFailed": "Não foi possível falar com o OpenTV. Seu mês grátis será ativado na próxima vez que você abrir o app.",
+    "endsTodayTitle": "Seu mês grátis termina hoje",
+    "endedTitle": "Seu mês grátis terminou",
+    "endedUsed": "Durante o seu mês você usou",
+    "endedIncludes": "O Plus inclui",
+    "endedSafe": "Todos os seus dados continuam aqui. Nada foi apagado, e acompanhar o que você assiste continua grátis.",
+    "endedAnnual": "Plano anual, {{price}} por ano",
+    "endedMonthly": "Plano mensal, {{price}} por mês"
   }
 }

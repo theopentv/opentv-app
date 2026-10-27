@@ -327,10 +327,10 @@ let storePlus: boolean | null = null;
 /** Called by the purchases module with the store's answer. See `plusDecision`. */
 export function setStorePlus(on: boolean): void {
   storePlus = on;
-  // Bought before day 25 of a free month: its "ends in 5 days" would be wrong.
+  // Bought during a free month: its reminders and its "has ended" are wrong now.
   if (on) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    (require('@/free-month') as typeof import('@/free-month')).cancelFreeMonthReminder();
+    (require('@/free-month') as typeof import('@/free-month')).freeMonthBought();
   }
   decidePlus();
 }
@@ -418,7 +418,13 @@ export function useCloudStorageAllowed(): boolean {
  * people and what never does.
  */
 export function requirePlus(from: string): boolean {
-  if (isPlus()) return true;
+  if (isPlus()) {
+    // What a free month was used for, for the screen at its end. Lazy:
+    // free-month imports this module.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    (require('@/free-month') as typeof import('@/free-month')).noteFreeMonthUse(from);
+    return true;
+  }
   // Nothing to offer: no paywall, no navigation, and the caller simply does
   // not proceed. Entry points are hidden in this build, so reaching here means
   // a deep link or a stale screen rather than a user who tapped something.

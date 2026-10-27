@@ -3908,5 +3908,19 @@
     "bannerBody": "Aralık dahil bütün yıl. Oluşturması ve paylaşması ücretsiz",
     "notifyTitle": "{{year}} yılın tamamlandı",
     "notifyBody": "Yılın tüm dizileri ve filmleri, yılbaşı dahil. Açmak için dokun."
+  },
+  "freeMonthOptIn": {
+    "cardTitle": "Plus'ı bir ay ücretsiz dene",
+    "cardBody": "Kart yok, hiçbir şey yenilenmez. 30 gün boyunca tüm Plus özellikleri, Bulut Yedekleme dahil, sonra ay kendiliğinden biter.",
+    "cardAccount": "Bir hesap gerekir: Apple, Google veya e-posta ile giriş yap. OpenTV'nin geri kalanı hesapsız da çalışır.",
+    "cardCta": "Ücretsiz dene",
+    "claimFailed": "OpenTV'ye ulaşılamadı. Ücretsiz ayın, uygulamayı bir sonraki açışında etkinleşecek.",
+    "endsTodayTitle": "Ücretsiz ayın bugün bitiyor",
+    "endedTitle": "Ücretsiz ayın bitti",
+    "endedUsed": "Bu ay kullandıkların",
+    "endedIncludes": "Plus şunları içerir",
+    "endedSafe": "Tüm verilerin hâlâ burada. Hiçbir şey silinmedi ve takip ücretsiz kalıyor.",
+    "endedAnnual": "Yıllık plan, yılda {{price}}",
+    "endedMonthly": "Aylık plan, ayda {{price}}"
   }
 }

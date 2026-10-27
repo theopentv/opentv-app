@@ -1,51 +1,73 @@
 /**
- * "Sign in and get a month of Plus free" (2.0.3) — after an import finishes,
- * and once on the Profile tab for somebody already here with no account.
+ * "Try Plus free for a month" (2.0.3) — after an import finishes, and in the
+ * Profile banner stack, for everybody who may have it: no account yet, or
+ * signed in and never claimed (`freeMonthInviteDue`).
  *
- * IT SAYS WHAT IT IS NOT. No payment, no trial to cancel, nothing renews, and
- * an account stays optional: a free month that quietly became a subscription
- * is the trick people expect from an offer like this, and the card is where
- * that suspicion is answered, not a terms page.
+ * IT SAYS WHAT IT IS NOT. No card, no trial to cancel, nothing renews: a free
+ * month that quietly became a subscription is the trick people expect from an
+ * offer like this, and the card is where that suspicion is answered, not a
+ * terms page. Signed out, it also says the month needs an account, before the
+ * tap rather than after it.
+ *
+ * "Try it free" is the only thing in the app that asks for the month
+ * (`acceptFreeMonth`). Signed in it is claimed there and then, and "A month
+ * of Plus is yours" opens; signed out it opens sign-in, which claims it.
  *
  * "No thanks" is one-way for BOTH cards (`declineFreeMonth`), so declining
  * after an import also means it is never asked again on the Profile tab.
  * Visibility is state, re-read on focus — signing in elsewhere hides it.
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { track } from '@/analytics';
 import { Text } from '@/components/text';
-import { declineFreeMonth, freeMonthInviteShown } from '@/free-month';
+import { hasAccount } from '@/community-session';
+import { acceptFreeMonth, declineFreeMonth, freeMonthInviteShown, freeMonthPending } from '@/free-month';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { colors, radius, space } from '@/theme';
 
 export function FreeMonthCard({ from, style }: { from: 'import' | 'profile'; style?: StyleProp<ViewStyle> }) {
   const [shown, setShown] = useState(freeMonthInviteShown);
-  useFocusEffect(useCallback(() => setShown(freeMonthInviteShown()), []));
+  const [signedIn, setSignedIn] = useState(hasAccount);
+  const [busy, setBusy] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      setShown(freeMonthInviteShown());
+      setSignedIn(hasAccount());
+    }, []),
+  );
   if (!shown) return null;
+
+  const accept = async () => {
+    if (busy) return;
+    tapLight();
+    setBusy(true);
+    await acceptFreeMonth(from);
+    setBusy(false);
+    setShown(freeMonthInviteShown());
+    // Signed in and still pending: the claim could not reach the server. It is
+    // made at the next launch anyway; say so rather than a button that did nothing.
+    if (signedIn && freeMonthPending()) Alert.alert(t('freeMonthOptIn.claimFailed'));
+  };
   return (
     <View style={[s.card, style]}>
       <View style={s.head}>
         <Ionicons name="sparkles" size={18} color={colors.yellow} />
         <Text style={s.title} accessibilityRole="header">
-          {t('freeMonth.cardTitle')}
+          {t('freeMonthOptIn.cardTitle')}
         </Text>
       </View>
-      <Text style={s.body}>{t('freeMonth.cardBody')}</Text>
-      <Text style={s.small}>{t('freeMonth.cardNoRenew')}</Text>
-      <Pressable
-        accessibilityRole="button"
-        style={s.cta}
-        onPress={() => {
-          tapLight();
-          track('free_month_invite', { from, answer: 'sign_in' });
-          router.push('/sign-in');
-        }}>
-        <Text style={s.ctaText}>{t('freeMonth.cardCta')}</Text>
+      <Text style={s.body}>{t('freeMonthOptIn.cardBody')}</Text>
+      {!signedIn && <Text style={s.small}>{t('freeMonthOptIn.cardAccount')}</Text>}
+      <Pressable accessibilityRole="button" style={s.cta} disabled={busy} onPress={() => void accept()}>
+        {busy ? (
+          <ActivityIndicator color={colors.onYellow} />
+        ) : (
+          <Text style={s.ctaText}>{t('freeMonthOptIn.cardCta')}</Text>
+        )}
       </Pressable>
       <Pressable
         accessibilityRole="button"

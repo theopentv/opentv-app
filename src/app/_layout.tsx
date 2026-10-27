@@ -759,6 +759,8 @@ export default function RootLayout() {
         {/* The free month, just granted (2.0.3): opened by `claimFreeMonth`
             after any sign-in, so it lives beside sign-in, outside the guard. */}
         <Stack.Screen name="free-month" />
+        {/* And its end, once, at the first launch after it (`freeMonthAfterRefresh`). */}
+        <Stack.Screen name="free-month-ended" />
         <Stack.Screen name="cloud-backup" />
         <Stack.Screen name="devices" />
         <Stack.Screen name="support" />
