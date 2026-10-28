@@ -740,8 +740,9 @@ export function ProfileTemplate({
             onPress={c.onPress}
             // While arranging, the tap belongs to the block's menu (9 Oct).
             disabled={!c.onPress || editing}>
-            <Text style={[styles.statNum, themeColor != null && { color: themeColor }]}>{c.value}</Text>
-            <Text style={styles.statLbl}>{c.label}</Text>
+            {/* The block's height is the grid's, not the text's: past 1.4x the labels were cut in half. */}
+            <Text maxFontSizeMultiplier={1.4} style={[styles.statNum, themeColor != null && { color: themeColor }]}>{c.value}</Text>
+            <Text maxFontSizeMultiplier={1.4} numberOfLines={1} adjustsFontSizeToFit style={styles.statLbl}>{c.label}</Text>
           </Pressable>
         ))}
       </View>

@@ -748,7 +748,8 @@ export default function ImportScreen() {
             {[t(fromSub(from)), t(STEPS[2])].map((text, i) => (
               <View key={i} style={styles.step}>
                 <View style={styles.stepNum}>
-                  <Text style={{ color: colors.onYellow, fontWeight: '800', fontSize: 13 }}>{i + 1}</Text>
+                  {/* a fixed 26pt circle: the digit may not grow past it at the largest text size */}
+                  <Text maxFontSizeMultiplier={1.3} style={{ color: colors.onYellow, fontWeight: '800', fontSize: 13 }}>{i + 1}</Text>
                 </View>
                 <Text style={styles.stepText}>{text}</Text>
               </View>
