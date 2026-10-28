@@ -3089,6 +3089,9 @@
       "devices": "Plus: Twoje urządzenia — zobacz każdy telefon i tablet na koncie i usuń wybrany — Ustawienia → Biblioteka → Kopia zapasowa",
       "fixes": "Naprawiono: Ukrywanie obejrzanych odcinków zostaje włączone, a wiersz Dziś wieczorem da się zamknąć"
     },
+    "v204": {
+      "simpleView": "Widok prosty: tylko liczba seriali, odcinków i filmów, bez dodatkowych statystyk. Ustawienia → Aplikacja → Widok prosty"
+    },
     "v203": {
       "imports": "Przechodzisz z Sofa Time albo Bingers? Przenieś całą bibliotekę: Ustawienia → Importuj swoje dane",
       "freeMonth": "Zaloguj się i odbierz miesiąc Plus za darmo. Nic się nie odnawia, nie trzeba niczego anulować",

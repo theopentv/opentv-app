@@ -2871,6 +2871,9 @@
       "devices": "Plus: I tuoi dispositivi — vedi ogni telefono e tablet del tuo account e rimuovine uno — Impostazioni → Libreria → Backup",
       "fixes": "Corretto: Nascondi episodi visti ora resta attivo, e la riga Stasera si può chiudere"
     },
+    "v204": {
+      "simpleView": "Vista semplice: solo quante serie, episodi e film, senza statistiche in più. Impostazioni → App → Vista semplice"
+    },
     "v203": {
       "imports": "Arrivi da Sofa Time o Bingers? Porta qui tutta la tua libreria: Impostazioni → Importa i tuoi dati",
       "freeMonth": "Accedi e ricevi un mese di Plus gratis. Nessun rinnovo, niente da disdire",

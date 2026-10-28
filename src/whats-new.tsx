@@ -28,6 +28,17 @@ const KEY = 'whatsNewSeen';
 const NOTES: Record<string, { icon: string; tint: string; key: LocaleKey; iosOnly?: boolean }[]> = {
   // 2.0.0–2.0.2 shipped with no row here, so nobody who updated was told
   // anything (Mahmood noticed on 27 Oct). Every release gets a row.
+  // 2.0.4 repeats 2.0.3's rows: iOS went from 2.0.2 straight to 2.0.4, and the
+  // TV Time re-import line is the one thing those people most need to read.
+  '2.0.4': [
+    { icon: '🧘', tint: '#78BE3D', key: 'whatsNew.v204.simpleView' },
+    { icon: '📥', tint: '#3E8BFF', key: 'whatsNew.v203.imports' },
+    { icon: '🎁', tint: ACCENTS.yellow, key: 'whatsNew.v203.freeMonth' },
+    { icon: '🧩', tint: '#9B7BFF', key: 'whatsNew.v203.everything' },
+    { icon: '🔔', tint: '#FF7A1A', key: 'whatsNew.v203.puzzle' },
+    { icon: '📱', tint: '#FF4D8D', key: 'whatsNew.v203.classic', iosOnly: true },
+    { icon: '🛠️', tint: '#78BE3D', key: 'whatsNew.v203.fixes' },
+  ],
   '2.0.3': [
     { icon: '📥', tint: '#3E8BFF', key: 'whatsNew.v203.imports' },
     { icon: '🎁', tint: ACCENTS.yellow, key: 'whatsNew.v203.freeMonth' },

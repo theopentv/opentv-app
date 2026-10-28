@@ -2871,6 +2871,9 @@
       "devices": "Plus : Vos appareils — tous les téléphones et tablettes de ton compte, et la possibilité d'en retirer un — Réglages → Bibliothèque → Sauvegarde",
       "fixes": "Corrigé : Masquer les épisodes vus reste activé, et la ligne Ce soir peut être fermée"
     },
+    "v204": {
+      "simpleView": "Vue simple : juste le nombre de séries, d'épisodes et de films, sans les statistiques en plus. Réglages → App → Vue simple"
+    },
     "v203": {
       "imports": "Vous venez de Sofa Time ou Bingers ? Importez toute votre bibliothèque : Réglages → Importer tes données",
       "freeMonth": "Connectez-vous et recevez un mois de Plus offert. Rien ne se renouvelle, rien à annuler",

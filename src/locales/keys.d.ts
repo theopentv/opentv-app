@@ -2897,6 +2897,7 @@ export type LocaleKey =
   | "whatsNew.v203.freeMonth"
   | "whatsNew.v203.imports"
   | "whatsNew.v203.puzzle"
+  | "whatsNew.v204.simpleView"
   | "widgets.caughtUp"
   | "widgets.emptyHint"
   | "widgets.movies"

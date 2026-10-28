@@ -2871,6 +2871,9 @@
       "devices": "Plus: Seus aparelhos — veja cada celular e tablet da sua conta e remova o que quiser — Configurações → Biblioteca → Backup",
       "fixes": "Corrigido: Ocultar episódios assistidos agora fica ligado, e a linha Hoje à noite pode ser fechada"
     },
+    "v204": {
+      "simpleView": "Visual simples: só quantas séries, episódios e filmes, sem estatísticas extras. Configurações → App → Visual simples"
+    },
     "v203": {
       "imports": "Vindo do Sofa Time ou do Bingers? Traga toda a sua biblioteca: Configurações → Importar seus dados",
       "freeMonth": "Entre na sua conta e ganhe um mês de Plus grátis. Nada é renovado, nada para cancelar",

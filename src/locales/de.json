@@ -2871,6 +2871,9 @@
       "devices": "Plus: Deine Geräte – sieh alle Handys und Tablets in deinem Konto und entferne eins – Einstellungen → Bibliothek → Backup",
       "fixes": "Behoben: „Gesehene Folgen ausblenden“ bleibt jetzt an, und die Heute-Abend-Zeile lässt sich schließen"
     },
+    "v204": {
+      "simpleView": "Einfache Ansicht: nur wie viele Serien, Folgen und Filme, ohne Extra-Statistiken. Einstellungen → App → Einfache Ansicht"
+    },
     "v203": {
       "imports": "Du kommst von Sofa Time oder Bingers? Nimm deine ganze Bibliothek mit: Einstellungen → Deine Daten importieren",
       "freeMonth": "Melde dich an und erhalte einen Monat Plus gratis. Nichts verlängert sich, nichts zu kündigen",

@@ -2871,6 +2871,9 @@
       "devices": "Plus: Cihazların — hesabındaki her telefon ve tableti gör, birini kaldır — Ayarlar → Kitaplık → Yedek",
       "fixes": "Düzeltildi: İzlenen bölümleri gizle artık açık kalıyor ve Bu akşam satırı kapatılabiliyor"
     },
+    "v204": {
+      "simpleView": "Sade görünüm: sadece kaç dizi, bölüm ve film, ekstra istatistik yok. Ayarlar → Uygulama → Sade görünüm"
+    },
     "v203": {
       "imports": "Sofa Time ya da Bingers'tan mı geliyorsun? Tüm kütüphaneni taşı: Ayarlar → Verilerini içe aktar",
       "freeMonth": "Giriş yap, bir ay Plus ücretsiz senin olsun. Yenilenmez, iptal edecek bir şey yok",

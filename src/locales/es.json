@@ -2871,6 +2871,9 @@
       "devices": "Plus: Tus dispositivos — ve cada teléfono y tableta de tu cuenta y quita el que quieras — Ajustes → Biblioteca → Copia de seguridad",
       "fixes": "Corregido: Ocultar episodios vistos ahora se mantiene activado, y la fila Esta noche se puede cerrar"
     },
+    "v204": {
+      "simpleView": "Vista sencilla: solo cuántas series, episodios y películas, sin estadísticas extra. Ajustes → App → Vista sencilla"
+    },
     "v203": {
       "imports": "¿Vienes de Sofa Time o Bingers? Trae toda tu biblioteca: Ajustes → Importar tus datos",
       "freeMonth": "Inicia sesión y recibe un mes de Plus gratis. No se renueva, no hay nada que cancelar",

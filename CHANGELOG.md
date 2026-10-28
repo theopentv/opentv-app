@@ -42,7 +42,7 @@ Play Console record rather than per-change.
 ---
 
 
-## 2.0.4 — the plan
+## 2.0.4 — released with Simple view (28 Oct 2026); the rest below is still the plan
 
 **BUILT 28 Oct 2026 (branch `2.0.4`):**
 - **Simple view** (Mahmood, 28 Oct, from Arthas in TV Time Refugees: "just the number of movies / shows / episodes… or at least let me opt out"; TV Time had the stats with no way to hide them). Settings → App → Simple view: free, on this phone, no account. The Profile's Stats become three counts (shows, episodes, films) with no way into the deep stats page; the heatmap, yearly goal, Wrapped banners and "X years ago" memory card are hidden, and Wrapped and memory notifications stop. Dates are still recorded (imports, backups and sync need them); only what is shown changes.
