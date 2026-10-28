@@ -412,7 +412,7 @@ export async function syncEpisodeNotifications(force = false): Promise<void> {
      * SLOT, not a "sent" flag, so the cancel-everything above cannot lose a
      * nudge booked for tomorrow evening — it is simply booked again.
      */
-    if (goalNudgeOn()) {
+    if (goalNudgeOn() && !simpleView()) {
       const today = new Date(now);
       const behind = mostBehind(goalStatus(today.getFullYear(), today));
       const at = goalNudgeAt(behind != null, today, Number(getMeta(GOAL_NUDGED_AT_KEY)) || null);
