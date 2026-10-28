@@ -45,7 +45,7 @@ Play Console record rather than per-change.
 ## 2.0.5 — the plan
 
 - **Notifications screen, redone** (Mahmood, 28 Oct). The inbox and push views need the TV Time treatment: grouping, clearer kinds, tap-through to the thing named. Details to be written before building.
-- **Duo design pass** (Mahmood, 28 Oct). Improve how OpenTV looks on iPhone Duo, using a reference reel he shared (instagram.com/reel/DelUks9x5j1, not viewable without login: get screenshots or a description first). Check against the Duo skills: fold avoidance, side bar, two-pane use of the open screen.
+- **Duo design pass: two panes when open** (Mahmood, 28 Oct; reference reel instagram.com/reel/DelUks9x5j1, a planner app in the Duo simulator: closed = one screen; open = month grid on the left half, the chosen day's notes, events and actions on the right, nothing on the fold). Today OpenTV only widens its pages when open. Do the same list-detail split: Watch List / Upcoming on the left and the tapped show or day on the right; a show's seasons left, the episode right; Profile shelves left, the opened shelf right. Closed stays as it is. Use the Duo skills (dual-pane patterns, fold avoidance, side bar) and NavigationSplitView-style behaviour; state must survive folding.
 - **TV Time parity pass** (Mahmood, 28 Oct: "we are missing so much from TV Time"). First a written gap list, screen by screen, of what TV Time had that OpenTV does not (or does worse), ranked by how often refugees hit it; then fixes. Not started: the list comes first. (The 2.0.0 sizing pass in `design/referance/tvtimeVsopentv/PLAN.md` covers sizes only, not missing features.)
 
 ## 2.0.4 — released with Simple view (28 Oct 2026); the rest below is still the plan
