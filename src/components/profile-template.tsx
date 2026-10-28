@@ -256,6 +256,8 @@ export type ProfileTemplateProps = {
   cells: readonly ProfileCountCell[];
   statsCards?: readonly StatCard[] | null;
   onStatsPress?: () => void;
+  /** Someone else's profile in Simple view (2.0.4): a lock where the stats would be, and what a tap says. */
+  statsLocked?: () => void;
   /**
    * The activity heatmap and its heading — own profile ONLY, and the template
    * takes it as a slot rather than building it, because a per-day grid of what
@@ -501,6 +503,7 @@ export function ProfileTemplate({
   cells,
   statsCards,
   onStatsPress,
+  statsLocked,
   activity,
   list,
   shelves,
@@ -750,7 +753,17 @@ export function ProfileTemplate({
     activity: (span: WidgetSpan) => (typeof activity === 'function' ? activity(span) : (activity ?? null)),
     timeline: () => timeline ?? null,
     stats: () =>
-      !statsCards || statsCards.length === 0 ? null : (
+      statsLocked && (!statsCards || statsCards.length === 0) ? (
+        <View>
+          <View style={{ marginHorizontal: space.lg }}>
+            <SectionHeader title={t('stats.title')} pad={0} />
+          </View>
+          <Pressable style={[styles.shelfCard, styles.statsLocked]} accessibilityRole="button" onPress={statsLocked}>
+            <Ionicons name="lock-closed" size={18} color={colors.dim} />
+            <Text style={styles.statsLockedText}>{t('profile.simpleView')}</Text>
+          </Pressable>
+        </View>
+      ) : !statsCards || statsCards.length === 0 ? null : (
         /* Boxed for the same reason the shelves are — see `renderBlock`. */
         /*
          * THE HEADER KEEPS BOTH MARGINS; THE RAIL GIVES UP ITS RIGHT ONE.
@@ -1731,6 +1744,8 @@ const styles = StyleSheet.create({
   skeleton: { height: 12, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.35)', marginTop: 5, marginBottom: 1 },
   /** A section that clips its own rail — see the note where it is used. */
   shelfCard: { marginHorizontal: space.lg, overflow: 'hidden' },
+  statsLocked: { flexDirection: 'row', alignItems: 'center', gap: 8, padding: 16, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line },
+  statsLockedText: { color: colors.dim, fontSize: 15 },
   /** Left margin only: the right one is where the peek shows. */
   railBleed: { marginStart: space.lg },
   tile: {

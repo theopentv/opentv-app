@@ -1763,6 +1763,8 @@ export type LocaleKey =
   | "profile.sectionLists"
   | "profile.showsCard"
   | "profile.signedOutBanner"
+  | "profile.simpleView"
+  | "profile.simpleViewBody"
   | "profile.statComments"
   | "profile.statFollowers"
   | "profile.statFollowing"

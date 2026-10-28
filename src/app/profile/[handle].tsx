@@ -607,6 +607,11 @@ export default function PublicProfileScreen() {
             ]
           : null
       }
+      statsLocked={
+        detail && pub.simple_view && !hidden('stats')
+          ? () => Alert.alert(t('profile.simpleView'), t('profile.simpleViewBody', { name: p.display_name || `@${p.handle}` }))
+          : undefined
+      }
       // NULL, NOT AN EMPTY BAND. `list={{lists: []}}` draws a card reading "no
       // lists yet", which is a sentence about somebody's library that the owner
       // has explicitly refused to make. Absent is the only honest rendering.

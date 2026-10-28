@@ -1278,6 +1278,8 @@
     "movieTimeCard": "🎬 Temps de films",
     "moviesWatchedCard": "🎬 Films regardés",
     "showsCard": "📺 Séries",
+    "simpleView": "Vue simple",
+    "simpleViewBody": "{{name}} utilise la vue simple, ses statistiques ne sont donc pas affichées.",
     "emptyTitle": "Rien de suivi pour l'instant",
     "emptyCaption": "Ajoute les séries et les films que tu regardes, ou récupère tout ton historique depuis TV Time.",
     "emptyCta": "TROUVER QUELQUE CHOSE À REGARDER",

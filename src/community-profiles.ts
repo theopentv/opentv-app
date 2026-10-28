@@ -421,6 +421,8 @@ export type PublishedProfile = {
   } | null;
   shows: PublishedTitle[];
   movies: PublishedTitle[];
+  /** The owner uses Simple view (2.0.4): `stats` is null on purpose, draw a lock. */
+  simple_view?: boolean;
 };
 
 const NO_PUBLISHED: PublishedProfile = { stats: null, shows: [], movies: [] };
@@ -445,6 +447,7 @@ export async function fetchPublishedProfile(handle: string): Promise<PublishedPr
       stats: res?.stats ?? null,
       shows: Array.isArray(res?.shows) ? res.shows : [],
       movies: Array.isArray(res?.movies) ? res.movies : [],
+      simple_view: res?.simple_view === true,
     };
   } catch {
     return NO_PUBLISHED;

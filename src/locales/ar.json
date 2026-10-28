@@ -1430,6 +1430,8 @@
     "movieTimeCard": "🎬 وقت الأفلام",
     "moviesWatchedCard": "🎬 الأفلام المُشاهَدة",
     "showsCard": "📺 المسلسلات",
+    "simpleView": "عرض بسيط",
+    "simpleViewBody": "{{name}} يستخدم العرض البسيط، لذلك لا تظهر إحصائياته.",
     "emptyTitle": "لا شيء مُتابَع بعد",
     "emptyCaption": "أضف المسلسلات والأفلام التي تشاهدها، أو انقل سجلك الكامل من TV Time.",
     "emptyCta": "ابحث عن شيء لمشاهدته",

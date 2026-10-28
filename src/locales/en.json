@@ -1278,6 +1278,8 @@
     "movieTimeCard": "🎬 Movie time",
     "moviesWatchedCard": "🎬 Movies watched",
     "showsCard": "📺 Shows",
+    "simpleView": "Simple view",
+    "simpleViewBody": "{{name}} uses Simple view, so their stats aren’t shown.",
     "emptyTitle": "Nothing tracked yet",
     "emptyCaption": "Add the shows and films you watch, or bring your whole history over from TV Time.",
     "emptyCta": "FIND SOMETHING TO WATCH",

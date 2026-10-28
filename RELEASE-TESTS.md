@@ -17,6 +17,7 @@ failure written next to it, not in a commit message.
 
 - [x] Simple view on: Profile Stats = Shows / Episodes / Films counts, no ›, no Wrapped banner (iOS sim, 28 Oct, set via meta)
 - [ ] Simple view switch in Settings → App turns it on and off; heatmap and goal widgets gone; no Wrapped/memory notification next day
+- [ ] Simple view on account A (after backend 0065 is deployed): account B opens A's profile and sees the 🔒 Simple view card, tap explains it; A turns it off → B sees the numbers again
 
 ## 2.0.3 — merged 27 Oct 2026, not yet on a device
 

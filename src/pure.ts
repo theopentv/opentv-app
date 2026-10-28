@@ -4552,6 +4552,8 @@ export function publishableStats(input: {
   movie_minutes: number;
   shows_count: number;
   movies_count: number;
+  /** Simple view (2.0.4): set by the publisher, never by this builder. */
+  simple_view?: boolean;
 } {
   const n = (v: number) => (Number.isFinite(v) && v > 0 ? Math.floor(v) : 0);
   return {

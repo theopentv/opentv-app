@@ -53,6 +53,7 @@ import {
   type LocalTitle,
   type PublishedTitle,
   type PublishHoldReason,
+  SIMPLE_VIEW_KEY,
 } from '@/pure';
 
 /**
@@ -440,6 +441,9 @@ export async function publishProfile(): Promise<PublishResult> {
       shows: t.shows,
       movies: m.watched,
     });
+    // Simple view: the server keeps the numbers from everybody else and the
+    // public profile shows a lock instead (0065).
+    if (getMeta(SIMPLE_VIEW_KEY) === '1') stats = { ...stats, simple_view: true };
     /*
      * ONE CHUNK FREE, THE WHOLE SHELF ON PLUS.
      *
@@ -739,6 +743,8 @@ async function publishIfChangedNow(): Promise<PublishResult | null> {
       // so without this a purchase would show up on the public profile only
       // when the buyer next happened to watch an episode.
       isPlus() ? 'plus' : 'free',
+      // Simple view changes what others see without changing the library.
+      getMeta(SIMPLE_VIEW_KEY) === '1' ? 'simple' : '',
     ].join('.');
   } catch {
     noteState('fingerprint_failed');

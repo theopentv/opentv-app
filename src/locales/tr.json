@@ -1278,6 +1278,8 @@
     "movieTimeCard": "🎬 Film süresi",
     "moviesWatchedCard": "🎬 İzlenen filmler",
     "showsCard": "📺 Diziler",
+    "simpleView": "Sade görünüm",
+    "simpleViewBody": "{{name}} sade görünümü kullanıyor, bu yüzden istatistikleri gösterilmiyor.",
     "emptyTitle": "Henüz takip edilen bir şey yok",
     "emptyCaption": "İzlediğin dizi ve filmleri ekle ya da tüm geçmişini TV Time'dan getir.",
     "emptyCta": "İZLEYECEK BİR ŞEY BUL",

@@ -1354,6 +1354,8 @@
     "movieTimeCard": "🎬 Czas z filmami",
     "moviesWatchedCard": "🎬 Obejrzane filmy",
     "showsCard": "📺 Seriale",
+    "simpleView": "Widok prosty",
+    "simpleViewBody": "{{name}} korzysta z widoku prostego, więc statystyki nie są widoczne.",
     "emptyTitle": "Nic jeszcze nie śledzisz",
     "emptyCaption": "Dodaj oglądane seriale i filmy albo przenieś całą historię z TV Time.",
     "emptyCta": "ZNAJDŹ COŚ DO OBEJRZENIA",
