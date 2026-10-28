@@ -7,7 +7,7 @@ import { deleteCommunityAccount, leaveCommunity } from '@/community-account';
 import { hasAnythingToSeed, seedingDone } from '@/community-seed';
 import { getHandle, hasAccount, lastAccount, useHasPassword, useJoined } from '@/community-session';
 import { communityErrorText } from '@/community-error-text';
-import { fetchFollowRequests, fetchProfile, pushHiddenSections, pushPrivate } from '@/community-profiles';
+import { fetchFollowRequests, fetchProfile, pushHiddenSections, pushPrivate, republishWidgets } from '@/community-profiles';
 import { pushDevPlus } from '@/community-plus-dev';
 import { appLinks } from '@/links';
 import { HIDDEN_SECTIONS_KEY, HIDE_UNSEEN_KEY, SIMPLE_VIEW_KEY, isSafeLinkUrl, parseHiddenSections, PRIVATE_PROFILE_KEY, sectionHidden, withSectionHidden } from '@/pure';
@@ -674,6 +674,7 @@ export default function SettingsScreen() {
                     void syncEpisodeNotifications(true);
                     // And the public profile: the flag is in the publish fingerprint.
                     void publishIfChanged();
+                    republishWidgets();
                   }}
                   trackColor={{ true: colors.green }}
                 />

@@ -39,6 +39,7 @@ import {
   withGoalBlock,
   withPuzzleBlock,
   withTogetherBlock,
+  SIMPLE_VIEW_HIDES,
 } from '@/profile-layout';
 import { profileTogetherSnapshot } from '@/community-together';
 import { sortableDate, watchedFilms } from '@/everything-view';
@@ -1398,9 +1399,9 @@ export default function ProfileScreen() {
     const goal = goalOnPage && !simple ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
     // Everything I watch: its switch puts the shelf above Shows, or takes it off.
     const out = everythingOn || goal ? withEverythingShelf(goal ?? defaultLayout(SHELF_KEYS), everythingOn) : goal;
-    return out?.map((p) =>
-      p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p.id === 'together' ? { ...p, data: togetherSnap } : p,
-    );
+    return out
+      ?.filter((p) => !simple || !SIMPLE_VIEW_HIDES.has(p.id))
+      .map((p) => (p.id === 'puzzle' ? { ...p, data: puzzleSnap } : p.id === 'together' ? { ...p, data: togetherSnap } : p));
   })();
   return (
     <ProfileTemplate

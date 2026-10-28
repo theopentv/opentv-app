@@ -437,6 +437,9 @@ const GALLERY: Record<GalleryGroup, readonly string[]> = {
   photos: ['artwork', 'gif', 'links'],
 };
 
+/** Widgets Simple view takes off the profile: every stat, and the day-by-day history (2.0.4). */
+export const SIMPLE_VIEW_HIDES: ReadonlySet<string> = new Set([...GALLERY.stats, 'activity', 'timeline', 'emotions', 'emotionCalendar']);
+
 export function galleryGroups(ids: readonly string[]): { group: GalleryGroup; ids: string[] }[] {
   const offered = new Set(ids);
   const placed = new Set<string>();

@@ -26,7 +26,8 @@ import { track } from '@/analytics';
 import { ApiError, api } from '@/api';
 import { getToken, isJoined, signOutLocally } from '@/community-session';
 import { getMeta, setMeta } from '@/db';
-import { visibleProfileFields, type ProfileCounts, displayNameFrom } from '@/pure';
+import { SIMPLE_VIEW_KEY, visibleProfileFields, type ProfileCounts, displayNameFrom } from '@/pure';
+import { SIMPLE_VIEW_HIDES } from '@/profile-layout';
 
 /** The compact person block every list row carries, as the server shapes it. */
 export type ProfileRef = {
@@ -501,12 +502,31 @@ export async function pushProfileTheme(color: string | null): Promise<void> {
  */
 const WIDGETS_SENT_KEY = 'communityWidgetsSent';
 
-export async function pushWidgets(json: string | null): Promise<void> {
+// The arrangement as the owner built it, before Simple view filters it, so the
+// switch can republish either way without the profile screen being open.
+const WIDGETS_SOURCE_KEY = 'communityWidgetsSource';
+
+export async function pushWidgets(source: string | null): Promise<void> {
+  setMeta(WIDGETS_SOURCE_KEY, source ?? '');
+  let json = source;
+  if (source && getMeta(SIMPLE_VIEW_KEY) === '1') {
+    try {
+      json = JSON.stringify((JSON.parse(source) as { id?: string }[]).filter((w) => !SIMPLE_VIEW_HIDES.has(w.id ?? '')));
+    } catch {
+      // Not a list we can read: send it as it came.
+    }
+  }
   if (getMeta(WIDGETS_SENT_KEY) === (json ?? '')) return;
   const token = await getToken();
   if (!token) return;
   await api('/v1/me', { method: 'PATCH', token, body: { widgets: json } });
   setMeta(WIDGETS_SENT_KEY, json ?? '');
+}
+
+/** Simple view was switched: send the owner's arrangement again, filtered or not. */
+export function republishWidgets(): void {
+  const source = getMeta(WIDGETS_SOURCE_KEY) || getMeta(WIDGETS_SENT_KEY);
+  if (source) void pushWidgets(source).catch(() => {});
 }
 
 /**
