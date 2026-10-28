@@ -65,3 +65,26 @@ it('does not retry when the network held (a miss is a real miss)', async () => {
   );
   expect(calls).toBe(3);
 });
+
+it('a breaker tripped BEFORE the pass (dead TV Time image CDN) does not empty it', async () => {
+  // the import downloads comment photos from TV Time's CDN first; that host is
+  // gone, so ten failures open the shared breaker before any TMDB call is made
+  fakeTmdb();
+  const { netUnreachable } = jest.requireActual('./net-circuit') as typeof import('./net-circuit');
+  for (let i = 0; i < 10; i++) netUnreachable();
+  const found = new Map<number, number>();
+  await lookupWithRetry(
+    [1, 2, 3, 4, 5],
+    async (id) => {
+      try {
+        const r = await tmdb<{ tv_results: { id: number }[] }>(`/find/${id}?external_source=tvdb_id`);
+        found.set(id, r.tv_results[0].id);
+      } catch {
+        // unresolved
+      }
+    },
+    (id) => !found.has(id),
+    2,
+  );
+  expect(found.size).toBe(5);
+});

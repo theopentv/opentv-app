@@ -139,6 +139,20 @@ export function netBudgetSpent(): boolean {
   return deadline !== 0 && Date.now() > deadline;
 }
 
+/**
+ * Close the breaker without touching the budget. A lookup pass calls this
+ * before it starts: what tripped the breaker earlier may have been a DIFFERENT
+ * host — the import downloads comment photos from TV Time's CDN first, and that
+ * CDN is gone, so ten dead image fetches used to open the breaker and every
+ * show lookup was refused in a millisecond (1,367 of 1,370 "not found"). The
+ * budget stays, so a startup repair still ends on time.
+ */
+export function netClose(): void {
+  consecutive = 0;
+  openedAt = 0;
+  probing = false;
+}
+
 /** Test seam, and used when an import begins: a fresh run deserves a fresh
  *  judgement rather than inheriting one made minutes ago. */
 export function netReset(): void {

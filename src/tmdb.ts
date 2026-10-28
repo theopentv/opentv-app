@@ -2,7 +2,7 @@
  *  Key lives in src/tmdb-token.ts (gitignored) — see tmdb-token.example.ts. */
 import { getMeta, setMeta } from '@/db';
 import { TMDB_TOKEN as BUNDLED } from '@/tmdb-token';
-import { isNetworkError, netGuard, netReachable, netReset, netTrips, netUnreachable } from '@/net-circuit';
+import { isNetworkError, netClose, netGuard, netReachable, netTrips, netUnreachable } from '@/net-circuit';
 
 /**
  * THE READER'S OWN TMDB TOKEN, if they added one.
@@ -108,12 +108,12 @@ export async function lookupWithRetry<T>(
 ): Promise<void> {
   let list = all;
   for (let pass = 0; pass < 3 && list.length > 0; pass++) {
+    netClose(); // judge this pass on its own requests, not on an earlier host's
     const before = netTrips();
     await pool(list, worker, pass === 0 ? concurrency : Math.max(2, Math.floor(concurrency / 2)), onEach);
     if (netTrips() === before) return; // the network held: what is left is genuinely unmatched
     list = all.filter(unresolved);
     if (!(await waitForTmdb(60_000))) return;
-    netReset();
   }
 }
 
