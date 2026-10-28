@@ -42,6 +42,11 @@ Play Console record rather than per-change.
 ---
 
 
+## 2.0.5 — the plan
+
+- **Notifications screen, redone** (Mahmood, 28 Oct). The inbox and push views need the TV Time treatment: grouping, clearer kinds, tap-through to the thing named. Details to be written before building.
+- **TV Time parity pass** (Mahmood, 28 Oct: "we are missing so much from TV Time"). First a written gap list, screen by screen, of what TV Time had that OpenTV does not (or does worse), ranked by how often refugees hit it; then fixes. Not started: the list comes first. (The 2.0.0 sizing pass in `design/referance/tvtimeVsopentv/PLAN.md` covers sizes only, not missing features.)
+
 ## 2.0.4 — released with Simple view (28 Oct 2026); the rest below is still the plan
 
 **BUILT 28 Oct 2026 (branch `2.0.4`):**
