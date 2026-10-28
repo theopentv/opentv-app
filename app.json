@@ -77,6 +77,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "./plugins/with-font-scale-config",
       "expo-router",
       [
         "expo-splash-screen",

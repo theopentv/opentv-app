@@ -198,7 +198,8 @@ export default function JoinScreen() {
           expensive screen in the app to get wrong. One person was annoyed
           enough to write it down.
         */}
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        {/* The indicator stays: the privacy lines end under the buttons' edge, and without it they read as cut off, not as more below. */}
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.body}>
           {/* a picture, not a word: VoiceOver read it as "popcorn" */}
           <Text style={styles.emoji} {...a11yHidden()}>🍿</Text>
           <Text accessibilityRole="header" style={styles.title}>{t('community.join.title')}</Text>
