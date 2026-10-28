@@ -199,7 +199,7 @@ export default function JoinScreen() {
           enough to write it down.
         */}
         {/* The indicator stays: the privacy lines end under the buttons' edge, and without it they read as cut off, not as more below. */}
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.body}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.body} persistentScrollbar>
           {/* a picture, not a word: VoiceOver read it as "popcorn" */}
           <Text style={styles.emoji} {...a11yHidden()}>🍿</Text>
           <Text accessibilityRole="header" style={styles.title}>{t('community.join.title')}</Text>
