@@ -22,6 +22,7 @@ import seed from '@/seed';
 import { classicTabBarOffered, setClassicTabBar } from '@/classic-tab-bar';
 import { getMeta, setMeta, wipeAllData } from '@/db';
 import { syncEpisodeNotifications } from '@/notifications';
+import { publishIfChanged } from '@/community-publish';
 import { currentLocale, monthYear, plotLanguage, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
@@ -671,6 +672,8 @@ export default function SettingsScreen() {
                     setMeta(SIMPLE_VIEW_KEY, on ? '1' : '');
                     // Wrapped and memory notifications follow the switch now, not at the next resync.
                     void syncEpisodeNotifications(true);
+                    // And the public profile: the flag is in the publish fingerprint.
+                    void publishIfChanged();
                   }}
                   trackColor={{ true: colors.green }}
                 />
