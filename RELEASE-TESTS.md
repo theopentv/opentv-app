@@ -40,6 +40,10 @@ Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 
 - [ ] Re-import Bingers: all zeros
 - [ ] Sofa Time ZIP fresh, online: ~214 shows, 46 archived, ~10.5k episodes; check an anime's numbering
 - [ ] TV Time, Trakt, Simkl, Letterboxd still import
+- [ ] TV Time GDPR ZIP fresh: shows get posters (not ~all "not found"); the comment-photo step may fail, the show lookup must not
+- [ ] Simkl merged on top of TV Time: the TV Time lists are still there; a show both files hold under different titles appears once
+- [ ] Merge the same file twice: needs-attention lists only what is still open, and its count matches
+- [ ] Import screen with the largest text size (Android + iPhone SE size): page scrolls, the whole game board is visible
 
 ### Long seasons and "Where are you?" (Android emulator + iPhone)
 - [ ] Onboarding Grey's Anatomy → S17 E06 → Done moves on within ~1 s, ~370 ticked; synced to a second device
