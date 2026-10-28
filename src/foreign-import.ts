@@ -777,6 +777,8 @@ export function simklRows(json: unknown): ForeignRows {
   const followOnly = new Map<string, string>();
   /** Shows the user dropped on Simkl: they arrive archived, as TV Time's "stopped". */
   const dropped = new Set<string>();
+  const planned: string[] = [];
+  const onHold: string[] = [];
   const notes: NonNullable<ForeignRows['notes']> = { shows: [], movies: [] };
   const memoText = (e: SimklEntry) => (typeof e.memo?.text === 'string' ? e.memo.text.trim() : '');
 
@@ -811,6 +813,10 @@ export function simklRows(json: unknown): ForeignRows {
     const tvdb = idText(show.ids?.tvdb);
     if (episodes === 0 && tvdb && show.title) followOnly.set(tvdb, show.title);
     if (tvdb && entry.status === 'dropped') dropped.add(tvdb);
+    // Simkl's custom lists are PRO-only and not in the backup; these two
+    // statuses are the "lists" a free user has, and a show has nowhere else to keep them.
+    if (tvdb && entry.status === 'plantowatch') planned.push(`map[id:${tvdb} type:series]`);
+    if (tvdb && entry.status === 'hold') onHold.push(`map[id:${tvdb} type:series]`);
     const memo = memoText(entry);
     if (tvdb && memo) notes.shows.push({ showId: Number(tvdb), season: -1, episode: -1, text: memo });
   }
@@ -836,6 +842,9 @@ export function simklRows(json: unknown): ForeignRows {
   }
   if (notes.shows.length || notes.movies.length) rows.notes = notes;
   if (movieTmdb.length) rows.movieTmdb = movieTmdb;
+  rows.listRows = ([['Plan to Watch', planned], ['On Hold', onHold]] as const)
+    .filter(([, objects]) => objects.length)
+    .map(([name, objects]) => ({ type: 'list', s_key: '', name, objects: `[${objects.join(' ')}]`, created_at: '' }));
   return rows;
 }
 

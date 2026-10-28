@@ -1081,6 +1081,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       foreignComments = mapped.comments ?? [];
       foreignNotes = mapped.notes ?? foreignNotes;
       foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
+      foreignExtra = mapped;
     }
   }
 

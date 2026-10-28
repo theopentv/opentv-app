@@ -197,6 +197,22 @@ describe('simklRows', () => {
     expect(out.movieRatings).toEqual([{ name: 'Heat', ten: 8 }]);
   });
 
+  it("keeps a show's Plan to Watch and On Hold status as lists, the only lists a backup carries", () => {
+    const out = simklRows({
+      shows: [
+        { title: 'Dark', ids: { tvdb: 70523 }, status: 'plantowatch' },
+        { title: 'Lost', ids: { tvdb: 73739 }, status: 'hold', seasons: [{ number: 1, episodes: [{ number: 1 }] }] },
+        { title: 'Heroes', ids: { tvdb: 79501 }, status: 'completed' },
+      ],
+      anime: [{ title: 'Monster', ids: { tvdb: 79623 }, status: 'plantowatch' }],
+    });
+    expect(out.listRows).toEqual([
+      { type: 'list', s_key: '', name: 'Plan to Watch', objects: '[map[id:70523 type:series] map[id:79623 type:series]]', created_at: '' },
+      { type: 'list', s_key: '', name: 'On Hold', objects: '[map[id:73739 type:series]]', created_at: '' },
+    ]);
+    expect(simklRows({ shows: [{ title: 'Heroes', ids: { tvdb: 79501 }, status: 'completed' }] }).listRows).toEqual([]);
+  });
+
   /*
    * THE SHAPE OF A REAL FILE (simkl.com/apps/backup, 25 Oct 2026): the title
    * and ids sit one level down, in `show` / `movie`, and anime has its own

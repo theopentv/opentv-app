@@ -44,6 +44,7 @@ Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 
 - [ ] Simkl merged on top of TV Time: the TV Time lists are still there; a show both files hold under different titles appears once
 - [ ] Merge the same file twice: needs-attention lists only what is still open, and its count matches
 - [ ] Import screen with the largest text size (Android + iPhone SE size): page scrolls, the whole game board is visible
+- [ ] Simkl backup (Henrike's file): Lists shows "Plan to Watch" (~739) and "On Hold" (63)
 
 ### Long seasons and "Where are you?" (Android emulator + iPhone)
 - [ ] Onboarding Grey's Anatomy → S17 E06 → Done moves on within ~1 s, ~370 ticked; synced to a second device
