@@ -453,6 +453,27 @@ export function mayFoldDuplicateShow(cand: FoldCandidate, primary: { tmdbId: num
 }
 
 /**
+ * ONE TMDB ID, TWO ROWS. The name pass above cannot see a show that two imports
+ * spelled in different languages — TV Time's German title next to Simkl's
+ * original — so it sat in the library twice, its watches and its community
+ * page split between the two. A shared, known TMDB id is the proof the name
+ * pass lacks. Returns each group's keeper (most watches) and the rows to fold
+ * into it. 0 is the "no TMDB id" sentinel and never groups.
+ */
+export function sameTmdbGroups<T extends { tvdbId: number; tmdbId: number | null; watches: number }>(
+  rows: readonly T[],
+): { keep: T; fold: T[] }[] {
+  const by = new Map<number, T[]>();
+  for (const r of rows) if (r.tmdbId) (by.get(r.tmdbId) ?? by.set(r.tmdbId, []).get(r.tmdbId)!).push(r);
+  return [...by.values()]
+    .filter((g) => g.length > 1)
+    .map((g) => {
+      const keep = g.reduce((a, b) => (b.watches > a.watches ? b : a));
+      return { keep, fold: g.filter((r) => r !== keep) };
+    });
+}
+
+/**
  * How long one watch counted for, in SECONDS. Never zero.
  *
  * TV Time exports carry a per-episode runtime for only some rows — about 40%

@@ -118,6 +118,7 @@ import {
   hasValue,
   listPlaceholderName,
   mergeCustomLists,
+  sameTmdbGroups,
   mergeEnrichment,
   inviteCodeFrom,
   splitShared,
@@ -224,6 +225,23 @@ describe('mergeCustomLists (re-import safety)', () => {
   it('a list in the new import replaces the earlier one of the same name', () => {
     const out = mergeCustomLists([{ name: 'krimi', items: 2 }], [], [], [{ name: 'Krimi', items: 1 }, { name: 'Other' }]);
     expect(out).toEqual([{ name: 'krimi', items: 2 }, { name: 'Other' }]);
+  });
+});
+
+describe('sameTmdbGroups (one show, two languages)', () => {
+  it('folds rows sharing a TMDB id into the one with most watches', () => {
+    const rows = [
+      { tvdbId: 1, tmdbId: 93405, watches: 3 }, // "Squid Game" from Simkl
+      { tvdbId: 2, tmdbId: 93405, watches: 9 }, // the German title from TV Time
+      { tvdbId: 3, tmdbId: 1399, watches: 5 },
+    ];
+    const g = sameTmdbGroups(rows);
+    expect(g).toHaveLength(1);
+    expect(g[0].keep.tvdbId).toBe(2);
+    expect(g[0].fold.map((r) => r.tvdbId)).toEqual([1]);
+  });
+  it('never groups on an unknown id (null or the 0 sentinel)', () => {
+    expect(sameTmdbGroups([{ tvdbId: 1, tmdbId: 0, watches: 1 }, { tvdbId: 2, tmdbId: 0, watches: 1 }, { tvdbId: 3, tmdbId: null, watches: 1 }])).toEqual([]);
   });
 });
 

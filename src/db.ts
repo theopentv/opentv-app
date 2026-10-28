@@ -1567,6 +1567,17 @@ export function dedupeDuplicateShows(): number {
       recountShow(primary.tvdbId);
     }
   });
+  // the same show under two names (one per language) — see sameTmdbGroups.
+  // remapShowId folds every watch across and runs its own transaction.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { sameTmdbGroups } = require('@/pure') as typeof import('@/pure');
+  const left = db.getAllSync<{ tvdbId: number }>('SELECT tvdbId FROM shows');
+  for (const { keep, fold } of sameTmdbGroups(left.map((s) => ({ tvdbId: s.tvdbId, tmdbId: tmdbOf(s.tvdbId), watches: watchCount(s.tvdbId) })))) {
+    for (const s of fold) {
+      remapShowId(s.tvdbId, keep.tvdbId);
+      removed++;
+    }
+  }
   return removed;
 }
 
