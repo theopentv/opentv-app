@@ -3,6 +3,7 @@ import * as Clipboard from 'expo-clipboard';
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, I18nManager, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { a11yAction } from '@/a11y';
@@ -13,6 +14,7 @@ import db, { countSeedableCommentRows, getMeta, hasLibrary, libraryOwner, setMet
 import { mixHex, NOTHING_READ, RAW_JSON_BACKUP, SIMKL_CSV } from '@/pure';
 import { tapLight } from '@/haptics';
 import { PopcornGame } from '@/components/popcorn-game';
+import { CELL } from '@/games';
 import type { ImportResult, Progress } from '@/importer';
 import { libraryRestored } from '@/community-publish';
 import { leaveOnboarding } from '@/session-store';
@@ -91,6 +93,11 @@ function Summary({ result, onDone }: { result: ImportResult; onDone: () => void 
   // which "needs attention" items got matched since import (via Fix match) —
   // re-checked from the database every time this screen regains focus
   const [fixed, setFixed] = useState<Set<string>>(new Set());
+  // WHAT WAS ALREADY FIXED WHEN THE SUMMARY OPENED IS NOT A PROBLEM. A merge
+  // import over a library that already knows the show listed it anyway, ticked
+  // green — 2,194 rows to scroll past, most of them done (a tester, 28 Oct).
+  // Hidden from the list and the count; a row fixed HERE keeps its green tick.
+  const [preFixed, setPreFixed] = useState<Set<string> | null>(null);
   useFocusEffect(
     useCallback(() => {
       const s = new Set<string>();
@@ -116,12 +123,14 @@ function Summary({ result, onDone }: { result: ImportResult; onDone: () => void 
         }
       }
       setFixed(s);
+      setPreFixed((p) => p ?? s);
     }, [result]),
   );
-  const missed = (kinds: string[]) => result.notImported.filter((n) => kinds.includes(n.kind)).length;
+  const stillOpen = result.notImported.filter((n) => !preFixed?.has(`${n.kind}:${n.name}`));
+  const missed = (kinds: string[]) => stillOpen.filter((n) => kinds.includes(n.kind)).length;
   // an entry with no title can't be searched for, and renders as a blank row
   // with a FIND button that looks for nothing — drop those rather than show them
-  const named = result.notImported.filter((n) => (n.name ?? '').trim() !== '');
+  const named = stillOpen.filter((n) => (n.name ?? '').trim() !== '');
   // Two different things were being shown under one heading. A row whose match
   // failed is a TASK: match it and the row goes green. A row saying the export
   // listed no episodes for a show is an EXPLANATION: the show is matched
@@ -609,7 +618,11 @@ export default function ImportScreen() {
              a progress tick would otherwise fall through to the branch below
              and render nothing at all, stranding the summary behind a blank
              screen. */
-          <View style={{ gap: 14, marginTop: 20, flex: 1 }}>
+          /* SCROLLS WHEN IT HAS TO (28 Oct). Large text or a short screen left
+             the arena less than a board needs, the board ran off the bottom
+             and nothing could reach it. Gesture-handler's ScrollView, so a drag
+             inside the game stays the game's; on a normal phone nothing moves. */
+          <GHScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 14, paddingTop: 20, flexGrow: 1 }} showsVerticalScrollIndicator={false}>
             {/* the popcorn bucket drags horizontally — don't let swipe-back steal it */}
             <Stack.Screen options={{ gestureEnabled: false }} />
             {result ? (
@@ -680,7 +693,8 @@ export default function ImportScreen() {
                 the player's thumb. First real measurement wins; the leftover
                 space goes under the arena instead of into it. */}
             <View
-              style={{ flex: 1, minHeight: 150, marginBottom: insets.bottom + 8 }}
+              // a header and ten rows: the board is never forced past its arena
+              style={{ flex: 1, minHeight: 44 + 10 * CELL, marginBottom: insets.bottom + 8 }}
               onLayout={(e) => {
                 // Read the event NOW, keep it in a local. `e.nativeEvent` is
                 // pooled and nulled the moment this handler returns, and a
@@ -691,7 +705,7 @@ export default function ImportScreen() {
               }}>
               {gameH > 0 && <PopcornGame height={gameH} />}
             </View>
-          </View>
+          </GHScrollView>
         ) : fromCloud ? null : !from ? (
           // SCROLLS (21 Oct): a plain View clipped the list — the last source
           // was off-screen on a 17e, Serializd unreachable on a Pro Max.
