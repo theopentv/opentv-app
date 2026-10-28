@@ -654,7 +654,9 @@
       "seasonalSub": "Decorazioni e temi di Halloween e Natale per il tuo profilo",
       "classicTabBar": "Barra delle schede classica",
       "classicTabBarSub": "La barra piatta in basso di prima di iOS 26, al posto di quella fluttuante",
-      "classicTabBarRestart": "Chiudi OpenTV e riaprilo per vedere la nuova barra delle schede."
+      "classicTabBarRestart": "Chiudi OpenTV e riaprilo per vedere la nuova barra delle schede.",
+      "simpleView": "Vista semplice",
+      "simpleViewSub": "Solo quante serie, episodi e film. Nasconde il tempo di visione, la mappa dei giorni, il Wrapped, i ricordi e l'obiettivo annuale."
     },
     "data": {
       "icloudSection": "Backup iCloud",
@@ -1275,6 +1277,7 @@
     "episodesWatchedCard": "📺 Episodi guardati",
     "movieTimeCard": "🎬 Tempo film",
     "moviesWatchedCard": "🎬 Film guardati",
+    "showsCard": "📺 Serie",
     "emptyTitle": "Ancora nulla da tracciare",
     "emptyCaption": "Aggiungi le serie e i film che guardi, oppure porta qui tutta la tua cronologia da TV Time.",
     "emptyCta": "TROVA QUALCOSA DA GUARDARE",

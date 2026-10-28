@@ -10,7 +10,7 @@ import { communityErrorText } from '@/community-error-text';
 import { fetchFollowRequests, fetchProfile, pushHiddenSections, pushPrivate } from '@/community-profiles';
 import { pushDevPlus } from '@/community-plus-dev';
 import { appLinks } from '@/links';
-import { HIDDEN_SECTIONS_KEY, HIDE_UNSEEN_KEY, isSafeLinkUrl, parseHiddenSections, PRIVATE_PROFILE_KEY, sectionHidden, withSectionHidden } from '@/pure';
+import { HIDDEN_SECTIONS_KEY, HIDE_UNSEEN_KEY, SIMPLE_VIEW_KEY, isSafeLinkUrl, parseHiddenSections, PRIVATE_PROFILE_KEY, sectionHidden, withSectionHidden } from '@/pure';
 import { backupNow, icloudSupported } from '@/backup';
 import { crashReportsOn, setCrashReports } from '@/crash';
 import { calendarSupported, calendarSyncOn } from '@/calendar-sync';
@@ -21,6 +21,7 @@ import { MenuRow, NavHeader, PillButton, PlusChip, Screen, TopTabs } from '@/com
 import seed from '@/seed';
 import { classicTabBarOffered, setClassicTabBar } from '@/classic-tab-bar';
 import { getMeta, setMeta, wipeAllData } from '@/db';
+import { syncEpisodeNotifications } from '@/notifications';
 import { currentLocale, monthYear, plotLanguage, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
 import { requirePlus, usePlus, usePlusUi } from '@/plus';
@@ -258,6 +259,7 @@ export default function SettingsScreen() {
   // memoises a render-time store read and would freeze this at first paint.
   const [haptics, setHaptics] = useState(() => hapticsOn());
   const [classicTab, setClassicTab] = useState(() => getMeta('classicTabBar') === '1');
+  const [simpleView, setSimpleView] = useState(() => getMeta(SIMPLE_VIEW_KEY) === '1');
   // WAS NEVER SAVED OR READ (since 1.1.2): a switch that flipped back the
   // moment you left the screen. It is a meta flag now, read by the show page.
   const [hideWatched, setHideWatchedState] = useState(() => getMeta('hideWatched') === '1');
@@ -657,6 +659,23 @@ export default function SettingsScreen() {
                 }
               />
             )}
+            {/* Counts only: no watch time, heatmap, Wrapped, memories or goal (SIMPLE_VIEW_KEY). */}
+            <MenuRow trackId="settings.app.simpleView"
+              title={t('settings.app.simpleView')}
+              sub={t('settings.app.simpleViewSub')}
+              right={
+                <Switch
+                  value={simpleView}
+                  onValueChange={(on) => {
+                    setSimpleView(on);
+                    setMeta(SIMPLE_VIEW_KEY, on ? '1' : '');
+                    // Wrapped and memory notifications follow the switch now, not at the next resync.
+                    void syncEpisodeNotifications(true);
+                  }}
+                  trackColor={{ true: colors.green }}
+                />
+              }
+            />
             <MenuRow trackId="settings.app.seasonal"
               title={t('settings.app.seasonal')}
               sub={t('settings.app.seasonalSub')}

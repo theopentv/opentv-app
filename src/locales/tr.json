@@ -654,7 +654,9 @@
       "seasonalSub": "Profilin için Cadılar Bayramı ve Noel süslemeleri ile temaları",
       "classicTabBar": "Klasik sekme çubuğu",
       "classicTabBarSub": "Yüzen çubuk yerine iOS 26 öncesindeki alttaki düz çubuk",
-      "classicTabBarRestart": "Yeni sekme çubuğunu görmek için OpenTV’yi kapatıp yeniden aç."
+      "classicTabBarRestart": "Yeni sekme çubuğunu görmek için OpenTV’yi kapatıp yeniden aç.",
+      "simpleView": "Sade görünüm",
+      "simpleViewSub": "Sadece kaç dizi, bölüm ve film. İzleme süresini, gün haritasını, Wrapped'i, anıları ve yıllık hedefi gizler."
     },
     "data": {
       "icloudSection": "iCloud yedeği",
@@ -1275,6 +1277,7 @@
     "episodesWatchedCard": "📺 İzlenen bölümler",
     "movieTimeCard": "🎬 Film süresi",
     "moviesWatchedCard": "🎬 İzlenen filmler",
+    "showsCard": "📺 Diziler",
     "emptyTitle": "Henüz takip edilen bir şey yok",
     "emptyCaption": "İzlediğin dizi ve filmleri ekle ya da tüm geçmişini TV Time'dan getir.",
     "emptyCta": "İZLEYECEK BİR ŞEY BUL",

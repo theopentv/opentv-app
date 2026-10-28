@@ -654,7 +654,9 @@
       "seasonalSub": "Halloween- und Weihnachtsdeko und -Designs für dein Profil",
       "classicTabBar": "Klassische Tab-Leiste",
       "classicTabBarSub": "Die flache Leiste am unteren Rand wie vor iOS 26 statt der schwebenden",
-      "classicTabBarRestart": "Schließe OpenTV und öffne es erneut, um die neue Tab-Leiste zu sehen."
+      "classicTabBarRestart": "Schließe OpenTV und öffne es erneut, um die neue Tab-Leiste zu sehen.",
+      "simpleView": "Einfache Ansicht",
+      "simpleViewSub": "Nur wie viele Serien, Folgen und Filme. Blendet Sehzeit, Tageskarte, Wrapped, Erinnerungen und das Jahresziel aus."
     },
     "data": {
       "icloudSection": "iCloud-Backup",
@@ -1275,6 +1277,7 @@
     "episodesWatchedCard": "📺 Gesehene Folgen",
     "movieTimeCard": "🎬 Filmzeit",
     "moviesWatchedCard": "🎬 Gesehene Filme",
+    "showsCard": "📺 Serien",
     "emptyTitle": "Noch nichts verfolgt",
     "emptyCaption": "Füg die Serien und Filme hinzu, die du schaust, oder hol deinen ganzen Verlauf von TV Time rüber.",
     "emptyCta": "WAS ZUM SCHAUEN FINDEN",

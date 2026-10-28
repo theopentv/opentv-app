@@ -2598,6 +2598,14 @@ export const PRIVATE_PROFILE_KEY = 'communityIsPrivate';
 export const HIDDEN_SECTIONS_KEY = 'communityHiddenSections';
 
 /**
+ * "Simple view" (2.0.4): counts only. For people who want "seen it, that's it"
+ * — no watch time, heatmap, Wrapped, memories or yearly goal on their own
+ * profile, and none of their notifications. Free, local, no account: it changes
+ * what this phone shows, never what it records.
+ */
+export const SIMPLE_VIEW_KEY = 'simpleView';
+
+/**
  * Any value — the wire's array, a parsed meta row, a mangled one — as the
  * sections this build can actually draw a switch for.
  *

@@ -672,7 +672,9 @@
       "seasonalSub": "Halloweenowe i świąteczne dekoracje oraz motywy do twojego profilu",
       "classicTabBar": "Klasyczny pasek kart",
       "classicTabBarSub": "Płaski pasek na dole sprzed iOS 26 zamiast pływającego",
-      "classicTabBarRestart": "Zamknij OpenTV i otwórz ponownie, aby zobaczyć nowy pasek kart."
+      "classicTabBarRestart": "Zamknij OpenTV i otwórz ponownie, aby zobaczyć nowy pasek kart.",
+      "simpleView": "Widok prosty",
+      "simpleViewSub": "Tylko liczba seriali, odcinków i filmów. Ukrywa czas oglądania, mapę dni, Wrapped, wspomnienia i cel roczny."
     },
     "data": {
       "icloudSection": "Kopia zapasowa iCloud",
@@ -1351,6 +1353,7 @@
     "episodesWatchedCard": "📺 Obejrzane odcinki",
     "movieTimeCard": "🎬 Czas z filmami",
     "moviesWatchedCard": "🎬 Obejrzane filmy",
+    "showsCard": "📺 Seriale",
     "emptyTitle": "Nic jeszcze nie śledzisz",
     "emptyCaption": "Dodaj oglądane seriale i filmy albo przenieś całą historię z TV Time.",
     "emptyCta": "ZNAJDŹ COŚ DO OBEJRZENIA",

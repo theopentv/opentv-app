@@ -690,7 +690,9 @@
       "seasonalSub": "زينة وثيمات الهالوين والكريسماس لملفك",
       "classicTabBar": "شريط التبويبات الكلاسيكي",
       "classicTabBarSub": "الشريط المسطّح أسفل الشاشة كما كان قبل iOS 26، بدل الشريط العائم",
-      "classicTabBarRestart": "أغلق OpenTV وافتحه من جديد لترى شريط التبويبات الجديد."
+      "classicTabBarRestart": "أغلق OpenTV وافتحه من جديد لترى شريط التبويبات الجديد.",
+      "simpleView": "عرض بسيط",
+      "simpleViewSub": "عدد المسلسلات والحلقات والأفلام فقط. يخفي وقت المشاهدة وخريطة الأيام وWrapped والذكريات وهدف السنة."
     },
     "data": {
       "icloudSection": "النسخ الاحتياطي على iCloud",
@@ -1427,6 +1429,7 @@
     "episodesWatchedCard": "📺 الحلقات المُشاهَدة",
     "movieTimeCard": "🎬 وقت الأفلام",
     "moviesWatchedCard": "🎬 الأفلام المُشاهَدة",
+    "showsCard": "📺 المسلسلات",
     "emptyTitle": "لا شيء مُتابَع بعد",
     "emptyCaption": "أضف المسلسلات والأفلام التي تشاهدها، أو انقل سجلك الكامل من TV Time.",
     "emptyCta": "ابحث عن شيء لمشاهدته",

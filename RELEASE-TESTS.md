@@ -12,6 +12,12 @@ failure written next to it, not in a commit message.
 
 ---
 
+
+## 2.0.4
+
+- [x] Simple view on: Profile Stats = Shows / Episodes / Films counts, no ›, no Wrapped banner (iOS sim, 28 Oct, set via meta)
+- [ ] Simple view switch in Settings → App turns it on and off; heatmap and goal widgets gone; no Wrapped/memory notification next day
+
 ## 2.0.3 — merged 27 Oct 2026, not yet on a device
 
 Before testing the free month: deploy backend `2.0.3` (migrations 0063 and 0064 BEFORE the Worker).

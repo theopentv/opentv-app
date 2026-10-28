@@ -654,7 +654,9 @@
       "seasonalSub": "Halloween and Christmas decorations and themes for your profile",
       "classicTabBar": "Classic tab bar",
       "classicTabBarSub": "The flat bar along the bottom from before iOS 26, instead of the floating one",
-      "classicTabBarRestart": "Close OpenTV and open it again to see the new tab bar."
+      "classicTabBarRestart": "Close OpenTV and open it again to see the new tab bar.",
+      "simpleView": "Simple view",
+      "simpleViewSub": "Just how many shows, episodes and films. Hides watch time, the heatmap, Wrapped, memories and the yearly goal."
     },
     "data": {
       "icloudSection": "iCloud backup",
@@ -1275,6 +1277,7 @@
     "episodesWatchedCard": "📺 Episodes watched",
     "movieTimeCard": "🎬 Movie time",
     "moviesWatchedCard": "🎬 Movies watched",
+    "showsCard": "📺 Shows",
     "emptyTitle": "Nothing tracked yet",
     "emptyCaption": "Add the shows and films you watch, or bring your whole history over from TV Time.",
     "emptyCta": "FIND SOMETHING TO WATCH",

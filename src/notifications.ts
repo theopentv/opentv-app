@@ -31,7 +31,7 @@ import {
 } from '@/notification-plan';
 import { memoryFor, memoryNotificationAt, memorySentence } from '@/on-this-day';
 import { puzzleRemindersFrom, setPuzzleReminderOn } from '@/puzzle-data';
-import { shouldResync, WRAPPED_SEEN_FINAL_KEY, wrappedFinalNotifyYear, wrappedYearWorthNudge } from '@/pure';
+import { shouldResync, SIMPLE_VIEW_KEY, WRAPPED_SEEN_FINAL_KEY, wrappedFinalNotifyYear, wrappedYearWorthNudge } from '@/pure';
 import { GOAL_NUDGED_AT_KEY, goalNudgeAt, goalNudgeOn, goalStatus, mostBehind } from '@/yearly-goal';
 import type { LocaleKey } from '@/locales/keys';
 
@@ -72,6 +72,8 @@ export function notificationsEnabled(): boolean {
 
 /** Whether one type is on. Anything the user has never touched falls back to
  *  its default, so the new kinds work without a settings visit. */
+const simpleView = () => getMeta(SIMPLE_VIEW_KEY) === '1';
+
 export function notifyKindEnabled(kind: NotifyKind): boolean {
   const raw = getMeta(KEYS[kind]);
   if (raw === '1') return true;
@@ -97,11 +99,11 @@ export function toggles(): NotifyToggles {
     // The switch only. The MONTH nudge is Plus-only and gated where its input
     // is built (`wrappedMonth` in `snapshot`); the YEAR nudge on 1 December is
     // for everybody (2.0.3), so the switch itself can no longer carry Plus.
-    wrapped: notifyKindEnabled('wrapped'),
+    wrapped: !simpleView() && notifyKindEnabled('wrapped'),
     // FREE, AND NEVER PLUS. It shows a person their own past, computed on their
     // own phone from marks they made years ago. Charging for that breaks the
     // rule the whole app stands on.
-    memory: notifyKindEnabled('memory'),
+    memory: !simpleView() && notifyKindEnabled('memory'),
   };
 }
 

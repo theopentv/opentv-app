@@ -71,7 +71,7 @@ import { FreeMonthCard } from '@/components/free-month-card';
 import { isPlus, markPlusAnnounced, subscribePlus, PLUS_AVAILABLE, plusAnnouncementSeen, requirePlus, usePlus, usePlusUi } from '@/plus';
 import { currentDecoration, currentLook } from '@/season';
 import { onProfileThemeChanged, useLiveCoverShape } from '@/cover-frame-live';
-import { WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, lastWatchedKey, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, WRAPPED_SEEN_FINAL_KEY, wrappedToOffer, wrappedYearToOffer, wrappedFinalToOffer, wrappedYearWorthNudge, mixHex } from '@/pure';
+import { SIMPLE_VIEW_KEY, WRAPPED_MIN_ITEMS, DISCORD_SEEN_KEY, HIDDEN_SECTIONS_KEY, PRIVATE_PROFILE_KEY, RECONNECT_SEEN_KEY, asHiddenSections, halfEnd, lastWatchedKey, mergedFollowTotal, parseCoverFrame, parseHiddenSections, profileAvatarSize, reconnectBannerCount, type RepairableList, sectionHidden, sortLists, topBanner, unresolvedUuids, WRAPPED_SEEN_KEY, WRAPPED_SEEN_YEAR_KEY, WRAPPED_SEEN_FINAL_KEY, wrappedToOffer, wrappedYearToOffer, wrappedFinalToOffer, wrappedYearWorthNudge, mixHex } from '@/pure';
 import { lastFriendMatches } from '@/community-seed';
 import { appLinks } from '@/links';
 import { colors, onAccent, radius, space, ls } from '@/theme';
@@ -262,6 +262,8 @@ export default function ProfileScreen() {
   );
   // Everything I watch: off until switched on in Edit profile (27 Oct).
   const [everythingOn, setEverythingOn] = useState(() => getMeta(EVERYTHING_ON_PROFILE_KEY) === '1');
+  // Settings → Simple view: counts only, none of the extras (see SIMPLE_VIEW_KEY).
+  const [simple, setSimple] = useState(() => getMeta(SIMPLE_VIEW_KEY) === '1');
   // Only for a joined profile: without an account there is no joining date to
   // state, and the local library's age is a different fact.
   // THE JOIN DATE IS REMEMBERED: it never changes, and waiting for the server
@@ -422,6 +424,7 @@ export default function ProfileScreen() {
       setArrangement(normalise(parseLayout(savedArrangement()), SHELF_KEYS));
       setActivityHidden(sectionHidden(parseHiddenSections(getMeta(HIDDEN_SECTIONS_KEY)), 'activity'));
       setEverythingOn(getMeta(EVERYTHING_ON_PROFILE_KEY) === '1');
+      setSimple(getMeta(SIMPLE_VIEW_KEY) === '1');
       setFriendState({ matches: lastFriendMatches(), seen: getMeta(RECONNECT_SEEN_KEY) });
       setTvdbFailed(tvdbKeyFailed() && !userTvdbKey() && getMeta('tvdbNudgeDismissed') !== '1');
       setNotifOff(!notificationsEnabled() && getMeta('notifyNudgeDismissed') !== '1');
@@ -1006,7 +1009,7 @@ export default function ProfileScreen() {
       )}
       {/* The year above the month: it is the rarer and bigger of the two,
           and on 1 December the one people came to post. */}
-      {offerFinal != null && (
+      {offerFinal != null && !simple && (
         <Pressable
           style={[styles.wrappedBanner, themedNotice]}
           accessibilityRole="button"
@@ -1027,7 +1030,7 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       )}
-      {offerYear != null && (
+      {offerYear != null && !simple && (
         <Pressable
           style={[styles.wrappedBanner, themedNotice]}
           accessibilityRole="button"
@@ -1048,7 +1051,7 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       )}
-      {offerMonth != null && (
+      {offerMonth != null && !simple && (
         <Pressable
           style={[styles.wrappedBanner, themedNotice]}
           accessibilityRole="button"
@@ -1085,7 +1088,7 @@ export default function ProfileScreen() {
           notices in half and read as something that had landed in the
           wrong place. The memory strip is a daily glance and loses
           nothing by following it. */}
-      {goalOffer && !emptyLibrary && (
+      {goalOffer && !emptyLibrary && !simple && (
         <Pressable
           style={[styles.wrappedBanner, themedNotice]}
           // A button like the notices above it, with its ✕ as a custom
@@ -1118,7 +1121,7 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       )}
-      <MemoryCard />
+      {!simple && <MemoryCard />}
       {(banner === 'plusBackupOff' || banner === 'plusBackupStalled') && (
         <Pressable
           style={styles.cloudBanner}
@@ -1392,7 +1395,7 @@ export default function ProfileScreen() {
     const together = togetherSnap
       ? withTogetherBlock(puzzled ?? defaultLayout(SHELF_KEYS), base && togetherRemoved ? ['together'] : [])
       : puzzled;
-    const goal = goalOnPage ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
+    const goal = goalOnPage && !simple ? withGoalBlock(together ?? defaultLayout(SHELF_KEYS)) : together;
     // Everything I watch: its switch puts the shelf above Shows, or takes it off.
     const out = everythingOn || goal ? withEverythingShelf(goal ?? defaultLayout(SHELF_KEYS), everythingOn) : goal;
     return out?.map((p) =>
@@ -1572,7 +1575,11 @@ export default function ProfileScreen() {
           onPress: () => router.push('/comments'),
         },
       ]}
-      statsCards={[
+      statsCards={simple ? [
+        { key: 'shows', title: t('profile.showsCard'), kind: 'number', value: formatCount(totals.shows, currentLocale()) },
+        { key: 'eps', title: t('profile.episodesWatchedCard'), kind: 'number', value: formatCount(totals.episodes, currentLocale()) },
+        { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: formatCount(movieClock.watched, currentLocale()) },
+      ] : [
         { key: 'tv', title: t('profile.tvTimeCard'), kind: 'clock', ...tvClock },
         {
           key: 'eps',
@@ -1583,7 +1590,7 @@ export default function ProfileScreen() {
         { key: 'mv', title: t('profile.movieTimeCard'), kind: 'clock', ...movieClock },
         { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: formatCount(movieClock.watched, currentLocale()) },
       ]}
-      onStatsPress={() => router.push('/stats')}
+      onStatsPress={simple ? undefined : () => router.push('/stats')}
       /**
        * ACTIVITY — the heatmap, and the door to the timeline. Own profile only:
        * see the note on the prop. Hidden by a preference the user owns, because
@@ -1604,7 +1611,7 @@ export default function ProfileScreen() {
          * on its own the moment `PLUS_AVAILABLE` flips — no line to remember at
          * release time, which is the only kind of gate that survives one.
          */
-        PLUS_AVAILABLE && !plusUi
+        simple || (PLUS_AVAILABLE && !plusUi)
           ? undefined
           : (span: WidgetSpan) => (
         <>
