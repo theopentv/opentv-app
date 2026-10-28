@@ -57,9 +57,19 @@ export type ListLike = { name: string; userCreated?: boolean; order?: number };
 /** Merge freshly-imported lists with the user's edits: drop imported lists the
  *  user renamed/deleted (tombstones) or that collide with a user list, keep the
  *  user's own lists first. Pure core of db.mergeImportedCustomLists. */
-export function mergeCustomLists<T extends ListLike>(imported: T[], userLists: T[], tombstones: string[]): T[] {
+export function mergeCustomLists<T extends ListLike>(
+  imported: T[],
+  userLists: T[],
+  tombstones: string[],
+  // A MERGE ADDS, IT DOES NOT REPLACE. Lists an earlier import brought, kept
+  // when this import has none of that name — a Simkl file carries no lists, and
+  // importing it on top of TV Time used to leave the Lists tab empty.
+  earlierImported: T[] = [],
+): T[] {
   const userNames = new Set(userLists.map((l) => l.name.toLowerCase()));
   const tomb = new Set(tombstones.map((n) => n.toLowerCase()));
+  const newNames = new Set(imported.map((l) => l.name.toLowerCase()));
+  imported = [...imported, ...earlierImported.filter((l) => !newNames.has(l.name.toLowerCase()))];
   const keptImported = imported.filter(
     (l) => !tomb.has(l.name.toLowerCase()) && !userNames.has(l.name.toLowerCase()),
   );

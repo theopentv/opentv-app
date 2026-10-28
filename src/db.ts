@@ -3511,9 +3511,11 @@ function tombstoneImportedList(name: string): void {
  *  merge-safe: drop imported lists the user deleted/renamed away, and keep the
  *  user's own created/edited lists. Called by the importer instead of a blind
  *  overwrite. */
-export function mergeImportedCustomLists(imported: CustomList[]): CustomList[] {
-  const userLists = getCustomLists().filter((l) => l.userCreated);
-  return mergeCustomLists(imported, userLists, deletedImportedListNames());
+export function mergeImportedCustomLists(imported: CustomList[], merge = false): CustomList[] {
+  const current = getCustomLists();
+  const userLists = current.filter((l) => l.userCreated);
+  const earlier = merge ? current.filter((l) => !l.userCreated) : [];
+  return mergeCustomLists(imported, userLists, deletedImportedListNames(), earlier);
 }
 
 /** Create a new empty list. Returns false on a blank or duplicate name. */

@@ -2279,7 +2279,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     // merge-safe: keep the user's created/renamed/deleted-list edits instead of
     // blindly overwriting, so a silent repair re-import never undoes them
     db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('customLists', ?)", [
-      JSON.stringify(mergeImportedCustomLists(orderedLists)),
+      JSON.stringify(mergeImportedCustomLists(orderedLists, merge)),
     ]);
     db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('moviesVersion', 'imported')");
     db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('libraryOwner', 'imported')");

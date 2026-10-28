@@ -215,6 +215,16 @@ describe('mergeCustomLists (re-import safety)', () => {
     expect(out).toHaveLength(1);
     expect(out[0].userCreated).toBe(true);
   });
+  it('a merge import with no lists keeps the lists an earlier import brought', () => {
+    // Simkl on top of TV Time: Simkl's file has no lists, and this wiped them
+    const earlier = [{ name: 'Krimi' }, { name: 'K-Drama' }];
+    const out = mergeCustomLists([], [], [], earlier);
+    expect(out.map((l) => l.name)).toEqual(['Krimi', 'K-Drama']);
+  });
+  it('a list in the new import replaces the earlier one of the same name', () => {
+    const out = mergeCustomLists([{ name: 'krimi', items: 2 }], [], [], [{ name: 'Krimi', items: 1 }, { name: 'Other' }]);
+    expect(out).toEqual([{ name: 'krimi', items: 2 }, { name: 'Other' }]);
+  });
 });
 
 describe('foundCsvsMessage (import-0 diagnostics)', () => {
