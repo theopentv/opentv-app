@@ -424,14 +424,6 @@ export const FoldContext = createContext<Fold | null>(null);
 export const useFold = (): Fold | null => use(FoldContext);
 
 /**
- * For a page's scroll view. iOS shifts its content in by the safe area even from
- * inside the left pane, which pushed the far side past the fold and clipped it.
- */
-export function useFoldScrollProps(): { contentInsetAdjustmentBehavior?: 'never' } {
-  return use(FoldContext)?.half != null ? { contentInsetAdjustmentBehavior: 'never' } : {};
-}
-
-/**
  * `router.push`, for a page that may belong in the right half: a show, film or
  * episode goes there when the Duo is open, and anything else navigates as usual.
  */

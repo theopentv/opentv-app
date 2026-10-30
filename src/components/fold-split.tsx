@@ -64,11 +64,13 @@ export function FoldSplit({ children }: { children: ReactNode }) {
   return (
     <FoldContext.Provider value={fold}>
       <View style={half != null ? s.row : s.fill}>
-        <View style={half != null ? { width: half } : s.fill}>
+        {/* Wider than `half` by the safe areas: the scene pads both sides inside
+            this box, so `half` is what is left, ending before the fold. */}
+        <View style={half != null ? { width: half + left + right } : s.fill}>
           <ScreenWidthContext.Provider value={half}>{children}</ScreenWidthContext.Provider>
         </View>
         {half != null && (
-          <View style={[s.pane, { width: paneW }]}>
+          <View style={[s.pane, { width: paneW, marginStart: PANE_GAP - right }]}>
             {page && pane ? (
               <DetailPaneContext.Provider value={pane}>
                 <ScreenWidthContext.Provider value={paneW}>
@@ -88,7 +90,7 @@ export function FoldSplit({ children }: { children: ReactNode }) {
 const s = StyleSheet.create({
   fill: { flex: 1 },
   row: { flex: 1, flexDirection: 'row', backgroundColor: colors.bg },
-  pane: { overflow: 'hidden', marginStart: PANE_GAP },
+  pane: { overflow: 'hidden' },
   // The empty half reads as space waiting, not a failed load (decided 29 Oct).
   backdrop: { ...StyleSheet.absoluteFill, opacity: 0.35 },
 });
