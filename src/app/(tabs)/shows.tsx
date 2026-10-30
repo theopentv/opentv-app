@@ -9,7 +9,7 @@ import { Text } from '@/components/text';
 import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
-import { CheckCircle, EmptyState, Screen, TopTabs, useScreenWidth } from '@/components/ui';
+import { CheckCircle, EmptyState, Screen, TopTabs, useFoldHalf, useScreenWidth } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -18,6 +18,7 @@ import { hasOriginalZip } from '@/migrations';
 import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { pool } from '@/tmdb';
+import { ShowPane } from '@/components/show-pane';
 import { useMetaFillRunning } from '@/meta-fill';
 import { upcomingEpisodes } from '@/widget-data';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
@@ -119,7 +120,16 @@ function chunk<T>(arr: T[], n: number): T[][] {
 
 export default function ShowsScreen() {
   const plus = usePlus();
-  const W = useScreenWidth();
+  const fullWidth = useScreenWidth();
+  // OPEN ON ITS SIDE, TWO PANES. The list stays on the left, sized to its half
+  // so nothing crosses the fold; a tapped show fills the right (see ShowPane).
+  const half = useFoldHalf();
+  const W = half ?? fullWidth;
+  const [picked, setPicked] = useState<number | null>(null);
+  const openShow = (id: number) => {
+    if (half != null) setPicked(id);
+    else router.push(`/show/${id}`);
+  };
   // the Watch List's rows and grid run full width (no ContentColumn cap) —
   // these are repeated rows/tiles, not prose, so a tablet should show MORE of
   // them rather than a narrow capped column. The column count derives from
@@ -252,7 +262,7 @@ export default function ShowsScreen() {
       // metadata hasn't loaded — marking blind here once fabricated ghost
       // episodes (FROM S04E19…E28). Open the show instead: the visit fetches
       // the real structure, and marking resumes verified
-      router.push(`/show/${sp.tvdbId}`);
+      openShow(sp.tvdbId);
       return;
     }
     markWatchedWithPrompt(sp.tvdbId, next.season, next.episode, () => setTick((t) => t + 1));
@@ -393,8 +403,11 @@ export default function ShowsScreen() {
   // The native tab bar floats over the list; its height is in the bottom inset.
   const tabBarSpace = useSafeAreaInsets().bottom;
 
+  const pickedShow = picked == null ? null : (getShowProgress().find((p) => p.tvdbId === picked) ?? null);
   return (
     <Screen>
+      <View style={half != null ? styles.split : styles.single}>
+      <View style={half != null ? { width: half } : styles.single}>
       <TopTabs
         tabs={TABS}
         labels={{ 'Watch List': t('shows.tabs.watchList'), Upcoming: t('shows.tabs.upcoming') }}
@@ -514,8 +527,8 @@ export default function ShowsScreen() {
                           accessible
                           accessibilityRole="button"
                           accessibilityLabel={[w.name, t('a11y.seasonEpisode', { season: w.season, episode: w.episode }), title].join(', ')}
-                          {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${w.showId}`))}>
-                          <Pressable style={styles.showPill} onPress={() => router.push(`/show/${w.showId}`)} accessibilityRole="button" accessibilityLabel={w.name}>
+                          {...a11yAction('openShow', t('a11y.openShow'), () => openShow(w.showId))}>
+                          <Pressable style={styles.showPill} onPress={() => openShow(w.showId)} accessibilityRole="button" accessibilityLabel={w.name}>
                             <Text style={styles.showPillText} numberOfLines={1}>
                               {w.name.toUpperCase()} ›
                             </Text>
@@ -620,7 +633,7 @@ export default function ShowsScreen() {
                     // structure) rather than a possibly-nonexistent episode,
                     // same guard markNext uses
                     next === 'unknown'
-                      ? router.push(`/show/${sp.tvdbId}`)
+                      ? openShow(sp.tvdbId)
                       : router.push(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
                   }
                 >
@@ -663,8 +676,8 @@ export default function ShowsScreen() {
                     ]
                       .filter(Boolean)
                       .join(', ')}
-                    {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${sp.tvdbId}`))}>
-                    <Pressable style={styles.showPill} onPress={() => router.push(`/show/${sp.tvdbId}`)} accessibilityRole="button" accessibilityLabel={sp.name}>
+                    {...a11yAction('openShow', t('a11y.openShow'), () => openShow(sp.tvdbId))}>
+                    <Pressable style={styles.showPill} onPress={() => openShow(sp.tvdbId)} accessibilityRole="button" accessibilityLabel={sp.name}>
                       <Text style={styles.showPillText} numberOfLines={1}>
                         {sp.name.toUpperCase()} ›
                       </Text>
@@ -712,7 +725,7 @@ export default function ShowsScreen() {
                   <Pressable
                     key={sp.tvdbId}
                     style={{ flex: 1 }}
-                    onPress={() => router.push(`/show/${sp.tvdbId}`)}
+                    onPress={() => openShow(sp.tvdbId)}
                     accessibilityRole="button"
                     accessibilityLabel={posterSpeech(sp.name, { progress: progressOf(sp) })}>
                     <Poster name={sp.name} uri={sp.posterUrl} progress={progressOf(sp)} progressColor={progressColorOf(sp)} animateProgress />
@@ -790,7 +803,7 @@ export default function ShowsScreen() {
                   style={styles.card}
                   accessibilityRole="button"
                   accessibilityLabel={[u.showName, t('a11y.seasonEpisode', { season: u.season, episode: u.episode }), title].join(', ')}
-                  onPress={() => router.push(`/episode/${u.showId}-s${u.season}e${u.episode}`)}>
+                  onPress={() => (half != null ? setPicked(u.showId) : router.push(`/episode/${u.showId}-s${u.season}e${u.episode}`))}>
                   <View style={styles.thumb}>
                     {(u.still ?? u.poster) && (
                       <Image source={{ uri: u.still ?? u.poster! }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -846,11 +859,18 @@ export default function ShowsScreen() {
         </View>
       )}
       </View>
+      </View>
+      {half != null && (
+        <ShowPane show={pickedShow} next={pickedShow ? realNext(pickedShow) : null} />
+      )}
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  single: { flex: 1 },
+  split: { flex: 1, flexDirection: 'row' },
   /* Every band on this screen owns its TOP margin and no bottom one, so that
      two in a row are separated once rather than twice. This had it the other
      way round, which left it flush against the tabs above and floating above

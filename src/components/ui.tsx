@@ -45,6 +45,17 @@ export function useScreenWidth(): number {
   return width - left - right;
 }
 
+/**
+ * The width of the half before the fold on an open iPhone Duo held sideways,
+ * null everywhere else. Read from size, as `ContentColumn` does: an iPhone (not
+ * an iPad, which has no fold) wider than 600pt and wider than tall.
+ */
+export function useFoldHalf(): number | null {
+  const { width, height } = useWindowDimensions();
+  const { left } = useSafeAreaInsets();
+  return Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - left : null;
+}
+
 /** Black full-height screen with a safe top inset. */
 export function Screen({ children }: { children: ReactNode }) {
   // Under a native header (NavHeader) the content starts below the header;
