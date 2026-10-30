@@ -64,7 +64,9 @@ export function FoldSplit({ children }: { children: ReactNode }) {
   return (
     <FoldContext.Provider value={fold}>
       <View style={half != null ? s.row : s.fill}>
-        <View style={half != null ? { width: half } : s.fill}>
+        {/* From the window's edge: its scroll views add the left safe area
+            themselves, so `half` is what they have left, not this box. */}
+        <View style={half != null ? { width: half + left } : s.fill}>
           <ScreenWidthContext.Provider value={half}>{children}</ScreenWidthContext.Provider>
         </View>
         {half != null && (
