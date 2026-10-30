@@ -976,6 +976,7 @@
     "catchUpHours": "{{h}}h per recuperare",
     "catchUpDaysHours": "{{d}}g {{h}}h per recuperare",
     "finishedCardTitle": "Concluso",
+    "upToDateCardSub": "I nuovi episodi appariranno qui.",
     "finishedCardSub": "Tutto qui, gente!",
     "episodeFallbackTitle": "Episodio {{n}}",
     "watchedOnDate": "Visto il {{date}}",
@@ -2378,6 +2379,7 @@
     }
   },
   "emotionCalendar": {
+    "noFeeling": "Visto, nessuna emozione",
     "title": "Calendario delle emozioni",
     "blurb": "Ogni giorno in cui hai guardato qualcosa, colorato da come ti ha fatto sentire. Tocca un giorno per vedere cosa era.",
     "nothing": "Niente registrato quel giorno",

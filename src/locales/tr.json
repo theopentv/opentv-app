@@ -976,6 +976,7 @@
     "catchUpHours": "Yetişmek için {{h}} sa",
     "catchUpDaysHours": "Yetişmek için {{d}} g {{h}} sa",
     "finishedCardTitle": "Bitti",
+    "upToDateCardSub": "Yeni bölümler burada görünecek.",
     "finishedCardSub": "Hepsi bu kadar!",
     "episodeFallbackTitle": "Bölüm {{n}}",
     "watchedOnDate": "İzlendi: {{date}}",
@@ -2378,6 +2379,7 @@
     }
   },
   "emotionCalendar": {
+    "noFeeling": "İzlendi, duygu yok",
     "title": "Duygu takvimi",
     "blurb": "Bir şey izlediğin her gün, nasıl hissettirdiğine göre renklendi. Ne olduğunu görmek için bir güne dokun.",
     "nothing": "O gün kayıtlı bir şey yok",

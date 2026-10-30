@@ -108,6 +108,12 @@ export default function EmotionCalendarScreen() {
 
         {present.length > 0 && (
           <View style={s.legend}>
+            {/* The days with no feeling picked, usually most of the grid: they
+                keep the heatmap's yellow, which nothing else here explains. */}
+            <View style={s.legendItem}>
+              <View style={[s.dot, { backgroundColor: colors.yellow }]} />
+              <Text style={s.legendText}>{t('emotionCalendar.noFeeling')}</Text>
+            </View>
             {present.map((i) => (
               <View key={i} style={s.legendItem}>
                 <View style={[s.dot, { backgroundColor: emotionColor(i) }]} />

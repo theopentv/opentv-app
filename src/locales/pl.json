@@ -1016,6 +1016,7 @@
     "catchUpHours": "{{h}} h do nadrobienia",
     "catchUpDaysHours": "{{d}} d {{h}} h do nadrobienia",
     "finishedCardTitle": "Ukończony",
+    "upToDateCardSub": "Nowe odcinki pojawią się tutaj.",
     "finishedCardSub": "To już jest koniec!",
     "episodeFallbackTitle": "Odcinek {{n}}",
     "watchedOnDate": "Obejrzane {{date}}",
@@ -2572,6 +2573,7 @@
     }
   },
   "emotionCalendar": {
+    "noFeeling": "Obejrzane, bez emocji",
     "title": "Kalendarz emocji",
     "blurb": "Każdy dzień z oglądaniem, pokolorowany według emocji. Stuknij dzień, żeby zobaczyć, co to było.",
     "nothing": "Tego dnia nic nie zapisano",

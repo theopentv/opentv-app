@@ -368,7 +368,9 @@ export default function ExploreScreen() {
       </ScrollView>
 
       {pill === 'Feed' && (
-        <ScrollView contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}>
+        // disableScrollViewPanResponder: a rail still gliding must not freeze the
+        // next one. See the note in `profile-template.tsx`.
+        <ScrollView disableScrollViewPanResponder contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}>
           {/* Today's "Guess the show" — local, so it is here before the feed
               has loaded and whether or not it ever does. */}
           <ContentColumn>
@@ -402,7 +404,7 @@ export default function ExploreScreen() {
       )}
 
       {pill === 'Groups' && (
-        <ScrollView contentContainerStyle={{ paddingBottom: tabBarSpace }}>
+        <ScrollView disableScrollViewPanResponder contentContainerStyle={{ paddingBottom: tabBarSpace }}>
           <View style={styles.sortRow}>
             <Text style={styles.sortLabel}>
               {t('explore.sortBy')} <Text style={{ color: colors.blue }}>{t('explore.popular')}</Text>

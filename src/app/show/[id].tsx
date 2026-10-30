@@ -36,7 +36,7 @@ import { airCountdown, communityScore, communityScoreFromCounts, ratingSeries, c
 import { filledStarText } from '@/star-rating';
 import { readSeasonAggregates, useSeasonAggregates } from '@/community-ratings';
 import { useJoined } from '@/community-session';
-import { airedTotalOf } from '@/show-status';
+import { airedTotalOf, showIsOver } from '@/show-status';
 import { fetchShowMeta, providersLackKind } from '@/show-meta-fetch';
 import { appliedLight, colors, radius, space, ls } from '@/theme';
 import { SeasonEffect } from '@/components/season-effect';
@@ -1015,7 +1015,7 @@ export default function ShowScreen() {
       />
 
       {tab === 'About' ? (
-        <ScrollView keyboardShouldPersistTaps="handled"
+        <ScrollView disableScrollViewPanResponder keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 24, paddingTop: 12 }}
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
@@ -1765,7 +1765,8 @@ export default function ShowScreen() {
             renderItem={({ item }) => {
               if (item.kind === 'finished') {
                 return (
-                  // one stop: "Finished, That's all, folks!"
+                  // one stop: "Finished, That's all, folks!", and only for a show
+                  // that is over. One still running is up to date (30 Oct).
                   <View style={[styles.carCard, { width: CARD_W, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]} accessible>
                     {backdropUri && (
                       <>
@@ -1773,8 +1774,8 @@ export default function ShowScreen() {
                         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)' }]} />
                       </>
                     )}
-                    <Text style={{ color: colors.yellow, fontSize: 22, fontWeight: '800' }}>{t('show.finishedCardTitle')}</Text>
-                    <Text style={{ color: colors.dim, fontSize: 14, marginTop: 2 }}>{t('show.finishedCardSub')}</Text>
+                    <Text style={{ color: colors.yellow, fontSize: 22, fontWeight: '800' }}>{t(showIsOver(show.tvdbId) ? 'show.finishedCardTitle' : 'filters.progressUpToDate')}</Text>
+                    <Text style={{ color: colors.dim, fontSize: 14, marginTop: 2 }}>{t(showIsOver(show.tvdbId) ? 'show.finishedCardSub' : 'show.upToDateCardSub')}</Text>
                   </View>
                 );
               }

@@ -976,6 +976,7 @@
     "catchUpHours": "{{h}}h to catch up",
     "catchUpDaysHours": "{{d}}d {{h}}h to catch up",
     "finishedCardTitle": "Finished",
+    "upToDateCardSub": "New episodes will show up here.",
     "finishedCardSub": "That's all, folks!",
     "episodeFallbackTitle": "Episode {{n}}",
     "watchedOnDate": "Watched {{date}}",
@@ -2378,6 +2379,7 @@
     }
   },
   "emotionCalendar": {
+    "noFeeling": "Watched, no feeling",
     "title": "Emotion calendar",
     "blurb": "Every day you watched something, coloured by how it felt. Tap a day to see what it was.",
     "nothing": "Nothing recorded that day",

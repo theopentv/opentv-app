@@ -26,6 +26,14 @@ export function airedTotalOf(tvdbId: number): number | null {
   return aired || m.totalEpisodes || null;
 }
 
+/** Truly over: ended or cancelled with nothing announced still to air. A show
+ *  between seasons is caught up, never finished. */
+export function showIsOver(tvdbId: number): boolean {
+  const m = showMeta(tvdbId);
+  const ended = m?.status === 'Ended' || m?.status === 'Canceled';
+  return ended && (m?.totalEpisodes ?? 0) <= (airedTotalOf(tvdbId) ?? 0);
+}
+
 /** overall show progress 0..1 — aired totals from metadata where available */
 export function progressOf(sp: ShowProgress): number {
   if (sp.finished) return 1; // user manually marked it complete
@@ -48,9 +56,7 @@ export function progressColorOf(sp: ShowProgress): string {
     // purple only when the show is truly over — a show between seasons or
     // with announced unaired episodes is still "caught up" green, like the
     // real app (inProduction alone flips false while awaiting renewal)
-    const ended = m?.status === 'Ended' || m?.status === 'Canceled';
-    const hasUnaired = (m?.totalEpisodes ?? 0) > total;
-    return ended && !hasUnaired ? colors.status.finished : colors.green;
+    return showIsOver(sp.tvdbId) ? colors.status.finished : colors.green;
   }
   /*
    * WATCHING — the brand, never `colors.yellow`. That token becomes INK in the

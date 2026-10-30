@@ -21,7 +21,7 @@ import { isPlus } from '@/plus';
 import { runtimeBand, seasonAirState, type TitleFacts } from '@/pure';
 import { starsValue } from '@/star-rating';
 import { watchRegion } from '@/show-meta-fetch';
-import { airedTotalOf } from '@/show-status';
+import { airedTotalOf, showIsOver } from '@/show-status';
 
 /** '1994' -> '1990s'. Anything that isn't a plausible year is no decade. */
 function decadeOf(year: string | null | undefined): string | null {
@@ -41,10 +41,7 @@ export function showProgressClass(sp: ShowProgress): string {
   if (seen === 0) return 'notStarted';
   const total = airedTotalOf(sp.tvdbId);
   if (total && seen >= total) {
-    const m = showMeta(sp.tvdbId);
-    const ended = m?.status === 'Ended' || m?.status === 'Canceled';
-    const hasUnaired = (m?.totalEpisodes ?? 0) > total;
-    return ended && !hasUnaired ? 'finished' : 'upToDate';
+    return showIsOver(sp.tvdbId) ? 'finished' : 'upToDate';
   }
   return 'watching';
 }
