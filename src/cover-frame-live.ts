@@ -4,9 +4,12 @@
  * finger: the adjuster writes here, the Profile tab draws whatever is here in
  * place of the saved frame. Null when nobody is adjusting.
  */
+import { File, Paths } from 'expo-file-system';
 import { useSyncExternalStore } from 'react';
 
+import { getMeta, setMeta } from '@/db';
 import type { CoverFrame } from '@/pure';
+import { setThemeAccentHex } from '@/theme';
 
 let live: CoverFrame | null = null;
 const subs = new Set<() => void>();
@@ -73,4 +76,48 @@ export function onProfileThemeChanged(cb: () => void): () => void {
   return () => {
     themeSubs.delete(cb);
   };
+}
+
+/*
+ * CANCEL PUTS THE OLD BANNER BACK. A picked picture is written straight away, so
+ * the adjuster can show it on the real page; until Done the previous banner, its
+ * frame and its colours are held here, and only Done lets the old file go.
+ */
+const UNDO_KEY = 'coverUndo';
+const UNDO_FIELDS = ['coverFile', 'coverUrl', 'coverFrame', 'profileThemeColor', 'profileThemeSecondary', 'profileThemeName'];
+
+function removeFile(name: string | null | undefined): void {
+  if (!name) return;
+  try {
+    const f = new File(Paths.document, name);
+    if (f.exists) f.delete();
+  } catch {}
+}
+
+/** Before a new banner replaces this one. A second pick keeps the first hold. */
+export function holdCover(): void {
+  if (getMeta(UNDO_KEY)) return;
+  setMeta(UNDO_KEY, JSON.stringify(Object.fromEntries(UNDO_FIELDS.map((k) => [k, getMeta(k) ?? '']))));
+}
+
+/** Done: the new banner stands, and the one held can go. */
+export function commitCover(): void {
+  const held = getMeta(UNDO_KEY);
+  if (!held) return;
+  const file = (JSON.parse(held) as Record<string, string>).coverFile;
+  if (file !== getMeta('coverFile') && file !== getMeta('coverStillFile')) removeFile(file);
+  setMeta(UNDO_KEY, '');
+}
+
+/** Cancel: everything as it was. The caller republishes. */
+export function undoCover(): boolean {
+  const raw = getMeta(UNDO_KEY);
+  if (!raw) return false;
+  const held = JSON.parse(raw) as Record<string, string>;
+  const picked = getMeta('coverFile');
+  if (picked !== held.coverFile) removeFile(picked);
+  for (const k of UNDO_FIELDS) setMeta(k, held[k] ?? '');
+  setThemeAccentHex(held.profileThemeColor || null);
+  setMeta(UNDO_KEY, '');
+  return true;
 }

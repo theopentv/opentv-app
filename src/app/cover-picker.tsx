@@ -1,15 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { File, Paths } from 'expo-file-system';
-import { router, useLocalSearchParams, useNavigation, usePreventRemove } from 'expo-router';
-import { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, I18nManager, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import type { LocaleKey } from '@/locales/keys';
 
 import { track } from '@/analytics';
 import { ApiError } from '@/api';
 import { GifSearch, saveGif, type GifHit } from '@/components/gif-search';
-import { openCoverAdjust } from '@/cover-frame-live';
+import { holdCover, openCoverAdjust } from '@/cover-frame-live';
 import { TitlePicker } from '@/components/title-picker';
 import { appearanceChanged } from '@/community-appearance';
 import { isPlus, usePlus } from '@/plus';
@@ -86,20 +86,19 @@ export default function CoverPickerScreen() {
   // full-bleed backdrop image sizes off the same screen width as its
   // full-width row, or it would leave dead space beside it on a tablet
   const CONTENT_W = W;
+  /** One a row on a phone; beyond that a banner is only ever a thumbnail here. */
+  // Measured: this page can be a sheet, which is narrower than the window.
+  const [listW, setListW] = useState(W);
+  const artCols = listW >= 600 ? 2 : 1;
   // The Ours tab: two banners across on a phone, three to five on an iPad —
   // the templates picker's own rule (`cardGrid`), since it is the same art.
   // This was `(W - padding - gap) / 2`: two 490pt banners per row on a 13" iPad.
   const oursW = cardGrid(W, space.lg, OURS_GAP).cellW;
+  // Page 2 is state on this screen, not a screen of its own. The row above the
+  // pictures goes back to the titles; the native back leaves the picker. Not
+  // `usePreventRemove`, which looped here ("prevented-routes: Maximum update
+  // depth exceeded") and left a picked picture saving for ever.
   const [selected, setSelected] = useState<Item | null>(null);
-  // Page 2 is state on this screen, not a screen of its own: the native back
-  // button (and the swipe) return to page 1 rather than leaving the picker.
-  // A pick leaves for real (router.back / dismissAll), so it is let through.
-  const navigation = useNavigation();
-  const leaving = useRef(false);
-  usePreventRemove(selected != null, ({ data }) => {
-    if (leaving.current) navigation.dispatch(data.action);
-    else setSelected(null);
-  });
   const [backdrops, setBackdrops] = useState<Backdrop[] | null>(null);
   const [saving, setSaving] = useState(false);
   // Subscribed, so the GIF tab appears the moment Plus does.
@@ -129,13 +128,7 @@ export default function CoverPickerScreen() {
     setSaving(true);
     try {
       const name = await bannerToDocuments(tpl.banner);
-      const old = getMeta('coverFile');
-      if (old) {
-        try {
-          const f = new File(Paths.document, old);
-          if (f.exists) f.delete();
-        } catch {}
-      }
+      holdCover();
       setMeta('coverFile', name);
       setMeta('coverUrl', '');
       setMeta('coverStillFile', '');
@@ -194,12 +187,8 @@ export default function CoverPickerScreen() {
       if (isGif) {
         // The still banner waits underneath, as for a GIPHY banner.
         if (old && !old.toLowerCase().endsWith('.gif')) setMeta('coverStillFile', old);
-      } else if (old) {
-        try {
-          const f = new File(Paths.document, old);
-          if (f.exists) f.delete();
-        } catch {}
       }
+      holdCover();
       setMeta('coverFile', name);
       // No address: it is published as an upload, not a link.
       setMeta('coverUrl', '');
@@ -297,6 +286,7 @@ export default function CoverPickerScreen() {
        * here, and a resubscribe puts the GIF straight back.
        */
       if (old && !old.toLowerCase().endsWith('.gif')) setMeta('coverStillFile', old);
+      holdCover();
       setMeta('coverFile', name);
       setMeta('coverUrl', hit.full);
       // A new picture starts centred, at the normal height; then straight to
@@ -382,7 +372,6 @@ export default function CoverPickerScreen() {
 
   const pick = async (path: string) => {
     if (saving) return;
-    leaving.current = true;
     // A LIST COVER IS JUST THE URL. Nothing to fetch, nothing to write to disk,
     // nothing to clean up after — so it is saved and the screen is gone before
     // the profile path's first `await`.
@@ -401,7 +390,7 @@ export default function CoverPickerScreen() {
       const bytes = new Uint8Array(await res.arrayBuffer());
       // unique filename per change — expo-image caches by uri
       const name = `profile-cover-${Date.now()}.jpg`;
-      const old = getMeta('coverFile');
+      holdCover();
       const dest = new File(Paths.document, name);
       if (dest.exists) dest.delete();
       dest.writeSync(bytes);
@@ -485,15 +474,8 @@ export default function CoverPickerScreen() {
       // call costs one `getMeta`.
       setMeta('coverFrame', '');
       appearanceChanged();
-      if (old) {
-        try {
-          const f = new File(Paths.document, old);
-          if (f.exists) f.delete();
-        } catch {}
-      }
       openCoverAdjust();
     } catch (err) {
-      leaving.current = false; // still on page 2, so back returns to page 1 again
       Alert.alert(
         t('coverPicker.couldNotSetCoverTitle'),
         err instanceof ApiError ? communityErrorText(err) : err instanceof Error ? err.message : String(err),
@@ -520,12 +502,22 @@ export default function CoverPickerScreen() {
           <FlatList
             data={backdrops}
             keyExtractor={(b) => b.path}
+            key={artCols}
+            onLayout={(e) => setListW(e.nativeEvent.layout.width)}
+            numColumns={artCols}
+            {...(artCols > 1 ? { columnWrapperStyle: { gap: 14 } } : {})}
+            ListHeaderComponent={
+              <Pressable accessibilityRole="button" style={styles.backRow} hitSlop={8} onPress={() => setSelected(null)}>
+                <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={18} color={colors.blue} />
+                <Text style={styles.backText} numberOfLines={1}>{t('editProfile.chooseCover')}</Text>
+              </Pressable>
+            }
             contentContainerStyle={{ paddingHorizontal: space.lg, gap: 14, paddingBottom: 40, paddingTop: 8 }}
             renderItem={({ item, index }) => (
-              <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.picture', { n: index + 1 })} onPress={() => pick(item.path)} disabled={saving}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.picture', { n: index + 1 })} style={{ flex: 1 / artCols }} onPress={() => pick(item.path)} disabled={saving}>
                 <Image
                   source={{ uri: item.path }}
-                  style={{ width: CONTENT_W - 2 * space.lg, aspectRatio: 16 / 9, borderRadius: 4, backgroundColor: colors.raise }}
+                  style={{ width: '100%', aspectRatio: 16 / 9, borderRadius: 4, backgroundColor: colors.raise }}
                   contentFit="cover"
                 />
               </Pressable>
@@ -654,6 +646,8 @@ export default function CoverPickerScreen() {
 }
 
 const styles = StyleSheet.create({
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6 },
+  backText: { color: colors.blue, fontSize: 15, fontWeight: '600' },
   upload: { alignItems: 'center', paddingHorizontal: space.xl, paddingTop: 48, gap: 12 },
   uploadTitle: { color: colors.text, fontSize: 20, fontWeight: '800', textAlign: 'center' },
   uploadBody: { color: colors.dim, fontSize: 15, lineHeight: 21, textAlign: 'center' },

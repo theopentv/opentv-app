@@ -20,14 +20,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { appearanceChanged } from '@/community-appearance';
 import { asProfileLayout } from '@/components/profile-template';
-import { liveCoverRatio, setLiveCoverFrame } from '@/cover-frame-live';
+import { pushProfileTheme } from '@/community-profiles';
+import { commitCover, liveCoverRatio, setLiveCoverFrame, undoCover } from '@/cover-frame-live';
 import { getMeta, setMeta } from '@/db';
 import { tapLight, tapSelection } from '@/haptics';
 import { t } from '@/i18n';
 import { visibleCoverUri } from '@/library';
 import { usePlus } from '@/plus';
 import { BANNER_MAX_SIZE, bannerGeometry, bannerHeight, CENTRE_FRAME, coverFrameString, parseCoverFrame, type CoverFrame } from '@/pure';
-import { useScreenWidth } from '@/components/ui';
+import { useFoldHalf, useScreenWidth } from '@/components/ui';
 import { colors, radius, space } from '@/theme';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -74,8 +75,13 @@ export default function CoverAdjustScreen() {
       });
     });
 
+  const foldHalf = useFoldHalf();
   const cancel = () => {
     setLiveCoverFrame(null);
+    if (undoCover()) {
+      void pushProfileTheme(getMeta('profileThemeColor') || null).catch(() => {});
+      appearanceChanged();
+    }
     router.back();
   };
 
@@ -124,6 +130,7 @@ export default function CoverAdjustScreen() {
   const done = () => {
     tapLight();
     setMeta('coverFrame', coverFrameString(shaped));
+    commitCover();
     appearanceChanged();
     router.back();
     // Held until the profile has re-read the saved frame on focus, so the
@@ -152,7 +159,8 @@ export default function CoverAdjustScreen() {
         </GestureDetector>
       )}
 
-      <View style={[styles.panel, { paddingBottom: Math.max(insets.bottom, space.lg) }]}>
+      {/* Open on its side, the controls keep to the right half: Reset sat on the fold. */}
+      <View style={[styles.panel, foldHalf != null && { width: foldHalf, alignSelf: 'flex-end' }, { paddingBottom: Math.max(insets.bottom, space.lg) }]}>
         <Text accessibilityRole="header" style={styles.title}>{t('coverAdjust.title')}</Text>
         {uri == null && <Text style={styles.rowSub}>{t('editProfile.chooseCover')}</Text>}
 

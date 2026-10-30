@@ -83,9 +83,23 @@ export function Screen({ children }: { children: ReactNode }) {
   // The iPhone Duo's clock strip runs down one side when it is closed. The
   // native header reaches it (that is how its buttons get into the strip), so
   // the content keeps clear here instead. 0 on every other iPhone in portrait.
+  // A sheet does not reach the strip, though the insets still say so: that left a
+  // black band down the side of every modal on the Duo. Narrower than the window
+  // and not a pane means a sheet.
   const { left, right } = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const inFold = use(FoldContext) != null;
+  const [sheet, setSheet] = useState(false);
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: headerHeight || topInset, paddingLeft: left, paddingRight: right }}>
+    <View
+      onLayout={(e) => setSheet(!inFold && e.nativeEvent.layout.width < width - 1)}
+      style={{
+        flex: 1,
+        backgroundColor: colors.bg,
+        paddingTop: headerHeight || topInset,
+        paddingLeft: sheet ? 0 : left,
+        paddingRight: sheet ? 0 : right,
+      }}>
       {children}
     </View>
   );

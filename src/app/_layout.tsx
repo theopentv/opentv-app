@@ -1024,7 +1024,12 @@ export default function RootLayout() {
         {/* one comment and its replies — the permalink a tap on any card opens */}
         <Stack.Screen name="comment/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="shared-comment/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="edit-profile" options={{ presentation: 'modal' }} />
+        {/* headerShown HERE, not only from NavHeader. In a modal, a header turned on
+            from inside the page remounts it and wipes its state ("Dynamically
+            changing header's visibility in modals"): a chosen cover title vanished
+            and the list jumped to the top (31 Oct, live on 2.0.4). */}
+        <Stack.Screen name="edit-profile" options={{ presentation: 'modal', headerShown: true }} />
+        <Stack.Screen name="cover-picker" options={{ headerShown: true }} />
         {/* Who asked to follow you. A modal, like every other list reached from
             a row rather than a tab. */}
         <Stack.Screen name="follow-requests" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
