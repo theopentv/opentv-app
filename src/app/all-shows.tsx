@@ -7,7 +7,8 @@ import { Text } from '@/components/text';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { a11yAction } from '@/a11y';
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
+import { ShowPane } from '@/components/show-pane';
+import { NavHeader, Screen, useFoldHalf, useScreenWidth } from '@/components/ui';
 import db, { getShowProgress, setFollowing, setShowArchived, setShowFavorited, setShowFinished, getRecentShows } from '@/db';
 import { tapLight } from '@/haptics';
 import { showFacts } from '@/filter-facts';
@@ -126,7 +127,12 @@ export default function AllShowsScreen() {
 
   const active = activeFilterCount(filters);
   // columns follow the live viewport — 3 on a phone, up to 9 on a landscape iPad
-  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
+  const fullWidth = useScreenWidth();
+  // Open on its side: the grid keeps the left half, a tapped show the right.
+  const half = useFoldHalf();
+  const [picked, setPicked] = useState<number | null>(null);
+  const pickedShow = picked == null ? null : (rows.find((r) => r.tvdbId === picked) ?? null);
+  const cols = gridGeometry(half ?? fullWidth, space.md, 3).cols;
 
   /* Only whether there are enough to make a grid — the card reads the
      shelf itself. */
@@ -134,6 +140,8 @@ export default function AllShowsScreen() {
 
   return (
     <Screen>
+      <View style={half != null ? styles.split : styles.single}>
+      <View style={half != null ? { width: half } : styles.single}>
       <NavHeader title={t('allShows.title')} />
       {/* THE OTHER SHELF WORTH POSTING. Favourites are curation and change
           once a year; what you have just watched changes every week, which is
@@ -183,7 +191,7 @@ export default function AllShowsScreen() {
         renderItem={({ item, index }) => (
           <Pressable
             style={{ flex: 1 / cols }}
-            onPress={() => router.push(`/show/${item.tvdbId}`)}
+            onPress={() => (half != null ? setPicked(item.tvdbId) : router.push(`/show/${item.tvdbId}`))}
             accessibilityRole="button"
             accessibilityLabel={posterSpeech(item.name, { progress: progressOf(item) })}
             // A long press has no screen-reader gesture; the menu is offered as an action instead.
@@ -219,11 +227,16 @@ export default function AllShowsScreen() {
             invisible filter reads as a library that lost half its shows */}
         {active > 0 ? <Text style={styles.filtersBadge}>{active}</Text> : null}
       </Pressable>
+      </View>
+      {half != null && <ShowPane show={pickedShow} next={null} />}
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  single: { flex: 1 },
+  split: { flex: 1, flexDirection: 'row' },
   shareRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 10 },
   shareText: { color: colors.blue, fontSize: 14, fontWeight: '700' },
 
