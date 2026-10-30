@@ -13,6 +13,49 @@ failure written next to it, not in a commit message.
 ---
 
 
+## 2.1.0
+
+Tick on a real iPhone and a real Android unless a line says otherwise.
+
+**Cover**
+- [ ] Edit profile → cover → a title opens its artwork, a picture saves, the adjuster opens
+- [ ] Cancel in the adjuster brings the old banner, position and colours back
+- [ ] Done keeps the new one, after a restart too
+- [ ] A title with no artwork still has the way back
+- [ ] The title list does not jump while scrolling
+- [ ] Same for a list's cover, a GIF, an upload and OpenTV's own banners
+
+**Import**
+- [ ] Full TV Time import, uninterrupted: summary opens at once, bar above the tabs, poster bars empty then filling
+- [ ] Rating prompt only after LET'S GO
+- [ ] Leave the app mid-fill and come back: it finishes
+
+**Free month**
+- [ ] Signed out: "from 1 December", Count me in, sign-in says the date
+- [ ] Signed in: You're in, its ✕ closes it, the claim stays
+- [ ] On Plus: "Your free month is coming"
+- [ ] Backend deployed: migration 0066 before the Worker; a sandbox payer's renewal moves a month (never a real one first)
+
+**Badges**
+- [ ] Library imported earlier: badges appear on opening Stats
+- [ ] A badge opens its page, Share works
+- [ ] Fresh library with no TV Time: counts make sense
+
+**Widget (needs a build)**
+- [ ] Upcoming placed on iOS and Android, countdown right, row opens the episode, elsewhere opens Upcoming
+- [ ] Android preview image is real, not Up Next's
+
+**The rest**
+- [ ] The bell, with a member account: sections, grouping, unread tint, tap-through
+- [ ] Finished only on ended shows, Up to date on running ones
+- [ ] Emotion calendar legend has the yellow
+- [ ] Two rails at once on Profile, Explore, show About; pull-down still closes the show page
+- [ ] Comments do not jump; memory fine on a big archive
+- [ ] Typing in a comment or modal survives
+- [ ] Modals on the Duo have no black band; side bar present (Xcode 27.1 build)
+- [ ] Android: comments list, modals, widgets
+- [ ] Arabic reads right on the new strings
+
 ## 2.0.4
 
 - [x] Simple view on: Profile Stats = Shows / Episodes / Films counts, no ›, no Wrapped banner (iOS sim, 28 Oct, set via meta)
