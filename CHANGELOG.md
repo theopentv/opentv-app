@@ -44,9 +44,9 @@ Play Console record rather than per-change.
 
 ## 2.1.0 — the plan
 
-**One release, everything below (Mahmood, 31 Oct; was 2.0.5).** Target: submit around 10 Nov (Mahmood, 31 Oct). Black Friday starts 27 Nov and Christmas Plus 1 Dec, so 20 Nov is the latest that leaves Apple review any margin. Before Black Friday the paywall must show the intro and win-back price (it shows the full price while Apple charges half), and year-end Wrapped must be out before 1 Dec. If a big item is not done by then, it moves to the next release rather than the campaign moving.
+**One release, everything below (Mahmood, 31 Oct; was 2.0.5).** Target: submit around 10 Nov (Mahmood, 31 Oct). Black Friday starts 27 Nov and Christmas Plus 1 Dec, so 20 Nov is the latest that leaves Apple review any margin. The paywall already shows intro and win-back prices (`planOffer`, checked 31 Oct), so Black Friday needs the offers set up in App Store Connect and Play, not code. Year-end Wrapped must be out before 1 Dec. If a big item is not done by then, it moves to the next release rather than the campaign moving.
 
-**Order:** (1) small fixes, done; (2) paywall prices, free month for payers, once per campaign; (3) Upcoming widget, Notifications screen, TV Time parity list; (4) Duo two panes, Shows tab first and approved before the rest; (5) the import carrying on with the app closed; ideas board only if agreed. Then: full import test uninterrupted, iPhone and Android, translations, RELEASE-TESTS, store notes.
+**Order:** (1) small fixes, done; (2) free month for payers, once per campaign; (3) Upcoming widget, Notifications screen, TV Time parity list; (4) Duo two panes, Shows tab first and approved before the rest; (5) the import carrying on with the app closed; ideas board only if agreed. Then: full import test uninterrupted, iPhone and Android, translations, RELEASE-TESTS, store notes.
 
 
 **Built 30 Oct, from a real 1,370-show TV Time export on a fresh simulator (branch `2.1.0`, not released):**
