@@ -4,6 +4,7 @@
  * cached in the db (meta key `showMeta:{tvdbId}`), then indistinguishable
  * from bundled shows everywhere: episodes tab, continue tracking, stats.
  */
+import { metaFillRunning, setMetaFill } from '@/meta-fill';
 import db, { getAllShowIds, getMeta, getMoviesMissingPoster, markMovieGuessed, getPlannedMoviesMissingRelease, getShowsMissingName, getShowsMissingPoster, fillShowPosterIfMissing, markShowNameTried, setMeta, setShowName, setMoviePoster, setMovieRelease, setShowBackdrop, setShowPoster } from '@/db';
 import { registerShowMeta, showMeta, type CastMeta, type CharacterMeta, type EpisodeMeta, type SeasonMeta, type ShowMeta } from '@/metadata';
 import * as Localization from 'expo-localization';
@@ -206,7 +207,6 @@ export async function fillMovieReleaseDates(): Promise<void> {
 // structure, a show without a cached record has no season or episode totals at
 // all — so progress bars and season counts read wrong until this pass reaches
 // it. At 25 a fresh 116-show library took five launches to become correct.
-const META_CACHE_BATCH = 200;
 
 /**
  * Shows with no usable TheTVDB structure yet.
@@ -244,9 +244,8 @@ function wrongPlotLang(m: ShowMeta): boolean {
  * Fetch structure for every show that lacks it, with NO per-launch cap.
  *
  * Runs straight after an import, where the whole library is missing structure
- * at once and the 25-a-launch trickle would leave most of the grid showing
- * wrong progress for several launches. Reports done/total so the import screen
- * can show it rather than appearing to hang.
+ * at once. The import does not wait for it: the library is already saved, so
+ * it opens at once and `MetaFillBar` shows this finishing behind it.
  *
  * Best-effort: whatever does not resolve here is picked up by
  * cacheAllShowMetadata on later launches, so an offline import still lands.
@@ -259,10 +258,24 @@ export async function cacheMissingShowMetadata(
     setMeta('metaCacheComplete', '1');
     return { total: 0, ok: 0 };
   }
-  await pool(need, (id) => fetchShowMeta(id).catch(() => null), 3, onProgress);
+  await fillShows(need, onProgress);
   const ok = need.filter((id) => !needsFetch(id)).length;
   setMeta('metaCacheComplete', ok === need.length ? '1' : '');
   return { total: need.length, ok };
+}
+
+/** One pass at a time, reported to `meta-fill` for the bar above the tabs. */
+async function fillShows(ids: number[], onProgress?: (done: number, total: number) => void): Promise<void> {
+  if (metaFillRunning()) return;
+  setMetaFill({ done: 0, total: ids.length });
+  try {
+    await pool(ids, (id) => fetchShowMeta(id).catch(() => null), 3, (done, total) => {
+      setMetaFill({ done, total });
+      onProgress?.(done, total);
+    });
+  } finally {
+    setMetaFill(null);
+  }
 }
 
 export async function cacheAllShowMetadata(onProgress?: (done: number, total: number) => void): Promise<void> {
@@ -274,20 +287,17 @@ export async function cacheAllShowMetadata(onProgress?: (done: number, total: nu
     setMeta('metaCacheComplete', '1');
     return;
   }
-  // cap per launch so a big fresh library (hundreds of shows) fills over a few
-  // launches instead of firing every request at once on whatever connection
-  const batch = need.slice(0, META_CACHE_BATCH);
-  await pool(batch, (id) => fetchShowMeta(id).catch(() => null), 3, onProgress);
-  if (need.length <= batch.length) {
-    // That was the last batch — but finishing is not the same as succeeding.
-    // fetchShowMeta never rejects (it falls back to the cached copy) and the
-    // per-item .catch() swallows the rest, so stamping complete here marked a
-    // library done while shows on a dropped connection still had no structure,
-    // and the background pass never looked at them again. Same honest measure
-    // as cacheMissingShowMetadata: did the shows actually get what we came for?
-    const ok = batch.filter((id) => !needsFetch(id)).length;
-    setMeta('metaCacheComplete', ok === batch.length ? '1' : '');
-  }
+  // THE WHOLE LIBRARY, NOT A BATCH (30 Oct). The import no longer waits for this,
+  // so an interrupted fill resumes here, and 200 a launch left a 1,300-show
+  // library wrong for seven launches. `pool` is what limits the connection.
+  await fillShows(need, onProgress);
+  // Finishing is not the same as succeeding. fetchShowMeta never rejects (it
+  // falls back to the cached copy) and the per-item .catch() swallows the rest,
+  // so stamping complete here marked a library done while shows on a dropped
+  // connection still had no structure, and the background pass never looked at
+  // them again. Same honest measure as cacheMissingShowMetadata.
+  const ok = need.filter((id) => !needsFetch(id)).length;
+  setMeta('metaCacheComplete', ok === need.length ? '1' : '');
 }
 
 /**

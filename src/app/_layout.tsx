@@ -28,6 +28,7 @@ import { dedupeOwnComments } from '@/db';
 import { resumeInterruptedImport, runStartupRepairs } from '@/migrations';
 import { backfillMovieTvdbIds } from '@/movie-tvdb-match';
 import { initPurchases } from '@/purchases';
+import { MetaFillBar } from '@/components/meta-fill-bar';
 import { cacheAllShowMetadata, fillMissingEpisodeStills, fillMissingMoviePosters, fillMissingListNames,
   fillMissingListPosters,
   fillMissingShowNames,
@@ -1087,6 +1088,7 @@ export default function RootLayout() {
         />
         </Stack.Protected>
         </Stack>
+        <MetaFillBar />
         <UpdateGate />
         {repairPhase != null && (
           <View style={[StyleSheet.absoluteFill, styles.repairOverlay]}>

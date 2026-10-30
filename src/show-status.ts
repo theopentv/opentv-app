@@ -4,6 +4,7 @@
  * purple = completed an ended show.
  */
 import type { ShowProgress } from '@/db';
+import { metaFillRunning } from '@/meta-fill';
 import { showMeta } from '@/metadata';
 import { colors } from '@/theme';
 
@@ -31,7 +32,9 @@ export function progressOf(sp: ShowProgress): number {
   const seen = Math.max(sp.watched, sp.episodesSeen);
   const total = airedTotalOf(sp.tvdbId);
   if (total && total > 0) return Math.min(seen / total, 1);
-  if (seen === 0) return 0;
+  // Still being fetched: an empty bar, not a guess that draws a finished show
+  // as part-watched. It fills when the data lands.
+  if (seen === 0 || metaFillRunning()) return 0;
   return Math.min(seen / (seen + 15), 0.95);
 }
 

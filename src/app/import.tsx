@@ -146,20 +146,20 @@ function Summary({ result, onDone }: { result: ImportResult; onDone: () => void 
     result.stats.shows.nameOnly + result.stats.moviesWatched.nameOnly + result.stats.watchlist.nameOnly;
 
   /*
-   * THE ONE MOMENT WORTH ASKING AT. The summary is on screen and a decade of
-   * somebody's history has just come back; every other place in this app is an
-   * interruption. Deferred so it lands after the screen has drawn rather than
-   * over a blank one, and guarded inside `maybeAskForRating`: small imports do
+   * THE ONE MOMENT WORTH ASKING AT, once they have read it. A decade of history
+   * has just come back, but over the summary the prompt hid the numbers it was
+   * asking them to be pleased about (30 Oct), so it waits for LET'S GO and for
+   * the library to draw. Guarded inside `maybeAskForRating`: small imports do
    * not qualify, and it asks at most once per version.
    */
-  useEffect(() => {
-    const id = setTimeout(() => {
+  const leave = () => {
+    onDone();
+    setTimeout(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { maybeAskForRating } = require('@/rate-us') as typeof import('@/rate-us');
       maybeAskForRating(result.library.episodes);
     }, 1800);
-    return () => clearTimeout(id);
-  }, [result.library.episodes]);
+  };
 
   const copy = async (text: string, key: number | string) => {
     await Clipboard.setStringAsync(text);
@@ -360,7 +360,7 @@ function Summary({ result, onDone }: { result: ImportResult; onDone: () => void 
           answered, or once they are signed in. */}
       <FreeMonthCard from="import" />
 
-      <Pressable accessibilityRole="button" style={styles.cta} onPress={onDone}>
+      <Pressable accessibilityRole="button" style={styles.cta} onPress={leave}>
         <Text style={styles.ctaText}>{t('import.summary.letsGo')}</Text>
       </Pressable>
     </ScrollView>
@@ -477,22 +477,13 @@ export default function ImportScreen() {
         setProgress(null);
         return; // user cancelled the picker
       }
-      // Episode structure comes from TheTVDB at runtime — the bundled metadata
-      // carries enrichment only since 1.2.0. Until a show has it there are no
-      // season or episode totals, so the grid draws part-watched bars over
-      // finished shows. Fetch it now, while the user is still looking at a
-      // progress screen, rather than trickling 200-a-launch afterwards.
-      // Best-effort: anything that fails here is retried by the background
-      // pre-cache on the next launch, so an offline import still completes.
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { cacheMissingShowMetadata } = require('@/show-meta-fetch') as typeof import('@/show-meta-fetch');
-        await cacheMissingShowMetadata((done, total) =>
-          setProgress({ phase: t('import.gettingEpisodeData'), done, total }),
-        );
-      } catch {
-        // offline or TheTVDB unreachable — the library is imported either way
-      }
+      // Episode structure comes from TheTVDB at runtime. The library is already
+      // saved, so nobody waits for it here (30 Oct: it was most of a seven-minute
+      // import): it runs behind the app with `MetaFillBar` showing it, and the
+      // pre-cache at the next launch finishes whatever was cut short.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { cacheMissingShowMetadata } = require('@/show-meta-fetch') as typeof import('@/show-meta-fetch');
+      void cacheMissingShowMetadata().catch(() => {});
       /*
        * The films the export named as a bare uuid — see `list-repair.ts`. Here
        * rather than behind a button because a list arrives broken and nothing

@@ -18,6 +18,7 @@ import { hasOriginalZip } from '@/migrations';
 import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { pool } from '@/tmdb';
+import { useMetaFillRunning } from '@/meta-fill';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
@@ -131,6 +132,11 @@ export default function ShowsScreen() {
   const [tonightClosed, setTonightClosed] = useState(() => getMeta('tonightRowClosed') === '1');
   const [tonightH, setTonightH] = useState(0);
   const [tick, setTick] = useState(0);
+  // The posters' bars are empty while the library fills: redraw when it lands.
+  const filling = useMetaFillRunning();
+  useEffect(() => {
+    if (!filling) setTick((t) => t + 1);
+  }, [filling]);
   // Which focus this is — the metadata pass below runs once per focus, NOT on
   // `tick`: a landed batch bumps `tick` to redraw, and when that also started
   // the next batch the tab walked the whole stale library twelve shows at a
