@@ -1,14 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
+import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { a11yAction } from '@/a11y';
 import { Poster, posterSpeech } from '@/components/poster';
-import { ShowPane } from '@/components/show-pane';
-import { NavHeader, Screen, useFoldHalf, useScreenWidth } from '@/components/ui';
+import { FoldSplit } from '@/components/fold-split';
+import { NavHeader, Screen, useDetailRouter, useScreenWidth } from '@/components/ui';
 import db, { getShowProgress, setFollowing, setShowArchived, setShowFavorited, setShowFinished, getRecentShows } from '@/db';
 import { tapLight } from '@/haptics';
 import { showFacts } from '@/filter-facts';
@@ -18,7 +18,15 @@ import { activeFilterCount, compareTitles, gridGeometry, matchesFilters } from '
 import { colors, radius, space, ls } from '@/theme';
 import { t } from '@/i18n';
 
-export default function AllShowsScreen() {
+export default function AllShows() {
+  return (
+    <FoldSplit>
+      <AllShowsScreen />
+    </FoldSplit>
+  );
+}
+
+function AllShowsScreen() {
   // re-read on focus — a show deleted from its page must vanish on return.
   // The rows live in STATE, not a render-time read guarded by a counter: the
   // React Compiler memoises a render-time store read against its arguments and
@@ -127,14 +135,8 @@ export default function AllShowsScreen() {
 
   const active = activeFilterCount(filters);
   // columns follow the live viewport — 3 on a phone, up to 9 on a landscape iPad
-  const fullWidth = useScreenWidth();
-  // Open on its side: the grid keeps the left half, a tapped show the right.
-  const half = useFoldHalf();
-  const [picked, setPicked] = useState<number | null>(null);
-  const clearPicked = useCallback(() => setPicked(null), []);
-  const { width: windowW } = useWindowDimensions();
-  const paneW = windowW - (half ?? 0) - 28;
-  const cols = gridGeometry(half ?? fullWidth, space.md, 3).cols;
+  const detail = useDetailRouter();
+  const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
 
   /* Only whether there are enough to make a grid — the card reads the
      shelf itself. */
@@ -142,8 +144,6 @@ export default function AllShowsScreen() {
 
   return (
     <Screen>
-      <View style={half != null ? styles.split : styles.single}>
-      <View style={half != null ? { width: half } : styles.single}>
       <NavHeader title={t('allShows.title')} />
       {/* THE OTHER SHELF WORTH POSTING. Favourites are curation and change
           once a year; what you have just watched changes every week, which is
@@ -193,7 +193,7 @@ export default function AllShowsScreen() {
         renderItem={({ item, index }) => (
           <Pressable
             style={{ flex: 1 / cols }}
-            onPress={() => (half != null ? setPicked(item.tvdbId) : router.push(`/show/${item.tvdbId}`))}
+            onPress={() => detail.push(`/show/${item.tvdbId}`)}
             accessibilityRole="button"
             accessibilityLabel={posterSpeech(item.name, { progress: progressOf(item) })}
             // A long press has no screen-reader gesture; the menu is offered as an action instead.
@@ -229,16 +229,11 @@ export default function AllShowsScreen() {
             invisible filter reads as a library that lost half its shows */}
         {active > 0 ? <Text style={styles.filtersBadge}>{active}</Text> : null}
       </Pressable>
-      </View>
-      {half != null && <ShowPane id={picked} width={paneW} onClose={clearPicked} />}
-      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  single: { flex: 1 },
-  split: { flex: 1, flexDirection: 'row' },
   shareRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7, paddingVertical: 10 },
   shareText: { color: colors.blue, fontSize: 14, fontWeight: '700' },
 

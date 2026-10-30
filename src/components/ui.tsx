@@ -36,6 +36,9 @@ export function useTopInset(): number {
   return insets.top || initialWindowMetrics?.insets.top || 0;
 }
 
+/** The width of the pane a screen sits in, when it is not the whole window. */
+export const ScreenWidthContext = createContext<number | null>(null);
+
 /** The width a page has to lay out in: the window, less the left/right safe
  *  area. On the iPhone Duo closed the clock strip takes a column; anything
  *  sized from the raw window width ran under it. Equal to the window width on
@@ -43,7 +46,8 @@ export function useTopInset(): number {
 export function useScreenWidth(): number {
   const { width } = useWindowDimensions();
   const { left, right } = useSafeAreaInsets();
-  return width - left - right;
+  const half = use(ScreenWidthContext);
+  return half ?? width - left - right;
 }
 
 /**
@@ -59,8 +63,9 @@ const FOLD_GAP = 14;
 
 export function useFoldHalf(): number | null {
   const { width, height } = useWindowDimensions();
+  const { left } = useSafeAreaInsets();
   const fullWidth = useDuoFullWidth();
-  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? (width + DUO_STRIP) / 2 - FOLD_GAP : null;
+  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? (width + DUO_STRIP) / 2 - left - FOLD_GAP : null;
 }
 
 /** An iPhone Duo in either state: no other iPhone is this wide on its short side. */
@@ -405,9 +410,38 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  * a summary: the same screen, told its id and width here instead of by the
  * route and the window, and given no native header to borrow.
  */
-export type DetailPane = { id: string; width: number; close: () => void };
+export type DetailPane = { id: string; width: number; canBack: boolean; back: () => void; close: () => void };
 export const DetailPaneContext = createContext<DetailPane | null>(null);
 export const useDetailPane = (): DetailPane | null => use(DetailPaneContext);
+
+/** Set by `FoldSplit`; null outside one. */
+export type Fold = {
+  half: number | null;
+  open: (path: string, inPane: boolean) => void;
+  setBackdrop: (uri: string | null) => void;
+};
+export const FoldContext = createContext<Fold | null>(null);
+export const useFold = (): Fold | null => use(FoldContext);
+
+/**
+ * `router.push`, for a page that may belong in the right half: a show, film or
+ * episode goes there when the Duo is open, and anything else navigates as usual.
+ */
+export function useDetailRouter() {
+  const fold = use(FoldContext);
+  const pane = use(DetailPaneContext);
+  return {
+    push: (path: string) => {
+      if (fold?.half != null && /^\/(show|movie|episode)\//.test(path)) fold.open(path, pane != null);
+      else router.push(path as never);
+    },
+    /** Leave this page, wherever it lives. */
+    leave: () => {
+      if (pane) pane.close();
+      else router.back();
+    },
+  };
+}
 
 /** A detail page keeps clear of the iPhone Duo's clock strip (0 everywhere
  *  else). It is a full-width native push on every screen size: the pane that

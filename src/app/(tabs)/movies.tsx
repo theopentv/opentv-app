@@ -1,10 +1,11 @@
+import { FoldSplit } from '@/components/fold-split';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { EmptyState, Screen, TopTabs, useScreenWidth } from '@/components/ui';
+import { EmptyState, Screen, TopTabs, useDetailRouter, useScreenWidth } from '@/components/ui';
 import { getMovies, type MovieRow } from '@/db';
 import { airCountdown, gridGeometry, type AirIn } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
@@ -18,7 +19,16 @@ function chunk<T>(arr: T[], n: number): T[][] {
   return out;
 }
 
-export default function MoviesScreen() {
+export default function Movies() {
+  return (
+    <FoldSplit>
+      <MoviesScreen />
+    </FoldSplit>
+  );
+}
+
+function MoviesScreen() {
+  const detail = useDetailRouter();
   const [tab, setTab] = useState<(typeof TABS)[number]>('Watch List');
   // live from the database — marking/unmarking a movie updates the grid
   const [movies, setMovies] = useState(getMovies());
@@ -79,7 +89,7 @@ export default function MoviesScreen() {
                   <Pressable
                     key={m.name}
                     style={{ flex: 1 }}
-                    onPress={() => router.push(`/movie/${encodeURIComponent(m.name)}`)}
+                    onPress={() => detail.push(`/movie/${encodeURIComponent(m.name)}`)}
                     accessibilityRole="button"
                     accessibilityLabel={posterSpeech(m.title)}>
                     <Poster name={m.title} uri={m.poster} />
@@ -116,7 +126,7 @@ export default function MoviesScreen() {
                 <Pressable
                   key={m.name}
                   style={{ flex: 1 }}
-                  onPress={() => router.push(`/movie/${encodeURIComponent(m.name)}`)}
+                  onPress={() => detail.push(`/movie/${encodeURIComponent(m.name)}`)}
                   accessibilityRole="button"
                   // The countdown under the poster is part of the card's one line.
                   accessibilityLabel={`${posterSpeech(m.title)}, ${t(soon.key, { count: soon.count })}`}>

@@ -21,11 +21,12 @@ import { a11yAction, a11yHidden } from '@/a11y';
 import { NoteRow } from '@/components/note-row';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { posterSpeech } from '@/components/poster';
+import { PaneBar } from '@/components/pane-bar';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatchedMany, type EpisodeWatch } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -108,7 +109,7 @@ export default function ShowScreen() {
   const params = useLocalSearchParams<{ id: string; tmdbId?: string }>();
   const id = pane?.id ?? params.id;
   const tmdbId = pane ? undefined : params.tmdbId;
-  const [paneMenu, setPaneMenu] = useState(false);
+  const detail = useDetailRouter();
   const tvdbId = Number(id);
 
   // metadata for shows outside the bundle arrives from TMDB at runtime
@@ -845,8 +846,7 @@ export default function ShowScreen() {
                 style: 'destructive',
                 onPress: () => {
                   deleteShow(show.tvdbId);
-                  if (pane) pane.close();
-                  else router.back();
+                  detail.leave();
                 },
               },
               { text: t('common.cancel'), style: 'cancel' },
@@ -862,19 +862,8 @@ export default function ShowScreen() {
     <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
       <SplitPage split={split}>
       {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
-      {pane ? (
-        <>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('a11y.more')}
-            hitSlop={8}
-            style={styles.paneMore}
-            onPress={() => setPaneMenu(true)}>
-            <Ionicons name="ellipsis-horizontal" size={20} color="#FFF" />
-          </Pressable>
-          <ActionSheet visible={paneMenu} actions={showActions()} onClose={() => setPaneMenu(false)} />
-        </>
-      ) : (
+      <PaneBar actions={showActions()} />
+      {!pane && (
         <Stack.Screen
           options={{
             headerShown: true,
@@ -1584,7 +1573,7 @@ export default function ShowScreen() {
                     accessibilityLabel={[t('a11y.seasonEpisode', { season: picked.season, episode: picked.episode }), em?.title].filter(Boolean).join(', ')}
                     onPress={() => {
                       tapSelection();
-                      router.push(`/episode/${show.tvdbId}-s${picked.season}e${picked.episode}`);
+                      detail.push(`/episode/${show.tvdbId}-s${picked.season}e${picked.episode}`);
                     }}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.chartPickCode}>
@@ -1806,7 +1795,7 @@ export default function ShowScreen() {
                 <Pressable
                   style={[styles.carCard, { width: CARD_W }]}
                   accessible={false} importantForAccessibility="no"
-                  onPress={() => router.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
+                  onPress={() => detail.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
                   <View style={styles.carThumb} {...a11yHidden()}>
                     {em?.still ? (
                       <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -2564,18 +2553,6 @@ function ExtremeSeason({
 }
 
 const styles = StyleSheet.create({
-  paneMore: {
-    position: 'absolute',
-    top: 12,
-    end: 12,
-    zIndex: 5,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.45)',
-  },
   chartEdge: {
     position: 'absolute',
     width: 12,

@@ -3,13 +3,13 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { FlatList, I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
-import { CheckCircle, EmptyState, Screen, TopTabs, useFoldHalf, useScreenWidth } from '@/components/ui';
+import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useFold, useScreenWidth } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -18,7 +18,7 @@ import { hasOriginalZip } from '@/migrations';
 import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { pool } from '@/tmdb';
-import { ShowPane } from '@/components/show-pane';
+import { FoldSplit } from '@/components/fold-split';
 import { useMetaFillRunning } from '@/meta-fill';
 import { upcomingEpisodes } from '@/widget-data';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
@@ -118,20 +118,20 @@ function chunk<T>(arr: T[], n: number): T[][] {
   return out;
 }
 
-export default function ShowsScreen() {
+export default function Shows() {
+  return (
+    <FoldSplit>
+      <ShowsScreen />
+    </FoldSplit>
+  );
+}
+
+function ShowsScreen() {
   const plus = usePlus();
-  const fullWidth = useScreenWidth();
-  // OPEN ON ITS SIDE, TWO PANES. The list stays on the left, sized to its half
-  // so nothing crosses the fold; a tapped show fills the right (see ShowPane).
-  const half = useFoldHalf();
-  const W = half ?? fullWidth;
-  const { width: windowW } = useWindowDimensions();
-  const [picked, setPicked] = useState<number | null>(null);
-  const paneW = windowW - (half ?? 0) - 28;
-  const openShow = (id: number) => {
-    if (half != null) setPicked(id);
-    else router.push(`/show/${id}`);
-  };
+  const W = useScreenWidth();
+  const detail = useDetailRouter();
+  const half = useFold()?.half ?? null;
+  const openShow = (id: number) => detail.push(`/show/${id}`);
   // the Watch List's rows and grid run full width (no ContentColumn cap) —
   // these are repeated rows/tiles, not prose, so a tablet should show MORE of
   // them rather than a narrow capped column. The column count derives from
@@ -405,11 +405,8 @@ export default function ShowsScreen() {
   // The native tab bar floats over the list; its height is in the bottom inset.
   const tabBarSpace = useSafeAreaInsets().bottom;
 
-  const clearPicked = () => setPicked(null);
   return (
     <Screen>
-      <View style={half != null ? styles.split : styles.single}>
-      <View style={half != null ? { width: half } : styles.single}>
       <TopTabs
         tabs={TABS}
         labels={{ 'Watch List': t('shows.tabs.watchList'), Upcoming: t('shows.tabs.upcoming') }}
@@ -516,7 +513,7 @@ export default function ShowsScreen() {
                         // TalkBack stopped on the bare frame and said only
                         // "double tap". "no" hides the frame and keeps its children.
                         importantForAccessibility="no"
-                        onPress={() => (half != null ? setPicked(w.showId) : router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`))}>
+                        onPress={() => (half != null ? openShow(w.showId) : router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`))}>
                         <View style={styles.thumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -805,7 +802,7 @@ export default function ShowsScreen() {
                   style={styles.card}
                   accessibilityRole="button"
                   accessibilityLabel={[u.showName, t('a11y.seasonEpisode', { season: u.season, episode: u.episode }), title].join(', ')}
-                  onPress={() => (half != null ? setPicked(u.showId) : router.push(`/episode/${u.showId}-s${u.season}e${u.episode}`))}>
+                  onPress={() => detail.push(`/episode/${u.showId}-s${u.season}e${u.episode}`)}>
                   <View style={styles.thumb}>
                     {(u.still ?? u.poster) && (
                       <Image source={{ uri: u.still ?? u.poster! }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -861,18 +858,11 @@ export default function ShowsScreen() {
         </View>
       )}
       </View>
-      </View>
-      {half != null && (
-        <ShowPane id={picked} width={paneW} onClose={clearPicked} />
-      )}
-      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  single: { flex: 1 },
-  split: { flex: 1, flexDirection: 'row' },
   /* Every band on this screen owns its TOP margin and no bottom one, so that
      two in a row are separated once rather than twice. This had it the other
      way round, which left it flush against the tabs above and floating above
