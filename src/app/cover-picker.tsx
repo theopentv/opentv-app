@@ -490,6 +490,11 @@ export default function CoverPickerScreen() {
     return (
       <Screen>
         <NavHeader title={selected.name} />
+        {/* Above every state: with no artwork this is the only way back to the titles. */}
+        <Pressable accessibilityRole="button" style={styles.backRow} hitSlop={8} onPress={() => setSelected(null)}>
+          <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={18} color={colors.blue} />
+          <Text style={styles.backText} numberOfLines={1}>{t('editProfile.chooseCover')}</Text>
+        </Pressable>
         {backdrops == null ? (
           <View style={styles.center}>
             <ActivityIndicator color={colors.yellow} />
@@ -506,12 +511,6 @@ export default function CoverPickerScreen() {
             onLayout={(e) => setListW(e.nativeEvent.layout.width)}
             numColumns={artCols}
             {...(artCols > 1 ? { columnWrapperStyle: { gap: 14 } } : {})}
-            ListHeaderComponent={
-              <Pressable accessibilityRole="button" style={styles.backRow} hitSlop={8} onPress={() => setSelected(null)}>
-                <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={18} color={colors.blue} />
-                <Text style={styles.backText} numberOfLines={1}>{t('editProfile.chooseCover')}</Text>
-              </Pressable>
-            }
             contentContainerStyle={{ paddingHorizontal: space.lg, gap: 14, paddingBottom: 40, paddingTop: 8 }}
             renderItem={({ item, index }) => (
               <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.picture', { n: index + 1 })} style={{ flex: 1 / artCols }} onPress={() => pick(item.path)} disabled={saving}>
@@ -646,7 +645,7 @@ export default function CoverPickerScreen() {
 }
 
 const styles = StyleSheet.create({
-  backRow: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6 },
+  backRow: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: space.lg },
   backText: { color: colors.blue, fontSize: 15, fontWeight: '600' },
   upload: { alignItems: 'center', paddingHorizontal: space.xl, paddingTop: 48, gap: 12 },
   uploadTitle: { color: colors.text, fontSize: 20, fontWeight: '800', textAlign: 'center' },
