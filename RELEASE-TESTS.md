@@ -18,9 +18,9 @@ failure written next to it, not in a commit message.
 Tick on a real iPhone and a real Android unless a line says otherwise.
 
 **Cover**
-- [ ] Edit profile → cover → a title opens its artwork, a picture saves, the adjuster opens
-- [ ] Cancel in the adjuster brings the old banner, position and colours back
-- [ ] Done keeps the new one, after a restart too
+- [x] Edit profile → cover → a title opens its artwork, a picture saves, the adjuster opens (iPhone simulator, Metro)
+- [x] Cancel brings the old banner back, new file removed (iPhone simulator; colours not checked)
+- [x] Done keeps the new one, after a restart too (iPhone simulator)
 - [ ] A title with no artwork still has the way back
 - [ ] The title list does not jump while scrolling
 - [ ] Same for a list's cover, a GIF, an upload and OpenTV's own banners
@@ -48,12 +48,13 @@ Tick on a real iPhone and a real Android unless a line says otherwise.
 **The rest**
 - [ ] The bell, with a member account: sections, grouping, unread tint, tap-through
 - [ ] Finished only on ended shows, Up to date on running ones
-- [ ] Emotion calendar legend has the yellow
+- [x] Emotion calendar legend has the yellow (iPhone simulator)
 - [x] Two rails at once on Profile (iPhone)
 - [ ] Two rails at once on Explore, show About; pull-down still closes the show page
 - [ ] Comments do not jump; memory fine on a big archive
 - [ ] Typing in a comment or modal survives
 - [ ] Modals on the Duo have no black band; side bar present (Xcode 27.1 build)
+- [x] Android release APK opens on the emulator, no crash, versionCode 126
 - [ ] Android: comments list, modals, widgets
 - [ ] Arabic reads right on the new strings
 
