@@ -22,7 +22,7 @@ import { paletteFromImage } from '@/theme-from-art';
 import { bannerToDocuments, TEMPLATES, type Template } from '@/profile-templates';
 import { cardGrid } from '@/pure';
 import { tmdb } from '@/tmdb';
-import { colors, setThemeAccentHex, space } from '@/theme';
+import { colors, saveThemeAccentHex, space } from '@/theme';
 import { tapSelection } from '@/haptics';
 import { t } from '@/i18n';
 
@@ -116,7 +116,7 @@ export default function CoverPickerScreen() {
     setMeta('profileThemeColor', accent ?? '');
     setMeta('profileThemeSecondary', accent ? (secondary ?? '') : '');
     setMeta('profileThemeName', '');
-    setThemeAccentHex(accent);
+    saveThemeAccentHex(accent);
     track('profile_theme_set', { on: accent ? 1 : 0 });
   };
   const [uploading, setUploading] = useState(false);
@@ -462,7 +462,7 @@ export default function CoverPickerScreen() {
           // blue profile — is two settings where the user thought they had
           // one. The profile changes now because it is data; the app follows
           // on the next launch because it is a stylesheet.
-          setThemeAccentHex(accent);
+          saveThemeAccentHex(accent);
           track('profile_theme_set', { on: 1 });
         }
       }

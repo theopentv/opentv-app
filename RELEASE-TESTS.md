@@ -18,6 +18,8 @@ failure written next to it, not in a commit message.
 Tick on a real iPhone and a real Android unless a line says otherwise.
 
 **Cover**
+- [~] Build 102 on a real iPhone with Plus: restart froze the adjuster. Fixed for 103; simulator with the Plus path forced: no restart, accent saved, Cancel restores it
+- [ ] Build 103 on a real iPhone with Plus: pick several banners
 - [x] Edit profile → cover → a title opens its artwork, a picture saves, the adjuster opens (iPhone simulator, Metro)
 - [x] Cancel brings the old banner back, new file removed (iPhone simulator; colours not checked)
 - [x] Done keeps the new one, after a restart too (iPhone simulator)

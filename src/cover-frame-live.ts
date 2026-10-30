@@ -9,7 +9,7 @@ import { useSyncExternalStore } from 'react';
 
 import { getMeta, setMeta } from '@/db';
 import type { CoverFrame } from '@/pure';
-import { setThemeAccentHex } from '@/theme';
+import { saveThemeAccentHex } from '@/theme';
 
 let live: CoverFrame | null = null;
 const subs = new Set<() => void>();
@@ -118,7 +118,7 @@ export function undoCover(): boolean {
   const picked = getMeta('coverFile');
   if (picked !== held.coverFile) removeFile(picked);
   for (const k of UNDO_FIELDS) setMeta(k, held[k] ?? '');
-  setThemeAccentHex(held.profileThemeColor || null);
+  saveThemeAccentHex(held.profileThemeColor || null);
   setMeta(UNDO_KEY, '');
   return true;
 }

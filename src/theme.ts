@@ -295,6 +295,16 @@ export function setThemeAccentHex(hex: string | null): void {
   saveAndRepaint(ACCENT_KEY, hex ?? DEFAULT_ACCENT);
 }
 
+/**
+ * The same colour with no restart, from the next launch. For a banner: the
+ * adjuster opens over the page at that moment, and the restart a second later
+ * pulled the runtime out from under it, which froze the app (31 Oct, Plus only,
+ * and only when the colour changed). The profile is themed at once anyway.
+ */
+export function saveThemeAccentHex(hex: string | null): void {
+  setMeta(ACCENT_KEY, hex ?? DEFAULT_ACCENT);
+}
+
 export function setThemeOled(on: boolean): void {
   saveAndRepaint(OLED_KEY, on ? '1' : '0');
 }
