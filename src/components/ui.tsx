@@ -51,11 +51,16 @@ export function useScreenWidth(): number {
  * null everywhere else. Read from size, as `ContentColumn` does: an iPhone (not
  * an iPad, which has no fold) wider than 600pt and wider than tall.
  */
+// ponytail: read from a simulator (window 871 on a 951pt screen). The native
+// reserved-region API would give the fold itself, and needs a native module.
+const DUO_STRIP = 80;
+/** Half of the band beside the fold that nothing should sit in. */
+const FOLD_GAP = 14;
+
 export function useFoldHalf(): number | null {
   const { width, height } = useWindowDimensions();
-  const { left } = useSafeAreaInsets();
   const fullWidth = useDuoFullWidth();
-  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - left : null;
+  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? (width + DUO_STRIP) / 2 - FOLD_GAP : null;
 }
 
 /** An iPhone Duo in either state: no other iPhone is this wide on its short side. */
