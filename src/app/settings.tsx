@@ -17,7 +17,8 @@ import { calendarSupported, calendarSyncOn } from '@/calendar-sync';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { isCustomServer } from '@/server-url';
 import { hapticsOn, setHapticsOn, tapLight } from '@/haptics';
-import { MenuRow, NavHeader, PillButton, PlusChip, Screen, TopTabs } from '@/components/ui';
+import { MenuRow, NavHeader, PillButton, PlusChip, Screen, TopTabs, useIsDuo } from '@/components/ui';
+import { setDuoFullWidth, useDuoFullWidth } from '@/duo-layout';
 import seed from '@/seed';
 import { classicTabBarOffered, setClassicTabBar } from '@/classic-tab-bar';
 import { getMeta, setMeta, wipeAllData } from '@/db';
@@ -261,6 +262,8 @@ export default function SettingsScreen() {
   const [haptics, setHaptics] = useState(() => hapticsOn());
   const [classicTab, setClassicTab] = useState(() => getMeta('classicTabBar') === '1');
   const [simpleView, setSimpleView] = useState(() => getMeta(SIMPLE_VIEW_KEY) === '1');
+  const isDuo = useIsDuo();
+  const duoFullWidth = useDuoFullWidth();
   // WAS NEVER SAVED OR READ (since 1.1.2): a switch that flipped back the
   // moment you left the screen. It is a meta flag now, read by the show page.
   const [hideWatched, setHideWatchedState] = useState(() => getMeta('hideWatched') === '1');
@@ -680,6 +683,13 @@ export default function SettingsScreen() {
                 />
               }
             />
+            {isDuo && (
+              <MenuRow trackId="settings.app.duoFullWidth"
+                title={t('settings.app.duoFullWidth')}
+                sub={t('settings.app.duoFullWidthSub')}
+                right={<Switch value={duoFullWidth} onValueChange={setDuoFullWidth} trackColor={{ true: colors.green }} />}
+              />
+            )}
             <MenuRow trackId="settings.app.seasonal"
               title={t('settings.app.seasonal')}
               sub={t('settings.app.seasonalSub')}

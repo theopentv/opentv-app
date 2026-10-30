@@ -1,3 +1,4 @@
+import { useDuoFullWidth } from '@/duo-layout';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
@@ -53,7 +54,14 @@ export function useScreenWidth(): number {
 export function useFoldHalf(): number | null {
   const { width, height } = useWindowDimensions();
   const { left } = useSafeAreaInsets();
-  return Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - left : null;
+  const fullWidth = useDuoFullWidth();
+  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - left : null;
+}
+
+/** An iPhone Duo in either state: no other iPhone is this wide on its short side. */
+export function useIsDuo(): boolean {
+  const { width, height } = useWindowDimensions();
+  return Platform.OS === 'ios' && !Platform.isPad && Math.min(width, height) >= 460;
 }
 
 /** Black full-height screen with a safe top inset. */

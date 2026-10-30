@@ -663,6 +663,8 @@
       "classicTabBar": "Barre d’onglets classique",
       "classicTabBarSub": "La barre plate en bas de l’écran d’avant iOS 26, au lieu de la barre flottante",
       "classicTabBarRestart": "Fermez OpenTV puis rouvrez-le pour voir la nouvelle barre d’onglets.",
+      "duoFullWidth": "Pleine largeur une fois ouvert",
+      "duoFullWidthSub": "Utilise tout l'écran quand l'iPhone Duo est ouvert, au lieu de deux volets.",
       "simpleView": "Vue simple",
       "simpleViewSub": "Juste le nombre de séries, d'épisodes et de films. Masque le temps de visionnage, la carte des jours, le Wrapped, les souvenirs et l'objectif annuel."
     },

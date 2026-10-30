@@ -663,6 +663,8 @@
       "classicTabBar": "Klasik sekme çubuğu",
       "classicTabBarSub": "Yüzen çubuk yerine iOS 26 öncesindeki alttaki düz çubuk",
       "classicTabBarRestart": "Yeni sekme çubuğunu görmek için OpenTV’yi kapatıp yeniden aç.",
+      "duoFullWidth": "Açıkken tam genişlik",
+      "duoFullWidthSub": "iPhone Duo açıkken iki bölme yerine tüm ekranı kullanır.",
       "simpleView": "Sade görünüm",
       "simpleViewSub": "Sadece kaç dizi, bölüm ve film. İzleme süresini, gün haritasını, Wrapped'i, anıları ve yıllık hedefi gizler."
     },

@@ -681,6 +681,8 @@
       "classicTabBar": "Klasyczny pasek kart",
       "classicTabBarSub": "Płaski pasek na dole sprzed iOS 26 zamiast pływającego",
       "classicTabBarRestart": "Zamknij OpenTV i otwórz ponownie, aby zobaczyć nowy pasek kart.",
+      "duoFullWidth": "Pełna szerokość po otwarciu",
+      "duoFullWidthSub": "Używa całego ekranu po otwarciu iPhone Duo zamiast dwóch paneli.",
       "simpleView": "Widok prosty",
       "simpleViewSub": "Tylko liczba seriali, odcinków i filmów. Ukrywa czas oglądania, mapę dni, Wrapped, wspomnienia i cel roczny."
     },
