@@ -7,13 +7,13 @@
  * What is shared is everything between the header and the sheet — the sort line,
  * the list itself, the empty state, and the cards.
  *
- * THE FLATLIST TUNING IS NOT INCIDENTAL. `initialNumToRender`, `windowSize` and
- * `removeClippedSubviews` are what stopped a library of thousands of comments,
+ * THE FLATLIST TUNING IS NOT INCIDENTAL. `initialNumToRender` and `windowSize`
+ * are what stopped a library of thousands of comments,
  * many of them GIFs, locking the screen while every card mounted at once. They
  * move with the list rather than being re-derived per screen, because a screen
  * that forgets them looks fine until someone with a real archive opens it.
  */
-import { FlatList, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CommentCard, type CommentCardProps } from '@/components/comment-card';
 import { CONTENT_MAX_WIDTH, ContentColumn } from '@/components/ui';
@@ -75,13 +75,13 @@ export function CommentsList({
         initialNumToRender={8}
         maxToRenderPerBatch={8}
         windowSize={7}
-        // NO CLIPPING ON ANDROID (21 Oct). FlatList clips off-screen children by
-        // default on Android only, and under Fabric a card that changes shape
-        // while it is detached (a comment's GIF arriving, a picture approved)
-        // crashes the app: "Unable to remove a view from a view that is not a
-        // ViewGroup" / ReactClippingViewManager IndexOutOfBounds (Crashlytics,
-        // 1.7.2, a member with 296 GIFs). iOS keeps its own default.
-        removeClippedSubviews={Platform.OS !== 'android'}
+        // NO CLIPPING, ON EITHER PLATFORM. Android (21 Oct): a card changing shape
+        // while detached crashed under Fabric ("Unable to remove a view from a
+        // view that is not a ViewGroup", Crashlytics 1.7.2, 296 GIFs). iOS
+        // (30 Oct): these cards vary hugely in height, and with clipping on the
+        // list jumped several screens up and back while scrolling. `windowSize`
+        // still decides what is mounted.
+        removeClippedSubviews={false}
         onEndReachedThreshold={0.5}
         onEndReached={onEndReached}
         ListHeaderComponent={
