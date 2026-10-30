@@ -181,6 +181,14 @@
     "noBackdrops": "Für diese Serie gibt es keine Hintergründe."
   },
   "badge": {
+    "voterTitle": "Serien-Wähler",
+    "voterDesc": "Du hast bei {{count}} Folgen von {{show}} für Figuren abgestimmt",
+    "emoterTitle": "Gefühlsmensch",
+    "emoterDesc": "Du hast bei {{count}} Folgen von {{show}} ein Gefühl gewählt",
+    "quizzerTitle": "Quizzer",
+    "quizzerDesc": "Du hast {{count}} Quizze auf TV Time gespielt",
+    "showoffTitle": "Angeber",
+    "showoffDesc": "Du hast dein Jahr {{year}} auf TV Time geteilt",
     "share": "TEILEN",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "Marathon-Gucker",
@@ -815,6 +823,7 @@
       "pace": "{{pace}} Folgen/Woche",
       "basedOnRecent": "basierend auf den Folgen, die du in den letzten zwei Monaten gesehen hast",
       "catchUpTitle": "Wann hast du deine Folgen aufgeholt?",
+      "allBadges": "Alle ansehen",
       "appBadges": "App-Abzeichen · {{count}}",
       "watchBadges": "Schau-Abzeichen · {{count}}",
       "ratingsBadges": "Bewertungs-Abzeichen",

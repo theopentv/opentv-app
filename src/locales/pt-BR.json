@@ -181,6 +181,14 @@
     "noBackdrops": "Nenhum fundo disponível para esta série."
   },
   "badge": {
+    "voterTitle": "Votante em série",
+    "voterDesc": "Você votou em personagens em {{count}} episódios de {{show}}",
+    "emoterTitle": "Emotivo em série",
+    "emoterDesc": "Você escolheu uma emoção em {{count}} episódios de {{show}}",
+    "quizzerTitle": "Quizzer",
+    "quizzerDesc": "Você jogou {{count}} quizzes na TV Time",
+    "showoffTitle": "Exibido",
+    "showoffDesc": "Você compartilhou seu {{year}} na TV Time",
     "share": "COMPARTILHAR",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "Maratonista",
@@ -815,6 +823,7 @@
       "pace": "{{pace}} episódios/semana",
       "basedOnRecent": "com base nos episódios que você assistiu nos últimos dois meses",
       "catchUpTitle": "Quando você vai colocar seus episódios em dia",
+      "allBadges": "Ver tudo",
       "appBadges": "Emblemas do app · {{count}}",
       "watchBadges": "Emblemas de visualização · {{count}}",
       "ratingsBadges": "Emblemas de notas",

@@ -253,6 +253,15 @@ export function backfillCommentThreadIdsFromZip(zipBytes?: Uint8Array): number {
   return filled;
 }
 
+/** Earned badges for a library imported before they were kept. */
+export function rebuildBadgesFromZip(zipBytes: Uint8Array): void {
+  const files = unzipSync(zipBytes);
+  const key = Object.keys(files).find((k) => k.toLowerCase().endsWith('user_badge.csv') && !k.includes('__MACOSX'));
+  if (!key) return;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  (require('@/badges') as typeof import('@/badges')).saveBadgeRows(parseCsv(strFromU8(files[key])));
+}
+
 export function rebuildImportedListsFromZip(zipBytes?: Uint8Array): number {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { getCustomLists, saveCustomLists } = require('@/db') as typeof import('@/db');
@@ -1262,6 +1271,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
    */
   const signIn = tvtimeSignIn(csv('auth-prod-login.csv'), csv('user.csv')[0]);
   const friendIds = readFriendIds(csv('friend.csv'));
+  const badgeRows = csv('user_badge.csv');
   // votes reference shows by NAME only — match case/space-insensitively and
   // learn alias spellings from the tracking rows, or ratings silently vanish
   const nameKey = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -2274,6 +2284,9 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     if (friendIds.length) {
       db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('tvtimeFriends', ?)", [JSON.stringify(friendIds)]);
     }
+    // what TV Time awarded: only ever added to, a re-import cannot lose one
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    (require('@/badges') as typeof import('@/badges')).saveBadgeRows(badgeRows);
     // imported data replaces any bundled versions — mark them current
     db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('votesVersion', 'imported')");
     // your TV Time custom lists (shows + movies), shown on the Lists tab.

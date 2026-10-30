@@ -181,6 +181,14 @@
     "noBackdrops": "Bu dizi için arka plan görseli yok."
   },
   "badge": {
+    "voterTitle": "Seri Oy Veren",
+    "voterDesc": "{{show}} dizisinin {{count}} bölümünde karakterlere oy verdin",
+    "emoterTitle": "Seri Duygucu",
+    "emoterDesc": "{{show}} dizisinin {{count}} bölümünde bir duygu seçtin",
+    "quizzerTitle": "Quiz Tutkunu",
+    "quizzerDesc": "TV Time'da {{count}} quiz oynadın",
+    "showoffTitle": "Gösterişçi",
+    "showoffDesc": "{{year}} yılını TV Time'da paylaştın",
     "share": "PAYLAŞ",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "Maratoncu",
@@ -815,6 +823,7 @@
       "pace": "Haftada {{pace}} bölüm",
       "basedOnRecent": "son iki ayda izlediğin bölümlere göre",
       "catchUpTitle": "Bölümlerine ne zaman yetişeceksin",
+      "allBadges": "Tümünü gör",
       "appBadges": "Uygulama rozetleri · {{count}}",
       "watchBadges": "İzleme rozetleri · {{count}}",
       "ratingsBadges": "Puan rozetleri",

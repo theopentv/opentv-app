@@ -181,6 +181,14 @@
     "noBackdrops": "Nessuno sfondo disponibile per questa serie."
   },
   "badge": {
+    "voterTitle": "Votante seriale",
+    "voterDesc": "Hai votato i personaggi in {{count}} episodi di {{show}}",
+    "emoterTitle": "Emotivo seriale",
+    "emoterDesc": "Hai scelto un'emozione in {{count}} episodi di {{show}}",
+    "quizzerTitle": "Quizzer",
+    "quizzerDesc": "Hai giocato {{count}} quiz su TV Time",
+    "showoffTitle": "Esibizionista",
+    "showoffDesc": "Hai condiviso il tuo {{year}} su TV Time",
     "share": "CONDIVIDI",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "Maratoneta",
@@ -815,6 +823,7 @@
       "pace": "{{pace}} episodi/settimana",
       "basedOnRecent": "in base agli episodi guardati negli ultimi due mesi",
       "catchUpTitle": "Quando ti aggiornerai con i tuoi episodi",
+      "allBadges": "Vedi tutto",
       "appBadges": "Distintivi app · {{count}}",
       "watchBadges": "Distintivi visione · {{count}}",
       "ratingsBadges": "Distintivi voti",

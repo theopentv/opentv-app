@@ -181,6 +181,14 @@
     "noBackdrops": "No backdrops available for this show."
   },
   "badge": {
+    "voterTitle": "Serial Voter",
+    "voterDesc": "You've voted for characters on {{count}} episodes of {{show}}",
+    "emoterTitle": "Serial Emoter",
+    "emoterDesc": "You've picked a feeling on {{count}} episodes of {{show}}",
+    "quizzerTitle": "Quizzer",
+    "quizzerDesc": "You've played {{count}} quizzes on TV Time",
+    "showoffTitle": "Show-off",
+    "showoffDesc": "You shared your {{year}} on TV Time",
     "share": "SHARE",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "Marathoner",
@@ -815,6 +823,7 @@
       "pace": "{{pace}} episodes/week",
       "basedOnRecent": "based on episodes you watched in the last two months",
       "catchUpTitle": "When will you catch up on your episodes",
+      "allBadges": "See all",
       "appBadges": "App badges · {{count}}",
       "watchBadges": "Watch badges · {{count}}",
       "ratingsBadges": "Ratings badges",

@@ -5,17 +5,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 
 import { NavHeader } from '@/components/ui';
-import badgesJson from '@/data/badges.json';
+import { APP_BADGES } from '@/badge-rules';
+import { badgeById, type Badge } from '@/badges';
+import { BadgeArt } from '@/components/badge-art';
 import { colors, radius, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
 import type { LocaleKey } from '@/locales/keys';
 import { SITE_HOST, withLink } from '@/share-link';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
-
-type AppBadge = { id: string; name: string; image?: string; unlocked?: boolean; date?: string };
-type WatchBadge = { id: string; show: string; tier?: string; detail?: string; image?: string; date?: string };
-const badges = badgesJson as { app: AppBadge[]; watch: WatchBadge[] };
 
 // ring-text descriptions for the app badges, like the real detail page
 const APP_DESC_KEY: Record<string, LocaleKey> = {
@@ -35,24 +33,29 @@ const APP_DESC_KEY: Record<string, LocaleKey> = {
   'archived-show': 'badge.desc.archivedShow',
 };
 
-function describe(id: string, show?: string): { title: string; desc: string } {
-  const marathon = /marathoner-(\d+)-within-(\d+)/.exec(id);
-  if (marathon) {
-    return {
-      title: t('badge.marathonerTitle'),
-      desc: t('badge.marathonerDesc', { episodes: marathon[1], show: show ?? '', hours: marathon[2] }),
-    };
+function describe(b: Badge): { title: string; desc: string } {
+  const show = b.name ?? '';
+  switch (b.kind) {
+    case 'marathoner':
+      return { title: t('badge.marathonerTitle'), desc: t('badge.marathonerDesc', { episodes: String(b.count), show, hours: String(b.hours) }) };
+    case 'quick':
+      return { title: t('badge.quickWatcherTitle'), desc: t('badge.quickWatcherDesc', { count: String(b.count), show }) };
+    case 'serial':
+      return { title: t('badge.serialWatcherTitle'), desc: t('badge.serialWatcherDesc', { count: String(b.count) }) };
+    case 'voter':
+      return { title: t('badge.voterTitle'), desc: t('badge.voterDesc', { count: String(b.count), show }) };
+    case 'emoter':
+      return { title: t('badge.emoterTitle'), desc: t('badge.emoterDesc', { count: String(b.count), show }) };
+    case 'quizzer':
+      return { title: t('badge.quizzerTitle'), desc: t('badge.quizzerDesc', { count: String(b.count) }) };
+    case 'showoff':
+      return { title: t('badge.showoffTitle'), desc: t('badge.showoffDesc', { year: b.year ?? '' }) };
+    default:
+      return {
+        title: APP_BADGES.find(([a]) => a === b.app)?.[1] ?? t('badge.defaultTitle'),
+        desc: b.app && APP_DESC_KEY[b.app] ? t(APP_DESC_KEY[b.app]) : '',
+      };
   }
-  const quick = /quick-watcher-(\d+)/.exec(id);
-  if (quick) {
-    return { title: t('badge.quickWatcherTitle'), desc: t('badge.quickWatcherDesc', { count: quick[1], show: show ?? '' }) };
-  }
-  const serial = /serial-watcher-(\d+)/.exec(id);
-  if (serial) {
-    return { title: t('badge.serialWatcherTitle'), desc: t('badge.serialWatcherDesc', { count: serial[1] }) };
-  }
-  const descKey = APP_DESC_KEY[id];
-  return { title: show ?? t('badge.defaultTitle'), desc: descKey ? t(descKey) : '' };
 }
 
 function longDate(iso?: string | null): string | null {
@@ -67,14 +70,8 @@ export default function BadgeScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const cardRef = useRef<ViewInstance>(null);
 
-  const app = badges.app.find((b) => b.id === id);
-  const watch = badges.watch.find((b) => b.id === id);
-  const image = app?.image ?? watch?.image ?? null;
-  const meta = app
-    ? { title: app.name, desc: APP_DESC_KEY[app.id] ? t(APP_DESC_KEY[app.id]) : '', date: app.date }
-    : watch
-      ? { ...describe(watch.id, watch.show), date: watch.date }
-      : null;
+  const badge = badgeById(id);
+  const meta = badge ? { ...describe(badge), date: badge.date } : null;
 
   if (!meta) return null;
 
@@ -96,7 +93,8 @@ export default function BadgeScreen() {
       <NavHeader close />
 
       <View ref={cardRef} collapsable={false} style={styles.card}>
-        <Text style={{ fontSize: 96 }}>🏅</Text>
+        {badge && <BadgeArt kind={badge.kind} app={badge.app} art={badge.art} size={190} />}
+        <View style={{ height: 40 }} />
         <Text accessibilityRole="header" style={styles.title}>{meta.title}</Text>
         {meta.desc !== '' && <Text style={styles.desc}>{meta.desc}</Text>}
         {longDate(meta.date) && <Text style={styles.date}>{longDate(meta.date)}</Text>}
@@ -128,7 +126,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
     gap: 6,
   },
-  art: { width: 190, height: 190, marginBottom: 40 },
   title: { color: colors.text, fontSize: 27, fontWeight: '800' },
   desc: { color: colors.text, fontSize: 17.5, textAlign: 'center', lineHeight: 25, marginTop: 10 },
   date: { color: colors.dim, fontSize: 12.5, fontWeight: '700', letterSpacing: ls(1), marginTop: 8 },

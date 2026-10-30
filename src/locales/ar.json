@@ -193,6 +193,14 @@
     "noBackdrops": "لا توجد خلفيات متاحة لهذا المسلسل."
   },
   "badge": {
+    "voterTitle": "مصوّت دائم",
+    "voterDesc": "صوّتّ للشخصيات في {{count}} حلقة من {{show}}",
+    "emoterTitle": "صاحب مشاعر",
+    "emoterDesc": "اخترت شعورًا في {{count}} حلقة من {{show}}",
+    "quizzerTitle": "هاوي الاختبارات",
+    "quizzerDesc": "لعبت {{count}} اختبارًا على TV Time",
+    "showoffTitle": "المتباهي",
+    "showoffDesc": "شاركت سنتك {{year}} على TV Time",
     "share": "مشاركة",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "عاشق المتابعة المكثفة",
@@ -879,6 +887,7 @@
       "pace": "{{pace}} حلقة/أسبوع",
       "basedOnRecent": "بناءً على الحلقات التي شاهدتها خلال آخر شهرين",
       "catchUpTitle": "متى ستلحق بحلقات مسلسلاتك",
+      "allBadges": "عرض الكل",
       "appBadges": "أوسمة التطبيق · {{count}}",
       "watchBadges": "أوسمة المشاهدة · {{count}}",
       "ratingsBadges": "أوسمة التقييمات",

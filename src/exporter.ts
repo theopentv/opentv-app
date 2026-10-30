@@ -5,6 +5,7 @@
  * tokens…) ship header-only, since that data never existed here.
  * OpenTV's importer reads the result back losslessly.
  */
+import { storedBadges } from '@/badges';
 import { File, Paths } from 'expo-file-system';
 import { strToU8, zipSync } from 'fflate';
 
@@ -352,7 +353,7 @@ export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint
           created_at: b.date ?? '',
           updated_at: b.date ?? '',
         }))
-      : [],
+      : storedBadges().map((b) => ({ user_id: uid, badge_id: b.id, created_at: b.date, updated_at: b.date })),
     'comments-prod-comments.csv': flatComments.map((c) => ({
       is_spoiler: 'false',
       type: c.type,

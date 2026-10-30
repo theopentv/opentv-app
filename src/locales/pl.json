@@ -187,6 +187,14 @@
     "noBackdrops": "Brak teł dla tego serialu."
   },
   "badge": {
+    "voterTitle": "Seryjny głosujący",
+    "voterDesc": "Oddano głosy na postacie w {{count}} odcinkach {{show}}",
+    "emoterTitle": "Seryjny emocjonalny",
+    "emoterDesc": "Wybrano emocję w {{count}} odcinkach {{show}}",
+    "quizzerTitle": "Quizowicz",
+    "quizzerDesc": "Rozegrano {{count}} quizów w TV Time",
+    "showoffTitle": "Popisywacz",
+    "showoffDesc": "Udostępniono rok {{year}} w TV Time",
     "share": "UDOSTĘPNIJ",
     "shareMessage": "{{title}} — {{desc}} (OpenTV)",
     "marathonerTitle": "Maratończyk",
@@ -847,6 +855,7 @@
       "pace": "{{pace}} odc./tydzień",
       "basedOnRecent": "na podstawie odcinków obejrzanych w ostatnich dwóch miesiącach",
       "catchUpTitle": "Kiedy nadrobisz swoje odcinki",
+      "allBadges": "Zobacz wszystko",
       "appBadges": "Odznaki aplikacji · {{count}}",
       "watchBadges": "Odznaki oglądania · {{count}}",
       "ratingsBadges": "Odznaki za oceny",

@@ -1,14 +1,16 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { type ReactNode, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PeriodSheet } from '@/components/period-picker';
 import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs, useScreenWidth } from '@/components/ui';
-import { badges, charVotes } from '@/bundled-data';
+import { badgeShelves, type Badge } from '@/badges';
+import { BadgeArt } from '@/components/badge-art';
+import { charVotes } from '@/bundled-data';
 import { tapLight } from '@/haptics';
 import { isJoined } from '@/community-session';
-import { getCharacterVoteStats } from '@/db';
+import { getCharacterVoteStats, getMeta, setMeta } from '@/db';
 import { currentLocale, genreText, t } from '@/i18n';
 import { isSeedLibrary } from '@/library';
 import { formatCount, intlTag } from '@/locale-resolve';
@@ -143,10 +145,61 @@ function topCharacterPerShow<T extends { show: string; name: string | null; coun
   return [...best.values()].sort((a, b) => b.count - a.count);
 }
 
+/** One earned badge: its art, whose it is, and what it was for. */
+function BadgeTile({ badge: b }: { badge: Badge }) {
+  const tier =
+    b.kind === 'marathoner'
+      ? t('marathonTier.label', { count: b.count, hours: b.hours })
+      : b.kind === 'showoff'
+        ? b.year
+        : String(b.count);
+  return (
+    <Pressable accessibilityRole="button" style={styles.appBadge} onPress={() => router.push(`/badge/${encodeURIComponent(b.id)}`)}>
+      <BadgeArt kind={b.kind} art={b.art} size={56} />
+      <Text style={styles.badgeLabel} numberOfLines={1}>
+        {b.name ?? t(BADGE_TITLE[b.kind])}
+      </Text>
+      <Text style={styles.badgeTier} numberOfLines={1}>{tier}</Text>
+    </Pressable>
+  );
+}
+
+const BADGE_TITLE = {
+  marathoner: 'badge.marathonerTitle',
+  quick: 'badge.quickWatcherTitle',
+  serial: 'badge.serialWatcherTitle',
+  voter: 'badge.voterTitle',
+  emoter: 'badge.emoterTitle',
+  quizzer: 'badge.quizzerTitle',
+  showoff: 'badge.showoffTitle',
+  app: 'badge.defaultTitle',
+} as const;
+
 export default function StatsScreen() {
   const [tab, setTab] = useState<(typeof TABS)[number]>('Shows');
   const [pickingWrapped, setPickingWrapped] = useState(false);
   const s = useMemo(() => computeShowStats(), []);
+  const [shelves, setShelves] = useState(() => badgeShelves(s.badges));
+  const [badgeLimit, setBadgeLimit] = useState(24);
+  // A LIBRARY IMPORTED BEFORE BADGES WERE KEPT: once, from the preserved export.
+  // Stamped whatever the outcome, so no export means no unzipping on every visit.
+  useEffect(() => {
+    if (getMeta('badgesRecovered') === '1') return;
+    void (async () => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const bytes = await (require('@/migrations') as typeof import('@/migrations')).originalZipBytes();
+        if (bytes && bytes !== 'none') {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          (require('@/importer') as typeof import('@/importer')).rebuildBadgesFromZip(bytes);
+          setShelves(badgeShelves(s.badges));
+        }
+      } catch {
+        // The badges are exactly as they were.
+      }
+      setMeta('badgesRecovered', '1');
+    })();
+  }, [s.badges]);
   const m = useMemo(() => computeMovieStats(), []);
   const seedLib = isSeedLibrary();
   // imported/fresh libraries vote in the db; the demo library keeps its
@@ -375,57 +428,47 @@ export default function StatsScreen() {
               <Text style={styles.sub}>{t('stats.shows.basedOnRecent')}</Text>
             </StatCard>
 
-            {seedLib && (
-            <StatCard title={t('stats.shows.appBadges', { count: badges.app.filter((b) => b.unlocked).length })}>
+            <StatCard title={t('stats.shows.appBadges', { count: shelves.app.filter((b) => b.earned).length + shelves.extra.length })}>
               <View style={styles.badgeGrid}>
-                {badges.app.map((b) => (
-                  <Pressable accessibilityRole="button" accessibilityState={{ disabled: !b.unlocked }}
+                {shelves.app.map((b) => (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: !b.earned }}
                     key={b.id}
-                    style={[styles.appBadge, !b.unlocked && { opacity: 0.3 }]}
-                    disabled={!b.unlocked}
+                    style={styles.appBadge}
+                    disabled={!b.earned}
                     onPress={() => router.push(`/badge/${encodeURIComponent(b.id)}`)}>
-                    <Text style={{ fontSize: 30 }}>🏅</Text>
+                    <BadgeArt kind="app" app={b.id} earned={b.earned} size={56} />
                     <Text style={styles.badgeLabel} numberOfLines={1}>
                       {b.name}
                     </Text>
                   </Pressable>
                 ))}
+                {shelves.extra.map((b) => <BadgeTile key={b.id} badge={b} />)}
               </View>
             </StatCard>
-            )}
 
-            <StatCard title={t('stats.shows.watchBadges', { count: seedLib ? badges.watch.length : s.badges.length })}>
+            <StatCard title={t('stats.shows.watchBadges', { count: shelves.watch.length })}>
               <View style={styles.badgeGrid}>
-                {(seedLib ? badges.watch : []).map((b) => (
-                  <Pressable accessibilityRole="button" key={b.id} style={styles.appBadge} onPress={() => router.push(`/badge/${encodeURIComponent(b.id)}`)}>
-                    <Text style={{ fontSize: 30 }}>🏅</Text>
-                    <Text style={styles.badgeLabel} numberOfLines={1}>
-                      {b.show}
-                    </Text>
-                    <Text style={styles.badgeTier}>{b.detail}</Text>
-                  </Pressable>
-                ))}
-                {!seedLib &&
-                  s.badges.map((b, i) => (
-                    <View key={i} style={styles.appBadge}>
-                      <Text style={{ fontSize: 30 }}>🏅</Text>
-                      <Text style={styles.badgeLabel} numberOfLines={1}>
-                        {b.show}
-                      </Text>
-                      <Text style={styles.badgeTier}>{t('marathonTier.label', { count: b.count, hours: b.hours })}</Text>
-                    </View>
-                  ))}
+                {shelves.watch.slice(0, badgeLimit).map((b) => <BadgeTile key={b.id} badge={b} />)}
               </View>
+              {shelves.watch.length > badgeLimit && (
+                <Pressable accessibilityRole="button" onPress={() => setBadgeLimit(Infinity)}>
+                  <Text style={styles.badgeMore}>{t('stats.shows.allBadges')}</Text>
+                </Pressable>
+              )}
             </StatCard>
 
             <StatCard title={t('stats.shows.ratingsBadges')}>
-              <Text style={styles.bigNum}>0</Text>
-            </StatCard>
-            <StatCard title={t('stats.shows.commentBadges')}>
-              <Text style={styles.bigNum}>0</Text>
-            </StatCard>
-            <StatCard title={t('stats.shows.followBadges')}>
-              <Text style={styles.bigNum}>0</Text>
+              <Text style={styles.bigNum}>{shelves.ratings.length}</Text>
+              <View style={styles.badgeGrid}>
+                {shelves.ratings.slice(0, badgeLimit).map((b) => <BadgeTile key={b.id} badge={b} />)}
+              </View>
+              {shelves.ratings.length > badgeLimit && (
+                <Pressable accessibilityRole="button" onPress={() => setBadgeLimit(Infinity)}>
+                  <Text style={styles.badgeMore}>{t('stats.shows.allBadges')}</Text>
+                </Pressable>
+              )}
             </StatCard>
           </>
         ) : (
@@ -571,11 +614,11 @@ const styles = StyleSheet.create({
   allTime: { color: colors.faint, fontSize: 10.5, fontWeight: '700', letterSpacing: ls(1), textAlign: 'center', marginTop: 14 },
   dots: { flexDirection: 'row', gap: 6, alignSelf: 'center', marginTop: 12 },
   dot: { width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#4A4A4E' },
-  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 4, justifyContent: 'space-between' },
+  badgeGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 12, columnGap: '5%', marginTop: 4 },
   appBadge: { width: '21%', alignItems: 'center', gap: 4 },
-  appBadgeImg: { width: 68, height: 68 },
   badgeLabel: { color: colors.text, fontSize: 10, fontWeight: '600' },
   badgeTier: { color: colors.dim, fontSize: 9 },
+  badgeMore: { color: colors.blue, fontSize: 14, fontWeight: '600', textAlign: 'center', paddingTop: 14 },
   deepRow: {
     flexDirection: 'row',
     alignItems: 'center',
