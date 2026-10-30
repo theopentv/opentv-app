@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "Questa settimana",
+    "earlier": "Prima",
+    "andOthers": {"one": "{{who}} e {{count}} altra persona", "other": "{{who}} e altri {{count}}"},
     "title": "In arrivo",
     "tabArchive": "TV Time",
     "tabCommunity": "In arrivo",

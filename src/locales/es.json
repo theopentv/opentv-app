@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "Esta semana",
+    "earlier": "Antes",
+    "andOthers": {"one": "{{who}} y {{count}} más", "other": "{{who}} y {{count}} más"},
     "title": "Bandeja de entrada",
     "tabArchive": "TV Time",
     "tabCommunity": "Bandeja de entrada",

@@ -171,6 +171,8 @@ import {
   CONTRARIAN_MIN_TITLES,
   parsePublishHold,
   publishHoldValue,
+  groupInbox,
+  inboxSection,
 } from './pure';
 
 describe('olderThan (update gate)', () => {
@@ -4156,5 +4158,40 @@ describe('splitShared', () => {
     const { lists, togethers } = splitShared(rows);
     expect(lists.map((r) => r.id)).toEqual(['a', 'c']);
     expect(togethers.map((r) => r.id)).toEqual(['b', 'd']);
+  });
+});
+
+describe('groupInbox', () => {
+  const ev = (kind: string, subject: string | null, at: string, actor: string | null) => ({
+    kind,
+    subject_id: subject,
+    created_at: at,
+    actor: actor ? { id: actor } : null,
+  });
+  it('folds likes on one comment, counting people rather than events', () => {
+    const g = groupInbox([
+      ev('like', 'c1', '2026-10-30T10:00:00Z', 'a'),
+      ev('like', 'c2', '2026-10-30T09:00:00Z', 'x'),
+      ev('like', 'c1', '2026-10-30T08:00:00Z', 'b'),
+      ev('like', 'c1', '2026-10-30T07:00:00Z', 'b'),
+    ]);
+    expect(g.map((x) => [x.lead.actor?.id, x.others])).toEqual([['a', 1], ['x', 0]]);
+  });
+  it('stops a group at a week, groups follows by day, and never folds what needs reading', () => {
+    expect(groupInbox([ev('like', 'c', '2026-10-30T10:00:00Z', 'a'), ev('like', 'c', '2026-10-01T10:00:00Z', 'b')])).toHaveLength(2);
+    expect(groupInbox([ev('follow', null, '2026-10-30T10:00:00Z', 'a'), ev('follow', null, '2026-10-30T09:00:00Z', 'b')])).toHaveLength(1);
+    expect(groupInbox([ev('follow', null, '2026-10-30T10:00:00Z', 'a'), ev('follow', null, '2026-10-29T10:00:00Z', 'b')])).toHaveLength(2);
+    expect(groupInbox([ev('message', null, '2026-10-30T10:00:00Z', null), ev('message', null, '2026-10-30T09:00:00Z', null)])).toHaveLength(2);
+    expect(groupInbox([ev('follow_request', null, '2026-10-30T10:00:00Z', 'a'), ev('follow_request', null, '2026-10-30T09:00:00Z', 'b')])).toHaveLength(2);
+  });
+});
+
+describe('inboxSection', () => {
+  const now = new Date(2026, 9, 31, 12).getTime();
+  it('sorts into today, this week and earlier, and a bad date is earlier', () => {
+    expect(inboxSection(new Date(2026, 9, 31, 1).toISOString(), now)).toBe('today');
+    expect(inboxSection(new Date(2026, 9, 28).toISOString(), now)).toBe('week');
+    expect(inboxSection(new Date(2026, 8, 1).toISOString(), now)).toBe('earlier');
+    expect(inboxSection('', now)).toBe('earlier');
   });
 });

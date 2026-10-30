@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "Cette semaine",
+    "earlier": "Plus tôt",
+    "andOthers": {"one": "{{who}} et {{count}} autre", "other": "{{who}} et {{count}} autres"},
     "title": "Boîte de réception",
     "tabArchive": "TV Time",
     "tabCommunity": "Boîte de réception",

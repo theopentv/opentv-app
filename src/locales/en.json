@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "This week",
+    "earlier": "Earlier",
+    "andOthers": {"one": "{{who}} and {{count}} other", "other": "{{who}} and {{count}} others"},
     "title": "Inbox",
     "tabArchive": "TV Time",
     "tabCommunity": "Inbox",

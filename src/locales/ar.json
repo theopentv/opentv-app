@@ -2024,6 +2024,9 @@
     }
   },
   "activity": {
+    "thisWeek": "هذا الأسبوع",
+    "earlier": "سابقًا",
+    "andOthers": {"zero": "{{who}} و{{count}} آخرين", "one": "{{who}} وشخص آخر", "two": "{{who}} وشخصان آخران", "few": "{{who}} و{{count}} آخرين", "many": "{{who}} و{{count}} آخرين", "other": "{{who}} و{{count}} آخرين"},
     "title": "الوارد",
     "tabArchive": "TV Time",
     "tabCommunity": "الوارد",

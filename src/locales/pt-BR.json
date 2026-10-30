@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "Esta semana",
+    "earlier": "Antes",
+    "andOthers": {"one": "{{who}} e mais {{count}}", "other": "{{who}} e mais {{count}}"},
     "title": "Caixa de entrada",
     "tabArchive": "TV Time",
     "tabCommunity": "Caixa de entrada",

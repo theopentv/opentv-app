@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "Diese Woche",
+    "earlier": "Früher",
+    "andOthers": {"one": "{{who}} und {{count}} weitere Person", "other": "{{who}} und {{count}} weitere"},
     "title": "Posteingang",
     "tabArchive": "TV Time",
     "tabCommunity": "Posteingang",

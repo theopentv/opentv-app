@@ -1906,6 +1906,9 @@
     }
   },
   "activity": {
+    "thisWeek": "W tym tygodniu",
+    "earlier": "Wcześniej",
+    "andOthers": {"one": "{{who}} i {{count}} inna osoba", "few": "{{who}} i {{count}} inne osoby", "many": "{{who}} i {{count}} innych osób", "other": "{{who}} i {{count}} innej osoby"},
     "title": "Skrzynka",
     "tabArchive": "TV Time",
     "tabCommunity": "Skrzynka",

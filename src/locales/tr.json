@@ -1788,6 +1788,9 @@
     }
   },
   "activity": {
+    "thisWeek": "Bu hafta",
+    "earlier": "Daha önce",
+    "andOthers": {"one": "{{who}} ve {{count}} kişi daha", "other": "{{who}} ve {{count}} kişi daha"},
     "title": "Gelen Kutusu",
     "tabArchive": "TV Time",
     "tabCommunity": "Gelen Kutusu",

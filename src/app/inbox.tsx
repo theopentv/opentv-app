@@ -33,9 +33,10 @@
  * registration and nothing on the Worker that sends — opening this screen is the
  * only way these arrive, which is the quiet version on purpose.
  */
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { avatarUri } from '@/community-comments';
@@ -49,6 +50,7 @@ import { NavHeader, Screen } from '@/components/ui';
 import { getMeta } from '@/db';
 import { currentLocale, t } from '@/i18n';
 import { documentFileUri } from '@/library';
+import { groupInbox, inboxSection, type InboxSection } from '@/pure';
 import { colors, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
@@ -102,23 +104,37 @@ function ArchiveRow({ item }: { item: ArchiveItem }) {
  * when it lands rather than holding an empty screen until it does.
  */
 type Row =
+  | { kind: 'header'; at: string; section: InboxSection }
   | { kind: 'archive'; at: string; item: ArchiveItem }
-  | { kind: 'activity'; at: string; item: Notification };
+  | { kind: 'activity'; at: string; item: Notification; others: number };
 
+/** Both sources, newest first, under Today / This week / Earlier. */
 function mergeRows(archive: ArchiveItem[], activity: Notification[]): Row[] {
   const rows: Row[] = [
     ...archive.map((item): Row => ({ kind: 'archive', at: item.date, item })),
-    ...activity.map((item): Row => ({ kind: 'activity', at: item.created_at, item })),
+    ...groupInbox(activity).map(({ lead, others }): Row => ({ kind: 'activity', at: lead.created_at, item: lead, others })),
   ];
   // Newest first. A dateless archive row (some exports carry none) sorts last
   // rather than to the top on an empty string.
-  return rows.sort((a, b) => {
+  rows.sort((a, b) => {
     if (a.at === '' && b.at === '') return 0;
     if (a.at === '') return 1;
     if (b.at === '') return -1;
     return b.at.localeCompare(a.at);
   });
+  const now = Date.now();
+  const out: Row[] = [];
+  let last: InboxSection | null = null;
+  for (const r of rows) {
+    const section = inboxSection(r.at, now);
+    if (section !== last) out.push({ kind: 'header', at: r.at, section });
+    last = section;
+    out.push(r);
+  }
+  return out;
 }
+
+const SECTION_TITLE = { today: 'shows.today', week: 'activity.thisWeek', earlier: 'activity.earlier' } as const;
 
 // ── the community's activity ─────────────────────────────────────────────────
 
@@ -129,8 +145,13 @@ function mergeRows(archive: ArchiveItem[], activity: Notification[]): Row[] {
  * `actor_id` to NULL and keeps the row, because a like that really happened is
  * better shown as "someone" than hidden.
  */
-function activityText(n: Notification): string {
-  const who = n.actor?.display_name || n.actor?.handle || t('activity.someone');
+function actorName(n: Notification): string {
+  return n.actor?.display_name || n.actor?.handle || t('activity.someone');
+}
+
+function activityText(n: Notification, others: number): string {
+  const one = actorName(n);
+  const who = others > 0 ? t('activity.andOthers', { who: one, count: others }) : one;
   switch (n.kind) {
     case 'follow':
       return t('activity.follow', { who });
@@ -184,20 +205,53 @@ function openActivity(n: Notification): void {
   if (n.actor?.handle != null) router.push(`/profile/${encodeURIComponent(n.actor.handle)}`);
 }
 
+const KIND_ICON: Record<string, React.ComponentProps<typeof Ionicons>['name']> = {
+  follow: 'person-add',
+  follow_request: 'person-add',
+  like: 'heart',
+  reply: 'chatbubble',
+  comment: 'chatbubble',
+  friend_found: 'people',
+  profile: 'person',
+  message: 'megaphone',
+};
+
 /** One community event: who did it, what it was, and where it goes. */
-function ActivityRow({ item }: { item: Notification }) {
+function ActivityRow({ item, others }: { item: Notification; others: number }) {
   const uri = avatarUri(item.actor?.avatar_key);
+  const text = activityText(item, others);
+  const name = actorName(item);
+  const at = text.indexOf(name);
   return (
-    <Pressable accessibilityRole="button" style={styles.row} onPress={() => openActivity(item)}>
-      {uri != null ? (
-        <Image source={{ uri }} style={styles.thumb} contentFit="cover" />
-      ) : (
-        <View style={[styles.thumb, styles.thumbFallback]}>
-          <Text style={styles.thumbLetter}>{(item.actor?.handle ?? '?').slice(0, 1).toUpperCase()}</Text>
+    <Pressable
+      accessibilityRole="button"
+      style={[styles.row, item.read_at == null && styles.unread]}
+      onPress={() => openActivity(item)}>
+      <View>
+        {uri != null ? (
+          <Image source={{ uri }} style={styles.thumb} contentFit="cover" />
+        ) : (
+          <View style={[styles.thumb, styles.thumbFallback]}>
+            <Text style={styles.thumbLetter}>{(item.actor?.handle ?? '?').slice(0, 1).toUpperCase()}</Text>
+          </View>
+        )}
+        <View style={styles.kindBadge}>
+          <Ionicons name={KIND_ICON[item.kind] ?? 'notifications'} size={11} color={colors.onBrand} />
         </View>
-      )}
+      </View>
       <View style={{ flex: 1 }}>
-        <Text style={styles.text}>{activityText(item)}</Text>
+        {/* The person in bold, as TV Time set it: who, then what. */}
+        <Text style={styles.text}>
+          {at < 0 ? (
+            text
+          ) : (
+            <>
+              {text.slice(0, at)}
+              <Text style={styles.name}>{name}</Text>
+              {text.slice(at + name.length)}
+            </>
+          )}
+        </Text>
         <Text style={styles.date}>{prettyDate(item.created_at)}</Text>
       </View>
     </Pressable>
@@ -232,7 +286,9 @@ export default function NotificationsScreen() {
     };
   }, [joined]);
 
-  const rows = mergeRows(archive, activity);
+  // Memoised: the archive and a long activity list are sorted and grouped here,
+  // before the FlatList sees anything.
+  const rows = useMemo(() => mergeRows(archive, activity), [archive, activity]);
 
   return (
     <Screen>
@@ -244,7 +300,7 @@ export default function NotificationsScreen() {
       <FlatList
         data={rows}
         contentContainerStyle={{ paddingBottom: space.lg }}
-        keyExtractor={(r, i) => (r.kind === 'activity' ? r.item.id : `a${i}`)}
+        keyExtractor={(r, i) => (r.kind === 'activity' ? r.item.id : r.kind === 'header' ? r.section : `a${i}`)}
         onEndReachedThreshold={0.5}
         onEndReached={() => {
           if (cursor == null) return;
@@ -262,7 +318,15 @@ export default function NotificationsScreen() {
           </View>
         }
         renderItem={({ item: row }) =>
-          row.kind === 'archive' ? <ArchiveRow item={row.item} /> : <ActivityRow item={row.item} />
+          row.kind === 'header' ? (
+            <Text style={styles.section} accessibilityRole="header">
+              {t(SECTION_TITLE[row.section])}
+            </Text>
+          ) : row.kind === 'archive' ? (
+            <ArchiveRow item={row.item} />
+          ) : (
+            <ActivityRow item={row.item} others={row.others} />
+          )
         }
       />
     </Screen>
@@ -281,7 +345,21 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.line,
   },
   unread: { backgroundColor: colors.panel },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.yellow },
+  name: { fontWeight: '700' },
+  section: { color: colors.dim, fontSize: 13, fontWeight: '700', paddingHorizontal: space.lg, paddingTop: 18, paddingBottom: 6 },
+  kindBadge: {
+    position: 'absolute',
+    end: -3,
+    bottom: -3,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.brand,
+    borderWidth: 1.5,
+    borderColor: colors.bg,
+  },
   thumb: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.raise },
   thumbFallback: { alignItems: 'center', justifyContent: 'center' },
   text: { color: colors.text, fontSize: 14.5, lineHeight: 20 },

@@ -8831,3 +8831,57 @@ export const SEASONS_SQL = `SELECT season, COUNT(DISTINCT CASE WHEN episode > 0 
  */
 export const SHOW_NAME_MISSING_WHERE =
   "(name IS NULL OR TRIM(name) = '' OR TRIM(name) = CAST(tvdbId AS TEXT)) AND COALESCE(nameTried, 0) = 0";
+
+// ── the bell ─────────────────────────────────────────────────────────────────
+
+type InboxEvent = { kind: string; subject_id: string | null; created_at: string; actor: { id: string } | null };
+
+/** One line in the bell: the newest event, and how many other people did the same. */
+export type InboxGroup<T> = { lead: T; others: number };
+
+const INBOX_GROUP_MS = 7 * 86_400_000;
+
+/**
+ * FIVE LIKES ON ONE COMMENT ARE ONE LINE. Likes, replies and comments group on
+ * what they were about; follows group by day. Everything else stands alone: a
+ * follow request is something to answer and a message is meant to be read. A
+ * group stops at a week, so last year's likes do not lift an old comment back
+ * to the top. Expects newest first and keeps that order.
+ */
+export function groupInbox<T extends InboxEvent>(items: readonly T[]): InboxGroup<T>[] {
+  const out: (InboxGroup<T> & { people: Set<string> })[] = [];
+  const open = new Map<string, InboxGroup<T> & { people: Set<string> }>();
+  for (const n of items) {
+    const key =
+      n.kind === 'follow'
+        ? `follow:${n.created_at.slice(0, 10)}`
+        : (n.kind === 'like' || n.kind === 'reply' || n.kind === 'comment') && n.subject_id != null
+          ? `${n.kind}:${n.subject_id}`
+          : null;
+    const g = key != null ? open.get(key) : undefined;
+    if (g && Date.parse(g.lead.created_at) - Date.parse(n.created_at) < INBOX_GROUP_MS) {
+      const who = n.actor?.id ?? `gone:${g.people.size}`;
+      if (!g.people.has(who)) {
+        g.people.add(who);
+        g.others++;
+      }
+      continue;
+    }
+    const fresh = { lead: n, others: 0, people: new Set(n.actor ? [n.actor.id] : []) };
+    out.push(fresh);
+    if (key != null) open.set(key, fresh);
+  }
+  return out.map(({ lead, others }) => ({ lead, others }));
+}
+
+export type InboxSection = 'today' | 'week' | 'earlier';
+
+/** Which heading a date falls under. A dateless archive row is 'earlier'. */
+export function inboxSection(iso: string, nowMs: number): InboxSection {
+  const at = Date.parse(iso);
+  if (!Number.isFinite(at)) return 'earlier';
+  const midnight = new Date(nowMs);
+  midnight.setHours(0, 0, 0, 0);
+  if (at >= midnight.getTime()) return 'today';
+  return nowMs - at < INBOX_GROUP_MS ? 'week' : 'earlier';
+}
