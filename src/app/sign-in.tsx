@@ -19,6 +19,7 @@
  * rather than a checkbox on the other one — and a checkbox is exactly how
  * somebody joins a community by accident.
  */
+import { freeMonthIsSoon } from '@/free-month-rules';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -127,7 +128,7 @@ export default function SignInScreen() {
     <Screen>
       <NavHeader title={t('signIn.title')} close />
       <ScrollView contentContainerStyle={{ paddingBottom: space.xxl }}>
-        {forWhat === 'free-month' && <Text style={s.freeMonth}>{t('freeMonthOptIn.signInLede')}</Text>}
+        {forWhat === 'free-month' && <Text style={s.freeMonth}>{t(freeMonthIsSoon(Date.now()) ? 'freeMonthOptIn.signInLedeSoon' : 'freeMonthOptIn.signInLede')}</Text>}
         <Text style={s.lede}>{t('signIn.lede')}</Text>
 
         {known && (

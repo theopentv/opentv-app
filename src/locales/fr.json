@@ -3930,6 +3930,15 @@
     "endedSafe": "Toutes vos données sont toujours là. Rien n'a été supprimé, et le suivi reste gratuit.",
     "endedAnnual": "Formule annuelle, {{price}} par an",
     "endedMonthly": "Formule mensuelle, {{price}} par mois",
+    "soonTitle": "Un mois de Plus offert, dès le 1er décembre",
+    "soonBody": "Inscrivez-vous maintenant et votre mois commencera la première fois que vous ouvrirez OpenTV à partir du 1er décembre. Sans carte, et rien ne se renouvelle. Toutes les fonctions Plus pendant 30 jours, sauvegarde dans le cloud comprise.",
+    "soonCta": "Je m'inscris",
+    "countedTitle": "C'est noté",
+    "countedBody": "Votre mois de Plus offert commencera la première fois que vous ouvrirez OpenTV à partir du 1er décembre.",
+    "soonPlusTitle": "Votre mois offert arrive",
+    "soonPlusBody": "Le 1er décembre, nous ajoutons un mois offert à votre Plus. Sans carte, et votre formule ne change pas.",
+    "countedPlusBody": "Un mois offert s'ajoutera à votre Plus le 1er décembre.",
+    "signInLedeSoon": "Connectez-vous pour réserver votre mois de Plus offert. Il commence le 1er décembre. Sans carte, et rien ne se renouvelle.",
     "signInLede": "Connectez-vous pour commencer votre mois de Plus offert. Sans carte, rien ne se renouvelle."
   },
   "everythingSection": {

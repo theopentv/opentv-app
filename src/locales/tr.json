@@ -3930,6 +3930,15 @@
     "endedSafe": "Tüm verilerin hâlâ burada. Hiçbir şey silinmedi ve takip ücretsiz kalıyor.",
     "endedAnnual": "Yıllık plan, yılda {{price}}",
     "endedMonthly": "Aylık plan, ayda {{price}}",
+    "soonTitle": "1 Aralık'tan itibaren bir ay ücretsiz Plus",
+    "soonBody": "Şimdi katıl, ayın 1 Aralık'tan sonra OpenTV'yi ilk açtığında başlasın. Kart yok, yenileme yok. Bulut Yedekleme dahil tüm Plus özellikleri 30 gün boyunca.",
+    "soonCta": "Beni de ekle",
+    "countedTitle": "Listedesin",
+    "countedBody": "Ücretsiz Plus ayın, 1 Aralık'tan sonra OpenTV'yi ilk açtığında başlar.",
+    "soonPlusTitle": "Ücretsiz ayın geliyor",
+    "soonPlusBody": "1 Aralık'ta Plus'ına bir ay ücretsiz ekliyoruz. Kart yok, planında hiçbir şey değişmiyor.",
+    "countedPlusBody": "1 Aralık'ta Plus'ına bir ay ücretsiz eklenecek.",
+    "signInLedeSoon": "Ücretsiz Plus ayını ayırtmak için giriş yap. 1 Aralık'ta başlar. Kart yok, yenileme yok.",
     "signInLede": "Ücretsiz Plus ayını başlatmak için giriş yap. Kart yok, yenilenmez."
   },
   "everythingSection": {

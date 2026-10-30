@@ -26,7 +26,9 @@ import {
   addFreeMonthUse,
   freeMonthEndDue,
   freeMonthInviteDue,
+  freeMonthIsSoon,
   freeMonthReminders,
+  freeMonthStillWaiting,
   freeMonthUseOf,
   FREE_MONTH_USES,
   type FreeMonthServerState,
@@ -50,13 +52,26 @@ const BOUGHT_KEY = 'freeMonthBought';
 const ENDED_KEY = 'freeMonthEndedShown';
 /** The Plus features used during the month, for that screen. See `noteFreeMonthUse`. */
 const USED_KEY = 'freeMonthUsed';
+const COUNTED_CLOSED_KEY = 'freeMonthCountedClosed';
 
 export function freeMonthPending(): boolean {
   return getMeta(PENDING_KEY) === '1';
 }
 
+/** Said "Count me in" and signed in: the card says so until its ✕. */
+export function freeMonthCounted(): boolean {
+  return hasAccount() && freeMonthPending() && freeMonthIsSoon(Date.now()) && getMeta(COUNTED_CLOSED_KEY) !== '1';
+}
+
+/** The ✕ on "You're in". Closes the card only: the claim stays. */
+export function closeFreeMonthCounted(): void {
+  setMeta(COUNTED_CLOSED_KEY, '1');
+}
+
 /** Whether either invitation card may be drawn. Read in a focus effect, never in render. */
 export function freeMonthInviteShown(): boolean {
+  // Already counted in: asking again would be the same question twice.
+  if (hasAccount() && freeMonthPending() && freeMonthIsSoon(Date.now())) return false;
   return freeMonthInviteDue({
     signedIn: hasAccount(),
     server: (getMeta(SERVER_KEY) ?? '') as FreeMonthServerState,
@@ -64,6 +79,7 @@ export function freeMonthInviteShown(): boolean {
     available: PLUS_AVAILABLE,
     customServer: isCustomServer(),
     declined: getMeta(DECLINED_KEY) === 'no',
+    soon: freeMonthIsSoon(Date.now()),
   });
 }
 
@@ -82,12 +98,14 @@ export async function acceptFreeMonth(from: 'import' | 'profile'): Promise<void>
     return;
   }
   track('free_month_invite', { from, answer: 'claim' });
-  await claimFreeMonth();
+  // Before it opens this is "Count me in": the claim waits for the switch.
+  if (!freeMonthIsSoon(Date.now())) await claimFreeMonth();
 }
 
 /** "No thanks", on either card. Both stop for good. */
 export function declineFreeMonth(from: 'import' | 'profile'): void {
   setMeta(DECLINED_KEY, 'no');
+  setMeta(PENDING_KEY, '');
   track('free_month_invite', { from, answer: 'no' });
 }
 
@@ -95,8 +113,9 @@ export function declineFreeMonth(from: 'import' | 'profile'): void {
  * WHAT `refreshSession` HEARD, on the `/v1/me` every launch asks.
  *
  * THE SWITCH. `free_month_open: false` is the dashboard saying the offer is
- * off: the pending claim is dropped rather than asked and refused, and the
- * card hides on a signed-in phone. Remembered in `meta` so the card, which
+ * off: the pending claim is dropped rather than asked and refused, unless it
+ * is a "Count me in" still waiting for its date, and the card hides on a
+ * signed-in phone. Remembered in `meta` so the card, which
  * cannot fetch, reads it on focus.
  *
  * THE END. The first launch after the month passed opens "Your free month has
@@ -110,8 +129,11 @@ export function freeMonthAfterRefresh(me: {
 }): void {
   const state: FreeMonthServerState = me.free_month_at ? 'claimed' : me.free_month_open === true ? 'open' : 'closed';
   setMeta(SERVER_KEY, state);
-  if (state !== 'open') setMeta(PENDING_KEY, '');
-  else if (freeMonthPending()) void claimFreeMonth();
+  if (state === 'open') {
+    if (freeMonthPending()) void claimFreeMonth();
+  } else if (state === 'claimed' || !freeMonthStillWaiting(Date.now())) {
+    setMeta(PENDING_KEY, '');
+  }
 
   const due = freeMonthEndDue({
     until: getMeta(FREE_MONTH_UNTIL_KEY),
@@ -174,7 +196,7 @@ export async function claimFreeMonth(): Promise<void> {
       method: 'POST',
       token,
     });
-    setMeta(PENDING_KEY, '');
+    if (res.granted || res.reason !== 'closed' || !freeMonthStillWaiting(Date.now())) setMeta(PENDING_KEY, '');
     if (!res.granted || !res.plus_until) {
       // 'closed' or 'claimed': the card hides on its next focus.
       if (res.reason === 'closed' || res.reason === 'claimed') setMeta(SERVER_KEY, res.reason);

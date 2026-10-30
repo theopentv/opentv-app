@@ -3930,6 +3930,15 @@
     "endedSafe": "Tutti i tuoi dati sono ancora qui. Non è stato cancellato nulla, e il tracciamento resta gratis.",
     "endedAnnual": "Piano annuale, {{price}} all'anno",
     "endedMonthly": "Piano mensile, {{price}} al mese",
+    "soonTitle": "Un mese gratis di Plus, dal 1° dicembre",
+    "soonBody": "Aderisci ora e il tuo mese inizierà la prima volta che apri OpenTV dal 1° dicembre. Nessuna carta e nessun rinnovo. Tutte le funzioni Plus per 30 giorni, backup sul cloud incluso.",
+    "soonCta": "Ci sto",
+    "countedTitle": "Ci sei",
+    "countedBody": "Il tuo mese gratis di Plus inizierà la prima volta che apri OpenTV dal 1° dicembre.",
+    "soonPlusTitle": "Il tuo mese gratis sta arrivando",
+    "soonPlusBody": "Il 1° dicembre aggiungiamo un mese gratis al tuo Plus. Nessuna carta, e il tuo piano non cambia.",
+    "countedPlusBody": "Il 1° dicembre si aggiunge un mese gratis al tuo Plus.",
+    "signInLedeSoon": "Accedi per prenotare il tuo mese gratis di Plus. Inizia il 1° dicembre. Nessuna carta e nessun rinnovo.",
     "signInLede": "Accedi per iniziare il tuo mese di Plus gratis. Nessuna carta, nessun rinnovo."
   },
   "everythingSection": {

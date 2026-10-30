@@ -4234,6 +4234,15 @@
     "endedSafe": "Wszystkie Twoje dane wciąż tu są. Nic nie zostało usunięte, a śledzenie pozostaje darmowe.",
     "endedAnnual": "Plan roczny, {{price}} za rok",
     "endedMonthly": "Plan miesięczny, {{price}} za miesiąc",
+    "soonTitle": "Darmowy miesiąc Plus od 1 grudnia",
+    "soonBody": "Zapisz się teraz, a Twój miesiąc zacznie się, gdy po raz pierwszy otworzysz OpenTV od 1 grudnia. Bez karty i bez odnowień. Wszystkie funkcje Plus przez 30 dni, w tym kopia zapasowa w chmurze.",
+    "soonCta": "Wchodzę w to",
+    "countedTitle": "Jesteś na liście",
+    "countedBody": "Twój darmowy miesiąc Plus zacznie się, gdy po raz pierwszy otworzysz OpenTV od 1 grudnia.",
+    "soonPlusTitle": "Twój darmowy miesiąc już blisko",
+    "soonPlusBody": "1 grudnia dodamy darmowy miesiąc do Twojego Plus. Bez karty, a Twój plan się nie zmieni.",
+    "countedPlusBody": "1 grudnia do Twojego Plus dojdzie darmowy miesiąc.",
+    "signInLedeSoon": "Zaloguj się, aby zarezerwować darmowy miesiąc Plus. Zaczyna się 1 grudnia. Bez karty i bez odnowień.",
     "signInLede": "Zaloguj się, aby zacząć darmowy miesiąc Plus. Bez karty, nic się nie odnawia."
   },
   "everythingSection": {

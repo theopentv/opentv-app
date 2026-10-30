@@ -15,6 +15,22 @@ export const FREE_MONTH_REMIND_DAYS_BEFORE = 5;
 export type FreeMonthServerState = '' | 'open' | 'closed' | 'claimed';
 
 /**
+ * THE MONTH OPENS ON 1 DECEMBER 2026 (the Christmas campaign). The dashboard's
+ * switch is still what grants it; this date is only what the card can promise
+ * to a phone that cannot hear the switch.
+ */
+export const FREE_MONTH_OPENS = new Date(2026, 11, 1).getTime();
+
+export const freeMonthIsSoon = (nowMs: number): boolean => nowMs < FREE_MONTH_OPENS;
+
+/**
+ * "Count me in" outlives a closed switch for a week past the date, so a switch
+ * turned on a little late still honours it. After that the promise has lapsed
+ * and the claim is dropped rather than granted in some later campaign.
+ */
+export const freeMonthStillWaiting = (nowMs: number): boolean => nowMs < FREE_MONTH_OPENS + 7 * 86_400_000;
+
+/**
  * WHO IS INVITED (opt-in only, Mahmood 27 Oct). Everybody who has not had the
  * month and is not Plus right now, signed in or not: the account it needs is
  * half the point of the offer, so having one already is no reason to skip
@@ -29,6 +45,10 @@ export type FreeMonthServerState = '' | 'open' | 'closed' | 'claimed';
  * `plus` is `isPlus()`: paid, or a grant still running. Somebody whose earlier
  * gifted Plus has ended is not Plus and is invited like anybody else.
  *
+ * BEFORE IT OPENS (`soon`) the invitation is a date, not a claim, so it goes to
+ * everybody who has not had the month, Plus included: the card tells them it
+ * lands on top of what they already have.
+ *
  * A custom server is excluded because a grant from it is ignored by design
  * (`setServerPlus`); the card would promise something this app will not honour.
  */
@@ -39,8 +59,11 @@ export function freeMonthInviteDue(s: {
   available: boolean;
   customServer: boolean;
   declined: boolean;
+  soon?: boolean;
 }): boolean {
-  if (s.plus || !s.available || s.customServer || s.declined || s.server === 'claimed') return false;
+  if (!s.available || s.customServer || s.declined || s.server === 'claimed') return false;
+  if (s.soon) return true;
+  if (s.plus) return false;
   return s.signedIn ? s.server === 'open' : true;
 }
 

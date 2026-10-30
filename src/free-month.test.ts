@@ -1,8 +1,11 @@
 import {
   addFreeMonthUse,
+  FREE_MONTH_OPENS,
   freeMonthEndDue,
   freeMonthInviteDue,
+  freeMonthIsSoon,
   freeMonthReminders,
+  freeMonthStillWaiting,
   freeMonthUseOf,
 } from '@/free-month-rules';
 
@@ -104,5 +107,21 @@ describe('what the month was used for', () => {
     expect(addFreeMonthUse('', 'filters')).toBe('filters');
     expect(addFreeMonthUse('filters', 'stats')).toBe('stats,filters');
     expect(addFreeMonthUse('stats,filters', 'stats')).toBe('stats,filters');
+  });
+});
+
+describe('the 1 December wait', () => {
+  it('invites everybody before it opens, Plus and signed-in included, but not a claim or a no', () => {
+    expect(freeMonthInviteDue({ ...base, soon: true, plus: true })).toBe(true);
+    expect(freeMonthInviteDue({ ...base, soon: true, signedIn: true, server: 'closed' })).toBe(true);
+    expect(freeMonthInviteDue({ ...base, soon: true, server: 'claimed' })).toBe(false);
+    expect(freeMonthInviteDue({ ...base, soon: true, declined: true })).toBe(false);
+  });
+  const day = 86_400_000;
+  it('is soon until the date, and a claim outlives it by a week', () => {
+    expect(freeMonthIsSoon(FREE_MONTH_OPENS - 1)).toBe(true);
+    expect(freeMonthIsSoon(FREE_MONTH_OPENS)).toBe(false);
+    expect(freeMonthStillWaiting(FREE_MONTH_OPENS + 6 * day)).toBe(true);
+    expect(freeMonthStillWaiting(FREE_MONTH_OPENS + 7 * day)).toBe(false);
   });
 });
