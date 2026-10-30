@@ -114,6 +114,7 @@ function plusBackupState(): 'off' | 'stalled' | null {
   return last == null || (serverBackupFailing() && Date.now() - last > 24 * 60 * 60 * 1000) ? 'stalled' : null;
 }
 const GOAL_BANNER_CLOSED = 'goalBannerClosed';
+const LIST_HOLES_CLOSED = 'listHolesBannerClosed';
 /** Once per launch: the hold question is not worth asking on every tab switch. */
 let askedAboutHold = false;
 
@@ -138,6 +139,8 @@ export default function ProfileScreen() {
    * every other read on this screen happens.
    */
   const [listHoles, setListHoles] = useState(0);
+  // How many holes the ✕ closed: more than this and the banner has news again.
+  const [listHolesClosed, setListHolesClosed] = useState(0);
   // UX #4: a fresh start's first real screen is this one, and it led with Plus
   // and Join before there was anything to be Plus or social about. State, not a
   // render-time read — the React Compiler would memoise a bare hasLibrary().
@@ -402,6 +405,7 @@ export default function ProfileScreen() {
         }
         setListHoles(unresolvedUuids(getCustomLists() as unknown as RepairableList[], 5000).length);
       })();
+      setListHolesClosed(Number(getMeta(LIST_HOLES_CLOSED) ?? 0));
       setThemeColor(getMeta('profileThemeColor') || null);
       setThemeSecondary(getMeta('profileThemeSecondary') || null);
       setIsPrivate(getMeta(PRIVATE_PROFILE_KEY) === '1');
@@ -596,10 +600,10 @@ export default function ProfileScreen() {
    * here has lists with holes in them and no way to know it.
    *
    * Counted from what is already in memory, so it costs nothing and needs no
-   * network call to decide whether to appear. It is not dismissible: unlike
-   * every other banner in this stack it describes something broken that a tap
-   * FIXES, and a fix nobody can find again is worse than a bar they see twice.
-   * It disappears by being used.
+   * network call to decide whether to appear. A tap repairs what the catalogue
+   * knows, and the catalogue does not have every film, so its ✕ closes it for
+   * this count (30 Oct): a bar that could never go away was a nag, not a fix.
+   * More holes than that bring it back.
    */
   const [repairing, setRepairing] = useState(false);
   const repairListsNow = () => {
@@ -963,6 +967,10 @@ export default function ProfileScreen() {
     dismissCommunityBanner();
     setTick((n) => n + 1);
   };
+  const dismissListHoles = () => {
+    setMeta(LIST_HOLES_CLOSED, String(listHoles));
+    setListHolesClosed(listHoles);
+  };
   const dismissTvdbNudge = () => {
     setMeta('tvdbNudgeDismissed', '1');
     setTvdbFailed(false);
@@ -1077,18 +1085,9 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       )}
-      {/* A memory of their own library, so it belongs beside their own
-          library — not in front of the episode they opened the app to
-          watch. It reads as one of the notices because that is what it
-          is: something to glance at and put away. Most days it renders
-          nothing at all.
-
-          BELOW WRAPPED, not above it. Wrapped is the rarer and larger of
-          the two — a month, offered once — and it is also the only DARK
-          card in this stack, so sitting third it cut the run of yellow
-          notices in half and read as something that had landed in the
-          wrong place. The memory strip is a daily glance and loses
-          nothing by following it. */}
+      {/* THE ORDER OF THIS STACK (30 Oct): the dark cards first, so they never
+          cut the yellow run in half, then the yellow by what ignoring it costs:
+          what is broken or at risk, then today's glances, then invitations. */}
       {goalOffer && !emptyLibrary && !simple && (
         <Pressable
           style={[styles.wrappedBanner, themedNotice]}
@@ -1122,7 +1121,9 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       )}
-      {!simple && <MemoryCard />}
+      {/* THE FREE MONTH (2.0.3), for somebody already here with no account.
+          After the Plus card, never beside it: one invitation at a time. */}
+      {!(plusUi && !plus && !plusSeen && !emptyLibrary) && <FreeMonthCard from="profile" style={styles.freeMonth} />}
       {(banner === 'plusBackupOff' || banner === 'plusBackupStalled') && (
         <Pressable
           style={styles.cloudBanner}
@@ -1187,6 +1188,105 @@ export default function ProfileScreen() {
         </Pressable>
       )}
       {/*
+        THE FILMS TV TIME LEFT OUT OF YOUR LISTS.
+
+        For libraries imported before the repair existed. A new import fixes
+        itself on the way in; everybody already here has lists with holes and no
+        way to know it, because a missing entry looks exactly like a list that
+        was always that size.
+
+        Closes with its ✕ for this count, because a tap can only repair what
+        the catalogue knows; see the note on `repairListsNow`.
+      */}
+      {listHoles > listHolesClosed && (
+        <Pressable
+          style={styles.cloudBanner}
+          disabled={repairing}
+          onPress={repairListsNow}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissListHoles)}>
+          <Ionicons name={repairing ? 'hourglass-outline' : 'sparkles-outline'} size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>
+            {repairing ? t('profile.listFixWorking') : t('profile.listFixBanner', { count: listHoles })}
+          </Text>
+          <Pressable hitSlop={10} onPress={dismissListHoles} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+
+      {signedOutBanner && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissSignedOutNotice)}
+          onPress={() => {
+            tapLight();
+            router.push('/join');
+          }}>
+          <Ionicons name="log-in-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{t('profile.signedOutBanner')}</Text>
+          <Pressable hitSlop={10} onPress={() => dismissSignedOutNotice()} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {tvdbFailed && (
+        <Pressable
+          style={styles.cloudBanner}
+          onPress={() => router.push('/tvdb-key')}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissTvdbNudge)}>
+          <Ionicons name="key-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{t('profile.tvdbBannerText')}</Text>
+          <Pressable hitSlop={10} onPress={dismissTvdbNudge} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/* A memory of their own library: something to glance at and put away.
+          Most days it renders nothing at all. */}
+      {!simple && <MemoryCard />}
+      {/* NEW: ACTIVITY (2.0.0). Members only — it is a friends feed. Near
+          the end with the puzzle: news, not a warning, so it pushes none of
+          the notices above out. Gone for good on ✕ or once the intro is
+          answered (`activityBannerShown`). */}
+      {activityBannerShown({ member: joinedCommunity, ...activityNews }) && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissActivityNews)}
+          onPress={() => {
+            tapLight();
+            router.push('/activity-intro');
+          }}>
+          <Ionicons name="chatbubbles-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{t('activityIntro.banner')}</Text>
+          <Pressable hitSlop={10} onPress={dismissActivityNews} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/* TODAY'S PUZZLE (22 Oct). Last of the glances: a game, and it pushes
+          none of the notices out. Gone once today is played; its ✕ hides it
+          for today only — tomorrow is a new puzzle. */}
+      {puzzleBanner && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissPuzzle)}
+          onPress={() => {
+            tapLight();
+            router.push(puzzleEntryRoute());
+          }}>
+          <Ionicons name="extension-puzzle-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{puzzleText}</Text>
+          <Pressable hitSlop={10} onPress={dismissPuzzle} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/*
         PLUS EXISTS NOW — said once, then never again.
 
         A permanent banner on a screen people open daily becomes furniture, and
@@ -1203,6 +1303,42 @@ export default function ProfileScreen() {
         Never shown to a subscriber, and never in a build where the tier cannot
         be bought.
       */}
+      {plusUi && !plus && !plusSeen && !emptyLibrary && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissPlusAnnounce)}
+          onPress={() => {
+            tapLight();
+            dismissPlusAnnounce();
+            router.push('/paywall?from=profile_announce');
+          }}>
+          <Ionicons name="sparkles-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{t('plus.announce')}</Text>
+          <Pressable hitSlop={10} onPress={dismissPlusAnnounce} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
+      {/* ONE INVITATION AT A TIME (8 Oct): with the backup warning above it,
+          Plus and Join made three yellow bars at once. Join waits until the
+          Plus one has been closed or answered. */}
+      {communityBanner && !(plusUi && !plus && !plusSeen) && (
+        <Pressable
+          style={styles.cloudBanner}
+          accessibilityRole="button"
+          {...a11yAction('dismiss', t('ui.dismiss'), dismissCommunity)}
+          onPress={() => {
+            tapLight();
+            router.push('/join');
+          }}>
+          <Ionicons name="people-outline" size={18} color={colors.onBrand} />
+          <Text style={styles.cloudBannerText}>{t('community.banner.text')}</Text>
+          <Pressable hitSlop={10} onPress={dismissCommunity} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
+            <Ionicons name="close" size={17} color={colors.onBrand} />
+          </Pressable>
+        </Pressable>
+      )}
       {/*
         AND THE PEOPLE WHO REPORT THE BUGS ARE ON DISCORD.
         
@@ -1241,139 +1377,6 @@ export default function ProfileScreen() {
           <Ionicons name="logo-discord" size={18} color={colors.onBrand} />
           <Text style={styles.cloudBannerText}>{t('community.discord.announce')}</Text>
           <Pressable hitSlop={10} onPress={dismissDiscord} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
-            <Ionicons name="close" size={17} color={colors.onBrand} />
-          </Pressable>
-        </Pressable>
-      )}
-
-      {/*
-        THE FILMS TV TIME LEFT OUT OF YOUR LISTS.
-
-        For libraries imported before the repair existed. A new import fixes
-        itself on the way in; everybody already here has lists with holes and no
-        way to know it, because a missing entry looks exactly like a list that
-        was always that size.
-
-        NOT DISMISSIBLE, and it is the only banner in this stack that is not.
-        The others are invitations or warnings about the future; this one
-        describes something already wrong that one tap repairs. A fix nobody can
-        find again is worse than a bar somebody sees twice — and it removes
-        itself by being used, which is the honest way for a banner to go.
-      */}
-      {listHoles > 0 && (
-        <Pressable style={styles.cloudBanner} disabled={repairing} onPress={repairListsNow} accessibilityRole="button">
-          <Ionicons name={repairing ? 'hourglass-outline' : 'sparkles-outline'} size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>
-            {repairing ? t('profile.listFixWorking') : t('profile.listFixBanner', { count: listHoles })}
-          </Text>
-          <Ionicons name="chevron-forward" size={17} color={colors.onBrand} />
-        </Pressable>
-      )}
-
-      {plusUi && !plus && !plusSeen && !emptyLibrary && (
-        <Pressable
-          style={styles.cloudBanner}
-          accessibilityRole="button"
-          {...a11yAction('dismiss', t('ui.dismiss'), dismissPlusAnnounce)}
-          onPress={() => {
-            tapLight();
-            dismissPlusAnnounce();
-            router.push('/paywall?from=profile_announce');
-          }}>
-          <Ionicons name="sparkles-outline" size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>{t('plus.announce')}</Text>
-          <Pressable hitSlop={10} onPress={dismissPlusAnnounce} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
-            <Ionicons name="close" size={17} color={colors.onBrand} />
-          </Pressable>
-        </Pressable>
-      )}
-      {/* THE FREE MONTH (2.0.3), for somebody already here with no account.
-          After the Plus card, never beside it: one invitation at a time. */}
-      {!(plusUi && !plus && !plusSeen && !emptyLibrary) && <FreeMonthCard from="profile" style={styles.freeMonth} />}
-      {signedOutBanner && (
-        <Pressable
-          style={styles.cloudBanner}
-          accessibilityRole="button"
-          {...a11yAction('dismiss', t('ui.dismiss'), dismissSignedOutNotice)}
-          onPress={() => {
-            tapLight();
-            router.push('/join');
-          }}>
-          <Ionicons name="log-in-outline" size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>{t('profile.signedOutBanner')}</Text>
-          <Pressable hitSlop={10} onPress={() => dismissSignedOutNotice()} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
-            <Ionicons name="close" size={17} color={colors.onBrand} />
-          </Pressable>
-        </Pressable>
-      )}
-      {/* ONE INVITATION AT A TIME (8 Oct): with the backup warning above it,
-          Plus and Join made three yellow bars at once. Join waits until the
-          Plus one has been closed or answered. */}
-      {communityBanner && !(plusUi && !plus && !plusSeen) && (
-        <Pressable
-          style={styles.cloudBanner}
-          accessibilityRole="button"
-          {...a11yAction('dismiss', t('ui.dismiss'), dismissCommunity)}
-          onPress={() => {
-            tapLight();
-            router.push('/join');
-          }}>
-          <Ionicons name="people-outline" size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>{t('community.banner.text')}</Text>
-          <Pressable hitSlop={10} onPress={dismissCommunity} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
-            <Ionicons name="close" size={17} color={colors.onBrand} />
-          </Pressable>
-        </Pressable>
-      )}
-      {tvdbFailed && (
-        <Pressable
-          style={styles.cloudBanner}
-          onPress={() => router.push('/tvdb-key')}
-          accessibilityRole="button"
-          {...a11yAction('dismiss', t('ui.dismiss'), dismissTvdbNudge)}>
-          <Ionicons name="key-outline" size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>{t('profile.tvdbBannerText')}</Text>
-          <Pressable hitSlop={10} onPress={dismissTvdbNudge} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
-            <Ionicons name="close" size={17} color={colors.onBrand} />
-          </Pressable>
-        </Pressable>
-      )}
-      {/* NEW: ACTIVITY (2.0.0). Members only — it is a friends feed. Near
-          the end with the puzzle: news, not a warning, so it pushes none of
-          the notices above out. Gone for good on ✕ or once the intro is
-          answered (`activityBannerShown`). */}
-      {activityBannerShown({ member: joinedCommunity, ...activityNews }) && (
-        <Pressable
-          style={styles.cloudBanner}
-          accessibilityRole="button"
-          {...a11yAction('dismiss', t('ui.dismiss'), dismissActivityNews)}
-          onPress={() => {
-            tapLight();
-            router.push('/activity-intro');
-          }}>
-          <Ionicons name="chatbubbles-outline" size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>{t('activityIntro.banner')}</Text>
-          <Pressable hitSlop={10} onPress={dismissActivityNews} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
-            <Ionicons name="close" size={17} color={colors.onBrand} />
-          </Pressable>
-        </Pressable>
-      )}
-      {/* TODAY'S PUZZLE (22 Oct). LAST, because it is the least that
-          ignoring it costs: a game, below every warning and invitation, and
-          it pushes none of them out. Gone once today is played; its ✕ hides
-          it for today only — tomorrow is a new puzzle. */}
-      {puzzleBanner && (
-        <Pressable
-          style={styles.cloudBanner}
-          accessibilityRole="button"
-          {...a11yAction('dismiss', t('ui.dismiss'), dismissPuzzle)}
-          onPress={() => {
-            tapLight();
-            router.push(puzzleEntryRoute());
-          }}>
-          <Ionicons name="extension-puzzle-outline" size={18} color={colors.onBrand} />
-          <Text style={styles.cloudBannerText}>{puzzleText}</Text>
-          <Pressable hitSlop={10} onPress={dismissPuzzle} accessibilityRole="button" accessibilityLabel={t('ui.dismiss')}>
             <Ionicons name="close" size={17} color={colors.onBrand} />
           </Pressable>
         </Pressable>

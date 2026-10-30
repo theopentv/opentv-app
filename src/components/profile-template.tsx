@@ -1303,6 +1303,12 @@ export function ProfileTemplate({
           })}>
       <Animated.ScrollView
         ref={scrollRef}
+        // A RAIL STILL GLIDING MUST NOT FREEZE THE NEXT ONE. Its scroll events
+        // bubble here, and with a finger down on another rail this page took
+        // the JS responder, and a ScrollView under a responding ancestor will
+        // not start a drag (`_shouldDisableScrollInteraction`). No effect on
+        // the page's own scrolling, which is native.
+        disableScrollViewPanResponder
         onScroll={onScroll}
         scrollEventThrottle={16}
         // insets.bottom: under the native tab bar it includes the bar, which floats over the page.
