@@ -3940,6 +3940,10 @@
     "soonPlusTitle": "Your free month is coming",
     "soonPlusBody": "On 1 December we add a free month on top of your Plus. No card, and nothing changes on your plan.",
     "countedPlusBody": "A free month goes on top of your Plus on 1 December.",
+    "openPlusTitle": "A free month on top of your Plus",
+    "openPlusBody": "No card, and your plan stays as it is: your next renewal simply moves a month later.",
+    "storeAddedTitle": "A month has been added",
+    "storeAddedBody": "Your Plus now renews a month later. Nothing else changes.",
     "signInLedeSoon": "Sign in to save your free month of Plus. It starts on 1 December. No card, nothing renews.",
     "signInLede": "Sign in to start your free month of Plus. No card, nothing renews."
   },

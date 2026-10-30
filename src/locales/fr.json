@@ -3940,6 +3940,10 @@
     "soonPlusTitle": "Votre mois offert arrive",
     "soonPlusBody": "Le 1er décembre, nous ajoutons un mois offert à votre Plus. Sans carte, et votre formule ne change pas.",
     "countedPlusBody": "Un mois offert s'ajoutera à votre Plus le 1er décembre.",
+    "openPlusTitle": "Un mois offert en plus de votre Plus",
+    "openPlusBody": "Sans carte, et votre formule ne change pas : votre prochain renouvellement est simplement repoussé d'un mois.",
+    "storeAddedTitle": "Un mois a été ajouté",
+    "storeAddedBody": "Votre Plus se renouvelle désormais un mois plus tard. Rien d'autre ne change.",
     "signInLedeSoon": "Connectez-vous pour réserver votre mois de Plus offert. Il commence le 1er décembre. Sans carte, et rien ne se renouvelle.",
     "signInLede": "Connectez-vous pour commencer votre mois de Plus offert. Sans carte, rien ne se renouvelle."
   },

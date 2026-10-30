@@ -3940,6 +3940,10 @@
     "soonPlusTitle": "Ücretsiz ayın geliyor",
     "soonPlusBody": "1 Aralık'ta Plus'ına bir ay ücretsiz ekliyoruz. Kart yok, planında hiçbir şey değişmiyor.",
     "countedPlusBody": "1 Aralık'ta Plus'ına bir ay ücretsiz eklenecek.",
+    "openPlusTitle": "Plus'ına bir ay ücretsiz",
+    "openPlusBody": "Kart yok, planın aynı kalıyor: bir sonraki yenilemen yalnızca bir ay sonraya kayıyor.",
+    "storeAddedTitle": "Bir ay eklendi",
+    "storeAddedBody": "Plus'ın artık bir ay sonra yenilenecek. Başka bir şey değişmiyor.",
     "signInLedeSoon": "Ücretsiz Plus ayını ayırtmak için giriş yap. 1 Aralık'ta başlar. Kart yok, yenileme yok.",
     "signInLede": "Ücretsiz Plus ayını başlatmak için giriş yap. Kart yok, yenilenmez."
   },

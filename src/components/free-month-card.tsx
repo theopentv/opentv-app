@@ -67,14 +67,15 @@ export function FreeMonthCard({ from, style }: { from: 'import' | 'profile'; sty
     if (signedIn && !soon && freeMonthPending()) Alert.alert(t('freeMonthOptIn.claimFailed'));
   };
   // Somebody on Plus hears that it goes on top, not that Plus is on offer.
-  const onTop = soon && plus;
-  const title = counted ? 'countedTitle' : onTop ? 'soonPlusTitle' : soon ? 'soonTitle' : 'cardTitle';
+  const title = counted ? 'countedTitle' : plus ? (soon ? 'soonPlusTitle' : 'openPlusTitle') : soon ? 'soonTitle' : 'cardTitle';
   const body = counted
-    ? onTop
+    ? plus
       ? 'countedPlusBody'
       : 'countedBody'
-    : onTop
-      ? 'soonPlusBody'
+    : plus
+      ? soon
+        ? 'soonPlusBody'
+        : 'openPlusBody'
       : soon
         ? 'soonBody'
         : 'cardBody';

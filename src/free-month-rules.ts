@@ -63,7 +63,8 @@ export function freeMonthInviteDue(s: {
 }): boolean {
   if (!s.available || s.customServer || s.declined || s.server === 'claimed') return false;
   if (s.soon) return true;
-  if (s.plus) return false;
+  // Open, on Plus: the month goes on top, which needs the account to find it on.
+  if (s.plus && !s.signedIn) return false;
   return s.signedIn ? s.server === 'open' : true;
 }
 

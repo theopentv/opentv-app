@@ -21,6 +21,8 @@ import { router } from 'expo-router';
 import { track } from '@/analytics';
 import { api, ApiError } from '@/api';
 import { getToken, hasAccount, refreshSession } from '@/community-session';
+import { Alert } from 'react-native';
+
 import { getMeta, setMeta } from '@/db';
 import {
   addFreeMonthUse,
@@ -34,6 +36,7 @@ import {
   type FreeMonthServerState,
   type FreeMonthUse,
 } from '@/free-month-rules';
+import { t } from '@/i18n';
 import { isPlus, PLUS_AVAILABLE } from '@/plus';
 import { isCustomServer } from '@/server-url';
 
@@ -192,7 +195,7 @@ export async function claimFreeMonth(): Promise<void> {
     }
     const token = await getToken();
     if (!token) return;
-    const res = await api<{ granted: boolean; plus_until?: string; reason?: string }>('/v1/me/free-month', {
+    const res = await api<{ granted: boolean; plus_until?: string; reason?: string; via?: string }>('/v1/me/free-month', {
       method: 'POST',
       token,
     });
@@ -203,6 +206,13 @@ export async function claimFreeMonth(): Promise<void> {
       return;
     }
     setMeta(SERVER_KEY, 'claimed');
+    // A PAYER'S MONTH WENT ON THE STORE'S DATE (2.1.0). Nothing here ends and
+    // nothing "simply stops": no reminders, no ended screen, just the news.
+    if (res.via === 'store') {
+      track('free_month_granted');
+      Alert.alert(t('freeMonthOptIn.storeAddedTitle'), t('freeMonthOptIn.storeAddedBody'));
+      return;
+    }
     setMeta(FREE_MONTH_UNTIL_KEY, res.plus_until);
     setMeta(USED_KEY, '');
     track('free_month_granted');

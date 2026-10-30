@@ -34,7 +34,7 @@ describe('freeMonthInviteDue', () => {
   it.each([
     ['already claimed, signed in', { signedIn: true, server: 'claimed' as const }],
     ['claimed, then signed out', { server: 'claimed' as const }],
-    ['Plus now (paid or a grant running)', { plus: true, signedIn: true, server: 'open' as const }],
+    ['Plus now and signed out', { plus: true }],
     ['a build that cannot sell Plus', { available: false }],
     ['a custom server', { customServer: true }],
     ['said No thanks', { declined: true }],
@@ -111,6 +111,11 @@ describe('what the month was used for', () => {
 });
 
 describe('the 1 December wait', () => {
+  it('once open, invites somebody on Plus only with an account to add it to', () => {
+    expect(freeMonthInviteDue({ ...base, plus: true, signedIn: true, server: 'open' })).toBe(true);
+    expect(freeMonthInviteDue({ ...base, plus: true, signedIn: false })).toBe(false);
+    expect(freeMonthInviteDue({ ...base, plus: true, signedIn: true, server: 'closed' })).toBe(false);
+  });
   it('invites everybody before it opens, Plus and signed-in included, but not a claim or a no', () => {
     expect(freeMonthInviteDue({ ...base, soon: true, plus: true })).toBe(true);
     expect(freeMonthInviteDue({ ...base, soon: true, signedIn: true, server: 'closed' })).toBe(true);
