@@ -63,10 +63,44 @@ struct HeatData: Codable {
   let shades: [String]
 }
 
+struct UpcomingEp: Codable, Identifiable {
+  let showId: Int
+  let showName: String
+  let season: Int
+  let episode: Int
+  let title: String?
+  let code: String
+  let thumb: String?
+  /// YYYY-MM-DD
+  let air: String
+  var id: String { "\(showId)-\(season)-\(episode)" }
+  var deepLink: URL { URL(string: "opentv://episode/\(showId)-s\(season)e\(episode)")! }
+
+  /// Whole days from `now` to the air date on this phone's calendar, so a
+  /// countdown written days ago is still right.
+  func days(from now: Date) -> Int {
+    let parts = air.split(separator: "-").compactMap { Int($0) }
+    guard parts.count == 3 else { return 0 }
+    let cal = Calendar.current
+    let target = cal.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2])) ?? now
+    return cal.dateComponents([.day], from: cal.startOfDay(for: now), to: target).day ?? 0
+  }
+}
+
+struct WidgetLabels: Codable {
+  let upcoming: String?
+  let nothingUpcoming: String?
+}
+
 struct Payload: Codable {
   let updatedAt: String
   let upNext: [UpNextEp]
   let movies: [WatchMovie]
+  /// Optional like `heat`: a payload from an older build decodes without them.
+  var upcoming: [UpcomingEp]? = nil
+  /// "Today", "Tomorrow", "in 3 days" in the app's language; index = days away.
+  var dayWords: [String]? = nil
+  var labels: WidgetLabels? = nil
   /// Keyed by how many months the grid covers ("1", "3", "6") — one per widget
   /// size, because the extension cannot recompute and the app can.
   /// Optional: a payload written by an older build simply has no grid, and the
@@ -546,6 +580,106 @@ struct HeatmapWidget: Widget {
   }
 }
 
+// MARK: - Upcoming
+
+/// Unlike the others this one goes out of date by itself: "in 3 days" is wrong
+/// tomorrow whether or not the app was opened. One entry per midnight for the
+/// week the day words cover, then WidgetKit asks again.
+struct UpcomingProvider: TimelineProvider {
+  func placeholder(in _: Context) -> Entry { Entry(date: .now, payload: loadPayload()) }
+  func getSnapshot(in _: Context, completion: @escaping (Entry) -> Void) {
+    completion(Entry(date: .now, payload: loadPayload()))
+  }
+  func getTimeline(in _: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+    let payload = loadPayload()
+    let cal = Calendar.current
+    let start = cal.startOfDay(for: .now)
+    var entries = [Entry(date: .now, payload: payload)]
+    for d in 1...7 {
+      if let day = cal.date(byAdding: .day, value: d, to: start) { entries.append(Entry(date: day, payload: payload)) }
+    }
+    completion(Timeline(entries: entries, policy: .atEnd))
+  }
+}
+
+struct UpcomingView: View {
+  @Environment(\.widgetFamily) var family
+  let entry: Entry
+
+  /// Passed today (the app has not refreshed the list since): dropped.
+  private var eps: [UpcomingEp] {
+    (entry.payload.upcoming ?? []).filter { $0.days(from: entry.date) >= 0 }
+  }
+
+  private func when(_ ep: UpcomingEp) -> String {
+    let words = entry.payload.dayWords ?? []
+    let d = ep.days(from: entry.date)
+    return d < words.count ? words[d] : ep.air
+  }
+
+  private func thumb(_ ep: UpcomingEp, width: CGFloat, height: CGFloat) -> some View {
+    Group {
+      if let img = thumbImage(ep.thumb) {
+        Image(uiImage: img).resizable().aspectRatio(contentMode: .fill)
+      } else {
+        Color(white: 0.16)
+      }
+    }
+    .frame(width: width, height: height)
+    .clipShape(RoundedRectangle(cornerRadius: 6))
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 7) {
+      Header(text: entry.payload.labels?.upcoming ?? "UPCOMING")
+      if eps.isEmpty {
+        Spacer()
+        Text(entry.payload.labels?.nothingUpcoming ?? "Nothing announced yet")
+          .font(.system(size: 13)).foregroundColor(.white)
+        Spacer()
+      } else if family == .systemSmall {
+        let ep = eps[0]
+        Spacer(minLength: 2)
+        thumb(ep, width: 120, height: 52)
+        Text(ep.showName).font(.system(size: 12, weight: .semibold)).foregroundColor(.white).lineLimit(1)
+        Text(when(ep)).font(.system(size: 11, weight: .semibold)).foregroundColor(yellow).lineLimit(1)
+        Spacer(minLength: 0)
+      } else {
+        ForEach(eps.prefix(family == .systemLarge ? 6 : 2)) { ep in
+          Link(destination: ep.deepLink) {
+            HStack(spacing: 9) {
+              thumb(ep, width: 48, height: 32)
+              VStack(alignment: .leading, spacing: 2) {
+                Text("\(ep.code)  ·  \(ep.showName)")
+                  .font(.system(size: 12, weight: .semibold)).foregroundColor(.white).lineLimit(1)
+                Text(ep.title ?? ep.code).font(.system(size: 11)).foregroundColor(dim).lineLimit(1)
+              }
+              Spacer(minLength: 4)
+              Text(when(ep)).font(.system(size: 11, weight: .semibold)).foregroundColor(yellow).lineLimit(1)
+            }
+          }
+        }
+        Spacer(minLength: 0)
+      }
+    }
+    .padding(12)
+    .widgetBackground(bg)
+  }
+}
+
+struct UpcomingWidget: Widget {
+  var body: some WidgetConfiguration {
+    // A tap anywhere but a row goes to the Upcoming tab, not whichever tab the
+    // app last showed: the widget's whole question is "what is coming".
+    StaticConfiguration(kind: "Upcoming", provider: UpcomingProvider()) {
+      UpcomingView(entry: $0).widgetURL(URL(string: "opentv://shows?tab=upcoming"))
+    }
+      .configurationDisplayName("Upcoming")
+      .description("The next episodes to air, with a countdown.")
+      .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+  }
+}
+
 // MARK: - Bundle
 
 @main
@@ -555,5 +689,6 @@ struct OpenTVWidgetBundle: WidgetBundle {
     MoviesWidget()
     CombinedWidget()
     HeatmapWidget()
+    UpcomingWidget()
   }
 }

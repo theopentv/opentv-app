@@ -3690,6 +3690,8 @@
     }
   },
   "widgets": {
+    "inDays": {"one": "em {{count}} dia", "other": "em {{count}} dias"},
+    "nothingUpcoming": "Nada anunciado ainda",
     "upNext": "A seguir",
     "movies": "Filmes",
     "moviesToWatch": "Filmes para assistir",

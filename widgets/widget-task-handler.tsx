@@ -11,11 +11,13 @@ import { CombinedWidget } from './CombinedWidget';
 import { HeatmapWidget, heatLayout } from './HeatmapWidget';
 import { MoviesWidget } from './MoviesWidget';
 import { UpNextWidget } from './UpNextWidget';
+import { UpcomingWidget } from './UpcomingWidget';
 
 export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
   const { widgetInfo, renderWidget } = props;
   // computed lazily so the module load stays cheap for the app itself
-  const { upNextList, moviesToWatch, heatmapData } = await import('../src/widget-data');
+  const { upNextList, moviesToWatch, heatmapData, upcomingEpisodes } = await import('../src/widget-data');
+  const { upcomingRow } = await import('../src/widget-sync');
   // Headless, the app may never have started in this process: the widgets'
   // words follow the app's language only once the stored choice is read.
   (await import('../src/i18n')).initI18n();
@@ -37,6 +39,8 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
         );
       } else if (widgetInfo.widgetName === 'Movies') {
         renderWidget(<MoviesWidget movies={moviesToWatch(9).map((m) => ({ ...m, thumb: null }))} />);
+      } else if (widgetInfo.widgetName === 'Upcoming') {
+        renderWidget(<UpcomingWidget items={upcomingEpisodes(8).map(upcomingRow)} tall={widgetInfo.height >= 220} />);
       } else if (widgetInfo.widgetName === 'Heatmap') {
         const { data, cell } = heatLayout(widgetInfo.width, widgetInfo.height, heatmapData);
         renderWidget(<HeatmapWidget data={data} cell={cell} />);

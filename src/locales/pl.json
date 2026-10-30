@@ -3972,6 +3972,8 @@
     }
   },
   "widgets": {
+    "inDays": {"one": "za {{count}} dzień", "few": "za {{count}} dni", "many": "za {{count}} dni", "other": "za {{count}} dnia"},
+    "nothingUpcoming": "Nic jeszcze nie ogłoszono",
     "upNext": "Następne",
     "movies": "Filmy",
     "moviesToWatch": "Filmy do obejrzenia",

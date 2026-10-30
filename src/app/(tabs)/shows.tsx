@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -19,6 +19,7 @@ import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWa
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { pool } from '@/tmdb';
 import { useMetaFillRunning } from '@/meta-fill';
+import { upcomingEpisodes } from '@/widget-data';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
 import { colors, radius, space, ls } from '@/theme';
 import { currentLocale, t } from '@/i18n';
@@ -125,6 +126,11 @@ export default function ShowsScreen() {
   // the screen width (window minus side safe-area insets). On a phone this is unchanged from before.
   const gridCols = gridGeometry(W, space.md, 3).cols;
   const [tab, setTab] = useState<(typeof TABS)[number]>('Watch List');
+  // The Upcoming widget's tap: `opentv://shows?tab=upcoming`.
+  const { tab: wantedTab } = useLocalSearchParams<{ tab?: string }>();
+  useEffect(() => {
+    if (wantedTab === 'upcoming') setTab('Upcoming');
+  }, [wantedTab]);
   const [view, setView] = useState<'list' | 'grid'>(() => (getMeta('showsView') === 'grid' ? 'grid' : 'list'));
   // A FREE USER CAN CLOSE TONIGHT. For them it opens the paywall, and a row
   // at the top of every visit that cannot be put away reads as an ad (mike,
@@ -361,30 +367,8 @@ export default function ShowsScreen() {
   const contentH = useRef(0);
   const pendingGrow = useRef<number | null>(null);
 
-  // Upcoming: every announced episode of your followed shows for the next 90
-  // days, straight from the air dates already cached in metadata — the same
-  // data the episode notifications schedule from
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const upcoming = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    const horizon = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
-    type Up = { showId: number; showName: string; poster: string | null; season: number; episode: number; title: string | null; air: string; still: string | null };
-    const out: Up[] = [];
-    for (const sp of getShowProgress()) {
-      if (!sp.followed || sp.archived) continue;
-      const m = showMeta(sp.tvdbId);
-      if (!m) continue;
-      for (const [key, em] of Object.entries(m.episodes)) {
-        const air = em?.air;
-        if (!air || air <= today || air > horizon) continue;
-        const [se, ep] = key.split('-').map(Number);
-        if (!se || se < 1) continue;
-        out.push({ showId: sp.tvdbId, showName: sp.name, poster: sp.posterUrl, season: se, episode: ep, title: em.title ?? null, air, still: em.still ?? null });
-      }
-    }
-    out.sort((a, b) => a.air.localeCompare(b.air) || a.showName.localeCompare(b.showName) || a.episode - b.episode);
-    return out.slice(0, 150);
-  }, [tick]);
+  const upcoming = useMemo(() => upcomingEpisodes(), [tick]);
 
   const onListScroll = (y: number) => {
     scrollY.current = y;

@@ -8,7 +8,7 @@
  * Shows you touched most recently come first, so the widget tracks whatever
  * you're currently bingeing.
  */
-import db, { getMeta } from '@/db';
+import db, { getMeta, getShowProgress } from '@/db';
 import { episodeMeta, showMeta } from '@/metadata';
 import { heatWidgetData, type HeatWidgetData } from '@/pure';
 import { watchDayCounts } from '@/stats-calc';
@@ -30,6 +30,52 @@ export type WatchlistMovie = {
   poster: string | null;
   year: string | null;
 };
+
+export type UpcomingItem = {
+  showId: number;
+  showName: string;
+  poster: string | null;
+  season: number;
+  episode: number;
+  title: string | null;
+  /** YYYY-MM-DD */
+  air: string;
+  still: string | null;
+};
+
+/**
+ * Every announced episode of the followed shows for the next 90 days, from the
+ * air dates already cached in metadata: the Upcoming tab and the widget, and
+ * the same dates the episode notifications schedule from.
+ */
+export function upcomingEpisodes(limit = 150): UpcomingItem[] {
+  const today = new Date().toISOString().slice(0, 10);
+  const horizon = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+  const out: UpcomingItem[] = [];
+  for (const sp of getShowProgress()) {
+    if (!sp.followed || sp.archived) continue;
+    const m = showMeta(sp.tvdbId);
+    if (!m) continue;
+    for (const [key, em] of Object.entries(m.episodes)) {
+      const air = em?.air;
+      if (!air || air <= today || air > horizon) continue;
+      const [se, ep] = key.split('-').map(Number);
+      if (!se || se < 1) continue;
+      out.push({
+        showId: sp.tvdbId,
+        showName: sp.name,
+        poster: sp.posterUrl,
+        season: se,
+        episode: ep,
+        title: em.title ?? null,
+        air,
+        still: em.still ?? null,
+      });
+    }
+  }
+  out.sort((a, b) => a.air.localeCompare(b.air) || a.showName.localeCompare(b.showName) || a.episode - b.episode);
+  return out.slice(0, limit);
+}
 
 export function upNextList(limit = 8): UpNextItem[] {
   const shows = db.getAllSync<{ tvdbId: number; name: string; posterUrl: string | null; last: string | null }>(

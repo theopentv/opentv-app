@@ -14,10 +14,10 @@
 import { File, Paths, Directory } from 'expo-file-system';
 import { Platform } from 'react-native';
 
-import { heatmapData, upNextList, moviesToWatch, type UpNextItem, type WatchlistMovie } from '@/widget-data';
+import { heatmapData, upcomingEpisodes, upNextList, moviesToWatch, type UpcomingItem, type UpNextItem, type WatchlistMovie } from '@/widget-data';
 import type { HeatWidgetData } from '@/pure';
 
-import { widgetLabels } from '../widgets/labels';
+import { dayWords, widgetLabels } from '../widgets/labels';
 
 export const APP_GROUP = 'group.com.insightfy.opentv';
 
@@ -25,6 +25,10 @@ export type WidgetPayload = {
   updatedAt: string;
   upNext: (UpNextItem & { code: string; thumb: string | null })[];
   movies: (WatchlistMovie & { thumb: string | null })[];
+  /** Soonest first. The widget counts the days itself, so "3 days" stays true
+   *  between app opens; `dayWords` is that count in the app's language. */
+  upcoming: (UpcomingItem & { code: string; thumb: string | null })[];
+  dayWords: string[];
   /**
    * The activity grid, one entry per widget size, keyed by how many months it
    * covers. THREE OF THEM, because a WidgetKit extension cannot recompute:
@@ -61,6 +65,10 @@ async function thumb(dir: Directory, url: string | null, name: string): Promise<
   }
 }
 
+export function upcomingRow(u: UpcomingItem): WidgetPayload['upcoming'][number] {
+  return { ...u, code: `S${String(u.season).padStart(2, '0')} | E${String(u.episode).padStart(2, '0')}`, thumb: null };
+}
+
 export async function syncWidgets(): Promise<void> {
   try {
     const upNext = upNextList(8);
@@ -74,6 +82,8 @@ export async function syncWidgets(): Promise<void> {
         thumb: null,
       })),
       movies: movies.map((m) => ({ ...m, thumb: null })),
+      upcoming: upcomingEpisodes(8).map(upcomingRow),
+      dayWords: dayWords(),
       heat: { '1': heatmapData(1), '3': heatmapData(3), '6': heatmapData(6) },
       labels: widgetLabels(),
     };
@@ -91,6 +101,9 @@ export async function syncWidgets(): Promise<void> {
       }
       for (let i = 0; i < payload.movies.length; i++) {
         payload.movies[i].thumb = await thumb(thumbs, payload.movies[i].poster, `mv-${i}.jpg`);
+      }
+      for (const u of payload.upcoming) {
+        u.thumb = await thumb(thumbs, u.still ?? u.poster, `ce-${u.showId}-${u.season}-${u.episode}.jpg`);
       }
       new File(group, 'widget-data.json').writeSync(JSON.stringify(payload));
       /*
@@ -142,6 +155,13 @@ export async function syncWidgets(): Promise<void> {
             const { data, cell } = heatLayout(info.width, info.height, (m) => payload.heat[String(m)]);
             return HeatmapWidget({ data, cell });
           },
+          widgetNotFound: () => {},
+        });
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { UpcomingWidget } = require('../widgets/UpcomingWidget') as typeof import('../widgets/UpcomingWidget');
+        void requestWidgetUpdate({
+          widgetName: 'Upcoming',
+          renderWidget: (info) => UpcomingWidget({ items: payload.upcoming, tall: info.height >= 220 }),
           widgetNotFound: () => {},
         });
         // eslint-disable-next-line @typescript-eslint/no-require-imports

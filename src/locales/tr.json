@@ -3690,6 +3690,8 @@
     }
   },
   "widgets": {
+    "inDays": {"one": "{{count}} gün sonra", "other": "{{count}} gün sonra"},
+    "nothingUpcoming": "Henüz duyurulan yok",
     "upNext": "Sıradaki",
     "movies": "Filmler",
     "moviesToWatch": "İzlenecek filmler",

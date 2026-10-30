@@ -4254,6 +4254,8 @@
     }
   },
   "widgets": {
+    "inDays": {"zero": "بعد {{count}} يوم", "one": "بعد يوم", "two": "بعد يومين", "few": "بعد {{count}} أيام", "many": "بعد {{count}} يومًا", "other": "بعد {{count}} يوم"},
+    "nothingUpcoming": "لا شيء معلن بعد",
     "upNext": "التالي",
     "movies": "الأفلام",
     "moviesToWatch": "أفلام للمشاهدة",
