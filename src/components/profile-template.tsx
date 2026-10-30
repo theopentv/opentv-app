@@ -53,7 +53,7 @@ import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
-import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, useScreenWidth } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, useFoldScrollProps, useScreenWidth } from '@/components/ui';
 import { Poster } from '@/components/poster';
 import { PosterRail, SectionHeader, StatsGrid, StatsRail, type RailItem, type StatCard } from '@/components/profile-sections';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -510,6 +510,7 @@ export function ProfileTemplate({
   children,
 }: ProfileTemplateProps) {
   const W = useScreenWidth();
+  const foldScroll = useFoldScrollProps();
   const CONTENT_W = Math.min(W, PROFILE_MAX_WIDTH);
   /** The room inside a block: the page, less the margin on each side. Rails are
    *  sized from this and clipped to it, so nothing can reach the screen edge. */
@@ -1302,6 +1303,7 @@ export function ProfileTemplate({
             runOnJS(startEditing)();
           })}>
       <Animated.ScrollView
+        {...foldScroll}
         ref={scrollRef}
         // A RAIL STILL GLIDING MUST NOT FREEZE THE NEXT ONE. Its scroll events
         // bubble here, and with a finger down on another rail this page took

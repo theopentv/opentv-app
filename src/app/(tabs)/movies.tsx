@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { EmptyState, Screen, TopTabs, useDetailRouter, useScreenWidth } from '@/components/ui';
+import { EmptyState, Screen, TopTabs, useDetailRouter, useFoldScrollProps, useScreenWidth } from '@/components/ui';
 import { getMovies, type MovieRow } from '@/db';
 import { airCountdown, gridGeometry, type AirIn } from '@/pure';
 import { colors, radius, space, ls } from '@/theme';
@@ -29,6 +29,7 @@ export default function Movies() {
 
 function MoviesScreen() {
   const detail = useDetailRouter();
+  const foldScroll = useFoldScrollProps();
   const [tab, setTab] = useState<(typeof TABS)[number]>('Watch List');
   // live from the database — marking/unmarking a movie updates the grid
   const [movies, setMovies] = useState(getMovies());
@@ -71,6 +72,7 @@ function MoviesScreen() {
       {tab === 'Watch List' ? (
         planned.length > 0 ? (
           <SectionList
+            {...foldScroll}
             sections={[{ title: t('movies.watchNextSection'), data: chunk(planned, cols) }]}
             keyExtractor={(row) => row.map((m) => m.name).join('|')}
             stickySectionHeadersEnabled
@@ -109,6 +111,7 @@ function MoviesScreen() {
         )
       ) : upcoming.length > 0 ? (
         <SectionList
+          {...foldScroll}
           sections={[{ title: t('movies.notOutYetSection'), data: chunk(upcoming, cols) }]}
           keyExtractor={(row) => row.map((x) => x.m.name).join('|')}
           stickySectionHeadersEnabled

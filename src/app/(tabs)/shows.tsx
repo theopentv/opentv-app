@@ -9,7 +9,7 @@ import { Text } from '@/components/text';
 import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
-import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useFold, useScreenWidth } from '@/components/ui';
+import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useFoldScrollProps, useFold, useScreenWidth } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -130,6 +130,7 @@ function ShowsScreen() {
   const plus = usePlus();
   const W = useScreenWidth();
   const detail = useDetailRouter();
+  const foldScroll = useFoldScrollProps();
   const half = useFold()?.half ?? null;
   const openShow = (id: number) => detail.push(`/show/${id}`);
   // the Watch List's rows and grid run full width (no ContentColumn cap) —
@@ -468,6 +469,7 @@ function ShowsScreen() {
       {tab === 'Watch List' ? (
         <View style={{ flex: 1 }}>
         <FlatList
+          {...foldScroll}
           ref={listRef}
           // TV Time: black cards on a grey page, not grey cards on black.
           style={{ backgroundColor: colors.panel }}
@@ -779,6 +781,7 @@ function ShowsScreen() {
         </View>
       ) : (
         <FlatList
+          {...foldScroll}
           style={{ backgroundColor: colors.panel }}
           data={upcoming}
           keyExtractor={(u) => `${u.showId}-${u.season}-${u.episode}`}

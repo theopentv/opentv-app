@@ -8,7 +8,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { a11yAction } from '@/a11y';
 import { Poster, posterSpeech } from '@/components/poster';
 import { FoldSplit } from '@/components/fold-split';
-import { NavHeader, Screen, useDetailRouter, useScreenWidth } from '@/components/ui';
+import { NavHeader, Screen, useDetailRouter, useFoldScrollProps, useScreenWidth } from '@/components/ui';
 import db, { getShowProgress, setFollowing, setShowArchived, setShowFavorited, setShowFinished, getRecentShows } from '@/db';
 import { tapLight } from '@/haptics';
 import { showFacts } from '@/filter-facts';
@@ -136,6 +136,7 @@ function AllShowsScreen() {
   const active = activeFilterCount(filters);
   // columns follow the live viewport — 3 on a phone, up to 9 on a landscape iPad
   const detail = useDetailRouter();
+  const foldScroll = useFoldScrollProps();
   const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
 
   /* Only whether there are enough to make a grid — the card reads the
@@ -178,6 +179,7 @@ function AllShowsScreen() {
         )}
       </View>
       <FlatList
+        {...foldScroll}
         // remount on a column change — FlatList cannot vary numColumns in place
         key={cols}
         data={shows}

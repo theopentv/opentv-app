@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, Pressable, SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen, useDetailRouter, useScreenWidth } from '@/components/ui';
+import { NavHeader, Screen, useDetailRouter, useFoldScrollProps, useScreenWidth } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovies, type MovieRow, getRecentMovies } from '@/db';
 import { movieFacts } from '@/filter-facts';
@@ -31,6 +31,7 @@ export default function AllMovies() {
 
 function AllMoviesScreen() {
   const detail = useDetailRouter();
+  const foldScroll = useFoldScrollProps();
   // live from the database — un/marking a movie elsewhere updates the grids
   const [movies, setMovies] = useState(getMovies());
   useFocusEffect(
@@ -138,6 +139,7 @@ function AllMoviesScreen() {
       </View>
       <View style={{ flex: 1 }}>
         <SectionList
+          {...foldScroll}
           ref={listRef}
           sections={sections}
           keyExtractor={(row) => row.map((m) => m.name).join('|')}
