@@ -64,6 +64,10 @@ export function FoldSplit({ children }: { children: ReactNode }) {
   return (
     <FoldContext.Provider value={fold}>
       <View style={half != null ? s.row : s.fill}>
+        {/* Behind both halves, so the cover runs across the fold with no gap. */}
+        {half != null && backdrop != null && page == null && (
+          <Image source={{ uri: backdrop }} style={s.backdrop} contentFit="cover" />
+        )}
         {/* Wider than `half` by the safe areas: the scene pads both sides inside
             this box, so `half` is what is left, ending before the fold. */}
         <View style={half != null ? { width: half + left + right } : s.fill}>
@@ -77,9 +81,7 @@ export function FoldSplit({ children }: { children: ReactNode }) {
                   <page.Page key={top} />
                 </ScreenWidthContext.Provider>
               </DetailPaneContext.Provider>
-            ) : (
-              backdrop != null && <Image source={{ uri: backdrop }} style={s.backdrop} contentFit="cover" />
-            )}
+            ) : null}
           </View>
         )}
       </View>
