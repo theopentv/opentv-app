@@ -47,7 +47,8 @@ export function useLiveCoverShape(): string | null {
 export function openCoverAdjust(): void {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { router } = require('expo-router') as typeof import('expo-router');
-  router.dismissAll();
+  // Nothing to dismiss when this was opened from a tab or a link.
+  if (router.canDismiss()) router.dismissAll();
   setTimeout(() => router.push('/cover-adjust'), 400);
 }
 
