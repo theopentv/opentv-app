@@ -1,9 +1,8 @@
-import { useDuoFullWidth } from '@/duo-layout';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
-import { cloneElement, createContext, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
 import { I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,9 +35,6 @@ export function useTopInset(): number {
   return insets.top || initialWindowMetrics?.insets.top || 0;
 }
 
-/** The width of the pane a screen sits in, when it is not the whole window. */
-export const ScreenWidthContext = createContext<number | null>(null);
-
 /** The width a page has to lay out in: the window, less the left/right safe
  *  area. On the iPhone Duo closed the clock strip takes a column; anything
  *  sized from the raw window width ran under it. Equal to the window width on
@@ -46,31 +42,7 @@ export const ScreenWidthContext = createContext<number | null>(null);
 export function useScreenWidth(): number {
   const { width } = useWindowDimensions();
   const { left, right } = useSafeAreaInsets();
-  const half = use(ScreenWidthContext);
-  return half ?? width - left - right;
-}
-
-/**
- * The width of the half before the fold on an open iPhone Duo held sideways,
- * null everywhere else. Read from size, as `ContentColumn` does: an iPhone (not
- * an iPad, which has no fold) wider than 600pt and wider than tall.
- */
-// ponytail: the middle of the window, which is the fold when the app is built with
-// Xcode 27.1. The native reserved-region API would give it exactly.
-/** Half of the band beside the fold that nothing should sit in. */
-const FOLD_GAP = 14;
-
-export function useFoldHalf(): number | null {
-  const { width, height } = useWindowDimensions();
-  const { left } = useSafeAreaInsets();
-  const fullWidth = useDuoFullWidth();
-  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - left - FOLD_GAP : null;
-}
-
-/** An iPhone Duo in either state: no other iPhone is this wide on its short side. */
-export function useIsDuo(): boolean {
-  const { width, height } = useWindowDimensions();
-  return Platform.OS === 'ios' && !Platform.isPad && Math.min(width, height) >= 460;
+  return width - left - right;
 }
 
 /** Black full-height screen with a safe top inset. */
@@ -85,14 +57,13 @@ export function Screen({ children }: { children: ReactNode }) {
   // the content keeps clear here instead. 0 on every other iPhone in portrait.
   // A sheet does not reach the strip, though the insets still say so: that left a
   // black band down the side of every modal on the Duo. Narrower than the window
-  // and not a pane means a sheet.
+  // means a sheet.
   const { left, right } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const inFold = use(FoldContext) != null;
   const [sheet, setSheet] = useState(false);
   return (
     <View
-      onLayout={(e) => setSheet(!inFold && e.nativeEvent.layout.width < width - 1)}
+      onLayout={(e) => setSheet(e.nativeEvent.layout.width < width - 1)}
       style={{
         flex: 1,
         backgroundColor: colors.bg,
@@ -418,59 +389,18 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  * Returns nothing below the breakpoint, so phones and narrow windows keep
  * exactly the full-screen behaviour they have today.
  */
-/**
- * THE DETAIL PAGE IN THE RIGHT HALF of an open iPhone Duo. The page itself, not
- * a summary: the same screen, told its id and width here instead of by the
- * route and the window, and given no native header to borrow.
- */
-export type DetailPane = { id: string; width: number; canBack: boolean; back: () => void; close: () => void };
-export const DetailPaneContext = createContext<DetailPane | null>(null);
-export const useDetailPane = (): DetailPane | null => use(DetailPaneContext);
-
-/** Set by `FoldSplit`; null outside one. */
-export type Fold = {
-  half: number | null;
-  open: (path: string, inPane: boolean) => void;
-  setBackdrop: (uri: string | null) => void;
-};
-export const FoldContext = createContext<Fold | null>(null);
-export const useFold = (): Fold | null => use(FoldContext);
-
-/**
- * `router.push`, for a page that may belong in the right half: a show, film or
- * episode goes there when the Duo is open, and anything else navigates as usual.
- */
-export function useDetailRouter() {
-  const fold = use(FoldContext);
-  const pane = use(DetailPaneContext);
-  return {
-    push: (path: string) => {
-      if (fold?.half != null && /^\/(show|movie|episode)\//.test(path)) fold.open(path, pane != null);
-      else router.push(path as never);
-    },
-    /** Leave this page, wherever it lives. */
-    leave: () => {
-      if (pane) pane.close();
-      else router.back();
-    },
-  };
-}
-
 /** A detail page keeps clear of the iPhone Duo's clock strip (0 everywhere
  *  else). It is a full-width native push on every screen size: the pane that
  *  placed it beside the list is off -- see design/iphone-duo/PLAN.md, Phase 4. */
 export function useDetailPaneStyle(): ViewStyle | null {
   const { left, right } = useSafeAreaInsets();
-  const pane = useDetailPane();
-  return !pane && (left || right) ? { paddingLeft: left, paddingRight: right } : null;
+  return left || right ? { paddingLeft: left, paddingRight: right } : null;
 }
 
 /** The width a detail page lays out in: the window less the Duo's strip. The
  *  episode pager sizes each page from this. */
 export function useDetailWidth(): number {
-  const pane = useDetailPane();
-  const screen = useScreenWidth();
-  return pane?.width ?? screen;
+  return useScreenWidth();
 }
 
 /** TV Time's underline text tabs — WATCH LIST | UPCOMING.

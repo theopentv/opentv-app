@@ -663,8 +663,6 @@
       "classicTabBar": "Barra de pestañas clásica",
       "classicTabBarSub": "La barra plana en la parte inferior de antes de iOS 26, en lugar de la flotante",
       "classicTabBarRestart": "Cierra OpenTV y vuelve a abrirlo para ver la nueva barra de pestañas.",
-      "duoFullWidth": "Ancho completo al abrir",
-      "duoFullWidthSub": "Usa toda la pantalla con el iPhone Duo abierto, en lugar de dos paneles.",
       "simpleView": "Vista sencilla",
       "simpleViewSub": "Solo cuántas series, episodios y películas. Oculta el tiempo visto, el mapa de días, el Wrapped, los recuerdos y el objetivo anual."
     },

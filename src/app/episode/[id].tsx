@@ -3,7 +3,7 @@ import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
-import { Alert, I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { NoteRow } from '@/components/note-row';
 import { Text } from '@/components/text';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -19,8 +19,7 @@ import { CommunityRating } from '@/components/rating-breakdown';
 import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { PaneBar } from '@/components/pane-bar';
-import { CheckCircle, closeItem, ContentColumn, useDetailPane, useDetailPaneStyle, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, useDetailPaneStyle, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -1121,10 +1120,7 @@ export default function EpisodePagerScreen() {
   // the pane's width when beside the list, the window's otherwise
   const W = usePageWidth();
   const split = useCommentsSplit();
-  // In the Duo's right half the id comes from the page beside it, not the route.
-  const pane = useDetailPane();
-  const params = useLocalSearchParams<{ id: string }>();
-  const id = pane?.id ?? params.id;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   // ids look like "72454-s1e2" — resolve the show from the library first
   // (imported/added shows), falling back to the bundled seed (demo library)
@@ -1189,7 +1185,7 @@ export default function EpisodePagerScreen() {
   const dotStart = Math.min(Math.max(index - 2, 0), Math.max(episodes.length - dotCount, 0));
 
   const insets = useSafeAreaInsets();
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true, off: pane != null });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
 
@@ -1319,8 +1315,6 @@ export default function EpisodePagerScreen() {
         <SplitPage split={split}>
         {/* Native, transparent: its close button goes into the iPhone Duo's strip.
             The pager dots below stay in the same row, centred under it. */}
-        <PaneBar />
-        {!pane && (
         <Stack.Screen
           options={{
             headerShown: true,
@@ -1329,7 +1323,6 @@ export default function EpisodePagerScreen() {
             ...headerItems({ left: [closeItem()] }),
           }}
         />
-        )}
         {/* header right under the status bar: close + pager dots — it never
             scrolls, so dragging it down always dismisses */}
         <GestureDetector gesture={headerGesture}>

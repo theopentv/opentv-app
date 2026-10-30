@@ -21,12 +21,11 @@ import { a11yAction, a11yHidden } from '@/a11y';
 import { NoteRow } from '@/components/note-row';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { posterSpeech } from '@/components/poster';
-import { PaneBar } from '@/components/pane-bar';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatchedMany, type EpisodeWatch } from '@/db';
 import { tapSelection } from '@/haptics';
@@ -104,12 +103,7 @@ export default function ShowScreen() {
   const winW = useDetailWidth();
   // Read once per page: the season does not change while a page is open.
   const [season] = useState(() => currentLook(isPlus()));
-  // In the Duo's right half the id comes from the list beside it, not the route.
-  const pane = useDetailPane();
-  const params = useLocalSearchParams<{ id: string; tmdbId?: string }>();
-  const id = pane?.id ?? params.id;
-  const tmdbId = pane ? undefined : params.tmdbId;
-  const detail = useDetailRouter();
+  const { id, tmdbId } = useLocalSearchParams<{ id: string; tmdbId?: string }>();
   const tvdbId = Number(id);
 
   // metadata for shows outside the bundle arrives from TMDB at runtime
@@ -275,7 +269,7 @@ export default function ShowScreen() {
     return list;
   }, [show, tick]);
 
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true, off: pane != null });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
   // the horizontal carousel is a native scroll view that grabs vertical drags
@@ -691,9 +685,9 @@ export default function ShowScreen() {
         )}
         {/* The same native close as the loaded page, so it does not jump from
             the iPhone Duo's strip to the top-left while the show loads. */}
-        {!pane && <Stack.Screen
+        <Stack.Screen
           options={{ headerShown: true, headerTransparent: true, title: '', headerTintColor: colors.onArt, ...headerItems({ left: [closeItem()] }) }}
-        />}
+        />
       </View>
     );
   }
@@ -846,7 +840,7 @@ export default function ShowScreen() {
                 style: 'destructive',
                 onPress: () => {
                   deleteShow(show.tvdbId);
-                  detail.leave();
+                  router.back();
                 },
               },
               { text: t('common.cancel'), style: 'cancel' },
@@ -862,18 +856,15 @@ export default function ShowScreen() {
     <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
       <SplitPage split={split}>
       {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
-      <PaneBar actions={showActions()} />
-      {!pane && (
-        <Stack.Screen
-          options={{
-            headerShown: true,
-            headerTransparent: true,
-            title: '',
-            headerTintColor: colors.onArt,
-            ...headerItems({ left: [closeItem()], right: [moreMenuItem(showActions())] }),
-          }}
-        />
-      )}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          title: '',
+          headerTintColor: colors.onArt,
+          ...headerItems({ left: [closeItem()], right: [moreMenuItem(showActions())] }),
+        }}
+      />
       {/* The backdrop runs under the status bar, so its glyphs follow the
           artwork rather than the page — dark-on-dark otherwise. */}
       <StatusBarOnCover />
@@ -1573,7 +1564,7 @@ export default function ShowScreen() {
                     accessibilityLabel={[t('a11y.seasonEpisode', { season: picked.season, episode: picked.episode }), em?.title].filter(Boolean).join(', ')}
                     onPress={() => {
                       tapSelection();
-                      detail.push(`/episode/${show.tvdbId}-s${picked.season}e${picked.episode}`);
+                      router.push(`/episode/${show.tvdbId}-s${picked.season}e${picked.episode}`);
                     }}>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.chartPickCode}>
@@ -1795,7 +1786,7 @@ export default function ShowScreen() {
                 <Pressable
                   style={[styles.carCard, { width: CARD_W }]}
                   accessible={false} importantForAccessibility="no"
-                  onPress={() => detail.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
+                  onPress={() => router.push(`/episode/${show.tvdbId}-s${item.season}e${item.episode}`)}>
                   <View style={styles.carThumb} {...a11yHidden()}>
                     {em?.still ? (
                       <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
