@@ -55,7 +55,9 @@ Tick on a real iPhone and a real Android unless a line says otherwise.
 - [ ] Typing in a comment or modal survives
 - [ ] Modals on the Duo have no black band; side bar present (Xcode 27.1 build)
 - [x] Android release APK opens on the emulator, no crash, versionCode 126
-- [ ] Android: comments list, modals, widgets
+- [x] Android release build (126, emulator): import 361 shows / 21,621 episodes with summary, rating after LET'S GO, free month card, cover pick, Cancel, all four tabs, Upcoming widget registered; no crash
+- [ ] Android: comments list, the widget on a home screen
+- [~] Android: a blank band of about 96dp under the header on every NavHeader screen (Stats, cover picker). Same code in 2.0.4, not new; `Screen` pads for a header that is opaque there
 - [ ] Arabic reads right on the new strings
 
 ## 2.0.4
