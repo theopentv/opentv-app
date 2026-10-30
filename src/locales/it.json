@@ -2861,6 +2861,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "La scelta della copertina funziona di nuovo: scegli un titolo, un'immagine, e Annulla ripristina davvero quella vecchia",
+      "badges": "I tuoi badge di TV Time sono qui. Trovali nelle Statistiche e condividili",
+      "imports": "Le importazioni si aprono subito, i dati degli episodi si completano in background",
+      "upcoming": "Nuovo widget dei prossimi episodi, con conto alla rovescia",
+      "fixes": "Correzioni: i commenti non saltano più, le serie in corso mostrano lo stato giusto, le notifiche sono più ordinate"
+    },
     "title": "Novità",
     "done": "Ho capito",
     "close": "Chiudi",

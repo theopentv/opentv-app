@@ -2861,6 +2861,13 @@
     "overlayAuto": "Otomatik"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Kapak seçimi yeniden çalışıyor: bir başlık, bir görsel seç; İptal eskisini gerçekten geri getirir",
+      "badges": "TV Time rozetlerin burada. İstatistikler'de gör ve paylaş",
+      "imports": "İçe aktarma hemen açılır, bölüm verileri arka planda tamamlanır",
+      "upcoming": "Yeni Yaklaşan widget'ı, geri sayımla",
+      "fixes": "Düzeltmeler: yorumlar artık zıplamıyor, devam eden diziler doğru durumu gösteriyor, bildirimler daha düzenli"
+    },
     "title": "Yenilikler",
     "done": "Anladım",
     "close": "Kapat",

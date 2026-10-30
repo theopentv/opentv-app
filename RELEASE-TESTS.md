@@ -38,18 +38,19 @@ Tick on a real iPhone and a real Android unless a line says otherwise.
 
 **Badges**
 - [ ] Library imported earlier: badges appear on opening Stats
-- [ ] A badge opens its page, Share works
+- [x] A badge opens its page (simulator, Marathoner; Share not confirmed)
 - [ ] Fresh library with no TV Time: counts make sense
 
 **Widget (needs a build)**
 - [ ] Upcoming placed on iOS and Android, countdown right, row opens the episode, elsewhere opens Upcoming
-- [ ] Android preview image is real, not Up Next's
+- [x] Android preview image is real (invented titles)
 
 **The rest**
 - [ ] The bell, with a member account: sections, grouping, unread tint, tap-through
 - [ ] Finished only on ended shows, Up to date on running ones
 - [ ] Emotion calendar legend has the yellow
-- [ ] Two rails at once on Profile, Explore, show About; pull-down still closes the show page
+- [x] Two rails at once on Profile (iPhone)
+- [ ] Two rails at once on Explore, show About; pull-down still closes the show page
 - [ ] Comments do not jump; memory fine on a big archive
 - [ ] Typing in a comment or modal survives
 - [ ] Modals on the Duo have no black band; side bar present (Xcode 27.1 build)

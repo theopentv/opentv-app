@@ -2861,6 +2861,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Elegir portada vuelve a funcionar: elige un título, una imagen, y Cancelar recupera de verdad la anterior",
+      "badges": "Tus insignias de TV Time ya están aquí. Míralas en Estadísticas y compártelas",
+      "imports": "Las importaciones se abren al momento y los datos de episodios se completan en segundo plano",
+      "upcoming": "Nuevo widget de próximos episodios, con cuenta atrás",
+      "fixes": "Correcciones: los comentarios ya no saltan, las series en emisión muestran el estado correcto y las notificaciones están más ordenadas"
+    },
     "title": "Novedades",
     "done": "Entendido",
     "close": "Cerrar",

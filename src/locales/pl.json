@@ -3079,6 +3079,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Wybór okładki znów działa: wybierz tytuł, obraz, a Anuluj naprawdę przywraca poprzednią",
+      "badges": "Twoje odznaki z TV Time są tutaj. Zobacz je w Statystykach i udostępnij",
+      "imports": "Import otwiera się od razu, dane odcinków uzupełniają się w tle",
+      "upcoming": "Nowy widżet nadchodzących odcinków z odliczaniem",
+      "fixes": "Poprawki: komentarze już nie skaczą, emitowane seriale mają właściwy status, powiadomienia są bardziej uporządkowane"
+    },
     "title": "Co nowego",
     "done": "Jasne",
     "close": "Zamknij",

@@ -2861,6 +2861,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Escolher capa voltou a funcionar: escolha um título, uma imagem, e Cancelar realmente traz a antiga de volta",
+      "badges": "Suas insígnias do TV Time estão aqui. Veja nas Estatísticas e compartilhe",
+      "imports": "Importações abrem na hora, e os dados dos episódios chegam em segundo plano",
+      "upcoming": "Novo widget de próximos episódios, com contagem regressiva",
+      "fixes": "Correções: comentários não pulam mais, séries em exibição mostram o status certo, notificações mais organizadas"
+    },
     "title": "Novidades",
     "done": "Entendi",
     "close": "Fechar",

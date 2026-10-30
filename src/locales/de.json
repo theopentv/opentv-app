@@ -2861,6 +2861,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Titelbild wählen funktioniert wieder: Titel wählen, Bild wählen, und Abbrechen stellt das alte wirklich wieder her",
+      "badges": "Deine TV-Time-Abzeichen sind da. Sieh sie dir in den Statistiken an und teile sie",
+      "imports": "Importe öffnen sofort, Episodendaten laden im Hintergrund nach",
+      "upcoming": "Neues Widget für kommende Folgen, mit Countdown",
+      "fixes": "Fehlerbehebungen: Kommentare springen nicht mehr, laufende Serien zeigen den richtigen Status, Mitteilungen sind übersichtlicher"
+    },
     "title": "Was ist neu",
     "done": "Alles klar",
     "close": "Schließen",

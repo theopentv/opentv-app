@@ -2861,6 +2861,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Choosing a cover works again: pick a title, pick a picture, and Cancel really puts the old one back",
+      "badges": "Your TV Time badges are here. See them in Stats and share them",
+      "imports": "Imports open straight away, and episode data fills in behind the app",
+      "upcoming": "New Upcoming widget, with a countdown to the next episodes",
+      "fixes": "Fixes: comments no longer jump, shows still airing say Up to date, and notifications are tidier"
+    },
     "title": "What's new",
     "done": "Got it",
     "close": "Close",

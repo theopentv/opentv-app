@@ -2861,6 +2861,13 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v210": {
+      "cover": "Le choix de la couverture fonctionne à nouveau : choisissez un titre, une image, et Annuler remet vraiment l'ancienne",
+      "badges": "Vos badges TV Time sont là. Retrouvez-les dans les Statistiques et partagez-les",
+      "imports": "Les imports s'ouvrent aussitôt, les données d'épisodes se complètent en arrière-plan",
+      "upcoming": "Nouveau widget des prochains épisodes, avec compte à rebours",
+      "fixes": "Corrections : les commentaires ne sautent plus, les séries en cours affichent le bon statut, les notifications sont mieux rangées"
+    },
     "title": "Nouveautés",
     "done": "Compris",
     "close": "Fermer",
