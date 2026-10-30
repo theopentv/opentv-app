@@ -1019,11 +1019,11 @@ export default function RootLayout() {
             fullScreenGestureEnabled: true,
           }}
         />
-        <Stack.Screen name="review-movies" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="review-movies" options={{ presentation: 'modal', headerShown: true }} />
         <Stack.Screen name="lists/create" options={{ presentation: 'modal' }} />
         {/* one comment and its replies — the permalink a tap on any card opens */}
-        <Stack.Screen name="comment/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="shared-comment/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="comment/[id]" options={{ presentation: 'modal', headerShown: true, animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="shared-comment/[id]" options={{ presentation: 'modal', headerShown: true, animation: 'slide_from_bottom' }} />
         {/* headerShown HERE, not only from NavHeader. In a modal, a header turned on
             from inside the page remounts it and wipes its state ("Dynamically
             changing header's visibility in modals"): a chosen cover title vanished
@@ -1032,7 +1032,7 @@ export default function RootLayout() {
         <Stack.Screen name="cover-picker" options={{ headerShown: true }} />
         {/* Who asked to follow you. A modal, like every other list reached from
             a row rather than a tab. */}
-        <Stack.Screen name="follow-requests" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="follow-requests" options={{ presentation: 'modal', headerShown: true, animation: 'slide_from_bottom' }} />
         <Stack.Screen name="create-topic" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="filters"
