@@ -42,9 +42,14 @@ Play Console record rather than per-change.
 ---
 
 
-## 2.0.5 — the plan
+## 2.1.0 — the plan
 
-**Built 30 Oct, from a real 1,370-show TV Time export on a fresh simulator (branch `2.0.5`, not released):**
+**One release, everything below (Mahmood, 31 Oct; was 2.0.5).** The dates decide the order, not the list: Black Friday starts 27 Nov and Christmas Plus 1 Dec, and Apple review needs margin, so the build has to be submitted by about 20 Nov. Before Black Friday the paywall must show the intro and win-back price (it shows the full price while Apple charges half), and year-end Wrapped must be out before 1 Dec. If a big item is not done by then, it moves to the next release rather than the campaign moving.
+
+**Order:** (1) small fixes: Finished vs Up to date, the emotion legend, the rail fix on Explore and the show page if they have the bug; (2) paywall prices, free month for payers, once per campaign; (3) Upcoming widget, Notifications screen, TV Time parity list; (4) Duo two panes, Shows tab first and approved before the rest; (5) the import carrying on with the app closed; ideas board only if agreed. Then: full import test uninterrupted, iPhone and Android, translations, RELEASE-TESTS, store notes.
+
+
+**Built 30 Oct, from a real 1,370-show TV Time export on a fresh simulator (branch `2.1.0`, not released):**
 - **An import no longer waits for episode data.** The library is saved before that step, which was most of a seven-minute import, so the summary opens straight away and the fetch runs behind the app with a small bar above the tabs (`MetaFillBar`, 20+ shows only, never on other screens). A 1,367-show fill took about three minutes. An interrupted fill resumes in full at the next launch: the 200-a-launch cap is gone. Until a show's data lands its poster bar is empty instead of a guess. Not built: carrying on with the app closed (`BGContinuedProcessingTask`, Android foreground service).
 - **The rating prompt waits for LET'S GO** instead of covering the import summary.
 - **The free month has a date.** Before 1 December the card says so, the button is "Count me in", and everybody who has not had it sees it, signed in or not, Plus included ("on top of your Plus"). Saying yes saves the claim (`freeMonthStillWaiting`, a week past the date) and it is made at the first launch after the dashboard's switch opens; "You're in" closes with its ✕ and the claim stays. It used to invite a sign-in and then vanish while the switch was off. Payers still need the server work below or the dashboard's Give.
