@@ -514,7 +514,7 @@ export default function ShowsScreen() {
                         // TalkBack stopped on the bare frame and said only
                         // "double tap". "no" hides the frame and keeps its children.
                         importantForAccessibility="no"
-                        onPress={() => router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`)}>
+                        onPress={() => (half != null ? setPicked(w.showId) : router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`))}>
                         <View style={styles.thumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -632,7 +632,7 @@ export default function ShowsScreen() {
                     // guess, so open the show (which fetches the real
                     // structure) rather than a possibly-nonexistent episode,
                     // same guard markNext uses
-                    next === 'unknown'
+                    next === 'unknown' || half != null
                       ? openShow(sp.tvdbId)
                       : router.push(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
                   }
