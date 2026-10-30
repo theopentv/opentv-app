@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Keyboard, FlatList, Pressable, StyleSheet, TextInput, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
@@ -131,7 +131,9 @@ export default function AllShowsScreen() {
   // Open on its side: the grid keeps the left half, a tapped show the right.
   const half = useFoldHalf();
   const [picked, setPicked] = useState<number | null>(null);
-  const pickedShow = picked == null ? null : (rows.find((r) => r.tvdbId === picked) ?? null);
+  const clearPicked = useCallback(() => setPicked(null), []);
+  const { width: windowW } = useWindowDimensions();
+  const paneW = windowW - (half ?? 0) - 28;
   const cols = gridGeometry(half ?? fullWidth, space.md, 3).cols;
 
   /* Only whether there are enough to make a grid — the card reads the
@@ -228,7 +230,7 @@ export default function AllShowsScreen() {
         {active > 0 ? <Text style={styles.filtersBadge}>{active}</Text> : null}
       </Pressable>
       </View>
-      {half != null && <ShowPane show={pickedShow} next={null} />}
+      {half != null && <ShowPane id={picked} width={paneW} onClose={clearPicked} />}
       </View>
     </Screen>
   );

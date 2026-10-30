@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, Stack, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
-import { cloneElement, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, createContext, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
 import { I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -400,18 +400,30 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  * Returns nothing below the breakpoint, so phones and narrow windows keep
  * exactly the full-screen behaviour they have today.
  */
+/**
+ * THE DETAIL PAGE IN THE RIGHT HALF of an open iPhone Duo. The page itself, not
+ * a summary: the same screen, told its id and width here instead of by the
+ * route and the window, and given no native header to borrow.
+ */
+export type DetailPane = { id: string; width: number; close: () => void };
+export const DetailPaneContext = createContext<DetailPane | null>(null);
+export const useDetailPane = (): DetailPane | null => use(DetailPaneContext);
+
 /** A detail page keeps clear of the iPhone Duo's clock strip (0 everywhere
  *  else). It is a full-width native push on every screen size: the pane that
  *  placed it beside the list is off -- see design/iphone-duo/PLAN.md, Phase 4. */
 export function useDetailPaneStyle(): ViewStyle | null {
   const { left, right } = useSafeAreaInsets();
-  return left || right ? { paddingLeft: left, paddingRight: right } : null;
+  const pane = useDetailPane();
+  return !pane && (left || right) ? { paddingLeft: left, paddingRight: right } : null;
 }
 
 /** The width a detail page lays out in: the window less the Duo's strip. The
  *  episode pager sizes each page from this. */
 export function useDetailWidth(): number {
-  return useScreenWidth();
+  const pane = useDetailPane();
+  const screen = useScreenWidth();
+  return pane?.width ?? screen;
 }
 
 /** TV Time's underline text tabs — WATCH LIST | UPCOMING.

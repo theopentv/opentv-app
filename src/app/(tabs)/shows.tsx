@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { FlatList, I18nManager, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 
 import { a11yAction, a11yHidden } from '@/a11y';
@@ -125,7 +125,9 @@ export default function ShowsScreen() {
   // so nothing crosses the fold; a tapped show fills the right (see ShowPane).
   const half = useFoldHalf();
   const W = half ?? fullWidth;
+  const { width: windowW } = useWindowDimensions();
   const [picked, setPicked] = useState<number | null>(null);
+  const paneW = windowW - (half ?? 0) - 28;
   const openShow = (id: number) => {
     if (half != null) setPicked(id);
     else router.push(`/show/${id}`);
@@ -403,7 +405,7 @@ export default function ShowsScreen() {
   // The native tab bar floats over the list; its height is in the bottom inset.
   const tabBarSpace = useSafeAreaInsets().bottom;
 
-  const pickedShow = picked == null ? null : (getShowProgress().find((p) => p.tvdbId === picked) ?? null);
+  const clearPicked = () => setPicked(null);
   return (
     <Screen>
       <View style={half != null ? styles.split : styles.single}>
@@ -861,7 +863,7 @@ export default function ShowsScreen() {
       </View>
       </View>
       {half != null && (
-        <ShowPane show={pickedShow} next={pickedShow ? realNext(pickedShow) : null} />
+        <ShowPane id={picked} width={paneW} onClose={clearPicked} />
       )}
       </View>
     </Screen>
