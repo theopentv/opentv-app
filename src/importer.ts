@@ -33,7 +33,7 @@ import {
   unzipExport,
 } from '../packages/tvtime-export/src';
 import { bingersRows, bingersTable, bingersTableKind, bingersTmdbOnlyShows, classifyForeignJson, cp1252, detectForeignSource, imdbRows, imdbRemoteHit, imdbTvRows, isImdbCsv, isLetterboxdImportCsv, letterboxdImportRows, letterboxdRows, serializdRows, simklRows, sofaTimeItems, sofaTimeRows, traktRows, type BingersTables, type ForeignRows, type ImdbTvHit, type ImdbTvRef, type SerializdLink } from '@/foreign-import';
-import { importVerdict, pickTmdbMovieResult, type ImportDiagnosis } from '@/pure';
+import { importVerdict, isTitleOfFilm, pickTmdbMovieResult, type ImportDiagnosis } from '@/pure';
 
 import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, deletedShowIds, getMeta, hasLibrary, libraryOwner, mergeImportedCustomLists, recountShow, setMeta, unmarkedEpisodeKeys, wipeAllData } from '@/db';
 import { withImportLock } from '@/import-lock';
@@ -1824,6 +1824,23 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       notImported.push({ kind: 'movie', name: m.name, reason: 'No confident match on TMDB or TheTVDB — artwork or year may be missing', fixable: true, matchIssue: true });
     }
   }
+  // ONE NAME, TWO FILMS. `movies` is keyed by name, so Simkl's Cinderella (1950)
+  // would land on the library's Cinderella (2015) and vanish. Only when the file
+  // itself names the id: a title search is not proof that a row is another film.
+  if (merge) {
+    for (const m of movies) {
+      const info = movieInfo.get(m.name);
+      const year = m.year ?? info?.year;
+      if (!info?.tmdbId || !year || !foreignMovieTmdb.has(m.name)) continue;
+      const cur = db.getFirstSync<{ tmdbId: number | null }>('SELECT tmdbId FROM movies WHERE name = ?', [m.name]);
+      if (!cur?.tmdbId || cur.tmdbId === info.tmdbId) continue;
+      const renamed = `${m.name} (${year})`;
+      movieInfo.set(renamed, info);
+      for (const r of movieRatings) if (r.name === m.name) r.name = renamed;
+      for (const n of foreignNotes.movies) if (n.movie === m.name) n.movie = renamed;
+      m.name = renamed;
+    }
+  }
   void doneCount;
   void report;
 
@@ -2023,9 +2040,11 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       if (merge) {
         const moved = remappedPos(w.showId, `${w.season}-${w.episode}`);
         const [ms, me] = moved ? moved.split('-').map(Number) : [w.season, w.episode];
+        // A REWATCH IS ITS OWN ROW, known by its date: "this episode is already here"
+        // would drop every second viewing, and a merge lost Henrike 1,406 of them.
         const seen = db.getFirstSync<{ x: number }>(
-          'SELECT 1 AS x FROM watches WHERE showId = ? AND ((season = ? AND episode = ?) OR (season = ? AND episode = ?)) LIMIT 1',
-          [w.showId, w.season, w.episode, ms, me],
+          'SELECT 1 AS x FROM watches WHERE showId = ? AND ((season = ? AND episode = ?) OR (season = ? AND episode = ?)) AND (? = 0 OR watchedAt = ?) LIMIT 1',
+          [w.showId, w.season, w.episode, ms, me, w.rewatch ? 1 : 0, w.watchedAt],
         );
         if (seen) {
           existing.episodes++;
@@ -2413,6 +2432,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   try {
     dedupeDuplicateShows();
     // and the two spellings of one film (watched "Dune (2021)" + watchlist "Dune")
+    await linkBareFilms();
     dedupeDuplicateMovies();
   } catch {
     // dedupe is best-effort — never fail an otherwise-good import over it
@@ -2490,4 +2510,66 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     },
     notImported: notImportedRaw,
   };
+}
+
+/**
+ * GIVE A FILM WITH NO TMDB ID ONE, BY ITS TITLE IN ANOTHER LANGUAGE.
+ *
+ * TV Time wrote the title in the user's language, Simkl the English one, and
+ * TMDB's search finds neither "२ स्टेट्स" nor "Dune: Part One" as a title. So
+ * Henrike had "क्‍वीन" and "Queen" side by side with nothing joining them. The
+ * candidates are what search offered plus the library's films of that year, and
+ * a film only counts if `name` is among its titles in any language. The id then
+ * lets `dedupeDuplicateMovies` fold the two.
+ *
+ * Returns false if a request failed, so a caller can try again later.
+ */
+export async function linkBareFilms(): Promise<boolean> {
+  const rows = db.getAllSync<{ name: string; year: string | null; tmdbId: number | null }>('SELECT name, year, tmdbId FROM movies');
+  const bare = rows.filter((r) => !r.tmdbId && r.year);
+  if (!bare.length) return true;
+  const known = rows.filter((r) => r.tmdbId);
+  let ok = true;
+  type Detail = { poster_path?: string; title?: string; original_title?: string; alternative_titles?: { titles?: { title?: string }[] }; translations?: { translations?: { data?: { title?: string } }[] } };
+  const details = new Map<number, Promise<Detail | null>>();
+  const detail = (id: number) => {
+    let d = details.get(id);
+    if (!d) {
+      d = tmdb<Detail>(`/movie/${id}?append_to_response=alternative_titles,translations`).catch(() => {
+        ok = false;
+        return null;
+      });
+      details.set(id, d);
+    }
+    return d;
+  };
+  await pool(bare, async (b) => {
+    const near = (y: string | null | undefined) => Math.abs(Number((y ?? '').slice(0, 4)) - Number(b.year)) <= 1;
+    let found: { results?: { id: number; release_date?: string }[] } = {};
+    try {
+      found = await tmdb<typeof found>(`/search/movie?query=${encodeURIComponent(b.name)}`);
+    } catch {
+      ok = false;
+    }
+    const ids = new Set<number>((found.results ?? []).filter((x) => near(x.release_date)).map((x) => x.id));
+    for (const k of known) if (near(k.year)) ids.add(k.tmdbId!);
+    for (const id of ids) {
+      const d = await detail(id);
+      if (!d) continue;
+      const titles = [
+        d.title,
+        d.original_title,
+        ...(d.alternative_titles?.titles ?? []).map((x) => x.title),
+        ...(d.translations?.translations ?? []).map((x) => x.data?.title),
+      ];
+      if (!isTitleOfFilm(b.name, titles)) continue;
+      db.runSync('UPDATE movies SET tmdbId = ?, poster = COALESCE(poster, ?) WHERE name = ?', [
+        id,
+        d.poster_path ? `https://image.tmdb.org/t/p/w342${d.poster_path}` : null,
+        b.name,
+      ]);
+      return;
+    }
+  }, 8);
+  return ok;
 }

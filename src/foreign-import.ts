@@ -821,8 +821,17 @@ export function simklRows(json: unknown): ForeignRows {
     if (tvdb && memo) notes.shows.push({ showId: Number(tvdb), season: -1, episode: -1, text: memo });
   }
 
+  // Two films, one title (Footloose 1984 and 2011): `movies` is keyed by name.
+  const filmTitles = new Map<string, number>();
   for (const entry of [...(doc.movies ?? []), ...animeFilms]) {
-    const m = entry.movie ?? titleOf(entry, 'show');
+    const title = (entry.movie ?? titleOf(entry, 'show')).title ?? '';
+    filmTitles.set(title, (filmTitles.get(title) ?? 0) + 1);
+  }
+
+  for (const entry of [...(doc.movies ?? []), ...animeFilms]) {
+    const source = entry.movie ?? titleOf(entry, 'show');
+    const clash = (filmTitles.get(source.title ?? '') ?? 0) > 1 && source.year;
+    const m = clash ? { ...source, title: `${source.title} (${source.year})` } : source;
     const tmdb = Number(m.ids?.tmdb);
     if (m.title && Number.isFinite(tmdb) && tmdb > 0) movieTmdb.push({ name: m.title, tmdbId: tmdb });
     // `plantowatch` is Simkl's watchlist; anything else with a date is a watch.

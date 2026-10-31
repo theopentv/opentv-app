@@ -102,6 +102,7 @@ import {
   episodeKey,
   matchStillsByTitle,
   mayFoldDuplicateMovie,
+  isTitleOfFilm,
   monthWeeks,
   sameFilmById,
   mayFoldDuplicateShow,
@@ -4216,5 +4217,16 @@ describe('monthWeeks', () => {
   });
   it('handles a leap February', () => {
     expect(monthWeeks('2028-02').flat().filter(Boolean)).toHaveLength(29);
+  });
+});
+
+describe('isTitleOfFilm', () => {
+  it('ignores joiners, hyphens and spelling marks', () => {
+    expect(isTitleOfFilm('क्\u200dवीन', ['Queen', 'क्वीन'])).toBe(true);
+    expect(isTitleOfFilm('गोलियों की रासलीला राम-लीला', ['गोलियों की रासलीला रामलीला'])).toBe(true);
+  });
+  it('wants the whole title', () => {
+    expect(isTitleOfFilm('Dune', ['Dune: Part Two'])).toBe(false);
+    expect(isTitleOfFilm('...', ['...'])).toBe(false);
   });
 });

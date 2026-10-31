@@ -153,7 +153,24 @@ export async function hasOriginalZip(): Promise<'yes' | 'no' | 'unknown'> {
  *  onPhase fires with a label while the (thread-blocking) re-import runs and
  *  null when it's done, so the UI can show a progress overlay instead of a
  *  frozen splash. */
+/** Films that already sit twice in a library from before 2.1.1. Not a REPAIR_REV
+ *  bump: that re-runs every pass for everyone to fix one table. Retried on the
+ *  next launch if the network failed. */
+async function foldFilmsOnce(): Promise<void> {
+  if (getMeta('filmsFolded211')) return;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { linkBareFilms } = require('@/importer') as typeof import('@/importer');
+    const finished = await linkBareFilms();
+    dedupeDuplicateMovies();
+    if (finished) setMeta('filmsFolded211', '1');
+  } catch {
+    // never let this touch startup
+  }
+}
+
 export async function runStartupRepairs(onPhase?: (phase: string | null) => void): Promise<void> {
+  void foldFilmsOnce();
   if (getMeta('repairRev') === REPAIR_REV) {
     // The full repair is done, but the importer may have improved since. This
     // pass is local and cheap — the preserved ZIP and a merge — so it is worth

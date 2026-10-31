@@ -168,6 +168,18 @@ describe('traktRows', () => {
 });
 
 describe('simklRows', () => {
+  it('keeps two films of one title apart by year', () => {
+    const out = simklRows({
+      movies: [
+        { status: 'completed', last_watched_at: '2020-01-01', movie: { title: 'Footloose', year: 1984, ids: { tmdb: 1788 } } },
+        { status: 'completed', last_watched_at: '2021-01-01', movie: { title: 'Footloose', year: 2011, ids: { tmdb: 59962 } } },
+      ],
+    });
+    expect(out.movieTmdb).toEqual([
+      { name: 'Footloose (1984)', tmdbId: 1788 },
+      { name: 'Footloose (2011)', tmdbId: 59962 },
+    ]);
+  });
   it('flattens seasons into one row per episode', () => {
     const out = simklRows({
       shows: [

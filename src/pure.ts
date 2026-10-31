@@ -8902,3 +8902,20 @@ export function monthWeeks(month: string): (string | null)[][] {
   while (cells.length % 7) cells.push(null);
   return Array.from({ length: cells.length / 7 }, (_, i) => cells.slice(i * 7, i * 7 + 7));
 }
+
+/** A film's title with everything two spellings differ by removed: case, accents
+ *  and vowel signs, invisible joiners, punctuation and spaces. Only for comparing. */
+function filmTitleKey(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\p{M}\p{Cf}]/gu, '')
+    .replace(/[^\p{L}\p{N}]+/gu, '');
+}
+
+/** Is `name` one of the titles TMDB knows this film by? A film's titles in every
+ *  language are the only proof that "क्‍वीन" and "Queen" are one film. */
+export function isTitleOfFilm(name: string, titles: readonly (string | null | undefined)[]): boolean {
+  const want = filmTitleKey(name);
+  return want !== '' && titles.some((x) => x != null && filmTitleKey(x) === want);
+}

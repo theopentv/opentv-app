@@ -50,7 +50,10 @@ Play Console record rather than per-change.
 - **No blank band under the header on Android.** `Screen` padded for a header that is opaque there. In every version since 2.0.1.
 - **One film under two languages is one row:** `dedupeDuplicateMovies` also folds on a shared TMDB id.
 - **The confirmation code says to check spam.**
-- **The closing card on a show's episode line is centred**, the Snake popcorn sits inside its cell, and the emotion calendar's legend is above the grid. Not done: the calendar upright.
+- **A film without a TMDB id finds it through TMDB's titles in every language** (`linkBareFilms`), so "Dune: Part One" folds into "Dune". Existing libraries get this once on launch (`filmsFolded211`), without a `REPAIR_REV` bump. Not caught: titles TMDB has in no language (क्‍वीन, २ स्टेट्स, కల్కి 2898-AD).
+- **Two films of one name stay two films:** Cinderella (1950) no longer lands on Cinderella (2015) on a merge, and two different TMDB ids never fold.
+- **A merge keeps rewatches.** It treated every second viewing as "already here".
+- **The closing card on a show's episode line is centred**, the Snake popcorn sits inside its cell, and the emotion calendar's legend is above the grid.
 
 ## Next version — the plan
 

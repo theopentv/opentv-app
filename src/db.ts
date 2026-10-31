@@ -1433,6 +1433,8 @@ export function dedupeDuplicateMovies(): number {
       const sorted = [...live].sort((a, b) => rank(b) - rank(a));
       const keep = sorted[0];
       for (const drop of sorted.slice(1)) {
+        // two ids that differ are two films, whatever the titles say
+        if (keep.tmdbId && drop.tmdbId && keep.tmdbId !== drop.tmdbId) continue;
         if (!sameFilmById(keep, drop) && !canFoldMovie({ name: keep.name, year: keep.year }, { name: drop.name, year: drop.year })) continue;
         // title and year match, but a row holding history or added by hand is
         // not disposable — fold it only on proven identity
