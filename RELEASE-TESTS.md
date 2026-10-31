@@ -28,10 +28,10 @@ Simulator lines are marked. The rest wants a real iPhone and a real Android.
 **Emotion calendar**
 - [x] Upright grid, tap a day, Earlier (Duo simulator)
 - [x] Arabic, right to left (iPhone simulator)
-- [ ] Android
+- [x] Android release build 129, emulator: upright, no crash on launch (empty library)
 
 **Henrike's other fixes**
-- [ ] Android: no blank band under the header
+- [x] Android: no blank band under the header on Emotion calendar (release 129, emulator)
 - [ ] Closing card centred on a show, German text included
 - [ ] Snake popcorn sits inside its cell
 - [ ] Spam hint on the code screen
