@@ -9,6 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
+| 2.1.1 | 129 | 105 | **submitted 31 Oct 2026, both stores** (iOS 105 replaces 2.1.0 in review, Android on top of 2.1.0) — upright Emotion calendar, film and rewatch fixes for merged imports, Henrike's other fixes |
 | 2.1.0 | 127 | 103 | **built 31 Oct 2026** — cover choosing fixed (live bug), TV Time badges, instant imports, Upcoming widget, the bell, free month dated for 1 December. |
 | 2.0.2 | 116 | 97 | **built 25 Oct 2026** — Simkl import that works on a real backup (shows, anime, films, anime films as films, memos as notes, dropped archived), a clear message for Simkl's CSV |
 | 2.0.1 | 113 | 96 | **built 25 Oct 2026** — iPhone Duo support (controls in the side strip, nothing under it or on the fold), Expo SDK 58, a wider profile on big screens, the ✎ writing page for private comments, and a Classic tab bar setting |
@@ -45,17 +46,20 @@ Play Console record rather than per-change.
 
 ## 2.1.1 — Henrike's fixes (31 Oct)
 
-- Emotion calendar is upright now: month under month with large squares, weekday letters, the legend on top, and the day's titles open under their own month.
+iOS skipped 2.1.0: it went into review, was pulled, and 2.1.1 build 105 carries everything from it, What's New rows and store text included. Android 2.1.0 (127) was already live, so its build 129 and notes are 2.1.1 only; 128 was burned by a failed build.
 
+- **Emotion calendar is upright:** month under month with large squares, weekday letters, the legend on top, and the day's titles open under their own month.
 - **No blank band under the header on Android.** `Screen` padded for a header that is opaque there. In every version since 2.0.1.
 - **One film under two languages is one row:** `dedupeDuplicateMovies` also folds on a shared TMDB id.
 - **The confirmation code says to check spam.**
 - **A film without a TMDB id finds it through TMDB's titles in every language** (`linkBareFilms`), so "Dune: Part One" folds into "Dune". Existing libraries get this once on launch (`filmsFolded211`), without a `REPAIR_REV` bump. Not caught: titles TMDB has in no language (क्‍वीन, २ स्टेट्स, కల్కి 2898-AD).
 - **Two films of one name stay two films:** Cinderella (1950) no longer lands on Cinderella (2015) on a merge, and two different TMDB ids never fold.
-- **A merge keeps repeat viewings.** It treated every second viewing as "already here".
-- **`user-lists` and `user-comments` declare their header**, like the other modals.
+- **A merge keeps repeat viewings.** It treated every second viewing as "already here". A library merged before this needs one re-import to get them back, and the same-name films too.
+- **`user-lists` and `user-comments` declare their header**, like the other modals. Not opened in the test pass.
 - **The import counter shows watched films throughout**, instead of dropping from 826 to 452 at the end.
-- **The closing card on a show's episode line is centred**, the Snake popcorn sits inside its cell, and the emotion calendar's legend is above the grid.
+- **The closing card on a show's episode line is centred**, and the Snake popcorn sits inside its cell.
+
+Known: merging TV Time onto Simkl ends 143 rows short of the other order (15,786 against 15,929), cause not found. Upload warned of a missing `hermesvm` dSYM.
 
 ## Next version — the plan
 
