@@ -2868,7 +2868,7 @@
       "calendar": "Der Gefühlskalender steht jetzt im Hochformat, mit großen Kacheln und der Farblegende oben",
       "films": "Der Import aus zwei Apps führt einen Film in zwei Sprachen zusammen und hält gleichnamige Filme getrennt",
       "rewatches": "Beim Zusammenführen eines Imports bleiben deine Wiederholungen jetzt erhalten",
-      "fixes": "Fehlerbehebungen: kein leerer Streifen unter Kopfzeilen auf Android, und die Code-E-Mail erinnert an den Spam-Ordner"
+      "fixes": "Fehlerbehebungen: kein leerer Streifen unter Kopfzeilen, und die Code-E-Mail erinnert an den Spam-Ordner"
     },
     "v210": {
       "cover": "Titelbild wählen funktioniert wieder: Titel wählen, Bild wählen, und Abbrechen stellt das alte wirklich wieder her",

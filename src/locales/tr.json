@@ -2868,7 +2868,7 @@
       "calendar": "Duygu takvimi artık dikey, büyük kareler ve üstte renk açıklamasıyla",
       "films": "İki uygulamadan içe aktarma, iki dilde yazılmış bir filmi birleştirir, aynı adlı filmleri ayrı tutar",
       "rewatches": "İçe aktarmayı birleştirmek artık tekrar izlemelerini korur",
-      "fixes": "Düzeltmeler: Android'de başlıkların altında boş şerit yok, kod e-postası spam klasörünü hatırlatıyor"
+      "fixes": "Düzeltmeler: Başlıkların altında boş şerit yok, kod e-postası spam klasörünü hatırlatıyor"
     },
     "v210": {
       "cover": "Kapak seçimi yeniden çalışıyor: bir başlık, bir görsel seç; İptal eskisini gerçekten geri getirir",

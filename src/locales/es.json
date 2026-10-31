@@ -2868,7 +2868,7 @@
       "calendar": "El calendario de emociones ahora es vertical, con casillas grandes y la leyenda arriba",
       "films": "Importar desde dos apps une una película escrita en dos idiomas y separa las películas con el mismo nombre",
       "rewatches": "Combinar una importación ahora conserva tus revisionados",
-      "fixes": "Correcciones: sin franja vacía bajo los encabezados en Android, y el correo del código recuerda revisar el spam"
+      "fixes": "Correcciones: sin franja vacía bajo los encabezados, y el correo del código recuerda revisar el spam"
     },
     "v210": {
       "cover": "Elegir portada vuelve a funcionar: elige un título, una imagen, y Cancelar recupera de verdad la anterior",
