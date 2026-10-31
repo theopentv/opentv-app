@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Antes",
+    "latest": "Voltar para hoje",
     "noFeeling": "Assistido, sem emoção",
     "title": "Calendário de emoções",
     "blurb": "Cada dia em que você assistiu algo, colorido pelo que sentiu. Toque num dia para ver o que foi.",

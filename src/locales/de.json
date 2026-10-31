@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Früher",
+    "latest": "Zurück zu heute",
     "noFeeling": "Gesehen, kein Gefühl",
     "title": "Gefühlskalender",
     "blurb": "Jeder Tag, an dem du etwas gesehen hast, gefärbt nach dem Gefühl. Tippe auf einen Tag, um zu sehen, was es war.",

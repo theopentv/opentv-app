@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Earlier",
+    "latest": "Back to today",
     "noFeeling": "Watched, no feeling",
     "title": "Emotion calendar",
     "blurb": "Every day you watched something, coloured by how it felt. Tap a day to see what it was.",

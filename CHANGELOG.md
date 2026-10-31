@@ -45,6 +45,8 @@ Play Console record rather than per-change.
 
 ## 2.1.1 — Henrike's fixes (31 Oct)
 
+- Emotion calendar is upright now: month under month with large squares, weekday letters, the legend on top, and the day's titles open under their own month.
+
 - **No blank band under the header on Android.** `Screen` padded for a header that is opaque there. In every version since 2.0.1.
 - **One film under two languages is one row:** `dedupeDuplicateMovies` also folds on a shared TMDB id.
 - **The confirmation code says to check spam.**

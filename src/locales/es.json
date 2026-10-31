@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Antes",
+    "latest": "Volver a hoy",
     "noFeeling": "Visto, sin emoción",
     "title": "Calendario de emociones",
     "blurb": "Cada día que viste algo, coloreado según cómo te hizo sentir. Toca un día para ver qué fue.",

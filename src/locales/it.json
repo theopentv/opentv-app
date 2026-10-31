@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Prima",
+    "latest": "Torna a oggi",
     "noFeeling": "Visto, nessuna emozione",
     "title": "Calendario delle emozioni",
     "blurb": "Ogni giorno in cui hai guardato qualcosa, colorato da come ti ha fatto sentire. Tocca un giorno per vedere cosa era.",

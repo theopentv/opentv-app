@@ -8890,3 +8890,15 @@ export function inboxSection(iso: string, nowMs: number): InboxSection {
   if (at >= midnight.getTime()) return 'today';
   return nowMs - at < INBOX_GROUP_MS ? 'week' : 'earlier';
 }
+
+/** One month as calendar weeks, Monday first: null is a square before the 1st or
+ *  after the last day. `month` is YYYY-MM. */
+export function monthWeeks(month: string): (string | null)[][] {
+  const [y, m] = month.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+  const cells: (string | null)[] = Array.from({ length: lead }, () => null);
+  for (let d = 1; d <= days; d++) cells.push(`${month}-${String(d).padStart(2, '0')}`);
+  while (cells.length % 7) cells.push(null);
+  return Array.from({ length: cells.length / 7 }, (_, i) => cells.slice(i * 7, i * 7 + 7));
+}

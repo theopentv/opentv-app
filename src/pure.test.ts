@@ -102,6 +102,7 @@ import {
   episodeKey,
   matchStillsByTitle,
   mayFoldDuplicateMovie,
+  monthWeeks,
   sameFilmById,
   mayFoldDuplicateShow,
   movieMatchState,
@@ -4203,5 +4204,17 @@ describe('sameFilmById', () => {
     expect(sameFilmById({ tmdbId: 1 }, { tmdbId: 2 })).toBe(false);
     expect(sameFilmById({ tmdbId: 0 }, { tmdbId: 0 })).toBe(false);
     expect(sameFilmById({ tmdbId: null }, { tmdbId: null })).toBe(false);
+  });
+});
+
+describe('monthWeeks', () => {
+  it('starts on a Monday and pads both ends', () => {
+    const oct = monthWeeks('2026-10'); // 1 Oct 2026 is a Thursday
+    expect(oct[0]).toEqual([null, null, null, '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04']);
+    expect(oct.every((w) => w.length === 7)).toBe(true);
+    expect(oct.flat().filter(Boolean)).toHaveLength(31);
+  });
+  it('handles a leap February', () => {
+    expect(monthWeeks('2028-02').flat().filter(Boolean)).toHaveLength(29);
   });
 });

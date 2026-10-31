@@ -2586,6 +2586,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Wcześniej",
+    "latest": "Wróć do dziś",
     "noFeeling": "Obejrzane, bez emocji",
     "title": "Kalendarz emocji",
     "blurb": "Każdy dzień z oglądaniem, pokolorowany według emocji. Stuknij dzień, żeby zobaczyć, co to było.",

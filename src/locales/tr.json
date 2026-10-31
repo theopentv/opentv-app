@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Daha önce",
+    "latest": "Bugüne dön",
     "noFeeling": "İzlendi, duygu yok",
     "title": "Duygu takvimi",
     "blurb": "Bir şey izlediğin her gün, nasıl hissettirdiğine göre renklendi. Ne olduğunu görmek için bir güne dokun.",

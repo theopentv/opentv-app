@@ -24,13 +24,13 @@ import { useCallback, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 
-import { Heatmap, monthOf, todayISO } from '@/components/heatmap';
+import { monthOf, todayISO } from '@/components/heatmap';
 import { NavHeader, Screen } from '@/components/ui';
 import { emotionDayCounts, watchesOnDay } from '@/db';
 import { watchDayCounts } from '@/stats-calc';
 import { currentLocale, t } from '@/i18n';
-import { dominantEmotion, emotionColor, EMOTION_NAMES, shiftMonth } from '@/pure';
-import { colors, radius, space } from '@/theme';
+import { dominantEmotion, emotionColor, EMOTION_NAMES, monthWeeks, shiftMonth } from '@/pure';
+import { colors, onAccent, radius, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
 /** Six months, the same window the profile heatmap uses at full size. */
@@ -106,77 +106,128 @@ export default function EmotionCalendarScreen() {
             ))}
           </View>
         )}
-        <Heatmap
-          counts={counts}
-          accent={colors.yellow}
-          months={MONTHS}
-          endMonth={endMonth}
-          onEndMonth={setEndMonth}
-          today={today}
-          maxMonth={monthOf(today)}
-          colorOf={colorOf}
-          onPressDay={(d) => {
-            const next = day === d ? null : d;
-            setDay(next);
-            setItems(next ? watchesOnDay(next) : []);
-          }}
-        />
-
-
-        {day != null && (
-          <View style={s.daySheet}>
-            <Text style={s.dayTitle}>
-              {new Date(`${day}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
+        {/* UPRIGHT, month under month, at a phone's full width (Henrike, 31 Oct):
+            the sideways heatmap's squares were too small to tap. Newest first. */}
+        {Array.from({ length: MONTHS }, (_, n) => shiftMonth(endMonth, -n)).map((month) => (
+          <View key={month} style={s.month}>
+            <Text style={s.monthTitle} accessibilityRole="header">
+              {new Date(`${month}-15T12:00:00`).toLocaleDateString(intlTag(currentLocale()), { month: 'long', year: 'numeric' })}
             </Text>
-            {items.length === 0 ? (
-              <Text style={s.dayEmpty}>{t('emotionCalendar.nothing')}</Text>
-            ) : (
-              <FlatList
-                data={items}
-                scrollEnabled={false}
-                keyExtractor={(x, i) => `${x.showId}-${x.season}-${x.episode}-${i}`}
-                renderItem={({ item }) => (
-                  <Pressable accessibilityRole="button"
-                    style={s.row}
-                    onPress={() => router.push(`/episode/${item.showId}-s${item.season}e${item.episode}`)}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={s.rowShow} numberOfLines={1}>
-                        {item.show}
-                      </Text>
-                      <Text style={s.rowCode}>
-                        S{item.season}E{item.episode}
-                      </Text>
+            <View style={s.week}>
+              {/* 5 Oct 2026 was a Monday; any Monday-to-Sunday run would do. */}
+              {[5, 6, 7, 8, 9, 10, 11].map((n) => (
+                <Text key={n} style={s.weekday}>
+                  {new Date(2026, 9, n).toLocaleDateString(intlTag(currentLocale()), { weekday: 'narrow' })}
+                </Text>
+              ))}
+            </View>
+            {monthWeeks(month).map((week, w) => (
+              <View key={w} style={s.week}>
+                {week.map((d, c) => {
+                  if (d == null) return <View key={c} style={s.dayCell} />;
+                  const bg = colorOf(d) ?? ((counts.get(d) ?? 0) > 0 ? colors.yellow : colors.card);
+                  return (
+                    <View key={d} style={s.dayCell}>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={d}
+                        accessibilityState={{ selected: day === d }}
+                        style={[s.dayFill, { backgroundColor: bg }, (d === today || day === d) && s.dayRing]}
+                        onPress={() => {
+                          const next = day === d ? null : d;
+                          setDay(next);
+                          setItems(next ? watchesOnDay(next) : []);
+                        }}>
+                        <Text style={[s.dayNum, { color: bg === colors.card ? colors.faint : onAccent(bg) }]}>{Number(d.slice(8))}</Text>
+                      </Pressable>
                     </View>
-                    <View style={s.rowFeelings}>
-                      {item.emotions.map((e) => (
-                        <View key={e} style={[s.chip, { borderColor: emotionColor(e) }]}>
-                          <Text style={[s.chipText, { color: emotionColor(e) }]}>{emotionLabel(e)}</Text>
+                  );
+                })}
+              </View>
+            ))}
+            {/* Under its own month: at the end of the page it would open six months
+                below the finger. */}
+            {day != null && monthOf(day) === month && (
+              <View style={s.daySheet}>
+                <Text style={s.dayTitle}>
+                  {new Date(`${day}T12:00:00`).toLocaleDateString(intlTag(currentLocale()), {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </Text>
+                {items.length === 0 ? (
+                  <Text style={s.dayEmpty}>{t('emotionCalendar.nothing')}</Text>
+                ) : (
+                  <FlatList
+                    data={items}
+                    scrollEnabled={false}
+                    keyExtractor={(x, i) => `${x.showId}-${x.season}-${x.episode}-${i}`}
+                    renderItem={({ item }) => (
+                      <Pressable accessibilityRole="button"
+                        style={s.row}
+                        onPress={() => router.push(`/episode/${item.showId}-s${item.season}e${item.episode}`)}>
+                        <View style={{ flex: 1 }}>
+                          <Text style={s.rowShow} numberOfLines={1}>
+                            {item.show}
+                          </Text>
+                          <Text style={s.rowCode}>
+                            S{item.season}E{item.episode}
+                          </Text>
                         </View>
-                      ))}
-                    </View>
-                  </Pressable>
+                        <View style={s.rowFeelings}>
+                          {item.emotions.map((e) => (
+                            <View key={e} style={[s.chip, { borderColor: emotionColor(e) }]}>
+                              <Text style={[s.chipText, { color: emotionColor(e) }]}>{emotionLabel(e)}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      </Pressable>
+                    )}
+                  />
                 )}
-              />
+              </View>
             )}
           </View>
-        )}
+        ))}
+        <View style={s.pager}>
+          <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setEndMonth(shiftMonth(endMonth, -MONTHS))}>
+            <Text style={s.pagerText}>{t('emotionCalendar.earlier')}</Text>
+          </Pressable>
+          {endMonth < monthOf(today) && (
+            <Pressable accessibilityRole="button" hitSlop={8} onPress={() => setEndMonth(monthOf(today))}>
+              <Text style={s.pagerText}>{t('emotionCalendar.latest')}</Text>
+            </Pressable>
+          )}
+        </View>
+
+
       </ScrollView>
     </Screen>
   );
 }
 
 const s = StyleSheet.create({
+  month: { paddingHorizontal: space.lg, paddingBottom: 18, gap: 4 },
+  monthTitle: { color: colors.text, fontSize: 16, fontWeight: '800', paddingBottom: 4 },
+  week: { flexDirection: 'row', gap: 4 },
+  // The square sits INSIDE the flex cell: aspectRatio on the cell itself let a
+  // row with empty cells size differently from a full one.
+  dayCell: { flex: 1 },
+  // The border is always there, clear: added only on today it widened that square and squeezed its row.
+  dayFill: { width: '100%', aspectRatio: 1, borderRadius: 6, borderWidth: 2, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center' },
+  dayRing: { borderColor: colors.text },
+  weekday: { flex: 1, color: colors.faint, fontSize: 11, fontWeight: '700', textAlign: 'center' },
+  dayNum: { fontSize: 12, fontWeight: '700' },
+  pager: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: space.lg },
+  pagerText: { color: colors.blue, fontSize: 14, fontWeight: '600' },
   blurb: { color: colors.dim, fontSize: 14, lineHeight: 20, paddingHorizontal: space.lg, paddingBottom: 12 },
   legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: space.lg, paddingBottom: 14 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   dot: { width: 10, height: 10, borderRadius: 5 },
   legendText: { color: colors.dim, fontSize: 12, fontWeight: '600' },
-  daySheet: { marginTop: 18, marginHorizontal: space.lg, backgroundColor: colors.card, borderRadius: radius.card, padding: 14 },
+  daySheet: { marginTop: 14, backgroundColor: colors.card, borderRadius: radius.card, padding: 14 },
   dayTitle: { color: colors.text, fontSize: 15, fontWeight: '800', paddingBottom: 8 },
   dayEmpty: { color: colors.faint, fontSize: 14 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 9 },

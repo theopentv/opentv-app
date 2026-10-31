@@ -2392,6 +2392,8 @@
     }
   },
   "emotionCalendar": {
+    "earlier": "Plus tôt",
+    "latest": "Revenir à aujourd'hui",
     "noFeeling": "Vu, sans émotion",
     "title": "Calendrier des émotions",
     "blurb": "Chaque jour où vous avez regardé quelque chose, coloré selon le ressenti. Touchez un jour pour voir ce que c'était.",
