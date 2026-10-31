@@ -36,7 +36,13 @@ Simulator lines are marked. The rest wants a real iPhone and a real Android.
 - [ ] Snake popcorn sits inside its cell
 - [ ] Spam hint on the code screen
 
+**Full pass, 31 Oct**
+- [x] iPhone simulator, Metro: fresh TV Time import 361 / 21,621 / 528, four tabs, mark an episode, episode page, search
+- [x] Android release 129, emulator: same import, same numbers, no crash
+- [ ] Public profile lists and comments (no community account in this pass)
+- [ ] Widgets on a home screen
+
 **Carried over from 2.1.0**
-- [ ] Real iPhone with Plus: Cancel on a coloured banner brings the old colours back
+- [x] Real iPhone: Cancel on a banner works, on the 2.1.0 store build (Mahmood, 31 Oct)
 - [ ] Time the spinner after picking a cover
 - [ ] Public profile: lists and comments open with a header, no remount
