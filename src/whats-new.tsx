@@ -38,6 +38,11 @@ const NOTES: Record<string, { icon: string; tint: string; key: LocaleKey; iosOnl
     { icon: '📅', tint: '#FF7A1A', key: 'whatsNew.v211.calendar', to: '/emotion-calendar' },
     { icon: '🎬', tint: '#3E8BFF', key: 'whatsNew.v211.films' },
     { icon: '🔁', tint: '#9B7BFF', key: 'whatsNew.v211.rewatches' },
+    // iOS goes from 2.0.4 straight to 2.1.1, so these are 2.1.0's rows for those people.
+    { icon: '🖼️', tint: '#3E8BFF', key: 'whatsNew.v210.cover', to: '/edit-profile', iosOnly: true },
+    { icon: '🏅', tint: ACCENTS.yellow, key: 'whatsNew.v210.badges', to: '/stats', iosOnly: true },
+    { icon: '📥', tint: '#9B7BFF', key: 'whatsNew.v210.imports', iosOnly: true },
+    { icon: '📅', tint: '#FF7A1A', key: 'whatsNew.v210.upcoming', iosOnly: true },
     { icon: '🛠️', tint: '#78BE3D', key: 'whatsNew.v211.fixes' },
   ],
   '2.1.0': [
