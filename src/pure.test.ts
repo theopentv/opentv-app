@@ -102,6 +102,7 @@ import {
   episodeKey,
   matchStillsByTitle,
   mayFoldDuplicateMovie,
+  sameFilmById,
   mayFoldDuplicateShow,
   movieMatchState,
   nextPage,
@@ -4193,5 +4194,14 @@ describe('inboxSection', () => {
     expect(inboxSection(new Date(2026, 9, 28).toISOString(), now)).toBe('week');
     expect(inboxSection(new Date(2026, 8, 1).toISOString(), now)).toBe('earlier');
     expect(inboxSection('', now)).toBe('earlier');
+  });
+});
+
+describe('sameFilmById', () => {
+  it('matches a real shared TMDB id, and never 0 or null', () => {
+    expect(sameFilmById({ tmdbId: 496243 }, { tmdbId: 496243 })).toBe(true);
+    expect(sameFilmById({ tmdbId: 1 }, { tmdbId: 2 })).toBe(false);
+    expect(sameFilmById({ tmdbId: 0 }, { tmdbId: 0 })).toBe(false);
+    expect(sameFilmById({ tmdbId: null }, { tmdbId: null })).toBe(false);
   });
 });

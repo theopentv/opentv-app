@@ -43,9 +43,16 @@ Play Console record rather than per-change.
 ---
 
 
-## 2.1.1 — the plan
+## 2.1.1 — Henrike's fixes (31 Oct)
 
-**Duo two panes**, built on branch `2.1.1-duo` (31 Oct): `FoldSplit` for Shows, Movies, All shows, All movies and Profile, the real page in the right half, the setting for full width. Must be built with Xcode 27.1. Mahmood moved it here so the fixes in 2.1.0 go out first.
+- **No blank band under the header on Android.** `Screen` padded for a header that is opaque there. In every version since 2.0.1.
+- **One film under two languages is one row:** `dedupeDuplicateMovies` also folds on a shared TMDB id.
+- **The confirmation code says to check spam.**
+- **The closing card on a show's episode line is centred**, the Snake popcorn sits inside its cell, and the emotion calendar's legend is above the grid. Not done: the calendar upright.
+
+## Next version — the plan
+
+**Duo two panes**, built on branch `duo-two-panes` (31 Oct): `FoldSplit` for Shows, Movies, All shows, All movies and Profile, the real page in the right half, the setting for full width. Must be built with Xcode 27.1. Moved here by Mahmood. Never merge main into that branch, it reverts the Duo work: cherry-pick 4acfcac, 33f93ed, 8433620, cd4e26d.
 - **Duo design pass: two panes when open** (Mahmood, 28 Oct; reference reel instagram.com/reel/DelUks9x5j1, a planner app in the Duo simulator: closed = one screen; open = month grid on the left half, the chosen day's notes, events and actions on the right, nothing on the fold). Today OpenTV only widens its pages when open. Do the same list-detail split: Watch List / Upcoming on the left and the tapped show or day on the right; a show's seasons left, the episode right; Profile shelves left, the opened shelf right. Closed stays as it is. Use the Duo skills (dual-pane patterns, fold avoidance, side bar) and NavigationSplitView-style behaviour; state must survive folding. Half open (book) and flat open differ in the reel: half open keeps every control off the curve and adds a quick-action grid; flat is simpler and wider. Decided 29 Oct: the right half starts empty, as in the reel, and fills when a show, film or day is tapped; the background runs across both halves so the empty half is not black. **The video and frames are saved in `design/referance/duo-two-pane/` (NOTES.md there): watch it again before building.**
 
 ## 2.1.0 — the plan

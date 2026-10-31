@@ -67,7 +67,10 @@ export function Screen({ children }: { children: ReactNode }) {
       style={{
         flex: 1,
         backgroundColor: colors.bg,
-        paddingTop: headerHeight || topInset,
+        // ANDROID'S HEADER IS OPAQUE: the page already starts below it, and
+        // padding for it again left a blank band on every page (reported by
+        // Henrike, 31 Oct). iOS draws glass over the content, so it must clear it.
+        paddingTop: headerHeight ? (Platform.OS === 'android' ? 0 : headerHeight) : topInset,
         paddingLeft: sheet ? 0 : left,
         paddingRight: sheet ? 0 : right,
       }}>

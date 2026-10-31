@@ -401,7 +401,8 @@ const styles = StyleSheet.create({
   // The BRAND, never `colors.yellow`: that token becomes INK in the light
   // theme, and a board of black squares is a redaction rather than a game.
   cell: { position: 'absolute', width: CELL - 2, height: CELL - 2, margin: 1, borderRadius: 3, backgroundColor: colors.brand },
-  foodGlyph: { position: 'absolute', fontSize: CELL - 4, lineHeight: CELL },
+  // A fixed box: an emoji's own width let it hang over the last column.
+  foodGlyph: { position: 'absolute', width: CELL, height: CELL, textAlign: 'center', overflow: 'visible', fontSize: CELL - 6, lineHeight: CELL },
   bucketBox: { position: 'absolute', bottom: 6, left: 0, width: BUCKET_W, alignItems: 'center' },
   // Only the top corners round, and there's no gap beneath: a fully rounded
   // rim sitting a pixel above the body let the background show through and

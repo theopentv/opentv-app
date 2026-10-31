@@ -1872,6 +1872,7 @@
       "sentTitle": "Sprawdź skrzynkę",
       "title": "Potwierdź e-mail",
       "tooSoon": "Prośba została właśnie wysłana. Odczekaj minutę i spróbuj ponownie.",
+      "checkSpam": "Nic nie dotarło? Sprawdź folder spam.",
       "waitingBody": "Otwórz link z naszego e-maila, aby dokończyć zakładanie konta.",
       "codeLabel": "LUB WPISZ 6-CYFROWY KOD",
       "codeAction": "Potwierdź",

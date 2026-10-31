@@ -1754,6 +1754,7 @@
       "sentTitle": "Revisa tu bandeja",
       "title": "Confirma tu correo",
       "tooSoon": "Acabas de pedir uno. Espera un minuto.",
+      "checkSpam": "¿No ha llegado? Mira en la carpeta de spam.",
       "waitingBody": "Abre el enlace que te enviamos para terminar de configurar tu cuenta.",
       "codeLabel": "O INTRODUCE EL CÓDIGO DE 6 DÍGITOS",
       "codeAction": "Confirmar",

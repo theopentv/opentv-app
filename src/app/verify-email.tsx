@@ -236,7 +236,7 @@ export default function VerifyEmailScreen() {
           <Ionicons name="mail-outline" size={56} color={colors.yellow} />
           <Text accessibilityRole="header" style={styles.heading}>{t('community.verify.sentTitle')}</Text>
           <Text style={styles.text}>
-            {t('community.verify.waitingBody')}
+            {t('community.verify.waitingBody')} {t('community.verify.checkSpam')}
           </Text>
 
           {/* THE ADDRESS IT WENT TO, spelled out.

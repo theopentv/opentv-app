@@ -1754,6 +1754,7 @@
       "sentTitle": "Veja sua caixa de entrada",
       "title": "Confirme seu e-mail",
       "tooSoon": "Você acabou de pedir um. Espere um minuto.",
+      "checkSpam": "Não chegou? Veja a pasta de spam.",
       "waitingBody": "Abra o link que enviamos para terminar de configurar sua conta.",
       "codeLabel": "OU DIGITE O CÓDIGO DE 6 DÍGITOS",
       "codeAction": "Confirmar",

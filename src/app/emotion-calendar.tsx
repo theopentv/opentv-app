@@ -90,22 +90,6 @@ export default function EmotionCalendarScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         <Text style={s.blurb}>{t('emotionCalendar.blurb')}</Text>
 
-        <Heatmap
-          counts={counts}
-          accent={colors.yellow}
-          months={MONTHS}
-          endMonth={endMonth}
-          onEndMonth={setEndMonth}
-          today={today}
-          maxMonth={monthOf(today)}
-          colorOf={colorOf}
-          onPressDay={(d) => {
-            const next = day === d ? null : d;
-            setDay(next);
-            setItems(next ? watchesOnDay(next) : []);
-          }}
-        />
-
         {present.length > 0 && (
           <View style={s.legend}>
             {/* The days with no feeling picked, usually most of the grid: they
@@ -122,6 +106,22 @@ export default function EmotionCalendarScreen() {
             ))}
           </View>
         )}
+        <Heatmap
+          counts={counts}
+          accent={colors.yellow}
+          months={MONTHS}
+          endMonth={endMonth}
+          onEndMonth={setEndMonth}
+          today={today}
+          maxMonth={monthOf(today)}
+          colorOf={colorOf}
+          onPressDay={(d) => {
+            const next = day === d ? null : d;
+            setDay(next);
+            setItems(next ? watchesOnDay(next) : []);
+          }}
+        />
+
 
         {day != null && (
           <View style={s.daySheet}>
@@ -172,7 +172,7 @@ export default function EmotionCalendarScreen() {
 
 const s = StyleSheet.create({
   blurb: { color: colors.dim, fontSize: 14, lineHeight: 20, paddingHorizontal: space.lg, paddingBottom: 12 },
-  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: space.lg, paddingTop: 14 },
+  legend: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingHorizontal: space.lg, paddingBottom: 14 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   dot: { width: 10, height: 10, borderRadius: 5 },
   legendText: { color: colors.dim, fontSize: 12, fontWeight: '600' },

@@ -616,6 +616,7 @@ export type LocaleKey =
   | "community.time.weeks"
   | "community.time.years"
   | "community.verify.badCode"
+  | "community.verify.checkSpam"
   | "community.verify.codeAction"
   | "community.verify.codeLabel"
   | "community.verify.doneAction"

@@ -1754,6 +1754,7 @@
       "sentTitle": "Gelen kutunu kontrol et",
       "title": "E-postanı onayla",
       "tooSoon": "Daha yeni istedin. Bir dakika bekleyip tekrar dene.",
+      "checkSpam": "Gelmedi mi? Spam klasörüne bak.",
       "waitingBody": "Hesabını kurmayı bitirmek için sana e-postayla gönderdiğimiz bağlantıyı aç.",
       "codeLabel": "YA DA 6 HANELİ KODU GİR",
       "codeAction": "Onayla",

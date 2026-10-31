@@ -1400,13 +1400,21 @@ export function backfillShowTmdbIds(): void {
  */
 export function dedupeDuplicateMovies(): number {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { canFoldMovie, mayFoldDuplicateMovie, movieBaseName } = require('@/pure') as typeof import('@/pure');
+  const { canFoldMovie, mayFoldDuplicateMovie, movieBaseName, sameFilmById } = require('@/pure') as typeof import('@/pure');
   const movies = db.getAllSync<MovieRow>('SELECT * FROM movies');
 
   const groups = new Map<string, MovieRow[]>();
   for (const m of movies) {
     const k = movieBaseName(m.name);
     if (!k) continue;
+    (groups.get(k) ?? groups.set(k, []).get(k)!).push(m);
+  }
+  // ONE FILM UNDER TWO LANGUAGES: Simkl lists the original title, TV Time the
+  // English one, so the names never meet. The TMDB id is what says they are the
+  // same film (Henrike, 31 Oct); shows have folded this way since 2.0.3.
+  for (const m of movies) {
+    if (!m.tmdbId) continue;
+    const k = `tmdb:${m.tmdbId}`;
     (groups.get(k) ?? groups.set(k, []).get(k)!).push(m);
   }
 
@@ -1416,13 +1424,16 @@ export function dedupeDuplicateMovies(): number {
     (m.watchedAt ? 8 : 0) + (m.stars != null ? 4 : 0) + (m.favorited ? 2 : 0) + (m.poster ? 1 : 0);
 
   let removed = 0;
+  const gone = new Set<string>();
   db.withTransactionSync(() => {
     for (const grp of groups.values()) {
-      if (grp.length < 2) continue;
-      const sorted = [...grp].sort((a, b) => rank(b) - rank(a));
+      // A row can sit in both groups: once folded by name it is not there to fold.
+      const live = grp.filter((m) => !gone.has(m.name));
+      if (live.length < 2) continue;
+      const sorted = [...live].sort((a, b) => rank(b) - rank(a));
       const keep = sorted[0];
       for (const drop of sorted.slice(1)) {
-        if (!canFoldMovie({ name: keep.name, year: keep.year }, { name: drop.name, year: drop.year })) continue;
+        if (!sameFilmById(keep, drop) && !canFoldMovie({ name: keep.name, year: keep.year }, { name: drop.name, year: drop.year })) continue;
         // title and year match, but a row holding history or added by hand is
         // not disposable — fold it only on proven identity
         if (
@@ -1469,6 +1480,7 @@ export function dedupeDuplicateMovies(): number {
         db.runSync('UPDATE OR IGNORE movie_notes SET movie = ? WHERE movie = ?', [keep.name, drop.name]);
         db.runSync('DELETE FROM movie_notes WHERE movie = ?', [drop.name]);
         db.runSync('DELETE FROM movies WHERE name = ?', [drop.name]);
+        gone.add(drop.name);
         removed++;
       }
     }

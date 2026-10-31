@@ -366,6 +366,11 @@ export type MovieIdent = { name: string; year?: string | null };
  * ("Dune (1984)" vs "Dune (2021)"). Same rule that stopped the show deduper
  * eating remakes.
  */
+/** One film under two titles: the same real TMDB id. 0 means unknown, never a match. */
+export function sameFilmById(a: { tmdbId: number | null }, b: { tmdbId: number | null }): boolean {
+  return !!a.tmdbId && a.tmdbId === b.tmdbId;
+}
+
 export function canFoldMovie(a: MovieIdent, b: MovieIdent): boolean {
   if (movieBaseName(a.name) !== movieBaseName(b.name)) return false;
   const ya = movieYearOf(a.name, a.year);

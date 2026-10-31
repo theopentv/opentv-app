@@ -1767,15 +1767,15 @@ export default function ShowScreen() {
                 return (
                   // one stop: "Finished, That's all, folks!", and only for a show
                   // that is over. One still running is up to date (30 Oct).
-                  <View style={[styles.carCard, { width: CARD_W, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }]} accessible>
+                  <View style={[styles.carCard, { width: CARD_W, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', paddingHorizontal: space.md }]} accessible>
                     {backdropUri && (
                       <>
                         <Image source={{ uri: backdropUri }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
                         <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)' }]} />
                       </>
                     )}
-                    <Text style={{ color: colors.yellow, fontSize: 22, fontWeight: '800' }}>{t(showIsOver(show.tvdbId) ? 'show.finishedCardTitle' : 'filters.progressUpToDate')}</Text>
-                    <Text style={{ color: colors.dim, fontSize: 14, marginTop: 2 }}>{t(showIsOver(show.tvdbId) ? 'show.finishedCardSub' : 'show.upToDateCardSub')}</Text>
+                    <Text style={{ color: colors.yellow, fontSize: 22, fontWeight: '800', textAlign: 'center' }}>{t(showIsOver(show.tvdbId) ? 'show.finishedCardTitle' : 'filters.progressUpToDate')}</Text>
+                    <Text style={{ color: colors.dim, fontSize: 14, marginTop: 2, textAlign: 'center' }}>{t(showIsOver(show.tvdbId) ? 'show.finishedCardSub' : 'show.upToDateCardSub')}</Text>
                   </View>
                 );
               }

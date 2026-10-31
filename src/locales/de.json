@@ -1754,6 +1754,7 @@
       "sentTitle": "Schau in dein Postfach",
       "title": "Bestätige deine E-Mail",
       "tooSoon": "Du hast gerade erst einen angefordert. Warte kurz und versuch es noch mal.",
+      "checkSpam": "Nichts angekommen? Schau auch im Spam-Ordner nach.",
       "waitingBody": "Öffne den Link, den wir dir gemailt haben, um dein Konto fertig einzurichten.",
       "codeLabel": "ODER GIB DEN 6-STELLIGEN CODE EIN",
       "codeAction": "Bestätigen",

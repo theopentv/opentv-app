@@ -1754,6 +1754,7 @@
       "sentTitle": "Check your inbox",
       "title": "Confirm your email",
       "tooSoon": "You just asked for one. Wait a minute and try again.",
+      "checkSpam": "Nothing there? Check your spam folder.",
       "waitingBody": "Open the link we emailed you to finish setting up your account.",
       "codeLabel": "OR ENTER THE 6-DIGIT CODE",
       "codeAction": "Confirm",

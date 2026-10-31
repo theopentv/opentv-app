@@ -1754,6 +1754,7 @@
       "sentTitle": "Controlla la posta",
       "title": "Conferma la tua e-mail",
       "tooSoon": "L’hai appena chiesto. Aspetta un minuto.",
+      "checkSpam": "Non è arrivata? Controlla la cartella spam.",
       "waitingBody": "Apri il link che ti abbiamo inviato per completare la configurazione.",
       "codeLabel": "OPPURE INSERISCI IL CODICE A 6 CIFRE",
       "codeAction": "Conferma",
