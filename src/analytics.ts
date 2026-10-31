@@ -14,6 +14,7 @@
  */
 type AnalyticsModule = () => {
   setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
+  setConsent(consent: { analytics_storage: boolean }): Promise<void>;
   logEvent(name: string, params?: Record<string, string | number>): Promise<void>;
   logScreenView(params: { screen_name: string; screen_class: string }): Promise<void>;
 };
@@ -28,11 +29,12 @@ try {
 
 /** Called from the community session chokepoints: sign-in → true, sign-out → false. */
 export function setAnalyticsConsent(enabled: boolean): void {
-  void analytics?.()
-    .setAnalyticsCollectionEnabled(enabled)
-    .catch(() => {
-      // analytics must never break sign-in/out
-    });
+  const a = analytics?.();
+  // BOTH, AND IT TOOK UNTIL 1 NOV TO NOTICE. `firebase.json` defaults storage to
+  // denied, and collection alone does not lift that: every report read zero.
+  void Promise.all([a?.setConsent({ analytics_storage: enabled }), a?.setAnalyticsCollectionEnabled(enabled)]).catch(() => {
+    // analytics must never break sign-in/out
+  });
 }
 
 /**

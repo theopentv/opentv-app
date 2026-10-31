@@ -1725,6 +1725,8 @@ export type LocaleKey =
   | "plus.wrapped.readyTitle"
   | "plus.wrapped.rendering"
   | "plus.wrapped.renderingTitle"
+  | "plus.wrapped.saveAll"
+  | "plus.wrapped.saving"
   | "plus.wrapped.share"
   | "plus.wrapped.shareTitle"
   | "plus.wrapped.streakDays"

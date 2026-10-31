@@ -2031,6 +2031,8 @@
         "one": "Toplamda bir şeyler izlediğin {{count}} gün",
         "other": "Toplamda bir şeyler izlediğin {{count}} gün"
       },
+      "saveAll": "TÜMÜNÜ KAYDET",
+      "saving": "Kaydediliyor {{done}}/{{total}}…",
       "biggestDayKicker": "Bir gün öne çıkıyor",
       "biggestDaySub": {
         "one": "Bir günde {{count}} şey. Olur böyle.",

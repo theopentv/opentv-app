@@ -2031,6 +2031,8 @@
         "one": "{{count}} jour avec quelque chose à l'écran, en tout",
         "other": "{{count}} jours avec quelque chose à l'écran, en tout"
       },
+      "saveAll": "TOUT ENREGISTRER",
+      "saving": "Enregistrement {{done}} sur {{total}}…",
       "biggestDayKicker": "Un jour sort du lot",
       "biggestDaySub": {
         "one": "{{count}} chose en une seule journée. Ça arrive.",

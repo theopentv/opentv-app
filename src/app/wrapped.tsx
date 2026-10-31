@@ -37,6 +37,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type ViewInstance, Alert, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Share from 'react-native-share';
+import { captureRef } from 'react-native-view-shot';
 import Animated, {
   FadeInDown,
   runOnJS,
@@ -86,6 +88,7 @@ import { oneAtATime } from '@/one-at-a-time';
 
 /** How far the sheet must be dragged down before it leaves. */
 const DISMISS_Y = 130;
+const CARD_SETTLE_MS = 450;
 
 /** The month that has just finished — what Wrapped means with no parameters. */
 function lastCompleteMonth(): string {
@@ -113,6 +116,8 @@ export default function WrappedScreen() {
   const [displayName] = useState(() => getMeta('profileDisplayName') || null);
   // True for the moment a card is photographed for sharing — see SquareCorners.
   const [capturing, setCapturing] = useState(false);
+  // While every card is being saved: which one, of how many.
+  const [saving, setSaving] = useState<{ done: number; total: number } | null>(null);
   const accent = plus && themeColor != null ? themeColor : ACCENTS[DEFAULT_ACCENT];
   /**
    * Sized so the whole 9:16 card fits between the header and the button, on a
@@ -223,6 +228,37 @@ export default function WrappedScreen() {
   };
 
 
+  /**
+   * EVERY CARD OF THE PERIOD, TOGETHER (1 Nov). Walks the slides on screen,
+   * because a card only exists once it is drawn, then hands them all to the
+   * system share sheet: "Save 6 Images" on iOS, and any app that takes several
+   * pictures on Android. A ZIP came first and was useless on a phone.
+   */
+  const saveAll = () =>
+    void oneAtATime('share', async () => {
+      tapLight();
+      const start = index;
+      const urls: string[] = [];
+      setCapturing(true);
+      try {
+        for (let i = 0; i < slides.length; i++) {
+          setSaving({ done: i + 1, total: slides.length });
+          setIndex(i);
+          // long enough for the slide to mount and its posters to come off disk
+          await new Promise((r) => setTimeout(r, CARD_SETTLE_MS));
+          urls.push(await captureRef(cardRef, { format: 'jpg', quality: 0.92 }));
+        }
+        setSaving(null);
+        setIndex(start);
+        await Share.open({ urls, type: 'image/jpeg', failOnCancel: false });
+      } catch (err) {
+        Alert.alert(t('shareCard.shareFailedTitle'), err instanceof Error ? err.message : String(err));
+      }
+      setCapturing(false);
+      setSaving(null);
+      setIndex(start);
+    });
+
   // the beat before the focus effect has read the database — blank, never the
   // quiet state, which would flash "this month was quiet" at somebody whose
   // month was not (`data` is null here, so every count reads as zero)
@@ -301,7 +337,7 @@ export default function WrappedScreen() {
                 slide, so the animation belongs to reading, not to rendering. */}
             <Animated.View
               key={slide}
-              entering={FadeInDown.duration(420)}
+              entering={saving ? undefined : FadeInDown.duration(420)}
               style={s.stageInner}>
               {/* THE CARD IS THE WHOLE SHARE. `cardRef` wraps exactly the 9:16
                   canvas and nothing else — no segment bar, no buttons — so the
@@ -348,11 +384,21 @@ export default function WrappedScreen() {
                 }>
                 <Text style={[s.ctaText, { color: onAccent(accent) }]}>{t('plus.wrapped.share')}</Text>
               </Pressable>
+              {slides.length > 1 && (
+                <Pressable accessibilityRole="button" style={[s.cta, s.videoBtn]} onPress={saveAll}>
+                  <Text style={[s.ctaText, { color: colors.text }]}>{t('plus.wrapped.saveAll')}</Text>
+                </Pressable>
+              )}
             </View>
           )}
 
           {/* While it renders, the screen IS the canvas — so it says what it is
               doing rather than looking frozen on a slide that keeps changing. */}
+          {saving && (
+            <View style={s.rendering}>
+              <Text style={s.renderingTitle}>{t('plus.wrapped.saving', saving)}</Text>
+            </View>
+          )}
           <PeriodSheet visible={picking} onClose={() => setPicking(false)} onPick={pick} />
         </Screen>
       </Animated.View>

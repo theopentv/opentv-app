@@ -31,7 +31,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { StatsRow, levelColor, puzzleDay } from '@/components/puzzle-block';
+import { PuzzleMonths, StatsRow, levelColor, puzzleDay } from '@/components/puzzle-block';
 import { NavHeader, Screen } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
@@ -52,6 +52,7 @@ export default function PuzzleArchiveScreen() {
   const [names, setNames] = useState<Map<PuzzleId, string>>(new Map());
   const [summary, setSummary] = useState<Summary | null>(null);
   const [day, setDay] = useState(today);
+  const [levels, setLevels] = useState<Map<string, number>>(new Map());
 
   useFocusEffect(
     useCallback(() => {
@@ -63,6 +64,7 @@ export default function PuzzleArchiveScreen() {
       const done = results.get(now);
       const list = done ? [{ d: now, n: puzzleNumber(now, first ?? now), r: done }, ...past] : past;
       setDay(now);
+      setLevels(new Map([...results].map(([d, r]) => [d, winLevel(r)])));
       setRows(list);
       setNames(puzzleTitles(list.flatMap((row) => (row.r ? [row.r.id] : []))));
       setSummary(history.length ? { stats: puzzleStats(history), longest: longestStreak(history), first } : null);
@@ -90,6 +92,11 @@ export default function PuzzleArchiveScreen() {
           {summary.longest > 0 && <Text style={s.line}>{t('puzzleHistory.longest', { count: summary.longest })}</Text>}
           {summary.first && <Text style={s.line}>{t('puzzleHistory.firstDay', { date: puzzleDay(summary.first) })}</Text>}
           {!plus && <Text style={s.lockLine}>{t('puzzleHistory.locked')}</Text>}
+        </View>
+      )}
+      {levels.size > 0 && (
+        <View style={s.months}>
+          <PuzzleMonths levels={levels} today={day} />
         </View>
       )}
       <Text style={s.sub}>{t('puzzlePolish.archiveSub')}</Text>
@@ -152,6 +159,7 @@ export default function PuzzleArchiveScreen() {
 
 const s = StyleSheet.create({
   history: { paddingHorizontal: space.lg, paddingBottom: 18, gap: 8 },
+  months: { paddingHorizontal: space.lg, paddingBottom: 18 },
   heading: { color: colors.text, fontSize: 18, fontWeight: '800', marginBottom: 4 },
   line: { color: colors.dim, fontSize: 13.5, textAlign: 'center' },
   lockLine: { color: colors.faint, fontSize: 12.5, textAlign: 'center' },

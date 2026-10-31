@@ -668,6 +668,32 @@ export function finishGame(g: Game, archive = false): void {
   }
   setMeta(K.history, JSON.stringify(withResult(loadHistory(), resultOf(g))));
   void republishPuzzleBlock();
+  void reportPlayed(resultOf(g));
+}
+
+/**
+ * How the game went, for the dashboard's count of players and streaks: the
+ * day, won, tries and the streak. NEVER `r.id`: the answer stays on the phone.
+ * A phone that never joined has no token and sends nothing; a failure just
+ * leaves a day uncounted.
+ */
+async function reportPlayed(r: Result): Promise<void> {
+  try {
+    // Lazy, like the block's push: both import this file's neighbours.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getToken } = require('@/community-session') as typeof import('@/community-session');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { api } = require('@/api') as typeof import('@/api');
+    const token = await getToken();
+    if (!token) return;
+    await api('/v1/puzzle/played', {
+      token,
+      method: 'POST',
+      body: { day: r.d, won: r.won, tries: r.tries, streak: puzzleStreak(loadHistory(), r.d) },
+    });
+  } catch {
+    // Fire and forget.
+  }
 }
 
 /** Played, win %, average tries — today's games only, never the archive's. */

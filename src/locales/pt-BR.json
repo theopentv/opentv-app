@@ -2031,6 +2031,8 @@
         "one": "{{count}} dia com algo rolando, no total",
         "other": "{{count}} dias com algo rolando, no total"
       },
+      "saveAll": "SALVAR TUDO",
+      "saving": "Salvando {{done}} de {{total}}…",
       "biggestDayKicker": "Um dia se destaca",
       "biggestDaySub": {
         "one": "{{count}} coisa em um dia só. Acontece.",

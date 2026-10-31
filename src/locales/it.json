@@ -2031,6 +2031,8 @@
         "one": "{{count}} giorno con qualcosa acceso, in tutto",
         "other": "{{count}} giorni con qualcosa acceso, in tutto"
       },
+      "saveAll": "SALVA TUTTO",
+      "saving": "Salvataggio {{done}} di {{total}}…",
       "biggestDayKicker": "Un giorno spicca",
       "biggestDaySub": {
         "one": "{{count}} cosa in un giorno solo. Succede.",

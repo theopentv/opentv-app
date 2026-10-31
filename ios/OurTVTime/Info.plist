@@ -4,6 +4,16 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>OpenTV</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
 	<key>CFBundleLocalizations</key>
 	<array>
 		<string>en</string>
@@ -16,16 +26,6 @@
 		<string>pl</string>
 		<string>tr</string>
 	</array>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>OpenTV</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
@@ -87,6 +87,8 @@
 	<string>Lets OpenTV put your upcoming episodes in a calendar of its own, which you can hide or delete at any time.</string>
 	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
 	<string>Lets OpenTV add your upcoming episodes to a calendar of its own.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Lets you save your Wrapped cards to Photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Lets you choose a profile photo and cover photo.</string>
 	<key>NSUbiquitousContainers</key>

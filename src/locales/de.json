@@ -2031,6 +2031,8 @@
         "one": "{{count}} Tag, an dem etwas lief, alles in allem",
         "other": "{{count}} Tage, an denen etwas lief, alles in allem"
       },
+      "saveAll": "ALLE SPEICHERN",
+      "saving": "Speichern {{done}} von {{total}}…",
       "biggestDayKicker": "Ein Tag sticht heraus",
       "biggestDaySub": {
         "one": "{{count}} Titel an einem Tag. Kann passieren.",

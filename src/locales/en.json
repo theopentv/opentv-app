@@ -2031,6 +2031,8 @@
         "one": "{{count}} day with something on, all told",
         "other": "{{count}} days with something on, all told"
       },
+      "saveAll": "SAVE ALL",
+      "saving": "Saving {{done}} of {{total}}…",
       "biggestDayKicker": "One day stands out",
       "biggestDaySub": {
         "one": "{{count}} thing in one day. It happens.",

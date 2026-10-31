@@ -2031,6 +2031,8 @@
         "one": "{{count}} día con algo puesto, en total",
         "other": "{{count}} días con algo puesto, en total"
       },
+      "saveAll": "GUARDAR TODO",
+      "saving": "Guardando {{done}} de {{total}}…",
       "biggestDayKicker": "Un día destaca",
       "biggestDaySub": {
         "one": "{{count}} cosa en un solo día. Pasa.",

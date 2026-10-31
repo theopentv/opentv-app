@@ -23,17 +23,18 @@
  * cells are whatever fits the box they were given. Weeks run in the reading
  * direction, so in Arabic Sunday is on the right, as a calendar there is.
  */
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import { Text } from '@/components/text';
 
 import { todayISO } from '@/components/heatmap';
 import { CLOSE_SQUARE } from '@/components/puzzle-share-card';
 import { currentLocale, fmtDecimal, t } from '@/i18n';
-import { intlTag } from '@/locale-resolve';
+import { formatPeriod, intlTag } from '@/locale-resolve';
 import type { WidgetSpan } from '@/profile-layout';
 import { MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
-import { calendarMonth, mixHex } from '@/pure';
+import { calendarMonth, mixHex, shiftMonth } from '@/pure';
 import { ACCENTS, colors, ls } from '@/theme';
 
 const GAP = 3;
@@ -90,6 +91,76 @@ export function StatsRow({ stats, big = false }: { stats: Stats; big?: boolean }
   );
 }
 
+/** One month of squares: the profile block's and the archive's. */
+function MonthGrid({ weeks, levels, today, cell }: { weeks: (string | null)[][]; levels: Map<string, number>; today: string; cell: number }) {
+  const radius = Math.max(2, Math.round(cell / 4));
+  return (
+    <View style={{ gap: GAP }}>
+      {weeks.map((week, wi) => (
+        <View key={wi} style={{ flexDirection: 'row', gap: GAP }}>
+          {week.map((day, di) => {
+            // Outside the month: nothing, so the grid starts on a 1st.
+            if (day == null) return <View key={di} style={{ width: cell, height: cell }} />;
+            // Still to come: the faintest outline. Leaving them out drew a
+            // month that stopped halfway down the block and read as
+            // missing rather than as "the rest of October".
+            if (day > today) return <View key={day} style={[{ width: cell, height: cell, borderRadius: radius }, s.future]} />;
+            const level = levels.get(day);
+            return (
+              <View
+                key={day}
+                style={[
+                  { width: cell, height: cell, borderRadius: radius },
+                  level == null ? s.empty : { backgroundColor: levelColor(level) },
+                  day === today && s.today,
+                ]}
+              />
+            );
+          })}
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/**
+ * ANY PAST MONTH (1 Nov). The profile block only ever draws the current month,
+ * so on the 1st the whole of last month vanished. The archive keeps them all,
+ * from the first day played; the published block stays this month's.
+ */
+export function PuzzleMonths({ levels, today }: { levels: Map<string, number>; today: string }) {
+  const latest = today.slice(0, 7);
+  const [month, setMonth] = useState(latest);
+  const [width, setWidth] = useState(0);
+  const earliest = [...levels.keys()].sort()[0]?.slice(0, 7) ?? latest;
+  const weeks = calendarMonth(month);
+  const arrow = (delta: -1 | 1, can: boolean) => {
+    const target = shiftMonth(month, delta);
+    const back = delta < 0 !== I18nManager.isRTL;
+    return can ? (
+      <Pressable hitSlop={12} accessibilityRole="button" accessibilityLabel={formatPeriod(target, currentLocale())} onPress={() => setMonth(target)}>
+        <Ionicons name={back ? 'chevron-back' : 'chevron-forward'} size={22} color={colors.text} />
+      </Pressable>
+    ) : (
+      <View style={s.arrowGap} />
+    );
+  };
+  return (
+    <View style={{ gap: 10 }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <View style={s.monthHead}>
+        {arrow(-1, month > earliest)}
+        <Text style={s.monthTitle}>{formatPeriod(month, currentLocale())}</Text>
+        {arrow(1, month < latest)}
+      </View>
+      {width > 0 && (
+        <View style={{ alignSelf: 'center' }}>
+          <MonthGrid weeks={weeks} levels={levels} today={today} cell={Math.min(36, Math.floor((width - 6 * GAP) / 7))} />
+        </View>
+      )}
+    </View>
+  );
+}
+
 /**
  * `streak` is the OWNER's alone (22 Oct, opt-in): drawn on their own phone
  * from `meta`, never from a published value — `publicPuzzle` has none.
@@ -129,7 +200,6 @@ export function PuzzleBlock({
   const byWidth = (box.w - 6 * GAP) / 7;
   const byHeight = (box.h - (rows - 1) * GAP) / rows;
   const cell = Math.max(4, Math.floor(box.h > 0 ? Math.min(byWidth, byHeight) : byWidth));
-  const radius = Math.max(2, Math.round(cell / 4));
 
   const calendar = (
     <View
@@ -138,30 +208,8 @@ export function PuzzleBlock({
       accessible
       accessibilityLabel={t('puzzle.blockPlayed', { count: played })}>
       {box.w > 0 && (
-        <View style={{ gap: GAP, alignSelf: side ? 'flex-start' : 'center' }}>
-          {weeks.map((week, wi) => (
-            <View key={wi} style={{ flexDirection: 'row', gap: GAP }}>
-              {week.map((day, di) => {
-                // Outside the month: nothing, so the grid starts on a 1st.
-                if (day == null) return <View key={di} style={{ width: cell, height: cell }} />;
-                // Still to come: the faintest outline. Leaving them out drew a
-                // month that stopped halfway down the block and read as
-                // missing rather than as "the rest of October".
-                if (day > today) return <View key={day} style={[{ width: cell, height: cell, borderRadius: radius }, s.future]} />;
-                const level = levels.get(day);
-                return (
-                  <View
-                    key={day}
-                    style={[
-                      { width: cell, height: cell, borderRadius: radius },
-                      level == null ? s.empty : { backgroundColor: levelColor(level) },
-                      day === today && s.today,
-                    ]}
-                  />
-                );
-              })}
-            </View>
-          ))}
+        <View style={{ alignSelf: side ? 'flex-start' : 'center' }}>
+          <MonthGrid weeks={weeks} levels={levels} today={today} cell={cell} />
         </View>
       )}
     </View>
@@ -203,6 +251,9 @@ const s = StyleSheet.create({
   empty: { borderWidth: 1, borderColor: colors.liftStrong },
   future: { borderWidth: 1, borderColor: colors.lift },
   today: { borderWidth: 1.5, borderColor: colors.text },
+  monthHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  monthTitle: { color: colors.text, fontSize: 15, fontWeight: '800' },
+  arrowGap: { width: 22 },
   stats: { flexDirection: 'row', gap: 6 },
   streak: { color: colors.text, fontSize: 12.5, fontWeight: '700', textAlign: 'center' },
   extra: { color: colors.dim, fontSize: 11.5, fontWeight: '600', textAlign: 'center' },

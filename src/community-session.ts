@@ -66,6 +66,8 @@ const HANDLE_KEY = 'communityHandle';
 
 /** Reactive joined flag — mirrors `session-store.ts`'s `onboarded` exactly. */
 let joined = getMeta(JOINED_KEY) === '1';
+// Members from before consent was granted properly, and every launch after.
+if (joined) setAnalyticsConsent(true);
 const subs = new Set<() => void>();
 
 function notify(): void {

@@ -2159,6 +2159,8 @@
         "many": "W sumie {{count}} dni z czymś na ekranie",
         "other": "W sumie {{count}} dnia z czymś na ekranie"
       },
+      "saveAll": "ZAPISZ WSZYSTKO",
+      "saving": "Zapisywanie {{done}} z {{total}}…",
       "biggestDayKicker": "Jeden dzień się wyróżnia",
       "biggestDaySub": {
         "one": "{{count}} tytuł jednego dnia. Zdarza się.",
