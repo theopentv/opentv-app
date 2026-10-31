@@ -3082,6 +3082,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v211": {
+      "calendar": "Kalendarz emocji jest teraz pionowy, z dużymi polami i legendą na górze",
+      "films": "Import z dwóch aplikacji łączy film zapisany w dwóch językach i rozdziela filmy o tej samej nazwie",
+      "rewatches": "Scalanie importu zachowuje teraz powtórne seanse",
+      "fixes": "Poprawki: brak pustego paska pod nagłówkami na Androidzie, a e-mail z kodem przypomina o folderze spam"
+    },
     "v210": {
       "cover": "Wybór okładki znów działa: wybierz tytuł, obraz, a Anuluj naprawdę przywraca poprzednią",
       "badges": "Twoje odznaki z TV Time są tutaj. Zobacz je w Statystykach i udostępnij",

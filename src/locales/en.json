@@ -2864,6 +2864,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v211": {
+      "calendar": "The Emotion calendar now stands upright, with large squares and its colours explained on top",
+      "films": "Importing from two apps folds one film under two languages into one, and keeps films that share a name apart",
+      "rewatches": "Merging an import now keeps your rewatches",
+      "fixes": "Fixes: no blank band under headers on Android, and the email code reminds you to check spam"
+    },
     "v210": {
       "cover": "Choosing a cover works again: pick a title, pick a picture, and Cancel really puts the old one back",
       "badges": "Your TV Time badges are here. See them in Stats and share them",

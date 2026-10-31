@@ -2864,6 +2864,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v211": {
+      "calendar": "O calendário de emoções agora é vertical, com quadrados grandes e a legenda no topo",
+      "films": "Importar de dois apps une um filme escrito em dois idiomas e separa filmes com o mesmo nome",
+      "rewatches": "Mesclar uma importação agora mantém suas revisões",
+      "fixes": "Correções: sem faixa vazia sob os cabeçalhos no Android, e o e-mail do código lembra de olhar o spam"
+    },
     "v210": {
       "cover": "Escolher capa voltou a funcionar: escolha um título, uma imagem, e Cancelar realmente traz a antiga de volta",
       "badges": "Suas insígnias do TV Time estão aqui. Veja nas Estatísticas e compartilhe",

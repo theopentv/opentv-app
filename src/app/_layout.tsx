@@ -995,11 +995,12 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="user-lists"
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+          options={{ presentation: 'modal', animation: 'slide_from_bottom', headerShown: true }}
         />
         <Stack.Screen
           name="user-comments"
           options={{
+            headerShown: true,
             presentation: 'card',
             animation: 'slide_from_bottom',
             // A native push now (2.0.1), so its header and buttons are native and

@@ -1522,7 +1522,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
         done,
         total: shows.length,
         // live tallies for the import screen to count up
-        counts: { shows: shows.length, episodes: watches.length, movies: movies.length },
+        counts: { shows: shows.length, episodes: watches.length, movies: movies.filter((m) => m.watchedAt).length },
       }),
   );
   // persist EVERY resolved TMDB link, not just name-recovered ones. Metadata
@@ -2034,17 +2034,22 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     // every one of them, so the correction lasts only until the next import —
     // and a REPAIR_REV bump re-imports silently, with nothing to click.
     const unmarked = unmarkedEpisodeKeys();
+    const firstSeen = new Set<string>();
     for (const w of watches) {
       if (dead.has(w.showId)) continue; // deleted on purpose — stays deleted
       if (unmarked.has(episodeKey(w.showId, w.season, w.episode))) continue; // un-checked on purpose
       if (merge) {
+        const pos = `${w.showId}-${w.season}-${w.episode}`;
+        const repeat = w.rewatch > 0 || firstSeen.has(pos);
+        firstSeen.add(pos);
         const moved = remappedPos(w.showId, `${w.season}-${w.episode}`);
         const [ms, me] = moved ? moved.split('-').map(Number) : [w.season, w.episode];
-        // A REWATCH IS ITS OWN ROW, known by its date: "this episode is already here"
-        // would drop every second viewing, and a merge lost Henrike 1,406 of them.
+        // A REPEAT VIEWING IS ITS OWN ROW, known by its date: "this episode is already
+        // here" would drop it, and a merge lost Henrike 2,601 of them. TV Time flags
+        // only some, so a second row for an episode in the file counts as one too.
         const seen = db.getFirstSync<{ x: number }>(
           'SELECT 1 AS x FROM watches WHERE showId = ? AND ((season = ? AND episode = ?) OR (season = ? AND episode = ?)) AND (? = 0 OR watchedAt = ?) LIMIT 1',
-          [w.showId, w.season, w.episode, ms, me, w.rewatch ? 1 : 0, w.watchedAt],
+          [w.showId, w.season, w.episode, ms, me, repeat ? 1 : 0, w.watchedAt],
         );
         if (seen) {
           existing.episodes++;

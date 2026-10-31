@@ -2864,6 +2864,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v211": {
+      "calendar": "Le calendrier des émotions passe à la verticale, avec de grandes cases et la légende en haut",
+      "films": "L'import depuis deux applis réunit un film écrit en deux langues et garde séparés les films du même nom",
+      "rewatches": "Fusionner un import conserve maintenant vos revisionnages",
+      "fixes": "Corrections : plus de bande vide sous les en-têtes sur Android, et l'e-mail du code rappelle de vérifier les spams"
+    },
     "v210": {
       "cover": "Le choix de la couverture fonctionne à nouveau : choisissez un titre, une image, et Annuler remet vraiment l'ancienne",
       "badges": "Vos badges TV Time sont là. Retrouvez-les dans les Statistiques et partagez-les",
