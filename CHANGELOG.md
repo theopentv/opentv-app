@@ -9,7 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
-| 2.2.0 | 133 | 109 | **1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes (reviewed by Mahmood on the simulator), real film runtimes, puzzle results to the dashboard (106/130, 107/131 and 108/132 were never released; 109/133 add the CommsUni partner terms) |
+| 2.2.0 | 134 | 110 | **1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes (reviewed by Mahmood on the simulator), real film runtimes, puzzle results to the dashboard (106/130, 107/131, 108/132 and 109/133 were never released; 109/133 add the CommsUni partner terms, 110/134 the star fix) |
 | 2.1.1 | 129 | 105 | **submitted 31 Oct 2026, both stores** (iOS 105 replaces 2.1.0 in review, Android on top of 2.1.0) — upright Emotion calendar, film and rewatch fixes for merged imports, Henrike's other fixes |
 | 2.1.0 | 127 | 103 | **built 31 Oct 2026** — cover choosing fixed (live bug), TV Time badges, instant imports, Upcoming widget, the bell, free month dated for 1 December. |
 | 2.0.2 | 116 | 97 | **built 25 Oct 2026** — Simkl import that works on a real backup (shows, anime, films, anime films as films, memos as notes, dropped archived), a clear message for Simkl's CSV |
@@ -68,6 +68,7 @@ Built on `2.2.0` (1 Nov): **Save all** on Wrapped hands every card of the period
 
 - **Film runtimes from TMDB.** A watched film whose export row had no length and the bundled metadata did not know counted as 100 minutes, so Hidden Figures and The Station Agent both read "1h 40m" in Wrapped (`fillMovieRuntimes`, on launch, once per film; 0 = TMDB has none).
 - **Daily puzzle results reach the server** (day, won, tries, streak; never the title) for the dashboard's players-per-day count. Privacy policy updated 1 Nov.
+- **A slide that lifts off the stars rates nothing.** `ratingAt` clamps, so a sideways swipe that began on the stars and ended past the left edge saved half a star: The Help, a 5 on Mahmood's phone, became 0.5 on 1 Nov with nobody choosing it (`insideStars`, 24 pt of slack).
 - **What's New** rows for 2.2.0 in nine languages.
 - **CommsUni partner terms (§A10.3, §A11.4, §B6.3, §B9)**, before the agreement is signed: Block author on every shared comment (kept on our server, `commsuni_blocks`, migration 0069, so it follows the member to every device; reviewed and undone in Settings → Blocked CommsUni authors; never a report, never sent to CommsUni); the composer says what posting does before the first post and in short after, with links to §B3 and the connected apps; deleting a shared comment states §B6.3's limits; turning sharing on asks "16 or older?"; the settings line and the consent card no longer claim the public archive shows new comments. No edit exists, so §A10.8 holds. Website privacy policy and terms carry the CommsUni sections (not yet deployed).
 
