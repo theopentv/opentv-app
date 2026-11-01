@@ -1,0 +1,38 @@
+diff --git a/node_modules/expo-router/build/global-state/routingQueueContext.js b/node_modules/expo-router/build/global-state/routingQueueContext.js
+--- a/node_modules/expo-router/build/global-state/routingQueueContext.js
++++ b/node_modules/expo-router/build/global-state/routingQueueContext.js
+@@ -60,6 +60,7 @@
+ const _routingQueue = require("./routingQueue");
+ const EMPTY = [];
+ let boundBridges = 0;
++const liveBridges = [];
+ const throwMissingRoutingQueue = ()=>{
+     throw new Error('Attempted to navigate from a component rendered outside the Expo Router root. Render the component inside `ExpoRoot`. If this happened inside `ExpoRoot`, please report a bug at https://github.com/expo/expo/issues.');
+ };
+@@ -131,10 +132,24 @@
+         }
+         boundBridges++;
+         // The exported router identity must stay stable, so the bridge mutates it in place.
+-        Object.assign(_router.router, (0, _router.createImperativeRouter)(enqueue, setTransitionMode));
++        const bound = (0, _router.createImperativeRouter)(enqueue, setTransitionMode);
++        liveBridges.push(bound);
++        Object.assign(_router.router, bound);
+         return ()=>{
+             boundBridges--;
+-            Object.assign(_router.router, _router.unboundRouter);
++            liveBridges.splice(liveBridges.indexOf(bound), 1);
++            /*
++             * OpenTV patch (Nov 2026, "The imperative router is unavailable",
++             * 183 crashes on Android): this cleanup also runs when the
++             * container's Suspense boundary hides it or a second root
++             * overlaps, while the routing queue (RoutingQueueProvider, above
++             * the container) is still alive. Unbinding then turned every
++             * later tap into a fatal. Hand the router to a bridge still
++             * mounted; with none left, keep queueing into this provider: the
++             * drainer replays the intents when the container is back.
++             */
++            if (liveBridges.length) Object.assign(_router.router, liveBridges[liveBridges.length - 1]);
++            else globalThis.__opentvRouterUnbound?.(new Error('router bridge unmounted').stack);
+         };
+     }, [
+         enqueue,

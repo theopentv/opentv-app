@@ -50,6 +50,19 @@ try {
   crashlytics = null;
 }
 
+/*
+ * "The imperative router is unavailable" (181 crashes, mostly Samsung on
+ * Android 17, Nov 2026): something unmounts or hides the navigation container
+ * and expo-router used to unbind `router`. Our patch keeps it queueing and
+ * calls this instead, so the log rides along with any later crash and says
+ * what did it. Code stack only, never user data.
+ */
+(globalThis as { __opentvRouterUnbound?: (stack?: string) => void }).__opentvRouterUnbound = (stack) => {
+  void crashlytics?.()
+    .log(`router unbound: ${(stack ?? '').slice(0, 900)}`)
+    .catch(() => {});
+};
+
 /** Whether reports are being sent. Reads the stored choice, not the SDK. */
 export function crashReportsOn(): boolean {
   try {

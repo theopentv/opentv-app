@@ -9,6 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
+| 2.2.1 | 135 | — | **2 Nov 2026** — Android only: the "imperative router is unavailable" crash (expo-router patch). iOS stays on 2.2.0 (110) |
 | 2.2.0 | 134 | 110 | **1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes (reviewed by Mahmood on the simulator), real film runtimes, puzzle results to the dashboard (106/130, 107/131, 108/132 and 109/133 were never released; 109/133 add the CommsUni partner terms, 110/134 the star fix) |
 | 2.1.1 | 129 | 105 | **submitted 31 Oct 2026, both stores** (iOS 105 replaces 2.1.0 in review, Android on top of 2.1.0) — upright Emotion calendar, film and rewatch fixes for merged imports, Henrike's other fixes |
 | 2.1.0 | 127 | 103 | **built 31 Oct 2026** — cover choosing fixed (live bug), TV Time badges, instant imports, Upcoming widget, the bell, free month dated for 1 December. |
@@ -61,6 +62,13 @@ iOS skipped 2.1.0: it went into review, was pulled, and 2.1.1 build 105 carries 
 - **The closing card on a show's episode line is centred**, and the Snake popcorn sits inside its cell.
 
 Known: merging TV Time onto Simkl ends 143 rows short of the other order (15,786 against 15,929), cause not found. Upload warned of a missing `hermesvm` dSYM.
+
+## 2.2.1 — Android: taps that crashed the app (2 Nov)
+
+Android only; iOS stays on 2.2.0 (110). `app.json` says 2.2.1 for EAS; the iOS pbxproj keeps MARKETING_VERSION 2.2.0.
+
+- **"The imperative router is unavailable before the first render has finished."** 183 crashes on 15 installs in a week (Crashlytics issue 88c4e136), mostly Samsung on Android 17 plus L8X's Redmi 10C: once it happened, every tap that opened a page crashed, and on 2.1.0 the launch itself crashed in `RootLayout`. expo-router 58 binds the module-level `router` in a layout effect inside the navigation container and unbinds it in that effect's cleanup, which also runs when the container's Suspense boundary hides it or a second root overlaps, while the routing queue above the container is still alive. `patches/expo-router+58.0.26.patch` (patch-package, `postinstall`) hands the router to a bridge still mounted, or keeps queueing into the live provider; the drainer replays the intents when the container is back. Not reproduced: the Android 14 emulator navigates fine and the Android 17 image crashes the emulator on this Mac. If it was something else, `crash.ts` logs the unmount stack to Crashlytics (`router unbound: ...`), so the next event says what did it.
+- **Symbolicating Android crashes:** `expo export:embed --dev false --minify false` + `hermesc -O -output-source-map` at the release commit reproduces the shipped bytecode byte for byte (only the source hash differs); compose with `react-native/scripts/compose-source-maps.js`. That is how `onPress@1:3887565` became the Profile ⋯ button.
 
 ## 2.2.0 — Save all, puzzle months, Duo two panes, film runtimes (1 Nov)
 
