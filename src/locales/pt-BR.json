@@ -2820,7 +2820,7 @@
     "localOnly": "Só no OpenTV",
     "consent": {
       "title": "Compartilhar seus comentários com o CommsUni?",
-      "body": "O CommsUni é a casa comum dos comentários arquivados do TV Time, usada por vários apps. Se compartilhar, seus comentários novos também aparecem nesses apps e no site público do arquivo. Se não, ficam só no OpenTV, para os membros dele. Dá para mudar nos Ajustes.",
+      "body": "O CommsUni é a casa comum dos comentários arquivados do TV Time, usada por vários apps. Se você compartilhar, seus comentários novos também aparecem nesses apps. Se não, ficam só no OpenTV, vistos pelos membros. Você pode mudar isso nos Ajustes.",
       "share": "Compartilhar no CommsUni",
       "keep": "Só no OpenTV",
       "identityTitle": "Com qual nome?",
@@ -2829,7 +2829,7 @@
       "asPersona": "Um nome gerado"
     },
     "settingsRow": "Compartilhar comentários com o CommsUni",
-    "settingsSub": "Os comentários novos também aparecem em outros apps e no arquivo público",
+    "settingsSub": "Comentários novos também aparecem em outros apps conectados ao CommsUni",
     "replyNeedsSharingTitle": "Responder compartilha suas palavras",
     "replyNeedsSharingBody": "Uma resposta vai para o CommsUni, onde usuários de outros apps a leem. Para responder, ative Ajustes → Comunidade → Compartilhar comentários com o CommsUni.",
     "sortTop": "Destaques",
@@ -2842,7 +2842,34 @@
     "showReplies": "Ver respostas ({{count}})",
     "gifRefusedTitle": "GIFs ainda não chegam ao CommsUni",
     "gifRefusedBody": "Escreva algumas palavras e a resposta vai sem o GIF.",
-    "gif": "GIF"
+    "gif": "GIF",
+    "deleteBody": "Excluir seu comentário? Ele sai do CommsUni e deixa de aparecer em outros apps. Um app que já o buscou pode mostrá-lo por pouco tempo, as respostas dos outros ficam e alguém pode ter citado ou printado. Não dá para desfazer.",
+    "block": {
+      "action": "Bloquear autor",
+      "title": "Bloquear {{name}}?",
+      "someone": "este autor",
+      "body": "Você não verá os comentários nem as respostas dessa pessoa em nenhum lugar do OpenTV, em todos os seus aparelhos. O CommsUni não é avisado e nada é denunciado. Desfaça em Ajustes → Autores do CommsUni bloqueados.",
+      "confirm": "Bloquear",
+      "failed": "Não funcionou. Tente de novo daqui a pouco.",
+      "listTitle": "Autores do CommsUni bloqueados",
+      "listNote": "Autores bloqueados ficam ocultos para você em todo o OpenTV. Eles não são avisados e ainda podem postar em outros apps.",
+      "listEmpty": "Você não bloqueou ninguém no CommsUni.",
+      "unblock": "Desbloquear"
+    },
+    "notice": {
+      "full": "Seu comentário é público e vai para o CommsUni: usuários de outros apps conectados, agora e depois, podem ler, responder, curtir, marcar como spoiler e denunciar. Ele mostra o nome escolhido e um selo do OpenTV. Comentários não podem ser editados. Não compartilhe nada que não queira que estranhos leiam.",
+      "short": "Público no CommsUni, também em outros apps conectados. Não pode ser editado.",
+      "whatHappens": "O que acontece ao postar",
+      "apps": "Apps conectados"
+    },
+    "age": {
+      "title": "Você tem 16 anos ou mais?",
+      "body": "É preciso ter pelo menos 16 anos para postar no CommsUni. Qualquer pessoa pode ler e denunciar comentários.",
+      "yes": "Tenho 16 ou mais",
+      "no": "Não",
+      "underTitle": "Seus comentários ficam no OpenTV",
+      "underBody": "Você ainda pode ler e denunciar comentários do CommsUni. O que você escreve fica no OpenTV."
+    }
   },
   "stremio": {
     "title": "Stremio",

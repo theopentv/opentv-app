@@ -44,6 +44,8 @@ import {
 import { getHandle, useJoined } from '@/community-session';
 import { getMeta } from '@/db';
 import { CommentCard, formatCommentDate } from '@/components/comment-card';
+import { useBlockedAuthors } from '@/commsuni-blocks';
+import { CommsuniNotice, markCommsuniNoticeSeen } from '@/components/commsuni-notice';
 import { CommsuniAttribution, ConsentSheet, useReport } from '@/components/commsuni-board';
 import { useAndroidKeyboardUp } from '@/components/comment-thread';
 import { GifSearch } from '@/components/gif-search';
@@ -134,6 +136,8 @@ export default function SharedCommentScreen() {
   // A reply's own replies, fetched when "Show replies" is tapped.
   const [branches, setBranches] = useState<Record<string, SharedComment[]>>({});
   const [gone, setGone] = useState<ReadonlySet<string>>(new Set());
+  const blocked = useBlockedAuthors();
+  const isGone = (r: SharedComment) => gone.has(r.id) || blocked.some((b) => b.id === r.author.id);
   /*
    * WHAT YOU JUST SENT, shown at once (5 Oct). CommsUni's reads are a snapshot
    * a few seconds behind (§5), so the reload right after a send came back
@@ -210,6 +214,7 @@ export default function SharedCommentScreen() {
     const result = await replyOnBoard(to.id, words, clientId.current, root.id, { spoiler, gif });
     setSending(false);
     if (result === 'ok') {
+      markCommsuniNoticeSeen();
       const key = target ? target.id : root.id;
       const mineNow: SharedComment = {
         id: takeLastReplyId() ?? `local-${clientId.current}`,
@@ -257,7 +262,8 @@ export default function SharedCommentScreen() {
   const menuFor = (c: SharedComment) =>
     mine.has(c.id)
       ? () =>
-          Alert.alert(t('community.comments.deleteTitle'), t('community.comments.deleteBody'), [
+          // Everything here is on CommsUni: the limits of deleting, said first (§B6.3).
+          Alert.alert(t('community.comments.deleteTitle'), t('commsuni.deleteBody'), [
             { text: t('common.cancel'), style: 'cancel' },
             {
               text: t('community.comments.delete'),
@@ -286,13 +292,13 @@ export default function SharedCommentScreen() {
       ) : (
         <>
           <FlatList
-            data={withSent(root?.id ?? '', replies ?? []).filter((r) => !gone.has(r.id))}
+            data={withSent(root?.id ?? '', replies ?? []).filter((r) => !isGone(r))}
             keyExtractor={(r) => r.id}
             ListHeaderComponent={
               <>
                 {/* The guide's attribution, on every page that shows the board. */}
                 <CommsuniAttribution />
-                {gone.has(root.id) ? (
+                {isGone(root) ? (
                   <Text style={styles.gone}>{t('commsuni.gone')}</Text>
                 ) : (
                   <Card c={root} revealed={revealed.has(root.id)} onReveal={() => reveal(root.id)} onMenu={menuFor(root)} onReply={() => openWriter()} />
@@ -309,7 +315,7 @@ export default function SharedCommentScreen() {
                   </Pressable>
                 )}
                 {withSent(item.id, branches[item.id] ?? [])
-                  .filter((r) => !gone.has(r.id))
+                  .filter((r) => !isGone(r))
                   .map((sub) => (
                     <Card
                       key={sub.id}
@@ -369,6 +375,7 @@ export default function SharedCommentScreen() {
             editable={!sending}
             autoFocus
           />
+          <CommsuniNotice />
           {gif && (
             <View style={styles.gifRow}>
               <Image source={{ uri: gif }} style={styles.gifThumb} contentFit="cover" />

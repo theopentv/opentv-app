@@ -2820,7 +2820,7 @@
     "localOnly": "Solo su OpenTV",
     "consent": {
       "title": "Condividere i tuoi commenti con CommsUni?",
-      "body": "CommsUni è la casa comune dei commenti archiviati di TV Time, usata da varie app. Se condividi, i tuoi nuovi commenti compaiono anche in quelle app e sul sito pubblico dell'archivio. Altrimenti restano solo su OpenTV, visibili ai suoi membri. Puoi cambiarlo nelle Impostazioni.",
+      "body": "CommsUni è la casa comune dei commenti archiviati di TV Time, usata da diverse app. Se condividi, i tuoi nuovi commenti compaiono anche in quelle app. Altrimenti restano solo su OpenTV, visibili ai suoi membri. Puoi cambiarlo nelle Impostazioni.",
       "share": "Condividi su CommsUni",
       "keep": "Tieni solo su OpenTV",
       "identityTitle": "Con quale nome?",
@@ -2829,7 +2829,7 @@
       "asPersona": "Un nome generato"
     },
     "settingsRow": "Condividi i commenti con CommsUni",
-    "settingsSub": "I nuovi commenti compaiono anche in altre app e nell'archivio pubblico",
+    "settingsSub": "I nuovi commenti compaiono anche nelle altre app collegate a CommsUni",
     "replyNeedsSharingTitle": "Rispondere condivide le tue parole",
     "replyNeedsSharingBody": "Una risposta va su CommsUni, dove la leggono gli utenti di altre app. Per rispondere, attiva Impostazioni → Community → Condividi i commenti con CommsUni.",
     "sortTop": "In evidenza",
@@ -2842,7 +2842,34 @@
     "showReplies": "Mostra risposte ({{count}})",
     "gifRefusedTitle": "Le GIF non arrivano ancora su CommsUni",
     "gifRefusedBody": "Aggiungi qualche parola e la risposta partirà senza la GIF.",
-    "gif": "GIF"
+    "gif": "GIF",
+    "deleteBody": "Eliminare il commento? Esce da CommsUni e non compare più nelle altre app. Un'app che l'ha già scaricato può mostrarlo ancora per poco, le risposte degli altri restano e qualcuno potrebbe averlo citato o fotografato. Non si può annullare.",
+    "block": {
+      "action": "Blocca autore",
+      "title": "Bloccare {{name}}?",
+      "someone": "questo autore",
+      "body": "Non vedrai più i suoi commenti né le sue risposte in OpenTV, su tutti i tuoi dispositivi. CommsUni non viene avvisato e non parte nessuna segnalazione. Annulla in Impostazioni → Autori CommsUni bloccati.",
+      "confirm": "Blocca",
+      "failed": "Non ha funzionato. Riprova tra poco.",
+      "listTitle": "Autori CommsUni bloccati",
+      "listNote": "Gli autori bloccati ti sono nascosti ovunque in OpenTV. Non vengono avvisati e possono ancora pubblicare in altre app.",
+      "listEmpty": "Non hai bloccato nessuno su CommsUni.",
+      "unblock": "Sblocca"
+    },
+    "notice": {
+      "full": "Il tuo commento è pubblico e va su CommsUni: gli utenti di altre app collegate, ora e in futuro, possono leggerlo, rispondere, mettere mi piace, segnarlo come spoiler e segnalarlo. Mostra il nome scelto e un badge OpenTV. I commenti non si possono modificare. Non condividere nulla che non vorresti far leggere a sconosciuti.",
+      "short": "Pubblico su CommsUni, anche in altre app collegate. Non modificabile.",
+      "whatHappens": "Cosa succede quando pubblichi",
+      "apps": "App collegate"
+    },
+    "age": {
+      "title": "Hai 16 anni o più?",
+      "body": "Per pubblicare su CommsUni servono almeno 16 anni. Chiunque può leggere e segnalare i commenti.",
+      "yes": "Ho 16 anni o più",
+      "no": "No",
+      "underTitle": "I tuoi commenti restano su OpenTV",
+      "underBody": "Puoi ancora leggere e segnalare i commenti CommsUni. Quello che scrivi resta su OpenTV."
+    }
   },
   "stremio": {
     "title": "Stremio",

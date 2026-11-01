@@ -875,6 +875,7 @@ export default function RootLayout() {
         {/* "New: Activity" (2.0.0), from the Profile banner. */}
         <Stack.Screen name="activity-intro" />
         <Stack.Screen name="puzzle-settings" />
+        <Stack.Screen name="commsuni-blocks" />
         <Stack.Screen name="puzzle-archive" />
         {/* Plex: episodes watched on a server this app cannot see. */}
         <Stack.Screen name="plex" />

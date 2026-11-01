@@ -2820,7 +2820,7 @@
     "localOnly": "Yalnızca OpenTV",
     "consent": {
       "title": "Yorumların CommsUni'de paylaşılsın mı?",
-      "body": "CommsUni, TV Time'ın arşivlenmiş yorumlarının ortak evi ve birkaç uygulama tarafından kullanılıyor. Paylaşırsan buradaki yeni yorumların o uygulamalarda ve herkese açık arşiv sitesinde de görünür. Paylaşmazsan yalnızca OpenTV'de kalır, OpenTV üyeleri görür. Bunu Ayarlar'dan değiştirebilirsin.",
+      "body": "CommsUni, arşivlenmiş TV Time yorumlarının birçok uygulamanın kullandığı ortak evidir. Paylaşırsan yeni yorumların o uygulamalarda da görünür. Paylaşmazsan yalnızca OpenTV'de kalır ve üyeler görür. Bunu Ayarlar'dan değiştirebilirsin.",
       "share": "CommsUni'de paylaş",
       "keep": "Yalnızca OpenTV'de tut",
       "identityTitle": "Hangi isim görünsün?",
@@ -2829,7 +2829,7 @@
       "asPersona": "Oluşturulmuş bir isim"
     },
     "settingsRow": "Yorumları CommsUni'de paylaş",
-    "settingsSub": "Yeni yorumlar diğer uygulamalarda ve herkese açık arşivde de görünür",
+    "settingsSub": "Yeni yorumlar CommsUni'ye bağlı diğer uygulamalarda da görünür",
     "replyNeedsSharingTitle": "Yanıt vermek yazdıklarını paylaşır",
     "replyNeedsSharingBody": "Yanıtlar CommsUni'ye gider ve orada diğer uygulamaların kullanıcıları okur. Yanıt vermek için Ayarlar → Topluluk → Yorumları CommsUni'de paylaş seçeneğini aç.",
     "sortTop": "En iyi",
@@ -2842,7 +2842,34 @@
     "showReplies": "Yanıtları göster ({{count}})",
     "gifRefusedTitle": "GIF'ler henüz CommsUni'ye gönderilemiyor",
     "gifRefusedBody": "Birkaç kelime ekle, GIF olmadan gönderilsin.",
-    "gif": "GIF"
+    "gif": "GIF",
+    "deleteBody": "Yorumun silinsin mi? CommsUni'den kaldırılır ve diğer uygulamalarda görünmez. Onu önceden çekmiş bir uygulama kısa süre gösterebilir, başkalarının yanıtları kalır ve biri alıntılamış ya da ekran görüntüsü almış olabilir. Geri alınamaz.",
+    "block": {
+      "action": "Yazarı engelle",
+      "title": "{{name}} engellensin mi?",
+      "someone": "bu yazar",
+      "body": "Yorumlarını ve yanıtlarını OpenTV'nin hiçbir yerinde, hiçbir cihazında görmezsin. CommsUni'ye haber verilmez ve şikâyet gönderilmez. Ayarlar → Engellenen CommsUni yazarları'ndan geri alabilirsin.",
+      "confirm": "Engelle",
+      "failed": "Olmadı. Birazdan tekrar dene.",
+      "listTitle": "Engellenen CommsUni yazarları",
+      "listNote": "Engellenen yazarlar OpenTV'nin her yerinde senden gizlenir. Onlara haber verilmez ve diğer uygulamalarda yazmaya devam edebilirler.",
+      "listEmpty": "CommsUni'de kimseyi engellemedin.",
+      "unblock": "Engeli kaldır"
+    },
+    "notice": {
+      "full": "Yorumun herkese açıktır ve CommsUni'ye gider: bağlı diğer uygulamaların kullanıcıları şimdi ve sonra onu okuyabilir, yanıtlayabilir, beğenebilir, spoiler olarak işaretleyebilir ve şikâyet edebilir. Seçtiğin adla ve OpenTV rozetiyle görünür. Yorumlar düzenlenemez. Yabancıların okumasını istemediğin bir şey paylaşma.",
+      "short": "CommsUni'de ve bağlı diğer uygulamalarda herkese açık. Düzenlenemez.",
+      "whatHappens": "Gönderince ne olur",
+      "apps": "Bağlı uygulamalar"
+    },
+    "age": {
+      "title": "16 yaşında veya daha büyük müsün?",
+      "body": "CommsUni'ye yazmak için en az 16 yaşında olmalısın. Yorumları okumak ve şikâyet etmek herkese açık.",
+      "yes": "16 yaşında veya büyüğüm",
+      "no": "Hayır",
+      "underTitle": "Yorumların OpenTV'de kalır",
+      "underBody": "CommsUni yorumlarını okumaya ve şikâyet etmeye devam edebilirsin. Yazdıkların OpenTV'de kalır."
+    }
   },
   "stremio": {
     "title": "Stremio",

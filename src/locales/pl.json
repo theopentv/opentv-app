@@ -3040,7 +3040,7 @@
     "localOnly": "Tylko OpenTV",
     "consent": {
       "title": "Udostępniać komentarze w CommsUni?",
-      "body": "CommsUni to wspólny dom zarchiwizowanych komentarzy z TV Time, używany przez kilka aplikacji. Jeśli udostępnisz, twoje nowe komentarze pojawią się też w tych aplikacjach i na publicznej stronie archiwum. Jeśli nie, zostaną tylko w OpenTV, widoczne dla członków OpenTV. Możesz to zmienić w Ustawieniach.",
+      "body": "CommsUni to wspólny dom zarchiwizowanych komentarzy z TV Time, używany przez kilka aplikacji. Jeśli udostępnisz, Twoje nowe komentarze pojawią się też w tych aplikacjach. Jeśli nie, zostaną tylko w OpenTV, widoczne dla jego członków. Możesz to zmienić w Ustawieniach.",
       "share": "Udostępniaj w CommsUni",
       "keep": "Tylko w OpenTV",
       "identityTitle": "Jaką nazwę pokazywać?",
@@ -3049,7 +3049,7 @@
       "asPersona": "Wygenerowana nazwa"
     },
     "settingsRow": "Udostępniaj komentarze w CommsUni",
-    "settingsSub": "Nowe komentarze pojawiają się też w innych aplikacjach i w publicznym archiwum",
+    "settingsSub": "Nowe komentarze pojawiają się też w innych aplikacjach połączonych z CommsUni",
     "replyNeedsSharingTitle": "Odpowiedź udostępnia twoje słowa",
     "replyNeedsSharingBody": "Odpowiedź trafia do CommsUni, gdzie czytają ją użytkownicy innych aplikacji. Aby odpowiedzieć, włącz Ustawienia → Społeczność → Udostępniaj komentarze w CommsUni.",
     "sortTop": "Najlepsze",
@@ -3062,7 +3062,34 @@
     "showReplies": "Pokaż odpowiedzi ({{count}})",
     "gifRefusedTitle": "GIF-y nie mogą jeszcze trafiać do CommsUni",
     "gifRefusedBody": "Dodaj kilka słów, a komentarz zostanie wysłany bez GIF-a.",
-    "gif": "GIF"
+    "gif": "GIF",
+    "deleteBody": "Usunąć komentarz? Zniknie z CommsUni i przestanie być widoczny w innych aplikacjach. Aplikacja, która już go pobrała, może go jeszcze chwilę pokazywać, odpowiedzi innych zostają, a ktoś mógł go zacytować lub zrobić zrzut ekranu. Tego nie da się cofnąć.",
+    "block": {
+      "action": "Zablokuj autora",
+      "title": "Zablokować {{name}}?",
+      "someone": "tego autora",
+      "body": "Nie zobaczysz jego komentarzy ani odpowiedzi nigdzie w OpenTV, na żadnym ze swoich urządzeń. CommsUni nie zostaje powiadomione i nic nie jest zgłaszane. Cofniesz to w Ustawienia → Zablokowani autorzy CommsUni.",
+      "confirm": "Zablokuj",
+      "failed": "Nie udało się. Spróbuj za chwilę.",
+      "listTitle": "Zablokowani autorzy CommsUni",
+      "listNote": "Zablokowani autorzy są dla Ciebie ukryci w całym OpenTV. Nie dostają powiadomienia i nadal mogą pisać w innych aplikacjach.",
+      "listEmpty": "Nikogo nie zablokowano w CommsUni.",
+      "unblock": "Odblokuj"
+    },
+    "notice": {
+      "full": "Twój komentarz jest publiczny i trafia do CommsUni: użytkownicy innych połączonych aplikacji, teraz i później, mogą go czytać, odpowiadać, polubić, oznaczyć jako spoiler i zgłosić. Widać przy nim wybraną nazwę i odznakę OpenTV. Komentarzy nie można edytować. Nie udostępniaj niczego, czego nie chcesz pokazać obcym.",
+      "short": "Publiczny w CommsUni, także w innych połączonych aplikacjach. Bez edycji.",
+      "whatHappens": "Co się dzieje po opublikowaniu",
+      "apps": "Połączone aplikacje"
+    },
+    "age": {
+      "title": "Masz co najmniej 16 lat?",
+      "body": "Aby pisać w CommsUni, musisz mieć co najmniej 16 lat. Każdy może czytać i zgłaszać komentarze.",
+      "yes": "Mam 16 lat lub więcej",
+      "no": "Nie",
+      "underTitle": "Twoje komentarze zostają w OpenTV",
+      "underBody": "Nadal możesz czytać i zgłaszać komentarze z CommsUni. To, co piszesz, zostaje w OpenTV."
+    }
   },
   "stremio": {
     "title": "Stremio",

@@ -34,6 +34,7 @@ import { setOnboarded } from '@/session-store';
 import { getGuessedMovies } from '@/db';
 import { tvdbKeyFailed, userTvdbKey } from '@/tvdb';
 import { chosenScheme, colors, setThemeScheme, space, type SchemeChoice } from '@/theme';
+import { confirmAge16 } from '@/components/commsuni-notice';
 import { decision as commsuniDecision, recordDecision } from '@/commsuni';
 
 /** Export as a TV Time-format ZIP (images bundled) — our importer reads it
@@ -515,11 +516,11 @@ export default function SettingsScreen() {
                       value={cuShare}
                       onValueChange={(on) => {
                         if (on) {
-                          Alert.alert(t('commsuni.consent.identityTitle'), t('commsuni.consent.identityBody'), [
+                          confirmAge16(() => Alert.alert(t('commsuni.consent.identityTitle'), t('commsuni.consent.identityBody'), [
                             { text: t('common.cancel'), style: 'cancel' },
                             { text: t('commsuni.consent.asPersona'), onPress: () => { void recordDecision('share', 'persona'); setCuShare(true); } },
                             { text: t('commsuni.consent.asProfile'), onPress: () => { void recordDecision('share', 'profile'); setCuShare(true); } },
-                          ]);
+                          ]));
                         } else {
                           void recordDecision('keep_private');
                           setCuShare(false);
@@ -528,6 +529,11 @@ export default function SettingsScreen() {
                       trackColor={{ true: colors.green }}
                     />
                   }
+                />
+                {/* Review and undo CommsUni blocks (§A11.4). */}
+                <MenuRow trackId="commsuni.block.listRow"
+                  title={t('commsuni.block.listTitle')}
+                  onPress={() => router.push('/commsuni-blocks')}
                 />
                 {/* ONLY WHEN SOMEBODY IS WAITING. A row reading "0" is a
                     permanent reminder of an empty room; the count IS the reason

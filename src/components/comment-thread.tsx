@@ -25,6 +25,7 @@
 import type { BoardTarget, SharedComment } from '@/commsuni';
 import { BoardBanner, BoardMore, ConsentSheet, SharedRow, useBoard, useReport } from '@/components/commsuni-board';
 import { StripClose } from '@/components/strip-close';
+import { CommsuniNotice, markCommsuniNoticeSeen } from '@/components/commsuni-notice';
 import { decision as commsuniDecision, share as shareToCommsuni, sharingOn } from '@/commsuni';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
@@ -731,7 +732,10 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
         // a failure leaves it an OpenTV-only comment, which is what it already is.
         if (board && sharingOn() && body) {
           void shareToCommsuni(saved.id, board.type === 'movie' ? board.id : null).then((ok) => {
-            if (ok) setItems((prev) => prev.map((c) => (c.id === saved.id ? { ...c, shared: true } : c)));
+            if (ok) {
+              markCommsuniNoticeSeen();
+              setItems((prev) => prev.map((c) => (c.id === saved.id ? { ...c, shared: true } : c)));
+            }
           });
         }
       }
@@ -757,7 +761,8 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
   };
 
   const confirmDelete = (c: Comment) => {
-    Alert.alert(t('community.comments.deleteTitle'), t('community.comments.deleteBody'), [
+    // A shared comment says what deleting cannot undo, at the point of deleting (§B6.3).
+    Alert.alert(t('community.comments.deleteTitle'), t(c.shared ? 'commsuni.deleteBody' : 'community.comments.deleteBody'), [
       { text: t('common.cancel'), style: 'cancel' },
       {
         text: t('community.comments.delete'),
@@ -1140,6 +1145,8 @@ export function CommentThread({ target, board = null }: { target: ThreadTarget; 
               autoFocus
             />
           {overLength && <Text style={styles.overLength}>{t('community.comments.errTooLong')}</Text>}
+          {/* Only a top-level comment goes to CommsUni; a reply here stays on OpenTV. */}
+          {board && sharingOn() && !replyTo && <CommsuniNotice />}
           {attach.attachment != null && (
             <View style={styles.attachRow}>
               <Image source={{ uri: attach.attachment.uri }} style={styles.attachThumb} contentFit="cover" />

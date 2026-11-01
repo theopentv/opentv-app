@@ -2820,7 +2820,7 @@
     "localOnly": "OpenTV only",
     "consent": {
       "title": "Share your comments with CommsUni?",
-      "body": "CommsUni is the shared home of TV Time's archived comments, used by several apps. If you share, your new comments here also appear in those apps and on the public archive website. If not, they stay on OpenTV only, seen by OpenTV members. You can change this in Settings.",
+      "body": "CommsUni is the shared home of TV Time's archived comments, used by several apps. If you share, your new comments here also appear in those apps. If not, they stay on OpenTV only, seen by OpenTV members. You can change this in Settings.",
       "share": "Share on CommsUni",
       "keep": "Keep on OpenTV only",
       "identityTitle": "Which name should they show?",
@@ -2829,7 +2829,7 @@
       "asPersona": "A generated name"
     },
     "settingsRow": "Share comments with CommsUni",
-    "settingsSub": "New comments also appear in other apps and on the public archive",
+    "settingsSub": "New comments also appear in other apps connected to CommsUni",
     "replyNeedsSharingTitle": "Replying shares your words",
     "replyNeedsSharingBody": "A reply goes to CommsUni, where other apps' users read it. To reply, turn on Settings → Community → Share comments with CommsUni.",
     "sortTop": "Top",
@@ -2842,7 +2842,34 @@
     "showReplies": "Show replies ({{count}})",
     "gifRefusedTitle": "GIFs can't go to CommsUni yet",
     "gifRefusedBody": "Add a few words and it will be sent without the GIF.",
-    "gif": "GIF"
+    "gif": "GIF",
+    "deleteBody": "Delete your comment? It leaves CommsUni and stops showing in other apps. Apps that already fetched it may show it briefly, replies other people wrote stay, and someone may have quoted or screenshotted it. This can't be undone.",
+    "block": {
+      "action": "Block author",
+      "title": "Block {{name}}?",
+      "someone": "this author",
+      "body": "You won't see their comments or replies anywhere in OpenTV, on any of your devices. CommsUni isn't told and nothing is reported. Undo it in Settings → Blocked CommsUni authors.",
+      "confirm": "Block",
+      "failed": "That didn't work. Try again in a moment.",
+      "listTitle": "Blocked CommsUni authors",
+      "listNote": "Blocked authors are hidden from you everywhere in OpenTV. They aren't told, and they can still post in other apps.",
+      "listEmpty": "You haven't blocked anyone on CommsUni.",
+      "unblock": "Unblock"
+    },
+    "notice": {
+      "full": "Your comment is public and goes to CommsUni: people in other connected apps, now and later, can read it, reply, like it, mark it as a spoiler and report it. It shows your chosen name and an OpenTV badge. Comments can't be edited. Don't share anything you wouldn't want strangers to read.",
+      "short": "Public on CommsUni, in other connected apps too. Can't be edited.",
+      "whatHappens": "What happens when you post",
+      "apps": "Connected apps"
+    },
+    "age": {
+      "title": "Are you 16 or older?",
+      "body": "You need to be at least 16 to post to CommsUni. Anyone can read and report comments.",
+      "yes": "I'm 16 or older",
+      "no": "No",
+      "underTitle": "Your comments stay on OpenTV",
+      "underBody": "You can still read and report CommsUni comments. What you write stays on OpenTV."
+    }
   },
   "stremio": {
     "title": "Stremio",

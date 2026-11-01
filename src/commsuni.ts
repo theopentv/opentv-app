@@ -38,6 +38,7 @@
 import { getToken, isJoined } from '@/community-session';
 import { getMeta, setMeta } from '@/db';
 import { serverUrl } from '@/server-url';
+import { withoutBlocked } from '@/commsuni-blocks';
 
 /** Where a comment came from. Data-driven on purpose: the guide asks partners
  *  not to hard-code a boolean like `isArchiveComment` but to model a source
@@ -56,7 +57,8 @@ export type SharedComment = {
   text: string;
   language: string | null;
   createdAt: string;
-  author: { name: string | null; avatar: string | null; color: string | null };
+  /** `id`: CommsUni's author id, what Block author is keyed by. Absent on an old server. */
+  author: { id?: string | null; name: string | null; avatar: string | null; color: string | null };
   origin: { kind: 'tvtime' | 'partner'; slug: string; displayName: string };
   likes: number;
   replyCount: number;
@@ -272,7 +274,8 @@ export function boardPage(
   if (cursor) q.set('cursor', cursor);
   if (filter.source) q.set('source', filter.source);
   if (filter.language) q.set('language', filter.language);
-  return get<BoardPage>(`/comments?${q.toString()}`);
+  // Blocked authors never reach a screen: filtered here, the one place every page passes.
+  return get<BoardPage>(`/comments?${q.toString()}`).then((p) => (p ? { ...p, comments: withoutBlocked(p.comments) } : p));
 }
 
 /**
@@ -296,7 +299,9 @@ export function boardReplies(
 ): Promise<{ replies: SharedComment[]; nextCursor: string | null } | null> {
   const q = new URLSearchParams({ id: commentId });
   if (branch) q.set('parent', branch);
-  return get(`/replies?${q.toString()}`);
+  return get<{ replies: SharedComment[]; nextCursor: string | null }>(`/replies?${q.toString()}`).then((r) =>
+    r ? { ...r, replies: withoutBlocked(r.replies) } : r,
+  );
 }
 
 /** Cached for the session: the catalogue changes when an app joins, and the

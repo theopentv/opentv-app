@@ -23,6 +23,8 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { blockAuthor, refreshBlockedAuthors, useBlockedAuthors } from '@/commsuni-blocks';
+import { confirmAge16 } from '@/components/commsuni-notice';
 import { boardPage, recordDecision, rememberShared, reportOnBoard, sources as loadSources, type BoardFilter, type BoardSort, type BoardTarget, type LanguageCount, type ReportReason, type SharedComment, type Source } from '@/commsuni';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useJoined } from '@/community-session';
@@ -74,8 +76,15 @@ export function useBoard(target: BoardTarget | null) {
   const [total, setTotal] = useState<number | null>(null);
   // Reported here and hidden for this reader (§10 allows it after a 202).
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+  // A block hides that author's rows already on screen too (guide: "immediately").
+  const blocked = useBlockedAuthors();
   const key = target ? JSON.stringify(target) : '';
   const filterKey = `${filter.source ?? ''}|${filter.language ?? ''}`;
+
+  // Blocks made on another device, before the first page is drawn.
+  useEffect(() => {
+    if (joined) void refreshBlockedAuthors();
+  }, [joined]);
 
   useEffect(() => {
     if (!target || !joined) return;
@@ -123,7 +132,7 @@ export function useBoard(target: BoardTarget | null) {
     enabled: !!target && joined,
     pending: !!target && joined && !settled,
     active: !!target && joined && shown,
-    comments: comments.filter((c) => !hidden.has(c.id)),
+    comments: comments.filter((c) => !hidden.has(c.id) && !blocked.some((b) => b.id === c.author.id)),
     sort,
     setSort,
     cursor,
@@ -353,8 +362,30 @@ export function useReport(onHidden: (id: string) => void) {
       reason.startsWith('mine_') ? t('commsuni.mineSentBody') : t('community.report.sentBody'),
     );
   };
+  // BLOCK AUTHOR, kept apart from Report (§A11.4): it files nothing, it only
+  // stops this member seeing the author anywhere in OpenTV.
+  const block = (c: SharedComment) => {
+    setTarget(null);
+    const id = c.author.id;
+    if (!id) return;
+    Alert.alert(t('commsuni.block.title', { name: c.author.name ?? t('commsuni.block.someone') }), t('commsuni.block.body'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('commsuni.block.confirm'),
+        style: 'destructive',
+        onPress: () => {
+          void blockAuthor(id, c.author.name).then((ok) => {
+            if (!ok) Alert.alert(t('commsuni.block.failed'));
+          });
+        },
+      },
+    ]);
+  };
   const actions: SheetAction[] = target
     ? [
+        ...(target.author.id
+          ? ([{ text: t('commsuni.block.action'), icon: 'remove-circle-outline', onPress: () => block(target) }] as SheetAction[])
+          : []),
         ...(target.origin.kind === 'tvtime'
           ? ([
               { text: t('commsuni.mineHide'), icon: 'eye-off-outline', onPress: () => void send(target, 'mine_hide') },
@@ -501,7 +532,7 @@ export function ConsentSheet({ visible, onDone }: { visible: boolean; onDone: ()
             <>
               <Text accessibilityRole="header" style={styles.cardTitle}>{t('commsuni.consent.title')}</Text>
               <Text style={styles.cardText}>{t('commsuni.consent.body')}</Text>
-              <Pressable accessibilityRole="button" style={styles.support} onPress={() => setStep('identity')}>
+              <Pressable accessibilityRole="button" style={styles.support} onPress={() => confirmAge16(() => setStep('identity'), () => finish('keep_private'))}>
                 <Text style={styles.supportText}>{t('commsuni.consent.share')}</Text>
               </Pressable>
               <Pressable accessibilityRole="button" style={styles.archive} onPress={() => finish('keep_private')}>
