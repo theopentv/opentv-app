@@ -19,7 +19,7 @@ import type { ThreadTarget } from '@/community-comments';
 import { useJoined } from '@/community-session';
 import { CommentThread } from '@/components/comment-thread';
 import { Text } from '@/components/text';
-import { PillButton, useDetailWidth, useTopInset } from '@/components/ui';
+import { PillButton, useDetailPane, useDetailWidth, useTopInset } from '@/components/ui';
 import { getWatch } from '@/db';
 import { t } from '@/i18n';
 import { boardTargetFor, commentsSplitLayout } from '@/pure';
@@ -29,8 +29,10 @@ import { colors, space } from '@/theme';
 /** The split, or null when the page has the screen to itself. */
 export function useCommentsSplit(): { pageW: number; threadW: number } | null {
   const joined = useJoined();
+  const pane = useDetailPane();
   const layout = commentsSplitLayout(useWindowDimensions().width);
-  return joined && layout.split ? layout : null;
+  // Already a pane: the fold has been spent on the list beside it.
+  return joined && layout.split && !pane ? layout : null;
 }
 
 /** `useDetailWidth`, narrowed to the page's half while the comments are beside it.

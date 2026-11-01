@@ -36,7 +36,7 @@ import { nextAtTop, shouldDismissOnPull } from '@/pure';
  * stays on: it is what closed a page from over its content in 2.0.0, and the
  * system swipe never reaches a touch an inner scroll view has taken.
  */
-export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
+export function useSwipeDown({ native = false, off = false }: { native?: boolean; off?: boolean } = {}) {
   const translateY = useSharedValue(0);
   const screenH = useWindowDimensions().height;
   /*
@@ -97,7 +97,7 @@ export function useSwipeDown({ native = false }: { native?: boolean } = {}) {
   const makePan = useCallback(
     (enabled: boolean) =>
       Gesture.Pan()
-        .enabled(enabled)
+        .enabled(enabled && !off)
         .activeOffsetY(16)
         .failOffsetX([-24, 24])
         .onBegin(() => {

@@ -663,6 +663,8 @@
       "classicTabBar": "Classic tab bar",
       "classicTabBarSub": "The flat bar along the bottom from before iOS 26, instead of the floating one",
       "classicTabBarRestart": "Close OpenTV and open it again to see the new tab bar.",
+      "duoFullWidth": "Full width when open",
+      "duoFullWidthSub": "Use the whole screen when iPhone Duo is open, instead of two panes.",
       "simpleView": "Simple view",
       "simpleViewSub": "Just how many shows, episodes and films. Hides watch time, the heatmap, Wrapped, memories and the yearly goal."
     },
@@ -1800,7 +1802,10 @@
   "activity": {
     "thisWeek": "This week",
     "earlier": "Earlier",
-    "andOthers": {"one": "{{who}} and {{count}} other", "other": "{{who}} and {{count}} others"},
+    "andOthers": {
+      "one": "{{who}} and {{count}} other",
+      "other": "{{who}} and {{count}} others"
+    },
     "title": "Inbox",
     "tabArchive": "TV Time",
     "tabCommunity": "Inbox",
@@ -2866,6 +2871,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v220": {
+      "saveAll": "Wrapped: Save all puts every card of your month in one share, ready for Photos or a post",
+      "puzzleMonths": "Daily puzzle: page back through past months and see every day you played",
+      "duo": "iPhone Duo: open it and your shows, films and profile sit in two panes, the page you tap on the right",
+      "fixes": "Fixes: films with no length from your import now show their real runtime in Wrapped and Stats"
+    },
     "v211": {
       "calendar": "The Emotion calendar now stands upright, with large squares and its colours explained on top",
       "films": "Importing from two apps folds one film under two languages into one, and keeps films that share a name apart",
@@ -3720,7 +3731,10 @@
     }
   },
   "widgets": {
-    "inDays": {"one": "in {{count}} day", "other": "in {{count}} days"},
+    "inDays": {
+      "one": "in {{count}} day",
+      "other": "in {{count}} days"
+    },
     "nothingUpcoming": "Nothing announced yet",
     "upNext": "Up next",
     "movies": "Movies",

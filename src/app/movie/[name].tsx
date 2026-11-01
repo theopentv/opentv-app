@@ -1,3 +1,4 @@
+import { PaneBar } from '@/components/pane-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -14,7 +15,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPaneStyle, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
 import {
   addMovieToWatchlist,
   deleteMovie,
@@ -155,13 +156,17 @@ export default function MovieScreen() {
   const [season] = useState(() => currentLook(isPlus()));
   // Which comments screen Comments leads to — see `goComments`.
   const joined = useJoined();
+  // In the Duo's right half the name comes from the list beside it, not the route.
+  const pane = useDetailPane();
+  const detail = useDetailRouter();
+  const params = useLocalSearchParams<{ name: string; tmdbId?: string; tvdbId?: string; poster?: string; year?: string }>();
   const {
     name,
     tmdbId: tmdbIdParam,
     tvdbId: tvdbIdParam,
     poster: routePoster,
     year: routeYearParam,
-  } = useLocalSearchParams<{ name: string; tmdbId?: string; tvdbId?: string; poster?: string; year?: string }>();
+  } = pane ? { name: pane.id, tmdbId: undefined, tvdbId: undefined, poster: undefined, year: undefined } : params;
   // a tmdbId param is real identity — supplied whenever the tap came from a
   // search/catalog result, never for a bare imported title — and it is what
   // tells apart two different films sharing a display name ("Amado" 2011 vs.
@@ -534,7 +539,7 @@ export default function MovieScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tmdbId, tvdbId, dbMovie?.name, dbMovie?.poster, dbMovie?.tvdbId, name, routeYear]);
 
-  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true });
+  const { gesture, headerGesture, animatedStyle, onScroll, onScrollBeginDrag, onScrollSettled, setAtTop } = useSwipeDown({ native: true, off: pane != null });
   // on a wide screen this screen sits beside the list instead of covering it
   const paneStyle = useDetailPaneStyle();
   // Opened wide (iPhone Duo), the film's thread sits beside the page.
@@ -681,7 +686,7 @@ export default function MovieScreen() {
             t('media.removeConfirmTitle', { title }),
             t('movie.removeConfirmBody'),
             [
-              { text: t('common.remove'), style: 'destructive', onPress: () => { deleteMovie(rowName); router.back(); } },
+              { text: t('common.remove'), style: 'destructive', onPress: () => { deleteMovie(rowName); detail.leave(); } },
               { text: t('common.cancel'), style: 'cancel' },
             ],
           ),
@@ -946,6 +951,8 @@ export default function MovieScreen() {
       <Animated.View style={[{ flex: 1, backgroundColor: colors.bg }, animatedStyle, paneStyle, split && splitRow]}>
         <SplitPage split={split}>
         {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
+        <PaneBar actions={movieActions()} />
+        {!pane && (
         <Stack.Screen
           options={{
             headerShown: true,
@@ -955,6 +962,7 @@ export default function MovieScreen() {
             ...headerItems({ left: [closeItem()], right: [moreMenuItem(movieActions())] }),
           }}
         />
+        )}
         {/* The backdrop runs under the status bar, so its glyphs follow the
             artwork rather than the page — dark-on-dark otherwise. */}
         <StatusBarOnCover />

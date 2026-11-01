@@ -663,6 +663,8 @@
       "classicTabBar": "Klasik sekme çubuğu",
       "classicTabBarSub": "Yüzen çubuk yerine iOS 26 öncesindeki alttaki düz çubuk",
       "classicTabBarRestart": "Yeni sekme çubuğunu görmek için OpenTV’yi kapatıp yeniden aç.",
+      "duoFullWidth": "Açıkken tam genişlik",
+      "duoFullWidthSub": "iPhone Duo açıkken iki bölme yerine tüm ekranı kullanır.",
       "simpleView": "Sade görünüm",
       "simpleViewSub": "Sadece kaç dizi, bölüm ve film. İzleme süresini, gün haritasını, Wrapped'i, anıları ve yıllık hedefi gizler."
     },
@@ -1800,7 +1802,10 @@
   "activity": {
     "thisWeek": "Bu hafta",
     "earlier": "Daha önce",
-    "andOthers": {"one": "{{who}} ve {{count}} kişi daha", "other": "{{who}} ve {{count}} kişi daha"},
+    "andOthers": {
+      "one": "{{who}} ve {{count}} kişi daha",
+      "other": "{{who}} ve {{count}} kişi daha"
+    },
     "title": "Gelen Kutusu",
     "tabArchive": "TV Time",
     "tabCommunity": "Gelen Kutusu",
@@ -2866,6 +2871,12 @@
     "overlayAuto": "Otomatik"
   },
   "whatsNew": {
+    "v220": {
+      "saveAll": "Wrapped: Tümünü kaydet, ayın tüm kartlarını tek paylaşımda toplar; Fotoğraflar'a ya da bir gönderiye hazır",
+      "puzzleMonths": "Günlük bulmaca: geçmiş aylara dön ve oynadığın her günü gör",
+      "duo": "iPhone Duo: açınca dizilerin, filmlerin ve profilin iki bölmede durur, seçtiğin sayfa sağda",
+      "fixes": "Düzeltmeler: içe aktarmadan süresiz gelen filmler artık Wrapped ve İstatistikler'de gerçek süreleriyle görünüyor"
+    },
     "v211": {
       "calendar": "Duygu takvimi artık dikey, büyük kareler ve üstte renk açıklamasıyla",
       "films": "İki uygulamadan içe aktarma, iki dilde yazılmış bir filmi birleştirir, aynı adlı filmleri ayrı tutar",
@@ -3720,7 +3731,10 @@
     }
   },
   "widgets": {
-    "inDays": {"one": "{{count}} gün sonra", "other": "{{count}} gün sonra"},
+    "inDays": {
+      "one": "{{count}} gün sonra",
+      "other": "{{count}} gün sonra"
+    },
     "nothingUpcoming": "Henüz duyurulan yok",
     "upNext": "Sıradaki",
     "movies": "Filmler",

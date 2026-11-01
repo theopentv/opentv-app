@@ -3333,6 +3333,21 @@ export function clearMovieTvdbTried(): void {
   } catch {}
 }
 
+/** TMDB ids of watched films with no runtime yet. 0 means "looked, TMDB has
+ *  none", so a film is asked for once, not every launch. */
+export function getWatchedMovieIdsMissingRuntime(): number[] {
+  return db
+    .getAllSync<{ tmdbId: number }>(
+      'SELECT DISTINCT tmdbId FROM movies WHERE watchedAt IS NOT NULL AND tmdbId IS NOT NULL AND runtime IS NULL',
+    )
+    .map((r) => r.tmdbId);
+}
+
+/** A film's runtime in SECONDS, filling only rows that have none. */
+export function setMovieRuntime(tmdbId: number, seconds: number): void {
+  db.runSync('UPDATE movies SET runtime = ? WHERE tmdbId = ? AND runtime IS NULL', [seconds, tmdbId]);
+}
+
 export function getMoviesMissingPoster(): { name: string; year: string | null; tvdbId: number | null }[] {
   return db.getAllSync<{ name: string; year: string | null; tvdbId: number | null }>(
     'SELECT name, year, tvdbId FROM movies WHERE poster IS NULL',

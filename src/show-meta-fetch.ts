@@ -5,7 +5,7 @@
  * from bundled shows everywhere: episodes tab, continue tracking, stats.
  */
 import { metaFillRunning, setMetaFill } from '@/meta-fill';
-import db, { getAllShowIds, getMeta, getMoviesMissingPoster, markMovieGuessed, getPlannedMoviesMissingRelease, getShowsMissingName, getShowsMissingPoster, fillShowPosterIfMissing, markShowNameTried, setMeta, setShowName, setMoviePoster, setMovieRelease, setShowBackdrop, setShowPoster } from '@/db';
+import db, { getAllShowIds, getMeta, getMoviesMissingPoster, getWatchedMovieIdsMissingRuntime, setMovieRuntime, markMovieGuessed, getPlannedMoviesMissingRelease, getShowsMissingName, getShowsMissingPoster, fillShowPosterIfMissing, markShowNameTried, setMeta, setShowName, setMoviePoster, setMovieRelease, setShowBackdrop, setShowPoster } from '@/db';
 import { registerShowMeta, showMeta, type CastMeta, type CharacterMeta, type EpisodeMeta, type SeasonMeta, type ShowMeta } from '@/metadata';
 import * as Localization from 'expo-localization';
 import { plotTmdbCode, plotTvdbCodes } from '@/i18n';
@@ -146,6 +146,31 @@ async function tmdbMoviePosterById(id: number): Promise<string | null> {
     return img(d.poster_path, 'w500');
   } catch {
     return null;
+  }
+}
+
+/**
+ * Runtimes for watched films the export left blank and the bundled metadata
+ * does not know. Without this Wrapped and Stats count every such film as 100
+ * minutes (Hidden Figures and The Station Agent both read "1h 40m").
+ */
+export async function fillMovieRuntimes(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { movieMeta } = require('@/movie-metadata') as typeof import('@/movie-metadata');
+  const ids = getWatchedMovieIdsMissingRuntime().filter((id) => !movieMeta(id)?.runtime);
+  if (!ids.length) return;
+  try {
+    await pool(
+      ids,
+      async (id) => {
+        const d = await tmdb<{ runtime?: number | null }>(`/movie/${id}`);
+        setMovieRuntime(id, d.runtime && d.runtime > 0 ? d.runtime * 60 : 0);
+        return null;
+      },
+      3,
+    );
+  } catch {
+    // offline or TMDB unreachable — retry next launch
   }
 }
 

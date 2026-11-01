@@ -32,7 +32,7 @@ import { MetaFillBar } from '@/components/meta-fill-bar';
 import { cacheAllShowMetadata, fillMissingEpisodeStills, fillMissingMoviePosters, fillMissingListNames,
   fillMissingListPosters,
   fillMissingShowNames,
-  fillMissingShowPosters, fillMovieReleaseDates } from '@/show-meta-fetch';
+  fillMissingShowPosters, fillMovieReleaseDates, fillMovieRuntimes } from '@/show-meta-fetch';
 import { notificationsEnabled, syncEpisodeNotifications } from '@/notifications';
 import { checkAvailability } from '@/availability';
 import { syncWidgets } from '@/widget-sync';
@@ -379,6 +379,7 @@ export default function RootLayout() {
         })().catch(() => {});
         // release dates for the watchlist, so Upcoming can split out unreleased films
         void fillMovieReleaseDates();
+        void fillMovieRuntimes();
         // TheTVDB ids for imported films. The GDPR export has no movie id at
         // all, so every imported film had a null tvdbId and the film screen's
         // favourite-character poll silently fell back to TMDB's cast — which

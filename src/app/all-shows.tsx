@@ -7,7 +7,8 @@ import { Text } from '@/components/text';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { a11yAction } from '@/a11y';
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
+import { FoldSplit } from '@/components/fold-split';
+import { NavHeader, Screen, useDetailRouter, useScreenWidth } from '@/components/ui';
 import db, { getShowProgress, setFollowing, setShowArchived, setShowFavorited, setShowFinished, getRecentShows } from '@/db';
 import { tapLight } from '@/haptics';
 import { showFacts } from '@/filter-facts';
@@ -17,7 +18,15 @@ import { activeFilterCount, compareTitles, gridGeometry, matchesFilters } from '
 import { colors, radius, space, ls } from '@/theme';
 import { t } from '@/i18n';
 
-export default function AllShowsScreen() {
+export default function AllShows() {
+  return (
+    <FoldSplit>
+      <AllShowsScreen />
+    </FoldSplit>
+  );
+}
+
+function AllShowsScreen() {
   // re-read on focus — a show deleted from its page must vanish on return.
   // The rows live in STATE, not a render-time read guarded by a counter: the
   // React Compiler memoises a render-time store read against its arguments and
@@ -126,6 +135,7 @@ export default function AllShowsScreen() {
 
   const active = activeFilterCount(filters);
   // columns follow the live viewport — 3 on a phone, up to 9 on a landscape iPad
+  const detail = useDetailRouter();
   const cols = gridGeometry(useScreenWidth(), space.md, 3).cols;
 
   /* Only whether there are enough to make a grid — the card reads the
@@ -183,7 +193,7 @@ export default function AllShowsScreen() {
         renderItem={({ item, index }) => (
           <Pressable
             style={{ flex: 1 / cols }}
-            onPress={() => router.push(`/show/${item.tvdbId}`)}
+            onPress={() => detail.push(`/show/${item.tvdbId}`)}
             accessibilityRole="button"
             accessibilityLabel={posterSpeech(item.name, { progress: progressOf(item) })}
             // A long press has no screen-reader gesture; the menu is offered as an action instead.

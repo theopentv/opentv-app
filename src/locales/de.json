@@ -663,6 +663,8 @@
       "classicTabBar": "Klassische Tab-Leiste",
       "classicTabBarSub": "Die flache Leiste am unteren Rand wie vor iOS 26 statt der schwebenden",
       "classicTabBarRestart": "Schließe OpenTV und öffne es erneut, um die neue Tab-Leiste zu sehen.",
+      "duoFullWidth": "Volle Breite im geöffneten Zustand",
+      "duoFullWidthSub": "Nutzt den ganzen Bildschirm, wenn das iPhone Duo geöffnet ist, statt zwei Bereichen.",
       "simpleView": "Einfache Ansicht",
       "simpleViewSub": "Nur wie viele Serien, Folgen und Filme. Blendet Sehzeit, Tageskarte, Wrapped, Erinnerungen und das Jahresziel aus."
     },
@@ -1800,7 +1802,10 @@
   "activity": {
     "thisWeek": "Diese Woche",
     "earlier": "Früher",
-    "andOthers": {"one": "{{who}} und {{count}} weitere Person", "other": "{{who}} und {{count}} weitere"},
+    "andOthers": {
+      "one": "{{who}} und {{count}} weitere Person",
+      "other": "{{who}} und {{count}} weitere"
+    },
     "title": "Posteingang",
     "tabArchive": "TV Time",
     "tabCommunity": "Posteingang",
@@ -2866,6 +2871,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v220": {
+      "saveAll": "Wrapped: Alle speichern legt alle Karten deines Monats in ein Teilen, bereit für Fotos oder einen Post",
+      "puzzleMonths": "Tägliches Rätsel: blättere durch vergangene Monate und sieh jeden Tag, an dem du gespielt hast",
+      "duo": "iPhone Duo: aufgeklappt stehen Serien, Filme und Profil in zwei Bereichen, die gewählte Seite rechts",
+      "fixes": "Fehlerbehebungen: Filme ohne Laufzeit aus dem Import zeigen jetzt ihre echte Länge in Wrapped und Statistiken"
+    },
     "v211": {
       "calendar": "Der Gefühlskalender steht jetzt im Hochformat, mit großen Kacheln und der Farblegende oben",
       "films": "Der Import aus zwei Apps führt einen Film in zwei Sprachen zusammen und hält gleichnamige Filme getrennt",
@@ -3720,7 +3731,10 @@
     }
   },
   "widgets": {
-    "inDays": {"one": "in {{count}} Tag", "other": "in {{count}} Tagen"},
+    "inDays": {
+      "one": "in {{count}} Tag",
+      "other": "in {{count}} Tagen"
+    },
     "nothingUpcoming": "Noch nichts angekündigt",
     "upNext": "Als Nächstes",
     "movies": "Filme",

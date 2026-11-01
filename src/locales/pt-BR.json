@@ -663,6 +663,8 @@
       "classicTabBar": "Barra de abas clássica",
       "classicTabBarSub": "A barra plana na parte de baixo de antes do iOS 26, em vez da flutuante",
       "classicTabBarRestart": "Feche o OpenTV e abra de novo para ver a nova barra de abas.",
+      "duoFullWidth": "Largura total quando aberto",
+      "duoFullWidthSub": "Usa a tela inteira com o iPhone Duo aberto, em vez de dois painéis.",
       "simpleView": "Visual simples",
       "simpleViewSub": "Só quantas séries, episódios e filmes. Esconde o tempo assistido, o mapa de dias, o Wrapped, as memórias e a meta do ano."
     },
@@ -1800,7 +1802,10 @@
   "activity": {
     "thisWeek": "Esta semana",
     "earlier": "Antes",
-    "andOthers": {"one": "{{who}} e mais {{count}}", "other": "{{who}} e mais {{count}}"},
+    "andOthers": {
+      "one": "{{who}} e mais {{count}}",
+      "other": "{{who}} e mais {{count}}"
+    },
     "title": "Caixa de entrada",
     "tabArchive": "TV Time",
     "tabCommunity": "Caixa de entrada",
@@ -2866,6 +2871,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v220": {
+      "saveAll": "Wrapped: Salvar tudo junta todos os cards do mês em um só compartilhamento, prontos para Fotos ou um post",
+      "puzzleMonths": "Enigma do dia: volte pelos meses anteriores e veja cada dia que você jogou",
+      "duo": "iPhone Duo: abra e suas séries, filmes e perfil ficam em dois painéis, a página escolhida à direita",
+      "fixes": "Correções: filmes importados sem duração agora mostram a duração real no Wrapped e nas Estatísticas"
+    },
     "v211": {
       "calendar": "O calendário de emoções agora é vertical, com quadrados grandes e a legenda no topo",
       "films": "Importar de dois apps une um filme escrito em dois idiomas e separa filmes com o mesmo nome",
@@ -3720,7 +3731,10 @@
     }
   },
   "widgets": {
-    "inDays": {"one": "em {{count}} dia", "other": "em {{count}} dias"},
+    "inDays": {
+      "one": "em {{count}} dia",
+      "other": "em {{count}} dias"
+    },
     "nothingUpcoming": "Nada anunciado ainda",
     "upNext": "A seguir",
     "movies": "Filmes",
