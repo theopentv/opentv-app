@@ -30,8 +30,10 @@
  * advertising. Plus is what you get for yourself; Wrapped is what you show
  * other people.
  */
+import { File } from 'expo-file-system';
+import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type ViewInstance, Alert, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -88,7 +90,18 @@ import { oneAtATime } from '@/one-at-a-time';
 
 /** How far the sheet must be dragged down before it leaves. */
 const DISMISS_Y = 130;
-const CARD_SETTLE_MS = 450;
+/** Long enough for a poster's fade to finish; the retries are what catch the rest. */
+const CARD_SETTLE_MS = 500;
+const CARD_RETRIES = 4;
+const PREFETCH_MS = 8000;
+const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/** Every picture a period's cards may draw, wherever in the numbers it sits. */
+function imageUrlsIn(v: unknown): string[] {
+  if (typeof v === 'string') return /^https?:/.test(v) ? [v] : [];
+  if (Array.isArray(v)) return v.flatMap(imageUrlsIn);
+  return v && typeof v === 'object' ? Object.values(v).flatMap(imageUrlsIn) : [];
+}
 
 /** The month that has just finished — what Wrapped means with no parameters. */
 function lastCompleteMonth(): string {
@@ -209,6 +222,15 @@ export default function WrappedScreen() {
   const shownIndex = index;
   const slide = slides[Math.min(shownIndex, slides.length - 1)];
 
+  // After the commit, so `saveAll` photographs the slide it asked for.
+  const shownRef = useRef<{ slide: string; resolve: () => void } | null>(null);
+  useEffect(() => {
+    const pending = shownRef.current;
+    if (!pending || pending.slide !== slide) return;
+    shownRef.current = null;
+    requestAnimationFrame(() => requestAnimationFrame(pending.resolve));
+  }, [slide]);
+
   const go = (delta: number) => {
     tapLight();
     const next = index + delta;
@@ -233,6 +255,11 @@ export default function WrappedScreen() {
    * because a card only exists once it is drawn, then hands them all to the
    * system share sheet: "Save 6 Images" on iOS, and any app that takes several
    * pictures on Android. A ZIP came first and was useless on a phone.
+   *
+   * NOTHING HERE TRUSTS A CLOCK. A flat wait caught the previous card, or one
+   * with its posters missing, on a real phone with a real network. So: every
+   * picture is on disk before the walk starts, each step waits for React to
+   * have committed that slide, and a photo identical to the last is retaken.
    */
   const saveAll = () =>
     void oneAtATime('share', async () => {
@@ -240,13 +267,32 @@ export default function WrappedScreen() {
       const start = index;
       const urls: string[] = [];
       setCapturing(true);
+      setSaving({ done: 0, total: slides.length });
       try {
+        // Capped: offline, this would otherwise wait for ever and lock the button.
+        await Promise.race([Image.prefetch(imageUrlsIn(data), 'disk'), wait(PREFETCH_MS)]);
+        let last = -1;
+        let at = Math.min(index, slides.length - 1);
         for (let i = 0; i < slides.length; i++) {
           setSaving({ done: i + 1, total: slides.length });
-          setIndex(i);
-          // long enough for the slide to mount and its posters to come off disk
-          await new Promise((r) => setTimeout(r, CARD_SETTLE_MS));
-          urls.push(await captureRef(cardRef, { format: 'jpg', quality: 0.92 }));
+          // The slide already on screen will not commit again, so no waiting.
+          if (i !== at) {
+            const shown = new Promise<void>((resolve) => {
+              shownRef.current = { slide: slides[i]!, resolve };
+            });
+            setIndex(i);
+            await Promise.race([shown, wait(PREFETCH_MS)]);
+          }
+          at = i;
+          let uri = '';
+          let size = last;
+          for (let tries = 0; tries < CARD_RETRIES && size === last; tries++) {
+            await wait(CARD_SETTLE_MS);
+            uri = await captureRef(cardRef, { format: 'jpg', quality: 0.92 });
+            size = new File(uri).size;
+          }
+          last = size;
+          urls.push(uri);
         }
         setSaving(null);
         setIndex(start);
