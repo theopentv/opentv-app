@@ -33,7 +33,7 @@
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { type ScrollViewInstance, type ViewInstance, ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,7 +43,7 @@ import { track } from '@/analytics';
 import { ActionSheet } from '@/components/action-sheet';
 import { StatsRow, puzzleDay } from '@/components/puzzle-block';
 import { CLOSE_SQUARE, PuzzleShareCard, Squares } from '@/components/puzzle-share-card';
-import { ContentColumn, NavHeader, Screen } from '@/components/ui';
+import { ContentColumn, NavHeader, Screen, useDetailRouter, useScreenParams } from '@/components/ui';
 import { addShow, puzzleMemory } from '@/db';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
@@ -100,7 +100,8 @@ const SUGGESTIONS = 8;
 export default function PuzzleScreen() {
   /* The day is fixed when the screen opens: a game that straddles midnight
      finishes as the day it started, which is the day its answer belongs to. */
-  const params = useLocalSearchParams<{ day?: string; view?: string }>();
+  const params = useScreenParams<{ day?: string; view?: string }>();
+  const detail = useDetailRouter();
   const insets = useSafeAreaInsets();
   const [{ day, archive, past }] = useState(() => {
     const now = today();
@@ -317,7 +318,7 @@ export default function PuzzleScreen() {
           // The archive's door, on every visit to today's puzzle: before
           // playing, a way to warm up; after, somewhere to go next.
           ...(!archive && !view
-            ? [{ type: 'button' as const, label: t('puzzlePolish.archive'), icon: { type: 'sfSymbol' as const, name: 'calendar' as const }, onPress: () => router.push('/puzzle-archive') }]
+            ? [{ type: 'button' as const, label: t('puzzlePolish.archive'), icon: { type: 'sfSymbol' as const, name: 'calendar' as const }, onPress: () => detail.push('/puzzle-archive') }]
             : []),
         ]}
       />
@@ -525,7 +526,7 @@ export default function PuzzleScreen() {
                   {info.longest > 1 && <Text style={s.streakSub}>{t('puzzleHistory.longest', { count: info.longest })}</Text>}
                   {/* Every day played and what it was — the archive screen's
                       history, the last week free and the rest Plus. */}
-                  <Pressable style={s.historyLink} onPress={() => router.push('/puzzle-archive')} accessibilityRole="link" hitSlop={8}>
+                  <Pressable style={s.historyLink} onPress={() => detail.push('/puzzle-archive')} accessibilityRole="link" hitSlop={8}>
                     <Text style={s.historyText}>{t('puzzleHistory.title')}</Text>
                   </Pressable>
                 </View>

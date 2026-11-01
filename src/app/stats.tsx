@@ -4,7 +4,7 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PeriodSheet } from '@/components/period-picker';
-import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs, useScreenWidth } from '@/components/ui';
+import { Bars, NavHeader, Screen, StatCard, StatTable, TopTabs, useDetailRouter, useScreenWidth } from '@/components/ui';
 import { badgeShelves, type Badge } from '@/badges';
 import { BadgeArt } from '@/components/badge-art';
 import { charVotes } from '@/bundled-data';
@@ -109,13 +109,14 @@ function DeepStatsRow() {
   const plusUi = usePlusUi();
   // Dark until Plus can be bought — or until this device is entitled, which
   // is how it gets looked at before release. See `plusUiVisible`.
+  const detail = useDetailRouter();
   if (!plusUi) return null;
   return (
     <Pressable accessibilityRole="button"
       style={styles.deepRow}
       onPress={() => {
         tapLight();
-        if (requirePlus('deep_stats')) router.push('/deep-stats');
+        if (requirePlus('deep_stats')) detail.push('/deep-stats');
       }}>
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

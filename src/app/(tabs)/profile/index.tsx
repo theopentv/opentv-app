@@ -23,7 +23,7 @@ import { visibleCoverUri } from '@/library';
 import { tapLight } from '@/haptics';
 import { manualBackupOverdue, shareLibraryExport } from '@/manual-backup';
 import { FoldSplit } from '@/components/fold-split';
-import { EmptyState, MenuRow, headerItems, useDetailRouter, useFold, useScreenWidth } from '@/components/ui';
+import { EmptyState, MenuRow, headerItems, useDetailRouter, useScreenWidth } from '@/components/ui';
 import { asProfileLayout, type ProfileLayout, ProfileTemplate } from '@/components/profile-template';
 import {
   normalise,
@@ -129,7 +129,6 @@ export default function Profile() {
 
 function ProfileScreen() {
   const detail = useDetailRouter();
-  const fold = useFold();
   // Shows row: the SAME order as the all-shows grid (most recent watch first),
   // so the two screens never disagree. Shows sharing a watch timestamp break
   // the tie by episode count; shows never watched (no date) fall to the end.
@@ -761,8 +760,6 @@ function ProfileScreen() {
   // STATE, NOT A RENDER-TIME READ: a banner that arrives from another device
   // changes the file under the same `plus`, which a memoised call would miss.
   const [coverUri, setCoverUri] = useState(() => visibleCoverUri(plus));
-  // The cover runs into the empty right half on an open Duo.
-  useEffect(() => fold?.setBackdrop(coverUri ?? null), [fold, coverUri]);
   useFocusEffect(
     useCallback(() => {
       setCoverUri(visibleCoverUri(plus));
@@ -1290,7 +1287,7 @@ function ProfileScreen() {
           {...a11yAction('dismiss', t('ui.dismiss'), dismissPuzzle)}
           onPress={() => {
             tapLight();
-            router.push(puzzleEntryRoute());
+            detail.push(puzzleEntryRoute());
           }}>
           <Ionicons name="extension-puzzle-outline" size={18} color={colors.onBrand} />
           <Text style={styles.cloudBannerText}>{puzzleText}</Text>
@@ -1607,7 +1604,7 @@ function ProfileScreen() {
         { key: 'mv', title: t('profile.movieTimeCard'), kind: 'clock', ...movieClock },
         { key: 'mvn', title: t('profile.moviesWatchedCard'), kind: 'number', value: formatCount(movieClock.watched, currentLocale()) },
       ]}
-      onStatsPress={simple ? undefined : () => router.push('/stats')}
+      onStatsPress={simple ? undefined : () => detail.push('/stats')}
       /**
        * ACTIVITY — the heatmap, and the door to the timeline. Own profile only:
        * see the note on the prop. Hidden by a preference the user owns, because

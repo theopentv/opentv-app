@@ -20,7 +20,7 @@ import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
 import { PaneBar } from '@/components/pane-bar';
-import { CheckCircle, closeItem, ContentColumn, useDetailPane, useDetailPaneStyle, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, useDetailPane, useDetailPaneStyle, useDetailRouter, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -170,6 +170,11 @@ function EpisodePage({
   /** A neighbour the pager keeps mounted but is not showing — see the pager. */
   offscreen?: boolean;
 }) {
+  // On the Duo the show is usually the page behind this one in the right half:
+  // go back to it rather than pushing a full-screen copy that came up black.
+  const detail = useDetailRouter();
+  const inPane = useDetailPane();
+  const openShow = (path: string) => (inPane?.canBack ? inPane.back() : detail.push(path));
   const insets = useSafeAreaInsets();
   // real watch state from the database — toggling writes back to it
   const existing = show ? getWatch(show.tvdbId, season, ep) : null;
@@ -700,7 +705,7 @@ function EpisodePage({
                 that is not in the library — it falls back to fetched metadata —
                 so guarding on the library row here made the pill inert for
                 exactly the shows somebody most wants to look up. */}
-            <Pressable style={styles.showPill} onPress={() => tvdbId && router.push(`/show/${tvdbId}`)} accessibilityRole="button" accessibilityLabel={showName}>
+            <Pressable style={styles.showPill} onPress={() => tvdbId && openShow(`/show/${tvdbId}`)} accessibilityRole="button" accessibilityLabel={showName}>
               <Text style={styles.showPillText} numberOfLines={1}>
                 {showName.toUpperCase()} ›
               </Text>
@@ -1315,7 +1320,7 @@ export default function EpisodePagerScreen() {
 
   return (
     <GestureDetector gesture={pan}>
-      <Animated.View style={[{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }, animatedStyle, paneStyle, split && splitRow]}>
+      <Animated.View style={[{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top - barTuck(insets.top) }, animatedStyle, paneStyle, split && splitRow]}>
         <SplitPage split={split}>
         {/* Native, transparent: its close button goes into the iPhone Duo's strip.
             The pager dots below stay in the same row, centred under it. */}
@@ -1473,6 +1478,11 @@ export default function EpisodePagerScreen() {
     </GestureDetector>
   );
 }
+
+/** The open iPhone Duo held upright puts a 48 pt bar under the status bar
+ *  (an 84 pt top inset), and the dots row stacked under it made a tall black
+ *  band (Mahmood, 1 Nov). There the dots ride in the bar's row, beside close. */
+const barTuck = (top: number) => (top >= 80 ? 48 : 0);
 
 const styles = StyleSheet.create({
   header: { height: 46, alignItems: 'center', justifyContent: 'center' },

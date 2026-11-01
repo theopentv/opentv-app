@@ -1,6 +1,7 @@
+import { useHingeStatus } from '../../modules/fold-state';
 import { useDuoFullWidth } from '@/duo-layout';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useRoute } from 'expo-router';
+import { router, Stack, useLocalSearchParams, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
 import { cloneElement, createContext, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
@@ -60,11 +61,17 @@ export function useScreenWidth(): number {
 /** Half of the band beside the fold that nothing should sit in. */
 const FOLD_GAP = 14;
 
+/** Flat open, the left page gives up room to the right one (the planner reel,
+ *  Mahmood 1 Nov); half open it stops at the fold. */
+const FLAT_LEFT = 0.4;
+
 export function useFoldHalf(): number | null {
   const { width, height } = useWindowDimensions();
   const { left } = useSafeAreaInsets();
   const fullWidth = useDuoFullWidth();
-  return !fullWidth && Platform.OS === 'ios' && !Platform.isPad && width >= 600 && width > height ? width / 2 - left - FOLD_GAP : null;
+  const hinge = useHingeStatus();
+  if (fullWidth || Platform.OS !== 'ios' || Platform.isPad || width < 600 || width <= height) return null;
+  return width * (hinge === 'open' ? FLAT_LEFT : 0.5) - left - FOLD_GAP;
 }
 
 /** An iPhone Duo in either state: no other iPhone is this wide on its short side. */
@@ -235,7 +242,8 @@ export function NavHeader({
   items?: NativeStackHeaderItem[];
 }) {
   const route = useRoute();
-  if (DRAWN_HEADER_ROUTES.has(route.name)) return <DrawnNavHeader title={title} close={close} right={right} />;
+  const inPane = use(DetailPaneContext) != null;
+  if (inPane || DRAWN_HEADER_ROUTES.has(route.name)) return <DrawnNavHeader title={title} close={close} right={right} />;
   return (
     <Stack.Screen
       options={{
@@ -387,11 +395,15 @@ export function closeItem(): NativeStackHeaderItem {
 
 /** The header as it was before 2.0.1, for the screens a native one cannot reach. */
 function DrawnNavHeader({ title, close, right }: { title?: string; close?: boolean; right?: ReactNode }) {
+  const pane = useDetailPane();
+  // In the Duo's right half: back through the pane, or close it.
+  if (pane) close = !pane.canBack;
+  const leave = pane ? (pane.canBack ? pane.back : pane.close) : goBack;
   return (
     <View style={s.navHead}>
       <Pressable
         style={s.iconBtn}
-        onPress={goBack}
+        onPress={leave}
         hitSlop={8}
         accessibilityRole="button"
         accessibilityLabel={t(close ? 'a11y.close' : 'a11y.back')}>
@@ -426,16 +438,34 @@ function DrawnNavHeader({ title, close, right }: { title?: string; close?: boole
  * a summary: the same screen, told its id and width here instead of by the
  * route and the window, and given no native header to borrow.
  */
-export type DetailPane = { id: string; width: number; canBack: boolean; back: () => void; close: () => void };
+export type DetailPane = {
+  id: string;
+  /** The query of a page opened in the pane (`/puzzle?day=…`): it has no route of its own. */
+  params: Record<string, string>;
+  width: number;
+  canBack: boolean;
+  back: () => void;
+  close: () => void;
+};
 export const DetailPaneContext = createContext<DetailPane | null>(null);
 export const useDetailPane = (): DetailPane | null => use(DetailPaneContext);
 
 /** Set by `FoldSplit`; null outside one. */
 export type Fold = {
   half: number | null;
-  open: (path: string, inPane: boolean) => void;
-  setBackdrop: (uri: string | null) => void;
+  open: (path: string, inPane: boolean, replace?: boolean) => void;
 };
+
+/** Pages that open in the right half on an open Duo: the main screen stays on
+ *  the left, everything it opens goes right (Mahmood, 1 Nov). */
+export const PANE_ROUTE = /^\/(show|movie|episode|puzzle|puzzle-intro|puzzle-archive|stats|deep-stats)(\/|\?|$)/;
+
+/** Route params, or the pane's when the page lives in the Duo's right half. */
+export function useScreenParams<T extends Record<string, string | undefined>>(): Partial<T> {
+  const params = useLocalSearchParams<T>();
+  const pane = use(DetailPaneContext);
+  return (pane?.params as Partial<T>) ?? params;
+}
 export const FoldContext = createContext<Fold | null>(null);
 export const useFold = (): Fold | null => use(FoldContext);
 
@@ -448,8 +478,13 @@ export function useDetailRouter() {
   const pane = use(DetailPaneContext);
   return {
     push: (path: string) => {
-      if (fold?.half != null && /^\/(show|movie|episode)\//.test(path)) fold.open(path, pane != null);
+      if (fold?.half != null && PANE_ROUTE.test(path)) fold.open(path, pane != null);
       else router.push(path as never);
+    },
+    /** Swap this page for another, in the pane or in the stack. */
+    replace: (path: string) => {
+      if (pane && fold && PANE_ROUTE.test(path)) fold.open(path, true, true);
+      else router.replace(path as never);
     },
     /** Leave this page, wherever it lives. */
     leave: () => {

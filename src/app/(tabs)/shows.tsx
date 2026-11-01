@@ -9,7 +9,7 @@ import { Text } from '@/components/text';
 import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
-import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useFold, useScreenWidth } from '@/components/ui';
+import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useScreenWidth } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -130,7 +130,6 @@ function ShowsScreen() {
   const plus = usePlus();
   const W = useScreenWidth();
   const detail = useDetailRouter();
-  const half = useFold()?.half ?? null;
   const openShow = (id: number) => detail.push(`/show/${id}`);
   // the Watch List's rows and grid run full width (no ContentColumn cap) —
   // these are repeated rows/tiles, not prose, so a tablet should show MORE of
@@ -513,7 +512,7 @@ function ShowsScreen() {
                         // TalkBack stopped on the bare frame and said only
                         // "double tap". "no" hides the frame and keeps its children.
                         importantForAccessibility="no"
-                        onPress={() => (half != null ? openShow(w.showId) : router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`))}>
+                        onPress={() => detail.push(`/episode/${w.showId}-s${w.season}e${w.episode}`)}>
                         <View style={styles.thumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -631,9 +630,10 @@ function ShowsScreen() {
                     // guess, so open the show (which fetches the real
                     // structure) rather than a possibly-nonexistent episode,
                     // same guard markNext uses
-                    next === 'unknown' || half != null
+                    // On the Duo the episode too, in the right half (Mahmood, 1 Nov).
+                    next === 'unknown'
                       ? openShow(sp.tvdbId)
-                      : router.push(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
+                      : detail.push(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
                   }
                 >
                   <View style={styles.thumb} {...a11yHidden()}>

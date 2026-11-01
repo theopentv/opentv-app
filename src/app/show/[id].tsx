@@ -2276,13 +2276,14 @@ const EpisodeRow = memo(function EpisodeRow({
   // could tick by accident. Already-watched rows keep their
   // control regardless (a date can be wrong; history isn't).
   const soon = w ? null : airCountdown(em?.air, now);
+  const detail = useDetailRouter();
   return (
     // The same shape as every card with a circle in it: the
     // row is not an element, the text block is the button.
     <Pressable
       style={styles.epRow}
       accessible={false} importantForAccessibility="no"
-      onPress={() => router.push(`/episode/${tvdbId}-s${season}e${ep}`)}>
+      onPress={() => detail.push(`/episode/${tvdbId}-s${season}e${ep}`)}>
       <View style={styles.epThumb} {...a11yHidden()}>
         {em?.still ? (
           <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -2464,6 +2465,7 @@ function ExtremeRow({
   air?: string | null;
   still?: string | null;
 }) {
+  const detail = useDetailRouter();
   return (
     <Pressable
       style={styles.extremeRow}
@@ -2480,7 +2482,7 @@ function ExtremeRow({
         .join(', ')}
       onPress={() => {
         tapSelection();
-        router.push(`/episode/${showId}-s${season}e${episode}`);
+        detail.push(`/episode/${showId}-s${season}e${episode}`);
       }}>
       {/* THE STILL, because a season's best episode is recognised before it is
           read. A show whose artwork never downloaded gets the badge alone

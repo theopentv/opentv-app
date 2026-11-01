@@ -32,7 +32,7 @@ import { useCallback, useState } from 'react';
 import { FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { PuzzleMonths, StatsRow, levelColor, puzzleDay } from '@/components/puzzle-block';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, useDetailRouter } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
 import { MAX_TRIES, archiveDays, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
@@ -78,9 +78,10 @@ export default function PuzzleArchiveScreen() {
         ? t('puzzlePolish.solvedIn', { score: `${r.tries}/${MAX_TRIES}` })
         : t('puzzlePolish.missed');
 
+  const detail = useDetailRouter();
   const open = (d: string) => {
     if (!requirePlus('puzzle.archive')) return;
-    router.push(`/puzzle?day=${d}`);
+    detail.push(`/puzzle?day=${d}`);
   };
 
   const header = (

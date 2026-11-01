@@ -13,13 +13,12 @@
  * straight to the game. Leaving with the back button stamps nothing — that
  * is not an answer.
  */
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/text';
-import { ContentColumn, MenuRow, NavHeader, Screen } from '@/components/ui';
+import { ContentColumn, MenuRow, NavHeader, Screen, useDetailRouter } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { setPuzzleReminder } from '@/notifications';
@@ -38,6 +37,7 @@ export default function PuzzleIntroScreen() {
   const [streak, setStreak] = useState(true);
   const [remind, setRemind] = useState(true);
   const [busy, setBusy] = useState(false);
+  const detail = useDetailRouter();
 
   const start = async () => {
     if (busy) return;
@@ -46,7 +46,7 @@ export default function PuzzleIntroScreen() {
     setPuzzleStreakOnProfile(streak);
     markPuzzleReminderOffered();
     const ok = remind ? await setPuzzleReminder(true).catch(() => false) : true;
-    router.replace('/puzzle');
+    detail.replace('/puzzle');
     if (!ok) Alert.alert(t('settings.app.notificationsOffTitle'), t('settings.app.notificationsOffBody'));
   };
 

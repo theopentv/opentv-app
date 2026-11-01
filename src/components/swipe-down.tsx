@@ -1,4 +1,4 @@
-import { goBack } from '@/components/ui';
+import { goBack, useDetailPane } from '@/components/ui';
 import { useCallback, useMemo, useRef } from 'react';
 import { useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { Gesture } from 'react-native-gesture-handler';
@@ -37,6 +37,10 @@ import { nextAtTop, shouldDismissOnPull } from '@/pure';
  * system swipe never reaches a touch an inner scroll view has taken.
  */
 export function useSwipeDown({ native = false, off = false }: { native?: boolean; off?: boolean } = {}) {
+  // In the Duo's right half a pull down steps back within the half. `goBack`
+  // there popped the whole tab and left the screen black (Mahmood, 1 Nov).
+  const pane = useDetailPane();
+  const leave = pane ? (pane.canBack ? pane.back : pane.close) : goBack;
   const translateY = useSharedValue(0);
   const screenH = useWindowDimensions().height;
   /*
@@ -197,12 +201,12 @@ export function useSwipeDown({ native = false, off = false }: { native?: boolean
     // Same guard as the fling, and it has to be the SAME one: either path
     // committing must stop the other.
     if (shouldDismissOnPull(y, scrolling.current) && commitDismiss()) {
-      goBack();
+      leave();
       return;
     }
     setAtTop(nextAtTop(atTop.current, y <= 2, scrolling.current));
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable boxes only
-  }, [commitDismiss]);
+  }, [commitDismiss, leave]);
 
   const onScrollBeginDrag = () => {
     scrolling.current = true;

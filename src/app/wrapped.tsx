@@ -39,7 +39,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type ViewInstance, Alert, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { Text } from '@/components/text';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Share from 'react-native-share';
 import { captureRef } from 'react-native-view-shot';
 import Animated, {
   FadeInDown,
@@ -296,6 +295,10 @@ export default function WrappedScreen() {
         }
         setSaving(null);
         setIndex(start);
+        // Required here, not at the top: a dev client built before this module
+        // was added has no RNShare, and a top-level import kills the whole screen.
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const Share = (require('react-native-share') as typeof import('react-native-share')).default;
         await Share.open({ urls, type: 'image/jpeg', failOnCancel: false });
       } catch (err) {
         Alert.alert(t('shareCard.shareFailedTitle'), err instanceof Error ? err.message : String(err));
