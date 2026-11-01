@@ -3,6 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import {
   convertToTenOnce,
   filledStarText,
+  insideStars,
   ratingFromStars,
   ratingFromTen,
   ratingAt,
@@ -223,5 +224,17 @@ describe('whole stars to ten, once', () => {
     expect(() => convertToTenOnce(db, 'episode_ratings', 'episodeStarsScale')).toThrow('crash');
     expect(stars('episode_ratings')).toEqual([3]);
     expect(flag('episodeStarsScale')).toBeUndefined();
+  });
+});
+
+describe('insideStars', () => {
+  // The Help, 1 Nov: a sideways swipe lifted past the left edge saved 0.5.
+  it('lets a slide that lifted off the stars rate nothing', () => {
+    expect(insideStars(-80, 20, 300, 40)).toBe(false);
+    expect(insideStars(150, 120, 300, 40)).toBe(false);
+  });
+  it('keeps the ends reachable with a fingertip of slack', () => {
+    expect(insideStars(-10, 20, 300, 40)).toBe(true);
+    expect(insideStars(310, 20, 300, 40)).toBe(true);
   });
 });

@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { I18nManager, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-import { ratingAt, starSlots, stepRating, type StarSlot } from '@/star-rating';
+import { insideStars, ratingAt, starSlots, stepRating, type StarSlot } from '@/star-rating';
 import { tapSelection } from '@/haptics';
 import { a11yHidden } from '@/a11y';
 import { t } from '@/i18n';
@@ -134,6 +134,7 @@ export function HalfStarControl({
   onHold?: (held: boolean) => void;
 }) {
   const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
   const [preview, setPreview] = useState<number | null>(null);
 
   const show = (ten: number | null) => {
@@ -165,8 +166,12 @@ export function HalfStarControl({
     .onUpdate((e) => track(e.x))
     // the value is where the finger LIFTED, read off the event rather than
     // kept from the last tick — a cancelled slide (`ok` false) commits nothing
+    // A FINGER THAT LEFT THE STARS RATES NOTHING. `ratingAt` clamps, so a
+    // sideways swipe that began on the stars and lifted past the left edge
+    // saved half a star: The Help, a 5, became a 0.5 with nobody choosing it
+    // (Mahmood, 1 Nov). A little slack keeps "slide to the very end" working.
     .onEnd((e, ok) => {
-      if (ok) onSlide(at(e.x));
+      if (ok && insideStars(e.x, e.y, width, height)) onSlide(at(e.x));
     })
     .onFinalize(() => {
       show(null);
@@ -188,7 +193,10 @@ export function HalfStarControl({
     <GestureDetector gesture={Gesture.Exclusive(slide, tap)}>
       <View
         style={style}
-        onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+        onLayout={(e) => {
+          setWidth(e.nativeEvent.layout.width);
+          setHeight(e.nativeEvent.layout.height);
+        }}
         accessible
         accessibilityRole="adjustable"
         accessibilityLabel={label}

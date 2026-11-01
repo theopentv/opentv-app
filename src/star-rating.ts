@@ -152,3 +152,9 @@ export function convertToTenOnce(db: SyncDb, table: 'movies' | 'episode_ratings'
     db.runSync(`INSERT OR REPLACE INTO meta (key, value) VALUES ('${flag}', '10')`);
   });
 }
+
+/** Where a slide may lift and still count: the stars plus a fingertip of slack.
+ *  Outside it the slide rates nothing (see `HalfStarControl`). */
+const SLIDE_SLACK = 24;
+export const insideStars = (x: number, y: number, w: number, h: number): boolean =>
+  x >= -SLIDE_SLACK && x <= w + SLIDE_SLACK && y >= -SLIDE_SLACK && y <= h + SLIDE_SLACK;
