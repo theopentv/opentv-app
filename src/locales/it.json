@@ -663,6 +663,8 @@
       "classicTabBar": "Barra delle schede classica",
       "classicTabBarSub": "La barra piatta in basso di prima di iOS 26, al posto di quella fluttuante",
       "classicTabBarRestart": "Chiudi OpenTV e riaprilo per vedere la nuova barra delle schede.",
+      "duoFullWidth": "Larghezza piena da aperto",
+      "duoFullWidthSub": "Usa tutto lo schermo quando iPhone Duo è aperto, invece di due riquadri.",
       "simpleView": "Vista semplice",
       "simpleViewSub": "Solo quante serie, episodi e film. Nasconde il tempo di visione, la mappa dei giorni, il Wrapped, i ricordi e l'obiettivo annuale."
     },

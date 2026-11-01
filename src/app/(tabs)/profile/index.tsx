@@ -22,7 +22,8 @@ import { SectionHeader } from '@/components/profile-sections';
 import { visibleCoverUri } from '@/library';
 import { tapLight } from '@/haptics';
 import { manualBackupOverdue, shareLibraryExport } from '@/manual-backup';
-import { EmptyState, MenuRow, headerItems, useScreenWidth } from '@/components/ui';
+import { FoldSplit } from '@/components/fold-split';
+import { EmptyState, MenuRow, headerItems, useDetailRouter, useFold, useScreenWidth } from '@/components/ui';
 import { asProfileLayout, type ProfileLayout, ProfileTemplate } from '@/components/profile-template';
 import {
   normalise,
@@ -118,7 +119,17 @@ const LIST_HOLES_CLOSED = 'listHolesBannerClosed';
 /** Once per launch: the hold question is not worth asking on every tab switch. */
 let askedAboutHold = false;
 
-export default function ProfileScreen() {
+export default function Profile() {
+  return (
+    <FoldSplit>
+      <ProfileScreen />
+    </FoldSplit>
+  );
+}
+
+function ProfileScreen() {
+  const detail = useDetailRouter();
+  const fold = useFold();
   // Shows row: the SAME order as the all-shows grid (most recent watch first),
   // so the two screens never disagree. Shows sharing a watch timestamp break
   // the tie by episode count; shows never watched (no date) fall to the end.
@@ -750,6 +761,8 @@ export default function ProfileScreen() {
   // STATE, NOT A RENDER-TIME READ: a banner that arrives from another device
   // changes the file under the same `plus`, which a memoised call would miss.
   const [coverUri, setCoverUri] = useState(() => visibleCoverUri(plus));
+  // The cover runs into the empty right half on an open Duo.
+  useEffect(() => fold?.setBackdrop(coverUri ?? null), [fold, coverUri]);
   useFocusEffect(
     useCallback(() => {
       setCoverUri(visibleCoverUri(plus));
@@ -1738,7 +1751,7 @@ export default function ProfileScreen() {
           title: t('stats.headers.shows'),
           items: recentShows.map((sp) => ({ key: String(sp.tvdbId), name: sp.name, uri: sp.posterUrl })),
           onTitlePress: () => router.push('/all-shows'),
-          onItemPress: (k: string) => router.push(`/show/${k}`),
+          onItemPress: (k: string) => detail.push(`/show/${k}`),
         },
         {
           key: 'fav-shows',
@@ -1746,14 +1759,14 @@ export default function ProfileScreen() {
           heart: true,
           items: favShows.map((f) => ({ key: String(f.tvdbId), name: f.name, uri: f.poster })),
           onTitlePress: () => router.push('/favorites/shows'),
-          onItemPress: (k: string) => router.push(`/show/${k}`),
+          onItemPress: (k: string) => detail.push(`/show/${k}`),
         },
         {
           key: 'movies',
           title: t('stats.headers.movies'),
           items: recentMovies.map((m) => ({ key: m.name, name: m.title, uri: m.poster })),
           onTitlePress: () => router.push('/all-movies'),
-          onItemPress: (k: string) => router.push(`/movie/${encodeURIComponent(k)}`),
+          onItemPress: (k: string) => detail.push(`/movie/${encodeURIComponent(k)}`),
         },
         {
           key: 'fav-movies',
@@ -1761,7 +1774,7 @@ export default function ProfileScreen() {
           heart: true,
           items: favMovies.map((m, i) => ({ key: `${m.name}-${i}`, name: m.title ?? m.name, uri: m.poster })),
           onTitlePress: () => router.push('/favorites/movies'),
-          onItemPress: (k: string) => router.push(`/movie/${encodeURIComponent(k.replace(/-\d+$/, ''))}`),
+          onItemPress: (k: string) => detail.push(`/movie/${encodeURIComponent(k.replace(/-\d+$/, ''))}`),
         },
       ]}>
       {/* A fresh library used to render "Shows ›" and "Movies ›" over nothing,

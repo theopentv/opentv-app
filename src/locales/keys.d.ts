@@ -2160,6 +2160,8 @@ export type LocaleKey =
   | "settings.app.comeBackReminders"
   | "settings.app.comeBackRemindersSub"
   | "settings.app.communitySection"
+  | "settings.app.duoFullWidth"
+  | "settings.app.duoFullWidthSub"
   | "settings.app.finaleReminders"
   | "settings.app.finaleRemindersSub"
   | "settings.app.funSection"
