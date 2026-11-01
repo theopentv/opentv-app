@@ -454,6 +454,8 @@ export const useDetailPane = (): DetailPane | null => use(DetailPaneContext);
 export type Fold = {
   half: number | null;
   open: (path: string, inPane: boolean, replace?: boolean) => void;
+  /** The left page's own background, for the band beside the fold. */
+  setBand: (color: string) => void;
 };
 
 /** Pages that open in the right half on an open Duo: the main screen stays on

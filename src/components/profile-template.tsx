@@ -53,7 +53,7 @@ import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
-import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, useScreenWidth } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, useFold, useScreenWidth } from '@/components/ui';
 import { Poster } from '@/components/poster';
 import { PosterRail, SectionHeader, StatsGrid, StatsRail, type RailItem, type StatCard } from '@/components/profile-sections';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -637,6 +637,10 @@ export function ProfileTemplate({
    * page actually is.
    */
   const pageColor = themeColor != null ? mixHex(colors.bg, themeColor, 0.14) : colors.bg;
+  // On an open Duo the band by the fold takes this colour, so it reads as the
+  // profile's edge, not a white gap beside a tinted page (Mahmood, 1 Nov).
+  const fold = useFold();
+  useEffect(() => fold?.setBand(pageColor), [fold, pageColor]);
   /** The top of the ramp. Loud on purpose — this is the half people screenshot. */
   /*
    * THE TOP OF THE PAGE WASH, and the number is the whole complaint.

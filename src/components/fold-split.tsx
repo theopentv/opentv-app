@@ -17,11 +17,16 @@ import { SafeAreaInsetsContext, useSafeAreaInsets } from 'react-native-safe-area
 import EpisodeScreen from '@/app/episode/[id]';
 import MovieScreen from '@/app/movie/[name]';
 import ShowScreen from '@/app/show/[id]';
+import { useHingeStatus } from '../../modules/fold-state';
 import { DetailPaneContext, FoldContext, ScreenWidthContext, useFoldHalf } from '@/components/ui';
 import { colors } from '@/theme';
 
-/** The band either side of the fold: nothing of the page sits in it. */
-const PANE_GAP = 28;
+/** The band either side of the fold: nothing of the page sits in it. Flat
+ *  there is no bend to keep clear, and the band read as an empty strip
+ *  (Mahmood, 1 Nov): a hairline between the halves instead. */
+const FOLD_BAND = 28;
+
+const ENTER_MS = 320;
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 // Required on first use: these screens import ui.tsx, which this file is part of.
@@ -54,31 +59,52 @@ function pageOf(path: string): { Page: ComponentType; id: string; params: Record
 
 export function FoldSplit({ children }: { children: ReactNode }) {
   const half = useFoldHalf();
+  const flat = useHingeStatus() === 'open';
+  const gap = flat ? StyleSheet.hairlineWidth : FOLD_BAND;
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { left, right } = insets;
   // Every page opened stays mounted under the one on top, so back returns to
   // the same tab and scroll instead of rebuilding the page (Mahmood, 1 Nov).
-  const [stack, setStack] = useState<{ path: string; key: number }[]>([]);
+  // `root`: opened from the left half, so it closes rather than goes back.
+  const [stack, setStack] = useState<{ path: string; key: number; root: boolean }[]>([]);
+  const [band, setBand] = useState<string>(colors.bg);
   const nextKey = useRef(0);
   const fold = useMemo(
     () => ({
       half,
-      open: (path: string, inPane: boolean, replace?: boolean) =>
+      setBand,
+      open: (path: string, inPane: boolean, replace?: boolean) => {
+        const key = nextKey.current++;
         setStack((s) => {
-          const entry = { path, key: nextKey.current++ };
-          return replace ? [...s.slice(0, -1), entry] : inPane ? [...s, entry] : [entry];
-        }),
+          const top = s[s.length - 1];
+          // Tapping what is already open does nothing: a second tap used to
+          // start it again over the first, and the two slides fought (1 Nov).
+          if (top?.path === path) return s;
+          if (replace) return [...s.slice(0, -1), { path, key, root: top?.root ?? true }];
+          // From the left: slide up OVER the old page, and drop the old ones
+          // once it is covered, instead of one sliding out as the other comes in.
+          return [...s, { path, key, root: !inPane }];
+        });
+        if (!inPane && !replace) {
+          setTimeout(() => setStack((s) => {
+            const i = s.findIndex((e) => e.key === key);
+            return i > 0 ? s.slice(i) : s;
+          }), ENTER_MS + 40);
+        }
+      },
     }),
     [half],
   );
   const back = useCallback(() => setStack((s) => s.slice(0, -1)), []);
   const close = useCallback(() => setStack([]), []);
   // The row sits inside the safe area on both sides.
-  const paneW = half == null ? 0 : width - left - right - half - PANE_GAP;
+  const paneW = half == null ? 0 : width - left - right - half - gap;
   return (
     <FoldContext.Provider value={fold}>
-      <View style={half != null ? s.row : s.fill}>
+      {/* The empty right half and the band take the left page's colour: a white
+          half beside a tinted profile read as a hole (Mahmood, 1 Nov). */}
+      <View style={half != null ? [s.row, { backgroundColor: band }] : s.fill}>
         {/* The side bar's inset belongs to neither half: given to the left one,
             its cover (pinned edge to edge) ran 84 pt into the right half and
             sat on top of it (Mahmood, 1 Nov). Left keeps only its own edge. */}
@@ -92,7 +118,9 @@ export function FoldSplit({ children }: { children: ReactNode }) {
           )}
         </View>
         {half != null && (
-          <View style={[s.pane, { width: paneW, marginStart: PANE_GAP }]}>
+          <>
+          <View style={{ width: gap }} />
+          <View style={[s.pane, { width: paneW }, flat && s.seam]}>
             <SafeAreaInsetsContext.Provider value={{ ...insets, left: 0, right: 0 }}>
               <ScreenWidthContext.Provider value={paneW}>
                 {stack.map((e, i) => (
@@ -100,7 +128,7 @@ export function FoldSplit({ children }: { children: ReactNode }) {
                     key={e.key}
                     path={e.path}
                     width={paneW}
-                    canBack={i > 0}
+                    canBack={i > 0 && !e.root}
                     // The page just under the top stays drawn: the new one slides up
                     // over it, not over black (Mahmood, 1 Nov). Lower ones hide.
                     shown={i >= stack.length - 2}
@@ -111,6 +139,7 @@ export function FoldSplit({ children }: { children: ReactNode }) {
               </ScreenWidthContext.Provider>
             </SafeAreaInsetsContext.Provider>
           </View>
+          </>
         )}
       </View>
     </FoldContext.Provider>
@@ -128,7 +157,7 @@ function PaneEntry(p: { path: string; width: number; canBack: boolean; shown: bo
   if (!page || !pane) return null;
   return (
     <Animated.View
-      entering={SlideInDown.duration(320)}
+      entering={SlideInDown.duration(ENTER_MS)}
       exiting={SlideOutDown.duration(260)}
       style={[StyleSheet.absoluteFill, s.page, !p.shown && s.hidden]}>
       <DetailPaneContext.Provider value={pane}>
@@ -142,6 +171,7 @@ const s = StyleSheet.create({
   fill: { flex: 1 },
   row: { flex: 1, flexDirection: 'row', backgroundColor: colors.bg },
   pane: { overflow: 'hidden' },
+  seam: { borderStartWidth: StyleSheet.hairlineWidth, borderStartColor: colors.line },
   page: { backgroundColor: colors.bg },
   hidden: { display: 'none' },
 });
