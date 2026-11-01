@@ -9,7 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
-| 2.2.0 | 130 | 106 | **built 1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes, real film runtimes, puzzle results to the dashboard |
+| 2.2.0 | 131 | 107 | **built 1 Nov 2026** — Wrapped Save all, the puzzle's past months, real film runtimes, puzzle results to the dashboard (106/130 were built with Duo two panes by mistake and not submitted) |
 | 2.1.1 | 129 | 105 | **submitted 31 Oct 2026, both stores** (iOS 105 replaces 2.1.0 in review, Android on top of 2.1.0) — upright Emotion calendar, film and rewatch fixes for merged imports, Henrike's other fixes |
 | 2.1.0 | 127 | 103 | **built 31 Oct 2026** — cover choosing fixed (live bug), TV Time badges, instant imports, Upcoming widget, the bell, free month dated for 1 December. |
 | 2.0.2 | 116 | 97 | **built 25 Oct 2026** — Simkl import that works on a real backup (shows, anime, films, anime films as films, memos as notes, dropped archived), a clear message for Simkl's CSV |
@@ -62,7 +62,7 @@ iOS skipped 2.1.0: it went into review, was pulled, and 2.1.1 build 105 carries 
 
 Known: merging TV Time onto Simkl ends 143 rows short of the other order (15,786 against 15,929), cause not found. Upload warned of a missing `hermesvm` dSYM.
 
-## 2.2.0 — Save all, puzzle months, Duo two panes (1 Nov)
+## 2.2.0 — Save all, puzzle months, film runtimes (1 Nov)
 
 Built on `2.2.0` (1 Nov): **Save all** on Wrapped hands every card of the period to the system share sheet together (`react-native-share`, no new permissions on Android; iOS needs `NSPhotoLibraryAddUsageDescription`), and the puzzle archive pages back through past months with the same squares as the profile block.
 
@@ -70,7 +70,7 @@ Built on `2.2.0` (1 Nov): **Save all** on Wrapped hands every card of the period
 - **Daily puzzle results reach the server** (day, won, tries, streak; never the title) for the dashboard's players-per-day count. Privacy policy updated 1 Nov.
 - **What's New** rows for 2.2.0 in nine languages.
 
-**Duo two panes are back in** (revert of b0ca4d1), built on branch `duo-two-panes` (31 Oct): `FoldSplit` for Shows, Movies, All shows, All movies and Profile, the real page in the right half, the setting for full width. Must be built with Xcode 27.1. Moved here by Mahmood. Never merge main into that branch, it reverts the Duo work: cherry-pick 4acfcac, 33f93ed, 8433620, cd4e26d.
+**Duo two panes stay OUT of 2.2.0** (Mahmood, 1 Nov: watch the reference video first, then design and build; the 31 Oct attempt on branch `duo-two-panes` was never reviewed). What that branch has (31 Oct): `FoldSplit` for Shows, Movies, All shows, All movies and Profile, the real page in the right half, the setting for full width. Must be built with Xcode 27.1. Moved here by Mahmood. Never merge main into that branch, it reverts the Duo work: cherry-pick 4acfcac, 33f93ed, 8433620, cd4e26d.
 - **Duo design pass: two panes when open** (Mahmood, 28 Oct; reference reel instagram.com/reel/DelUks9x5j1, a planner app in the Duo simulator: closed = one screen; open = month grid on the left half, the chosen day's notes, events and actions on the right, nothing on the fold). Today OpenTV only widens its pages when open. Do the same list-detail split: Watch List / Upcoming on the left and the tapped show or day on the right; a show's seasons left, the episode right; Profile shelves left, the opened shelf right. Closed stays as it is. Use the Duo skills (dual-pane patterns, fold avoidance, side bar) and NavigationSplitView-style behaviour; state must survive folding. Half open (book) and flat open differ in the reel: half open keeps every control off the curve and adds a quick-action grid; flat is simpler and wider. Decided 29 Oct: the right half starts empty, as in the reel, and fills when a show, film or day is tapped; the background runs across both halves so the empty half is not black. **The video and frames are saved in `design/referance/duo-two-pane/` (NOTES.md there): watch it again before building.**
 
 ## 2.1.0 — the plan

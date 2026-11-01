@@ -663,8 +663,6 @@
       "classicTabBar": "Klassische Tab-Leiste",
       "classicTabBarSub": "Die flache Leiste am unteren Rand wie vor iOS 26 statt der schwebenden",
       "classicTabBarRestart": "Schließe OpenTV und öffne es erneut, um die neue Tab-Leiste zu sehen.",
-      "duoFullWidth": "Volle Breite im geöffneten Zustand",
-      "duoFullWidthSub": "Nutzt den ganzen Bildschirm, wenn das iPhone Duo geöffnet ist, statt zwei Bereichen.",
       "simpleView": "Einfache Ansicht",
       "simpleViewSub": "Nur wie viele Serien, Folgen und Filme. Blendet Sehzeit, Tageskarte, Wrapped, Erinnerungen und das Jahresziel aus."
     },
@@ -2874,7 +2872,6 @@
     "v220": {
       "saveAll": "Wrapped: Alle speichern legt alle Karten deines Monats in ein Teilen, bereit für Fotos oder einen Post",
       "puzzleMonths": "Tägliches Rätsel: blättere durch vergangene Monate und sieh jeden Tag, an dem du gespielt hast",
-      "duo": "iPhone Duo: aufgeklappt stehen Serien, Filme und Profil in zwei Bereichen, die gewählte Seite rechts",
       "fixes": "Fehlerbehebungen: Filme ohne Laufzeit aus dem Import zeigen jetzt ihre echte Länge in Wrapped und Statistiken"
     },
     "v211": {

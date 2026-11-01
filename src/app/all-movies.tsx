@@ -1,11 +1,10 @@
-import { FoldSplit } from '@/components/fold-split';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, Pressable, SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Poster, posterSpeech } from '@/components/poster';
-import { NavHeader, Screen, useDetailRouter, useScreenWidth } from '@/components/ui';
+import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovies, type MovieRow, getRecentMovies } from '@/db';
 import { movieFacts } from '@/filter-facts';
@@ -21,16 +20,7 @@ function chunk<T>(arr: T[], n: number): T[][] {
   return out;
 }
 
-export default function AllMovies() {
-  return (
-    <FoldSplit>
-      <AllMoviesScreen />
-    </FoldSplit>
-  );
-}
-
-function AllMoviesScreen() {
-  const detail = useDetailRouter();
+export default function AllMoviesScreen() {
   // live from the database — un/marking a movie elsewhere updates the grids
   const [movies, setMovies] = useState(getMovies());
   useFocusEffect(
@@ -160,7 +150,7 @@ function AllMoviesScreen() {
                 <Pressable
                   key={m.name}
                   style={{ flex: 1 }}
-                  onPress={() => detail.push(`/movie/${encodeURIComponent(m.name)}`)}
+                  onPress={() => router.push(`/movie/${encodeURIComponent(m.name)}`)}
                   accessibilityRole="button"
                   accessibilityLabel={posterSpeech(m.title)}>
                   <Poster name={m.title} uri={m.poster} />

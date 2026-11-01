@@ -28,7 +28,7 @@ import { t } from '@/i18n';
 import { visibleCoverUri } from '@/library';
 import { usePlus } from '@/plus';
 import { BANNER_MAX_SIZE, bannerGeometry, bannerHeight, CENTRE_FRAME, coverFrameString, parseCoverFrame, type CoverFrame } from '@/pure';
-import { useFoldHalf, useScreenWidth } from '@/components/ui';
+import { useScreenWidth } from '@/components/ui';
 import { colors, radius, space } from '@/theme';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -75,7 +75,6 @@ export default function CoverAdjustScreen() {
       });
     });
 
-  const foldHalf = useFoldHalf();
   const cancel = () => {
     setLiveCoverFrame(null);
     if (undoCover()) {
@@ -159,8 +158,7 @@ export default function CoverAdjustScreen() {
         </GestureDetector>
       )}
 
-      {/* Open on its side, the controls keep to the right half: Reset sat on the fold. */}
-      <View style={[styles.panel, foldHalf != null && { width: foldHalf, alignSelf: 'flex-end' }, { paddingBottom: Math.max(insets.bottom, space.lg) }]}>
+      <View style={[styles.panel, { paddingBottom: Math.max(insets.bottom, space.lg) }]}>
         <Text accessibilityRole="header" style={styles.title}>{t('coverAdjust.title')}</Text>
         {uri == null && <Text style={styles.rowSub}>{t('editProfile.chooseCover')}</Text>}
 

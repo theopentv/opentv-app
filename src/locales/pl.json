@@ -681,8 +681,6 @@
       "classicTabBar": "Klasyczny pasek kart",
       "classicTabBarSub": "Płaski pasek na dole sprzed iOS 26 zamiast pływającego",
       "classicTabBarRestart": "Zamknij OpenTV i otwórz ponownie, aby zobaczyć nowy pasek kart.",
-      "duoFullWidth": "Pełna szerokość po otwarciu",
-      "duoFullWidthSub": "Używa całego ekranu po otwarciu iPhone Duo zamiast dwóch paneli.",
       "simpleView": "Widok prosty",
       "simpleViewSub": "Tylko liczba seriali, odcinków i filmów. Ukrywa czas oglądania, mapę dni, Wrapped, wspomnienia i cel roczny."
     },
@@ -3094,7 +3092,6 @@
     "v220": {
       "saveAll": "Wrapped: Zapisz wszystko daje wszystkie karty miesiąca w jednym udostępnieniu, gotowe do Zdjęć lub posta",
       "puzzleMonths": "Codzienna zagadka: przeglądaj poprzednie miesiące i zobacz każdy dzień, w którym grałeś",
-      "duo": "iPhone Duo: po otwarciu seriale, filmy i profil są w dwóch panelach, wybrana strona po prawej",
       "fixes": "Poprawki: filmy z importu bez długości pokazują teraz prawdziwy czas w Wrapped i Statystykach"
     },
     "v211": {

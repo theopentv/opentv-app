@@ -9,7 +9,7 @@ import { Text } from '@/components/text';
 import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
-import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useFold, useScreenWidth } from '@/components/ui';
+import { CheckCircle, EmptyState, Screen, TopTabs, useScreenWidth } from '@/components/ui';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -18,7 +18,6 @@ import { hasOriginalZip } from '@/migrations';
 import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { pool } from '@/tmdb';
-import { FoldSplit } from '@/components/fold-split';
 import { useMetaFillRunning } from '@/meta-fill';
 import { upcomingEpisodes } from '@/widget-data';
 import { airedTotalOf, progressColorOf, progressOf } from '@/show-status';
@@ -118,20 +117,9 @@ function chunk<T>(arr: T[], n: number): T[][] {
   return out;
 }
 
-export default function Shows() {
-  return (
-    <FoldSplit>
-      <ShowsScreen />
-    </FoldSplit>
-  );
-}
-
-function ShowsScreen() {
+export default function ShowsScreen() {
   const plus = usePlus();
   const W = useScreenWidth();
-  const detail = useDetailRouter();
-  const half = useFold()?.half ?? null;
-  const openShow = (id: number) => detail.push(`/show/${id}`);
   // the Watch List's rows and grid run full width (no ContentColumn cap) —
   // these are repeated rows/tiles, not prose, so a tablet should show MORE of
   // them rather than a narrow capped column. The column count derives from
@@ -264,7 +252,7 @@ function ShowsScreen() {
       // metadata hasn't loaded — marking blind here once fabricated ghost
       // episodes (FROM S04E19…E28). Open the show instead: the visit fetches
       // the real structure, and marking resumes verified
-      openShow(sp.tvdbId);
+      router.push(`/show/${sp.tvdbId}`);
       return;
     }
     markWatchedWithPrompt(sp.tvdbId, next.season, next.episode, () => setTick((t) => t + 1));
@@ -513,7 +501,7 @@ function ShowsScreen() {
                         // TalkBack stopped on the bare frame and said only
                         // "double tap". "no" hides the frame and keeps its children.
                         importantForAccessibility="no"
-                        onPress={() => (half != null ? openShow(w.showId) : router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`))}>
+                        onPress={() => router.push(`/episode/${w.showId}-s${w.season}e${w.episode}`)}>
                         <View style={styles.thumb} {...a11yHidden()}>
                           {em?.still ? (
                             <Image source={{ uri: em.still }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />
@@ -526,8 +514,8 @@ function ShowsScreen() {
                           accessible
                           accessibilityRole="button"
                           accessibilityLabel={[w.name, t('a11y.seasonEpisode', { season: w.season, episode: w.episode }), title].join(', ')}
-                          {...a11yAction('openShow', t('a11y.openShow'), () => openShow(w.showId))}>
-                          <Pressable style={styles.showPill} onPress={() => openShow(w.showId)} accessibilityRole="button" accessibilityLabel={w.name}>
+                          {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${w.showId}`))}>
+                          <Pressable style={styles.showPill} onPress={() => router.push(`/show/${w.showId}`)} accessibilityRole="button" accessibilityLabel={w.name}>
                             <Text style={styles.showPillText} numberOfLines={1}>
                               {w.name.toUpperCase()} ›
                             </Text>
@@ -631,8 +619,8 @@ function ShowsScreen() {
                     // guess, so open the show (which fetches the real
                     // structure) rather than a possibly-nonexistent episode,
                     // same guard markNext uses
-                    next === 'unknown' || half != null
-                      ? openShow(sp.tvdbId)
+                    next === 'unknown'
+                      ? router.push(`/show/${sp.tvdbId}`)
                       : router.push(`/episode/${sp.tvdbId}-s${nextS}e${nextE}`)
                   }
                 >
@@ -675,8 +663,8 @@ function ShowsScreen() {
                     ]
                       .filter(Boolean)
                       .join(', ')}
-                    {...a11yAction('openShow', t('a11y.openShow'), () => openShow(sp.tvdbId))}>
-                    <Pressable style={styles.showPill} onPress={() => openShow(sp.tvdbId)} accessibilityRole="button" accessibilityLabel={sp.name}>
+                    {...a11yAction('openShow', t('a11y.openShow'), () => router.push(`/show/${sp.tvdbId}`))}>
+                    <Pressable style={styles.showPill} onPress={() => router.push(`/show/${sp.tvdbId}`)} accessibilityRole="button" accessibilityLabel={sp.name}>
                       <Text style={styles.showPillText} numberOfLines={1}>
                         {sp.name.toUpperCase()} ›
                       </Text>
@@ -724,7 +712,7 @@ function ShowsScreen() {
                   <Pressable
                     key={sp.tvdbId}
                     style={{ flex: 1 }}
-                    onPress={() => openShow(sp.tvdbId)}
+                    onPress={() => router.push(`/show/${sp.tvdbId}`)}
                     accessibilityRole="button"
                     accessibilityLabel={posterSpeech(sp.name, { progress: progressOf(sp) })}>
                     <Poster name={sp.name} uri={sp.posterUrl} progress={progressOf(sp)} progressColor={progressColorOf(sp)} animateProgress />
@@ -802,7 +790,7 @@ function ShowsScreen() {
                   style={styles.card}
                   accessibilityRole="button"
                   accessibilityLabel={[u.showName, t('a11y.seasonEpisode', { season: u.season, episode: u.episode }), title].join(', ')}
-                  onPress={() => detail.push(`/episode/${u.showId}-s${u.season}e${u.episode}`)}>
+                  onPress={() => router.push(`/episode/${u.showId}-s${u.season}e${u.episode}`)}>
                   <View style={styles.thumb}>
                     {(u.still ?? u.poster) && (
                       <Image source={{ uri: u.still ?? u.poster! }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="disk" />

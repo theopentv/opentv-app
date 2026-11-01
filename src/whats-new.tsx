@@ -37,7 +37,6 @@ const NOTES: Record<string, { icon: string; tint: string; key: LocaleKey; iosOnl
   '2.2.0': [
     { icon: '🎁', tint: ACCENTS.yellow, key: 'whatsNew.v220.saveAll', to: '/wrapped' },
     { icon: '🧩', tint: '#9B7BFF', key: 'whatsNew.v220.puzzleMonths', to: '/puzzle-archive' },
-    { icon: '📖', tint: '#3E8BFF', key: 'whatsNew.v220.duo', iosOnly: true },
     { icon: '🛠️', tint: '#78BE3D', key: 'whatsNew.v220.fixes' },
   ],
   '2.1.1': [
