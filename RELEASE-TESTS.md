@@ -13,6 +13,37 @@ failure written next to it, not in a commit message.
 ---
 
 
+## 2.2.0
+
+iOS 107, Android 131. Simulator lines are marked; the rest wants a real iPhone and a real Android.
+
+**Wrapped: Save all**
+- [~] Android emulator, before the per-card fix: shared 6 images, some cards wrong or missing (fixed since, not re-run)
+- [ ] iPhone (real): first tap asks to add to Photos; every card of the month lands, none twice, none blank
+- [ ] Android release build: same, and nothing breaks after R8
+- [ ] A month with one card shows no SAVE ALL
+
+**Daily puzzle**
+- [ ] Archive pages back through past months, squares match the profile block
+- [ ] Finishing today's puzzle shows on the dashboard's Daily puzzle section (signed-in only)
+
+**Film runtimes**
+- [ ] Hidden Figures / The Station Agent read their real length in Wrapped after a launch (Mahmood's phone)
+
+**iPhone Duo two panes (Device Hub, Mahmood only: tools cannot see the inner screen)**
+- [x] Right half empty and the theme's background until something is tapped (Duo simulator)
+- [x] Half open splits at the fold; flat gives the left 40% (Duo simulator)
+- [x] Show, episode, puzzle open on the right; back and a pull down step back within it; no black screen (Duo simulator)
+- [x] The profile cover stays in its half (Duo simulator)
+- [ ] Settings → App → Full width when open: one page again, and back to two
+- [ ] Closed: unchanged phone layout
+
+**Everyone else**
+- [ ] Fresh install, iPhone and Android: welcome, import, What's New not shown to a new install
+- [ ] Update from 2.1.1: What's New shows the 2.2.0 rows (iPhone shows the Duo row, Android does not)
+
+---
+
 ## 2.1.1
 
 Simulator lines are marked. The rest wants a real iPhone and a real Android.
