@@ -2874,6 +2874,7 @@
     "v220": {
       "saveAll": "Wrapped : Tout enregistrer met toutes les cartes de votre mois dans un seul partage, prêtes pour Photos ou un post",
       "puzzleMonths": "Énigme du jour : remontez les mois passés et voyez chaque jour joué",
+      "duo": "iPhone Duo : ouvrez-le et vos séries, films et profil s'affichent en deux volets, la page choisie à droite",
       "fixes": "Corrections : les films importés sans durée affichent maintenant leur vraie durée dans Wrapped et les Statistiques"
     },
     "v211": {

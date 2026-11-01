@@ -2941,6 +2941,7 @@ export type LocaleKey =
   | "whatsNew.v211.films"
   | "whatsNew.v211.fixes"
   | "whatsNew.v211.rewatches"
+  | "whatsNew.v220.duo"
   | "whatsNew.v220.fixes"
   | "whatsNew.v220.puzzleMonths"
   | "whatsNew.v220.saveAll"
