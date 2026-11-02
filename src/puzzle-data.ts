@@ -66,6 +66,8 @@ import {
   usedPictures,
   withPinned,
   withResult,
+  withServerDays,
+  RESTORED_ID,
   type Clues,
   type Game,
   type Pinned,
@@ -217,7 +219,8 @@ function loadPinned(): Pinned[] {
   let list = parsePinned(parse<unknown>(K.answers));
   const known = new Set(list.map((p) => p.d));
   for (const r of [...loadHistory(), ...loadArchive()]) {
-    if (!known.has(r.d)) list = withPinned(list, { d: r.d, id: r.id, pic: null });
+    // A restored day never knew its answer; pinning 0 would name nothing.
+    if (!known.has(r.d) && r.id !== RESTORED_ID) list = withPinned(list, { d: r.d, id: r.id, pic: null });
   }
   return list;
 }
@@ -696,6 +699,31 @@ async function reportPlayed(r: Result): Promise<void> {
   }
 }
 
+/**
+ * THE STREAK SURVIVES A WIPED PHONE (2.2.2). Since 2.2.0 every finished day is
+ * reported to the server (`reportPlayed`); this asks for those days on launch
+ * and fills the gaps in the local history, which is all the streak is counted
+ * from. L8X lost his streak to a reinstall on 1 Nov; this is why.
+ */
+export async function restorePuzzleDays(): Promise<void> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getToken } = require('@/community-session') as typeof import('@/community-session');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { api } = require('@/api') as typeof import('@/api');
+    const token = await getToken();
+    if (!token) return;
+    const res = await api<{ days?: { day: string; won: boolean; tries: number }[] }>('/v1/puzzle/played', { token });
+    const before = loadHistory();
+    const after = withServerDays(before, res?.days ?? []);
+    if (after === before) return;
+    setMeta(K.history, JSON.stringify(after));
+    void republishPuzzleBlock();
+  } catch {
+    // Offline, or an old server: the streak just stays as it was.
+  }
+}
+
 /** Played, win %, average tries — today's games only, never the archive's. */
 export function currentStats(): Stats {
   return puzzleStats(loadHistory());
@@ -783,7 +811,8 @@ export function resultsByDay(): Map<string, Result> {
  */
 export function pastGame(day: string): Game | null {
   const r = resultsByDay().get(day);
-  if (!r) return null;
+  // A restored day (2.2.2) kept how it went but never its answer: nothing to show.
+  if (!r || r.id === RESTORED_ID) return null;
   const saved = [loadGame(day), loadGame(day, true)].find((g) => g != null && g.id === r.id && isOver(g));
   return saved ?? gameOfResult(r);
 }

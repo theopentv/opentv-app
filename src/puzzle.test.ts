@@ -4,6 +4,8 @@
  * posted by a thousand people.
  */
 import {
+  withServerDays,
+  RESTORED_ID,
   gameOfResult,
   gridCode,
   BLUR,
@@ -797,5 +799,24 @@ describe('a past day rebuilt from its history row (22 Oct)', () => {
   it('a grid that disagrees with its row is ignored, and junk is dropped on read', () => {
     expect(squares(gameOfResult({ d: '2026-11-01', id, tries: 3, won: true, sq: 'rgr' }))).toBe('🟥🟥🟩');
     expect(parseHistory([{ d: '2026-11-01', id, tries: 2, won: true, sq: 'x<' }])[0].sq).toBeUndefined();
+  });
+});
+
+describe('days back from the server', () => {
+  const mine = { d: '2026-11-02', id: 42, tries: 1, won: true };
+  it('fills only the gaps, so a restored streak runs on and no game is rewritten', () => {
+    const out = withServerDays([mine], [
+      { day: '2026-10-31', won: true, tries: 3 },
+      { day: '2026-11-01', won: false, tries: 6 },
+      { day: '2026-11-02', won: false, tries: 6 },
+    ]);
+    expect(out.map((r) => r.d)).toEqual(['2026-10-31', '2026-11-01', '2026-11-02']);
+    expect(out[2]).toBe(mine);
+    expect(out[0]).toEqual({ d: '2026-10-31', id: RESTORED_ID, tries: 3, won: true });
+    expect(puzzleStreak(out, '2026-11-02')).toBe(3);
+  });
+  it('returns the same history when nothing is missing', () => {
+    const h = [mine];
+    expect(withServerDays(h, [{ day: '2026-11-02', won: true, tries: 1 }])).toBe(h);
   });
 });

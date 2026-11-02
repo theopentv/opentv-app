@@ -570,6 +570,28 @@ export function resultOf(g: Game): Result {
 
 /** One row per day, newest last. A day replayed (it cannot be, but a bad
  *  write must not double it) replaces its row. */
+/** The answer of a day that came back from the server (2.2.2): the server
+ *  never had it. 0 is no TheTVDB id, so it never names, pins or opens a show. */
+export const RESTORED_ID = 0;
+
+/**
+ * Days this phone lost (wiped, reinstalled, new phone) filled back in from
+ * what the server kept. Days the phone has win; only gaps are filled, so a
+ * restore can never rewrite a game. Returns `history` itself when nothing was
+ * missing, so the caller can skip the write.
+ */
+export function withServerDays(
+  history: readonly Result[],
+  days: readonly { day: string; won: boolean; tries: number }[],
+): readonly Result[] {
+  const have = new Set(history.map((r) => r.d));
+  const missing = days.filter((s) => /^\d{4}-\d{2}-\d{2}$/.test(s.day) && !have.has(s.day));
+  if (!missing.length) return history;
+  return [...history, ...missing.map((s) => ({ d: s.day, id: RESTORED_ID, tries: s.tries, won: s.won }))]
+    .sort((a, b) => a.d.localeCompare(b.d))
+    .slice(-HISTORY_MAX);
+}
+
 export function withResult(history: readonly Result[], r: Result): Result[] {
   return [...history.filter((h) => h.d !== r.d), r].sort((a, b) => a.d.localeCompare(b.d)).slice(-HISTORY_MAX);
 }

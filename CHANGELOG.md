@@ -9,6 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
+| 2.2.2 | 136 | — | **2 Nov 2026** — Android only: the puzzle streak survives a wiped or new phone. iOS stays on 2.2.0 (110) |
 | 2.2.1 | 135 | — | **2 Nov 2026** — Android only: the "imperative router is unavailable" crash (expo-router patch). iOS stays on 2.2.0 (110) |
 | 2.2.0 | 134 | 110 | **1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes (reviewed by Mahmood on the simulator), real film runtimes, puzzle results to the dashboard (106/130, 107/131, 108/132 and 109/133 were never released; 109/133 add the CommsUni partner terms, 110/134 the star fix) |
 | 2.1.1 | 129 | 105 | **submitted 31 Oct 2026, both stores** (iOS 105 replaces 2.1.0 in review, Android on top of 2.1.0) — upright Emotion calendar, film and rewatch fixes for merged imports, Henrike's other fixes |
@@ -62,6 +63,12 @@ iOS skipped 2.1.0: it went into review, was pulled, and 2.1.1 build 105 carries 
 - **The closing card on a show's episode line is centred**, and the Snake popcorn sits inside its cell.
 
 Known: merging TV Time onto Simkl ends 143 rows short of the other order (15,786 against 15,929), cause not found. Upload warned of a missing `hermesvm` dSYM.
+
+## 2.2.2 — Android: the puzzle streak comes back (2 Nov)
+
+Android only, like 2.2.1. Needs the backend's `GET /v1/puzzle/played` (backend cc38396) deployed first.
+
+- **A reinstall no longer costs the streak.** The streak is counted from `puzzle.history` on the phone; L8X cleared data and reinstalled to escape the 2.2.1 crash and lost his. Since 2.2.0 every finished day is reported (`reportPlayed`, kept 90 days); on launch `restorePuzzleDays` asks for them and `withServerDays` fills only the gaps (a day the phone has always wins). A restored day carries `RESTORED_ID` (0) as its answer: it counts for the streak and the squares, is never pinned, and `pastGame` shows nothing for it. L8X's own days predate 2.2.0 and were never reported: insert them by hand into `puzzle_days` from what he says.
 
 ## 2.2.1 — Android: taps that crashed the app (2 Nov)
 

@@ -56,6 +56,7 @@ import { useNotifyAsked, useOnboarded } from '@/session-store';
 import { decideWhatsNewAtLaunch } from '@/whats-new';
 import { MESSAGE_ROUTES } from '@/pure';
 import { publishIfChanged } from '@/community-publish';
+import { restorePuzzleDays } from '@/puzzle-data';
 import { shouldAskForNotifications } from '@/pure';
 import { appliedLight, colors } from '@/theme';
 
@@ -408,6 +409,8 @@ export default function RootLayout() {
         // one is what applies a dashboard Plus grant. Behind it, a gifted
         // account sat without Plus for the whole backfill.
         await refreshSession().catch(() => {});
+        // A wiped or new phone gets its puzzle days, and so its streak, back.
+        void restorePuzzleDays();
         // TV Time's export identifies a favourite character by TheTVDB id and
         // nothing else, so those votes imported nameless and the seeder — which
         // cannot send a vote with no name — silently dropped every one of them.
