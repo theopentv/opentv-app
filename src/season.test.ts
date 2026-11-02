@@ -14,6 +14,7 @@ import {
   currentTheme,
   SEASONS,
   setDecoration,
+  setFollowSeason,
   setPart,
   setSeasonalOn,
   setTheme,
@@ -88,5 +89,25 @@ describe('seasonal looks', () => {
         p.companions.forEach((c) => expect(s.companions).toContain(c));
       }
     }
+  });
+});
+
+describe('following the season', () => {
+  it('moves from Halloween to the running season by itself, for Plus too', () => {
+    storeEvent('halloween');
+    setTheme('halloween');
+    setDecoration(SEASONS.find((x) => x.id === 'halloween')!.presets[0]!.deco);
+    setFollowSeason();
+    storeEvent('muertos');
+    expect(currentTheme(true)?.id).toBe('muertos');
+    expect(currentDecoration(true)).toBe(SEASONS.find((x) => x.id === 'muertos')!.presets[0]!.deco);
+    storeEvent(null);
+    expect(currentTheme(true)).toBeNull();
+    expect(currentDecoration(true)).toBeNull();
+  });
+  it('a theme picked by name stays, as before', () => {
+    storeEvent('muertos');
+    setTheme('halloween');
+    expect(currentTheme(true)?.id).toBe('halloween');
   });
 });

@@ -2064,6 +2064,7 @@ export type LocaleKey =
   | "seasonIcon.keep"
   | "seasonIcon.title"
   | "seasonIcon.use"
+  | "seasonal.auto"
   | "seasonal.awards"
   | "seasonal.christmas"
   | "seasonal.companions"

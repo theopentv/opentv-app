@@ -24,6 +24,8 @@ import {
   applyPreset,
   availableSeasons,
   chosenTheme,
+  followsSeason,
+  setFollowSeason,
   currentDecoration,
   lookFor,
   seasonalOn,
@@ -48,6 +50,7 @@ export default function SeasonalScreen() {
   const [deco, setDeco] = useState(() => currentDecoration(plus));
   const [theme, setThemeState] = useState<SeasonId | null>(() => chosenTheme());
   const [rev, setRev] = useState(0);
+  const [auto, setAuto] = useState(() => followsSeason());
   const [editing, setEditing] = useState<SeasonId | undefined>(() => chosenTheme() ?? event?.id ?? seasons[0]?.id);
   const season = seasons.find((x) => x.id === editing) ?? seasons[0];
 
@@ -61,7 +64,11 @@ export default function SeasonalScreen() {
   const change = (fn: () => void) => {
     tapSelection();
     fn();
-    if (season) setTheme(season.id);
+    // Changing the running season's look while following keeps following.
+    if (season && !(auto && season.id === event?.id)) {
+      setTheme(season.id);
+      setAuto(false);
+    }
     refresh();
   };
   const lockedPart = !plus;
@@ -78,6 +85,15 @@ export default function SeasonalScreen() {
     const own = deco != null && x.decorations.includes(deco);
     if (!own) setDecoration(x.presets[0]!.deco);
     setTheme(x.id);
+    setAuto(false);
+    refresh();
+  };
+
+  const pickAuto = () => {
+    tapSelection();
+    setFollowSeason();
+    setAuto(true);
+    if (event) setEditing(event.id);
     refresh();
   };
 
@@ -129,9 +145,13 @@ export default function SeasonalScreen() {
 
               {seasons.length > 1 && (
                 <View style={s.chipRow}>
+                  {/* FOLLOW THE SEASON (2 Nov): changes by itself on the calendar. */}
+                  <Pressable style={[s.tab, auto && s.tabOn]} onPress={pickAuto} accessibilityRole="tab" accessibilityState={{ selected: auto }}>
+                    <Text style={[s.tabText, auto && { color: colors.bg }]}>{t('seasonal.auto')}</Text>
+                  </Pressable>
                   {seasons.map((x) => (
-                    <Pressable key={x.id} style={[s.tab, x.id === season.id && s.tabOn]} onPress={() => pickSeason(x)} accessibilityRole="tab" accessibilityState={{ selected: x.id === season.id }}>
-                      <Text style={[s.tabText, x.id === season.id && { color: colors.bg }]}>
+                    <Pressable key={x.id} style={[s.tab, !auto && x.id === season.id && s.tabOn]} onPress={() => pickSeason(x)} accessibilityRole="tab" accessibilityState={{ selected: x.id === season.id }}>
+                      <Text style={[s.tabText, !auto && x.id === season.id && { color: colors.bg }]}>
                         {t(`seasonal.${x.id}`)}
                         {event?.id === x.id ? ` · ${t('seasonal.now')}` : ''}
                       </Text>

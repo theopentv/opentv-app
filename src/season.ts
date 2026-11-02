@@ -169,7 +169,20 @@ export function chosenDecoration(): string | null {
   return getMeta(DECO);
 }
 export const setDecoration = (emoji: string): void => setMeta(DECO, emoji);
-export const chosenTheme = (): SeasonId | null => (getMeta(THEME) as SeasonId) || null;
+/**
+ * FOLLOW THE SEASON (2 Nov). A theme picked by name stays until it is changed,
+ * so a Plus member who chose Halloween was still in Halloween in November
+ * (developer, 2 Nov). 'auto' means whatever season is running: Day of the
+ * Dead today, Christmas from 1 December, nothing between.
+ */
+const AUTO = 'auto';
+export const followsSeason = (): boolean => getMeta(THEME) === AUTO;
+export const setFollowSeason = (): void => setMeta(THEME, AUTO);
+export const chosenTheme = (): SeasonId | null => {
+  const v = getMeta(THEME);
+  if (v === AUTO) return activeEvent()?.id ?? null;
+  return (v as SeasonId) || null;
+};
 export const setTheme = (id: SeasonId | null): void => setMeta(THEME, id ?? '');
 
 /**
@@ -189,8 +202,15 @@ export function currentDecoration(plus: boolean): string | null {
   const seasons = availableSeasons(plus);
   const chosen = chosenDecoration();
   if (chosen === '') return null;
+  const event = activeEvent();
+  // Following the season: the running one's decoration, a chosen one only if
+  // it is from this season, so Halloween's pumpkin goes when Halloween does.
+  if (followsSeason()) {
+    if (!event) return null;
+    return chosen && decorationsFor(event, plus).includes(chosen) ? chosen : (event.presets[0]?.deco ?? null);
+  }
   if (chosen && seasons.some((s) => decorationsFor(s, plus).includes(chosen))) return chosen;
-  return activeEvent()?.presets[0]?.deco ?? null;
+  return event?.presets[0]?.deco ?? null;
 }
 
 /** The theme template in force, if it was chosen and is still available. */
