@@ -35,7 +35,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { type ScrollViewInstance, type ViewInstance, ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
+import { type ScrollViewInstance, type ViewInstance, ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/text';
 
@@ -138,21 +138,22 @@ export default function PuzzleScreen() {
   const [added, setAdded] = useState(false);
   const cardRef = useRef<ViewInstance>(null);
   /*
-   * THE KEYBOARD HID THE SUGGESTIONS. The answer box sits under the picture and
-   * five clue rows, so the list it opens landed behind the keyboard (developer,
-   * 14 Oct). Focusing the box scrolls it to the top of the screen, and the
-   * scroll view takes the keyboard's height as an inset so the list can be
-   * reached below it.
+   * THE ANSWER BAR IS DOCKED (2 Nov). It sat under the clues, so typing
+   * scrolled the still and the clues away to show the suggestions — the two
+   * things a guess is made from (developer, 2 Nov). Now the box and Skip are a
+   * bar at the bottom that the keyboard carries up, the suggestions are one
+   * row of posters above it, and nothing on the page moves or changes size.
    */
   const scrollRef = useRef<ScrollViewInstance>(null);
-  const searchY = useRef(0);
-  const liftAnswerBox = () => scrollRef.current?.scrollTo({ y: Math.max(0, searchY.current - 12), animated: true });
-  // Again once the suggestions exist: before them the page may be too short to
-  // scroll, and the keyboard inset alone leaves the box where it was.
-  const hasQuery = query.trim().length > 0;
+  const [keyboardUp, setKeyboardUp] = useState(false);
   useEffect(() => {
-    if (hasQuery) liftAnswerBox();
-  }, [hasQuery]);
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardUp(true));
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardUp(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   // The first-open reminder offer moved to its own screen (22 Oct): see
   // `puzzle-intro.tsx`, which every entry point routes through once.
@@ -322,10 +323,11 @@ export default function PuzzleScreen() {
             : []),
         ]}
       />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView
         ref={scrollRef}
+        style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
-        automaticallyAdjustKeyboardInsets
         // Clear of the system navigation bar: edge-to-edge Android draws under it.
         contentContainerStyle={{ paddingBottom: 40 + insets.bottom }}>
         <ContentColumn>
@@ -414,61 +416,7 @@ export default function PuzzleScreen() {
                 })}
               </View>
 
-              {/* THE ANSWER BOX: shows and films from the library in any of
-                  their names, and the classics. A guess is matched by id, so
-                  the French title and the English one are one title — and
-                  Fargo the film and Fargo the series are two. */}
-              <View style={s.searchRow} onLayout={(e) => (searchY.current = e.nativeEvent.layout.y)}>
-                <Ionicons name="search" size={20} color={colors.dim} />
-                <TextInput
-                  style={s.searchInput}
-                  placeholder={t('puzzle.answerPlaceholder')}
-                  placeholderTextColor={colors.dim}
-                  value={query}
-                  onChangeText={setQuery}
-                  onFocus={() => setTimeout(liftAnswerBox, 250)}
-                  autoCorrect={false}
-                  accessibilityLabel={t('puzzle.answerPlaceholder')}
-                />
-              </View>
-              {query.trim().length > 0 && suggestions.length === 0 && <Text style={s.noMatch}>{t('puzzle.noMatch')}</Text>}
-              {suggestions.map((a) => (
-                <Pressable
-                  key={a.id}
-                  style={s.row}
-                  onPress={() => play(a.id)}
-                  accessibilityRole="button"
-                  accessibilityLabel={[
-                    a.name,
-                    a.year,
-                    t(a.kind === 'film' ? 'puzzleTitles.kindFilm' : 'puzzleTitles.kindShow'),
-                    a.mine ? t('puzzleFair.inLibrary') : null,
-                  ]
-                    .filter(Boolean)
-                    .join(', ')}>
-                  {a.poster ? (
-                    <Image source={{ uri: a.poster }} style={s.thumb} contentFit="cover" cachePolicy="disk" />
-                  ) : (
-                    <View style={[s.thumb, { backgroundColor: colors.raise }]} />
-                  )}
-                  {/* THE WHOLE TITLE AND ITS YEAR (14 Oct). One line with "…"
-                      cut "Harry Potter and the Deathly Hallows – Part 1" and
-                      "– Part 2" to the same row, and two Avatars to one name:
-                      the very guesses that need telling apart. So it wraps,
-                      never truncates, and the year follows in a quieter
-                      colour. */}
-                  <Text style={s.rowName}>
-                    {a.name}
-                    {a.year ? <Text style={s.rowYear}>{` (${a.year})`}</Text> : null}
-                  </Text>
-                  {/* Which kind, for the eye — the label above says it for the ear. */}
-                  <Ionicons name={a.kind === 'film' ? 'film-outline' : 'tv-outline'} size={16} color={colors.faint} />
-                  {a.mine && <Ionicons name="library-outline" size={16} color={colors.faint} />}
-                </Pressable>
-              ))}
-              <Pressable style={s.skip} onPress={() => play(SKIP)} accessibilityRole="button">
-                <Text style={s.skipText}>{t('puzzle.skip')}</Text>
-              </Pressable>
+
             </>
           ) : (
             <>
@@ -547,6 +495,69 @@ export default function PuzzleScreen() {
           )}
         </ContentColumn>
       </ScrollView>
+      {!over && (
+        <View style={[s.dock, { paddingBottom: keyboardUp ? 8 : Math.max(insets.bottom, 8) }]}>
+          {query.trim().length > 0 && suggestions.length === 0 && <Text style={s.noMatch}>{t('puzzle.noMatch')}</Text>}
+          {suggestions.length > 0 && (
+            <ScrollView horizontal keyboardShouldPersistTaps="handled" showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
+              {suggestions.map((a) => (
+                <Pressable
+                  key={a.id}
+                  style={s.chip}
+                  onPress={() => play(a.id)}
+                  accessibilityRole="button"
+                  accessibilityLabel={[
+                    a.name,
+                    a.year,
+                    t(a.kind === 'film' ? 'puzzleTitles.kindFilm' : 'puzzleTitles.kindShow'),
+                    a.mine ? t('puzzleFair.inLibrary') : null,
+                  ]
+                    .filter(Boolean)
+                    .join(', ')}>
+                  <View>
+                    {a.poster ? (
+                      <Image source={{ uri: a.poster }} style={s.chipPoster} contentFit="cover" cachePolicy="disk" />
+                    ) : (
+                      <View style={[s.chipPoster, { backgroundColor: colors.raise }]} />
+                    )}
+                    {/* Which kind, for the eye — the label above says it for the ear. */}
+                    <View style={s.chipKind}>
+                      <Ionicons name={a.kind === 'film' ? 'film-outline' : 'tv-outline'} size={11} color={colors.text} />
+                      {a.mine && <Ionicons name="library-outline" size={11} color={colors.text} />}
+                    </View>
+                  </View>
+                  {/* The whole title and its year: "Deathly Hallows – Part 1"
+                      and "– Part 2", and two Avatars, are the guesses that
+                      need telling apart (14 Oct). Three lines, then the year. */}
+                  <Text style={s.chipName} numberOfLines={3}>
+                    {a.name}
+                  </Text>
+                  {a.year ? <Text style={s.chipYear}>{a.year}</Text> : null}
+                </Pressable>
+              ))}
+            </ScrollView>
+          )}
+          {/* THE ANSWER BOX: shows and films from the library in any of their
+              names, and the classics. A guess is matched by id, so the French
+              title and the English one are one title. */}
+          <View style={s.searchRow}>
+            <Ionicons name="search" size={20} color={colors.dim} />
+            <TextInput
+              style={s.searchInput}
+              placeholder={t('puzzle.answerPlaceholder')}
+              placeholderTextColor={colors.dim}
+              value={query}
+              onChangeText={setQuery}
+              autoCorrect={false}
+              accessibilityLabel={t('puzzle.answerPlaceholder')}
+            />
+            <Pressable style={s.skip} onPress={() => play(SKIP)} accessibilityRole="button">
+              <Text style={s.skipText}>{t('puzzle.skip')}</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
+      </KeyboardAvoidingView>
       <ActionSheet
         visible={sharing}
         title={t('puzzlePolish.shareTitle')}
@@ -602,25 +613,18 @@ const s = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginHorizontal: space.lg,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
+    paddingVertical: 6,
   },
   searchInput: { flex: 1, color: colors.text, fontSize: 17, paddingVertical: 4 },
   noMatch: { color: colors.faint, fontSize: 13, paddingHorizontal: space.lg, paddingTop: 10 },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: space.lg,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
-  },
-  thumb: { width: 34, height: 51, borderRadius: radius.poster, backgroundColor: colors.card },
-  rowName: { color: colors.text, fontSize: 15.5, fontWeight: '600', lineHeight: 20, flex: 1 },
-  rowYear: { color: colors.dim, fontWeight: '500' },
-  skip: { alignSelf: 'center', marginTop: 16, paddingHorizontal: 18, paddingVertical: 8 },
+  skip: { paddingLeft: 12, paddingVertical: 8 },
+  dock: { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.line, backgroundColor: colors.bg, paddingTop: 8 },
+  chips: { gap: 10, paddingHorizontal: space.lg, paddingBottom: 8 },
+  chip: { width: 74 },
+  chipPoster: { width: 74, height: 111, borderRadius: radius.poster, backgroundColor: colors.card },
+  chipKind: { position: 'absolute', right: 4, bottom: 4, flexDirection: 'row', gap: 3, backgroundColor: '#000000AA', borderRadius: 6, paddingHorizontal: 4, paddingVertical: 2 },
+  chipName: { color: colors.text, fontSize: 12, fontWeight: '600', lineHeight: 15, marginTop: 5 },
+  chipYear: { color: colors.dim, fontSize: 11.5, fontWeight: '500' },
   skipText: { color: colors.dim, fontSize: 13.5, fontWeight: '700' },
   resultTitle: { color: colors.text, fontSize: 22, fontWeight: '900', textAlign: 'center', paddingTop: 16, paddingHorizontal: space.lg },
   reveal: { flexDirection: 'row', alignItems: 'center', gap: 14, marginHorizontal: space.lg, marginTop: 14 },
