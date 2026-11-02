@@ -124,7 +124,9 @@ jobs:
               }
           }
           EOF
-          echo 'apply from: "github-signing.gradle"' >> android/app/build.gradle
+          # A newline first: the generated build.gradle may not end in one, and
+          # "apply from" glued to its last line fails as apply() on null.
+          printf '\napply from: "github-signing.gradle"\n' >> android/app/build.gradle
 
       # EXPO_PUBLIC_DISTRIBUTION is what makes this the GitHub build inside the
       # app (src/sideload.ts): Metro inlines it while Gradle bundles the JS.
