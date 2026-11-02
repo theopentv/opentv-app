@@ -67,6 +67,7 @@ import {
   withPinned,
   withResult,
   withServerDays,
+  seriesKey,
   RESTORED_ID,
   type Clues,
   type Game,
@@ -363,6 +364,22 @@ function candidates(pool: readonly Answer[]): { library: PuzzleId[]; classics: P
   return { library: ids, classics: pool.filter((a) => !a.mine).map((a) => a.id) };
 }
 
+/** Each title's series, for `pickAnswer`'s fortnight rule: TMDB's collection
+ *  when this phone has fetched it, and the name's opening words either way. */
+function familiesOf(pool: readonly Answer[]): (id: PuzzleId) => readonly string[] {
+  const byId = new Map(pool.map((a) => [a.id, a]));
+  return (id) => {
+    const a = byId.get(id);
+    if (!a) return [];
+    const out: string[] = [];
+    const key = seriesKey(a.name);
+    if (key) out.push(`t:${key}`);
+    const c = a.kind === 'film' ? filmDetail(a.tmdbId)?.collection : null;
+    if (c != null) out.push(`c:${c}`);
+    return out;
+  };
+}
+
 /**
  * A day's game: the one in progress, or a fresh one on that day's pinned
  * answer, or — the first time the day is opened — a fresh pick, pinned.
@@ -382,7 +399,7 @@ export function gameFor(day: string, pool: readonly Answer[], archive = false): 
     g = saved;
   } else {
     const { library, classics } = candidates(pool);
-    const id = pin && inPool(pin.id) ? pin.id : pickAnswer(day, library, classics, pinned);
+    const id = pin && inPool(pin.id) ? pin.id : pickAnswer(day, library, classics, pinned, familiesOf(pool));
     if (id == null) return null;
     g = newGame(day, id);
     saveGame(g, archive);

@@ -4,6 +4,7 @@
  * posted by a thousand people.
  */
 import {
+  seriesKey,
   KEPT_LEVEL,
   withBackupDays,
   withServerDays,
@@ -843,5 +844,26 @@ describe('a kept day', () => {
     expect(winLevel(kept)).toBe(KEPT_LEVEL);
     expect(puzzleStreak([kept, real], '2026-11-02')).toBe(2);
     expect(puzzleStats([kept, real])).toEqual({ played: 1, win: 100, avg: 2 });
+  });
+});
+
+describe('one series a fortnight', () => {
+  it('knows a series by its opening words', () => {
+    expect(seriesKey('Harry Potter and the Chamber of Secrets')).toBe('harry potter');
+    expect(seriesKey('Harry Potter and the Prisoner of Azkaban')).toBe('harry potter');
+    expect(seriesKey('Dune: Part Two')).toBe('dune');
+    expect(seriesKey('Toy Story 3')).toBe('toy story');
+    expect(seriesKey('Up')).toBeNull();
+  });
+  it('keeps a second film of the series away for 14 days, unless nothing else is left', () => {
+    const fam: Record<string, string[]> = { 'm:2': ['t:harry potter'], 'm:3': ['t:harry potter'], 'm:9': ['t:arrival'] };
+    const families = (id: string | number) => fam[String(id)] ?? [];
+    const pinned = [{ d: '2026-11-01', id: 'm:2', pic: null }];
+    const lib = ['m:2', 'm:3', 'm:9', 'm:10', 'm:11', 'm:12', 'm:13', 'm:14', 'm:15', 'm:16', 'm:17'];
+    for (let i = 2; i <= 13; i++) {
+      const day = `2026-11-${String(i).padStart(2, '0')}`;
+      expect(pickAnswer(day, lib, [], pinned, families)).not.toBe('m:3');
+    }
+    expect(pickAnswer('2026-11-05', ['m:2', 'm:3'], [], pinned, families)).toBe('m:3');
   });
 });

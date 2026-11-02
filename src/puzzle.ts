@@ -243,6 +243,27 @@ export function pickIndex(day: string, count: number, lane = 1): number {
 
 // ── never running out ───────────────────────────────────────────────────────
 
+/** No two titles of one series (a TMDB collection, or one title's opening
+ *  words) inside this many days. */
+export const FAMILY_DAYS = 14;
+
+/**
+ * A title's series by its name, for when TMDB's collection is not known:
+ * "Harry Potter and the Chamber of Secrets" and "Harry Potter and the
+ * Prisoner of Azkaban" both give "harry potter". The name up to a colon, a
+ * dash, " and the ", " part " or a closing number; null when what is left is
+ * too short to mean a series ("Up", "It").
+ */
+export function seriesKey(name: string): string | null {
+  const base = name
+    .toLowerCase()
+    .split(/\s*[:\u2013\u2014-]\s+|\s+and the\s+|\s+part\s+|\s+chapter\s+/)[0]
+    .replace(/\s+(\d+|ii|iii|iv|v|vi|vii|viii)$/, '')
+    .replace(/[^\p{L}\p{N} ]/gu, '')
+    .trim();
+  return base.length >= 4 ? base : null;
+}
+
 /** No title is the answer twice inside this many days, for one person. */
 export const REPEAT_DAYS = 60;
 
@@ -306,10 +327,21 @@ export function pickAnswer(
   library: readonly PuzzleId[],
   classics: readonly PuzzleId[],
   pinned: readonly Pinned[],
+  families: (id: PuzzleId) => readonly string[] = () => [],
 ): PuzzleId | null {
   const near = nearIds(pinned, day);
   const pool = candidatePool(library, classics);
-  const fresh = pool.filter((id) => !near.has(id));
+  /*
+   * ONE SERIES A FORTNIGHT (2 Nov). Harry Potter 2 and 3 are two titles, so
+   * the rules below let them come a few days apart (developer, 2 Nov). A
+   * title whose series was an answer within `FAMILY_DAYS` waits, unless that
+   * would leave nothing to ask.
+   */
+  const recent = new Set(
+    pinned.filter((p) => p.d !== day && Math.abs(daysBetween(p.d, day)) < FAMILY_DAYS).flatMap((p) => families(p.id)),
+  );
+  const spaced = pool.filter((id) => !near.has(id) && !families(id).some((f) => recent.has(f)));
+  const fresh = spaced.length ? spaced : pool.filter((id) => !near.has(id));
   /*
    * NEVER ASKED BEFORE COMES FIRST. The 60-day rule alone let a title come
    * back on day 61 while others in the library had never been asked at all
