@@ -35,8 +35,8 @@ import { FROZEN_BLUE, PuzzleMonths, StatsRow, levelColor, puzzleDay } from '@/co
 import { NavHeader, Screen, useDetailRouter } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
-import { MAX_TRIES, archiveDays, isFrozen, isKept, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
-import { applyStreakFreezes, firstPlayedDay, freezesLeft, loadHistory, puzzleTitles, repairableDays, repairStreak, resultsByDay, today } from '@/puzzle-data';
+import { MAX_TRIES, archiveDays, isFrozen, isKept, isMakeup, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
+import { applyStreakFreezes, firstPlayedDay, freezesLeft, isMakeupDay, loadHistory, puzzleTitles, repairableDays, repairStreak, resultsByDay, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
@@ -78,8 +78,10 @@ export default function PuzzleArchiveScreen() {
   const status = (r: Result | null): string =>
     r == null
       ? t('puzzlePolish.notPlayed')
-      : isFrozen(r)
-        ? t('puzzlePolish.frozen')
+      : isMakeup(r)
+        ? t('puzzlePolish.makeup')
+        : isFrozen(r)
+          ? t('puzzlePolish.frozen')
         : isKept(r)
           ? t('puzzlePolish.kept')
         : r.won
@@ -88,7 +90,8 @@ export default function PuzzleArchiveScreen() {
 
   const detail = useDetailRouter();
   const open = (d: string) => {
-    if (!requirePlus('puzzle.archive')) return;
+    // A make-up day is ours to give back: free, Plus or not.
+    if (!isMakeupDay(d) && !requirePlus('puzzle.archive')) return;
     detail.push(`/puzzle?day=${d}`);
   };
 
@@ -151,8 +154,10 @@ export default function PuzzleArchiveScreen() {
               onPress={() =>
                 locked
                   ? requirePlus('puzzle.history')
-                  : item.r && (isKept(item.r) || isFrozen(item.r))
-                    ? undefined // a kept day has no game to show
+                  : item.r && isMakeup(item.r)
+                    ? open(item.d)
+                    : item.r && (isKept(item.r) || isFrozen(item.r))
+                      ? undefined // a kept or frozen day has no game to show
                     : !played
                       ? open(item.d)
                       : router.push(item.d === day ? '/puzzle' : `/puzzle?view=${item.d}`)

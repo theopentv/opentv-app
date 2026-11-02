@@ -667,6 +667,15 @@ export const isKept = (r: Result): boolean => r.tries === 0;
 export const FROZEN_LEVEL = -3;
 export const isFrozen = (r: Result): boolean => r.tries < 0;
 
+/**
+ * A MAKE-UP DAY (2.2.2): frozen because of US — the app crashed and the day
+ * could not be played (L8X, Nov 2026). Granted from the server (tries -2). It
+ * holds the streak at once like any frozen day, and unlike one it can be
+ * played from the archive, free, with the result counting as that day's.
+ */
+export const MAKEUP_TRIES = -2;
+export const isMakeup = (r: Result): boolean => r.tries === MAKEUP_TRIES;
+
 /** Freezes a month: a missed day uses one by itself. */
 export const FREEZES_FREE = 1;
 export const FREEZES_PLUS = 3;

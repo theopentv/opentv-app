@@ -72,6 +72,7 @@ import {
   MAX_TRIES,
 } from '@/puzzle';
 import {
+  isMakeupDay,
   repairableDays,
   repairStreak,
   freezesLeft,
@@ -114,7 +115,8 @@ export default function PuzzleScreen() {
     const done = seen && seen <= now && historyUnlocked(seen, now, isPlus()) ? pastGame(seen) : null;
     if (seen && done) return { day: seen, archive: false, past: done };
     const asked = stamp(params.day);
-    return asked && asked < now && isPlus() ? { day: asked, archive: true, past: null } : { day: now, archive: false, past: null };
+    // A make-up day (ours to give back) opens for everybody, not only Plus.
+    return asked && asked < now && (isPlus() || isMakeupDay(asked)) ? { day: asked, archive: true, past: null } : { day: now, archive: false, past: null };
   });
   /** Read-only: a played day's result, nothing saved, no stats. */
   const view = past != null;

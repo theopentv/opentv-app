@@ -67,6 +67,7 @@ import {
   withPinned,
   withResult,
   withServerDays,
+  isMakeup,
   missedDays,
   withFrozen,
   FREEZES_FREE,
@@ -689,9 +690,16 @@ export async function pictureFor(a: Answer, day: string): Promise<string | null>
  * profile block — and republishes the block if it is placed. An archive
  * game goes into the archive's own record and nowhere else.
  */
+/** A day granted to be made up (`isMakeup`), still unplayed. */
+export function isMakeupDay(day: string): boolean {
+  return loadHistory().some((r) => r.d === day && isMakeup(r));
+}
+
 export function finishGame(g: Game, archive = false): void {
   saveGame(g, archive);
-  if (archive) {
+  // A make-up day is played from the archive but is that day's own game:
+  // its result replaces the ice in the history and counts like any other.
+  if (archive && !isMakeupDay(g.day)) {
     setMeta(K.archive, JSON.stringify(withResult(loadArchive(), resultOf(g))));
     return;
   }

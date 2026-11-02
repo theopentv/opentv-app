@@ -1933,6 +1933,7 @@ export type LocaleKey =
   | "puzzlePolish.avg"
   | "puzzlePolish.frozen"
   | "puzzlePolish.kept"
+  | "puzzlePolish.makeup"
   | "puzzlePolish.missed"
   | "puzzlePolish.needsPlus"
   | "puzzlePolish.notPlayed"
