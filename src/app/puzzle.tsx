@@ -41,14 +41,14 @@ import { Text } from '@/components/text';
 
 import { track } from '@/analytics';
 import { ActionSheet } from '@/components/action-sheet';
-import { StatsRow, puzzleDay } from '@/components/puzzle-block';
+import { FROZEN_BLUE, StatsRow, puzzleDay } from '@/components/puzzle-block';
 import { CLOSE_SQUARE, PuzzleShareCard, Squares } from '@/components/puzzle-share-card';
 import { ContentColumn, NavHeader, Screen, useDetailRouter, useScreenParams } from '@/components/ui';
 import { addShow, puzzleMemory } from '@/db';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
 import { syncEpisodeNotifications } from '@/notifications';
-import { isPlus } from '@/plus';
+import { isPlus, requirePlus } from '@/plus';
 import { movieRoute } from '@/pure';
 import {
   CLUES,
@@ -72,6 +72,8 @@ import {
   MAX_TRIES,
 } from '@/puzzle';
 import {
+  repairableDays,
+  repairStreak,
   freezesLeft,
   answerPool,
   cluesFor,
@@ -134,6 +136,16 @@ export default function PuzzleScreen() {
   const [picture, setPicture] = useState<string | null | undefined>(undefined);
   const [stats, setStats] = useState(currentStats);
   const [info, setInfo] = useState(() => streakInfo(day));
+  /* A BROKEN STREAK SAYS SO WHERE THE PLAYER IS (2.2.2): somebody who missed
+     a day opens the puzzle, not the archive, so the repair is offered here. */
+  const [repair, setRepair] = useState<number | null>(() => (archive || view ? null : repairableDays(day)));
+  const doRepair = () => {
+    if (!requirePlus('puzzle.repair')) return;
+    if (repairStreak(day)) {
+      setRepair(null);
+      setInfo(streakInfo(day));
+    }
+  };
   const [sharing, setSharing] = useState(false);
   const [query, setQuery] = useState('');
   const [added, setAdded] = useState(false);
@@ -375,6 +387,13 @@ export default function PuzzleScreen() {
           </View>
 
           {archive && <Text style={s.archiveNote}>{t('puzzlePolish.archiveNote')}</Text>}
+          {repair != null && (
+            <Pressable style={s.repair} onPress={doRepair} accessibilityRole="button">
+              <Text style={s.repairTitle}>❄️ {t('puzzleStreak.broken')}</Text>
+              <Text style={s.repairSub}>{t('puzzleStreak.repairSub')}</Text>
+              <Text style={s.repairCta}>{t('puzzleStreak.repair')}</Text>
+            </Pressable>
+          )}
           {!over ? (
             <>
               <View style={s.squares}>
@@ -577,6 +596,10 @@ export default function PuzzleScreen() {
 
 const s = StyleSheet.create({
   number: { color: colors.yellow, fontSize: 15, fontWeight: '800' },
+  repair: { marginHorizontal: space.lg, marginTop: 12, borderRadius: radius.card, borderWidth: 1.5, borderColor: FROZEN_BLUE, padding: 12, gap: 3 },
+  repairTitle: { color: colors.text, fontSize: 15, fontWeight: '800' },
+  repairSub: { color: colors.dim, fontSize: 12.5 },
+  repairCta: { color: FROZEN_BLUE, fontSize: 14, fontWeight: '800', marginTop: 4 },
   archiveNote: { color: colors.dim, fontSize: 12.5, textAlign: 'center', marginHorizontal: space.lg, marginTop: 12 },
   statsFrame: { marginHorizontal: space.lg, marginTop: 20 },
   streak: { color: colors.text, fontSize: 15, fontWeight: '600', textAlign: 'center', marginTop: 12 },

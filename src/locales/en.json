@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Streak freezes left this month: {{n}}",
     "repair": "Repair my streak",
     "repairSub": "Missed a day? Plus brings your streak back, once a month, within two days.",
-    "repaired": "Streak repaired"
+    "repaired": "Streak repaired",
+    "broken": "Your puzzle streak broke"
   },
   "puzzleIntro": {
     "howOne": "One title a day, picked from what you've watched.",

@@ -3928,7 +3928,8 @@
     "freezesLeft": "❄️ Zamrożenia w tym miesiącu: {{n}}",
     "repair": "Napraw moją serię",
     "repairSub": "Opuszczony dzień? Plus przywraca serię raz w miesiącu, w ciągu dwóch dni.",
-    "repaired": "Seria naprawiona"
+    "repaired": "Seria naprawiona",
+    "broken": "Twoja seria w zagadce się przerwała"
   },
   "puzzleIntro": {
     "howOne": "Jeden tytuł dziennie, wybrany z tego, co obejrzałeś.",

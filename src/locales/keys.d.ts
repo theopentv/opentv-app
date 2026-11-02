@@ -1960,6 +1960,7 @@ export type LocaleKey =
   | "puzzleReminders.sub"
   | "puzzleStreak.bannerKeep"
   | "puzzleStreak.bannerNew"
+  | "puzzleStreak.broken"
   | "puzzleStreak.days"
   | "puzzleStreak.freezesLeft"
   | "puzzleStreak.repair"

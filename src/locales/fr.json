@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Gels de série restants ce mois-ci : {{n}}",
     "repair": "Réparer ma série",
     "repairSub": "Un jour manqué ? Plus rétablit ta série, une fois par mois, sous deux jours.",
-    "repaired": "Série réparée"
+    "repaired": "Série réparée",
+    "broken": "Ta série de l'énigme s'est arrêtée"
   },
   "puzzleIntro": {
     "howOne": "Un titre par jour, choisi parmi ce que vous avez regardé.",

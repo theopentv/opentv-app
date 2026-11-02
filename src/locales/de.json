@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Serienschutz übrig diesen Monat: {{n}}",
     "repair": "Serie reparieren",
     "repairSub": "Einen Tag verpasst? Plus holt deine Serie zurück, einmal im Monat, binnen zwei Tagen.",
-    "repaired": "Serie repariert"
+    "repaired": "Serie repariert",
+    "broken": "Deine Rätsel-Serie ist gerissen"
   },
   "puzzleIntro": {
     "howOne": "Ein Titel pro Tag, ausgewählt aus dem, was du gesehen hast.",

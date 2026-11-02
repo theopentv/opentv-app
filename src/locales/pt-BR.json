@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Congelamentos restantes este mês: {{n}}",
     "repair": "Reparar minha sequência",
     "repairSub": "Perdeu um dia? O Plus traz sua sequência de volta, uma vez por mês, em até dois dias.",
-    "repaired": "Sequência reparada"
+    "repaired": "Sequência reparada",
+    "broken": "Sua sequência do enigma foi quebrada"
   },
   "puzzleIntro": {
     "howOne": "Um título por dia, escolhido entre o que você assistiu.",

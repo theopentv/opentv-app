@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Bu ay kalan seri dondurma: {{n}}",
     "repair": "Serimi onar",
     "repairSub": "Bir gün mü kaçırdın? Plus serini ayda bir, iki gün içinde geri getirir.",
-    "repaired": "Seri onarıldı"
+    "repaired": "Seri onarıldı",
+    "broken": "Bulmaca serin kırıldı"
   },
   "puzzleIntro": {
     "howOne": "Her gün izlediklerinden seçilen bir başlık.",

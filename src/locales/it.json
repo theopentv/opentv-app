@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Congelamenti rimasti questo mese: {{n}}",
     "repair": "Ripara la mia serie",
     "repairSub": "Saltato un giorno? Plus riporta la serie, una volta al mese, entro due giorni.",
-    "repaired": "Serie riparata"
+    "repaired": "Serie riparata",
+    "broken": "La serie dell'enigma si è interrotta"
   },
   "puzzleIntro": {
     "howOne": "Un titolo al giorno, scelto tra ciò che hai guardato.",

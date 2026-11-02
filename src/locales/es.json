@@ -3644,7 +3644,8 @@
     "freezesLeft": "❄️ Congelaciones restantes este mes: {{n}}",
     "repair": "Reparar mi racha",
     "repairSub": "¿Te saltaste un día? Plus recupera tu racha, una vez al mes, en dos días.",
-    "repaired": "Racha reparada"
+    "repaired": "Racha reparada",
+    "broken": "Tu racha del acertijo se rompió"
   },
   "puzzleIntro": {
     "howOne": "Un título al día, elegido entre lo que has visto.",
