@@ -117,7 +117,10 @@ export function librarySignature(): string {
   ];
   // the display name lives in meta, not a counted table — fold it in; the dirty
   // counter makes this exact (catches in-place edits the counts/sums would miss)
-  return parts.join('|') + `|u=${getMeta('username') ?? ''}` + `|d=${libraryDirtyRev()}`;
+  // The puzzle (2.2.2): a day played changes nothing above, so without this a
+  // backup would carry the streak only as of the last library change.
+  const puzzleDays = (getMeta('puzzle.history') ?? '').length;
+  return parts.join('|') + `|u=${getMeta('username') ?? ''}` + `|d=${libraryDirtyRev()}` + `|p=${puzzleDays}`;
 }
 
 /**
