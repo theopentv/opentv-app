@@ -1956,7 +1956,8 @@
       "communityHeading": "Se entri nella community",
       "backup": "Backup automatico della tua libreria su OpenTV",
       "sync": "La tua libreria sincronizzata su ogni dispositivo",
-      "calendar": "Le tue serie in un calendario tutto loro"
+      "calendar": "Le tue serie in un calendario tutto loro",
+      "streak": "3 congelamenti al mese per la serie dell'enigma, e una riparazione"
     },
     "monthly": "Mensile",
     "annual": "Annuale",
@@ -1999,7 +2000,9 @@
       "pictures": "Immagini e GIF nei commenti",
       "backup": "OpenTV Backup",
       "sync": "Sincronizzazione tra i tuoi dispositivi",
-      "calendar": "Gli episodi nel tuo calendario"
+      "calendar": "Gli episodi nel tuo calendario",
+      "freezes": "Congelamenti della serie al mese",
+      "repair": "Riparare una serie interrotta"
     },
     "settingsRow": "OpenTV Plus",
     "settingsSupporter": "Sostenitore",

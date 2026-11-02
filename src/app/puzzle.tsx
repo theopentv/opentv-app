@@ -72,6 +72,7 @@ import {
   MAX_TRIES,
 } from '@/puzzle';
 import {
+  freezesLeft,
   answerPool,
   cluesFor,
   currentStats,
@@ -472,6 +473,9 @@ export default function PuzzleScreen() {
                     <Text style={s.streakSub}>{t('puzzleHistory.started', { date: puzzleDay(info.start) })}</Text>
                   )}
                   {info.longest > 1 && <Text style={s.streakSub}>{t('puzzleHistory.longest', { count: info.longest })}</Text>}
+                  {/* The freezes (2.2.2): how many days this month a miss is
+                      covered by itself. Beside the streak they protect. */}
+                  <Text style={s.streakSub}>{t('puzzleStreak.freezesLeft', { n: freezesLeft(day) })}</Text>
                   {/* Every day played and what it was — the archive screen's
                       history, the last week free and the rest Plus. */}
                   <Pressable style={s.historyLink} onPress={() => detail.push('/puzzle-archive')} accessibilityRole="link" hitSlop={8}>

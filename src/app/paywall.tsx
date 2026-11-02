@@ -80,6 +80,8 @@ const BENEFITS = [
   { icon: 'flame-outline', key: 'plus.benefit.heatmap' },
   { icon: 'funnel-outline', key: 'plus.benefit.filters' },
   { icon: 'color-palette-outline', key: 'plus.benefit.themes' },
+  // 2.2.2: the daily puzzle's streak, kept through a busy week.
+  { icon: 'snow-outline', key: 'plus.benefit.streak' },
   /*
    * THE DIVIDER, AND WHY THE ORDER ABOVE IT CHANGED.
    *
@@ -140,6 +142,9 @@ const COMPARE: { key: Parameters<typeof t>[0]; free: string | null | true; plus:
   { key: 'plus.compare.heatmap', free: null, plus: true },
   { key: 'plus.compare.crowd', free: null, plus: true },
   { key: 'plus.compare.badge', free: null, plus: true },
+  // A freeze covers a missed puzzle day by itself; repair is Plus only.
+  { key: 'plus.compare.freezes', free: '1', plus: '3' },
+  { key: 'plus.compare.repair', free: null, plus: true },
 ];
 
 export default function PaywallScreen() {

@@ -1956,7 +1956,8 @@
       "communityHeading": "Si te unes a la comunidad",
       "backup": "Copia de seguridad automática de tu biblioteca en OpenTV",
       "sync": "Tu biblioteca sincronizada en todos tus dispositivos",
-      "calendar": "Tus series en su propio calendario"
+      "calendar": "Tus series en su propio calendario",
+      "streak": "3 congelaciones al mes para la racha del acertijo, y una reparación"
     },
     "monthly": "Mensual",
     "annual": "Anual",
@@ -1999,7 +2000,9 @@
       "pictures": "Imágenes y GIF en los comentarios",
       "backup": "OpenTV Backup",
       "sync": "Sincronización entre tus dispositivos",
-      "calendar": "Los episodios en tu calendario"
+      "calendar": "Los episodios en tu calendario",
+      "freezes": "Congelaciones de racha al mes",
+      "repair": "Reparar una racha rota"
     },
     "settingsRow": "OpenTV Plus",
     "settingsSupporter": "Mecenas",

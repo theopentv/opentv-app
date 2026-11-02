@@ -2080,7 +2080,8 @@
       "communityHeading": "Jeśli dołączysz do społeczności",
       "backup": "Automatyczna kopia zapasowa biblioteki w OpenTV",
       "sync": "Biblioteka zsynchronizowana na każdym urządzeniu",
-      "calendar": "Twoje seriale we własnym kalendarzu"
+      "calendar": "Twoje seriale we własnym kalendarzu",
+      "streak": "3 zamrożenia serii zagadki w miesiącu i naprawa serii"
     },
     "monthly": "Miesięcznie",
     "annual": "Rocznie",
@@ -2123,7 +2124,9 @@
       "pictures": "Zdjęcia i GIF-y w komentarzach",
       "backup": "OpenTV Backup",
       "sync": "Synchronizacja między urządzeniami",
-      "calendar": "Odcinki w Twoim kalendarzu"
+      "calendar": "Odcinki w Twoim kalendarzu",
+      "freezes": "Zamrożenia serii w miesiącu",
+      "repair": "Naprawa przerwanej serii"
     },
     "settingsRow": "OpenTV Plus",
     "settingsSupporter": "Wspierający",

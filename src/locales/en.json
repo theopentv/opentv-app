@@ -1956,7 +1956,8 @@
       "communityHeading": "If you join the community",
       "backup": "Back up your library to OpenTV, automatically",
       "sync": "Your library in sync on every device",
-      "calendar": "Your shows in a calendar of their own"
+      "calendar": "Your shows in a calendar of their own",
+      "streak": "3 puzzle streak freezes a month, and a streak repair"
     },
     "monthly": "Monthly",
     "annual": "Annual",
@@ -1999,7 +2000,9 @@
       "pictures": "Pictures and GIFs on comments",
       "backup": "OpenTV Backup",
       "sync": "Sync between your devices",
-      "calendar": "Episodes in your calendar"
+      "calendar": "Episodes in your calendar",
+      "freezes": "Puzzle streak freezes a month",
+      "repair": "Repair a broken puzzle streak"
     },
     "settingsRow": "OpenTV Plus",
     "settingsSupporter": "Supporter",

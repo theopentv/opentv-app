@@ -1956,7 +1956,8 @@
       "communityHeading": "Topluluğa katılırsan",
       "backup": "Kitaplığını otomatik olarak OpenTV'ye yedekle",
       "sync": "Kitaplığın tüm cihazlarında senkronize",
-      "calendar": "Dizilerin kendi takviminde"
+      "calendar": "Dizilerin kendi takviminde",
+      "streak": "Bulmaca serisi için ayda 3 dondurma ve bir onarım"
     },
     "monthly": "Aylık",
     "annual": "Yıllık",
@@ -1999,7 +2000,9 @@
       "pictures": "Yorumlarda resim ve GIF",
       "backup": "OpenTV Yedekleme",
       "sync": "Cihazların arasında senkronizasyon",
-      "calendar": "Takviminde bölümler"
+      "calendar": "Takviminde bölümler",
+      "freezes": "Aylık seri dondurma",
+      "repair": "Kırılan seriyi onarma"
     },
     "settingsRow": "OpenTV Plus",
     "settingsSupporter": "Destekçi",

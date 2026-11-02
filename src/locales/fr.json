@@ -1956,7 +1956,8 @@
       "communityHeading": "Si vous rejoignez la communauté",
       "backup": "Sauvegarde automatique de votre bibliothèque sur OpenTV",
       "sync": "Votre bibliothèque synchronisée sur tous vos appareils",
-      "calendar": "Vos séries dans leur propre calendrier"
+      "calendar": "Vos séries dans leur propre calendrier",
+      "streak": "3 gels de série de l'énigme par mois, et une réparation de série"
     },
     "monthly": "Mensuel",
     "annual": "Annuel",
@@ -1999,7 +2000,9 @@
       "pictures": "Images et GIF dans les commentaires",
       "backup": "OpenTV Backup",
       "sync": "Synchronisation entre vos appareils",
-      "calendar": "Les épisodes dans votre calendrier"
+      "calendar": "Les épisodes dans votre calendrier",
+      "freezes": "Gels de série par mois",
+      "repair": "Réparer une série cassée"
     },
     "settingsRow": "OpenTV Plus",
     "settingsSupporter": "Soutien",
