@@ -35,7 +35,7 @@ import { PuzzleMonths, StatsRow, levelColor, puzzleDay } from '@/components/puzz
 import { NavHeader, Screen, useDetailRouter } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
-import { MAX_TRIES, archiveDays, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
+import { MAX_TRIES, archiveDays, isKept, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
 import { firstPlayedDay, loadHistory, puzzleTitles, resultsByDay, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
@@ -74,7 +74,9 @@ export default function PuzzleArchiveScreen() {
   const status = (r: Result | null): string =>
     r == null
       ? t('puzzlePolish.notPlayed')
-      : r.won
+      : isKept(r)
+        ? t('puzzlePolish.kept')
+        : r.won
         ? t('puzzlePolish.solvedIn', { score: `${r.tries}/${MAX_TRIES}` })
         : t('puzzlePolish.missed');
 
@@ -126,14 +128,16 @@ export default function PuzzleArchiveScreen() {
               onPress={() =>
                 locked
                   ? requirePlus('puzzle.history')
-                  : !played
-                    ? open(item.d)
-                    : router.push(item.d === day ? '/puzzle' : `/puzzle?view=${item.d}`)
+                  : item.r && isKept(item.r)
+                    ? undefined // a kept day has no game to show
+                    : !played
+                      ? open(item.d)
+                      : router.push(item.d === day ? '/puzzle' : `/puzzle?view=${item.d}`)
               }
               accessibilityRole="button"
               accessibilityLabel={`#${item.n}, ${longDay(item.d)}, ${line}`}
               accessibilityHint={(!played || locked) && !plus ? t('puzzlePolish.needsPlus') : undefined}>
-              <View style={[s.square, item.r ? { backgroundColor: levelColor(winLevel(item.r)) } : s.squareEmpty]} />
+              <View style={[s.square, !item.r ? s.squareEmpty : isKept(item.r) ? s.squareKept : { backgroundColor: levelColor(winLevel(item.r)) }]} />
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={s.title} numberOfLines={1}>
                   #{item.n} <Text style={s.date}>· {longDay(item.d)}</Text>
@@ -177,6 +181,7 @@ const s = StyleSheet.create({
   },
   square: { width: 26, height: 26, borderRadius: 7 },
   squareEmpty: { borderWidth: 1.5, borderColor: colors.liftStrong },
+  squareKept: { borderWidth: 2, borderColor: colors.green },
   title: { color: colors.text, fontSize: 16, fontWeight: '800' },
   date: { color: colors.dim, fontWeight: '600' },
   status: { color: colors.dim, fontSize: 13 },

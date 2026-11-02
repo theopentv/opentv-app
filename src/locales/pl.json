@@ -3953,6 +3953,7 @@
     "notPlayed": "Nierozegrana",
     "solvedIn": "Rozwiązane w {{score}}",
     "missed": "Pominięta",
+    "kept": "Zachowany · wynik niezapisany",
     "archiveNote": "Z archiwum. Nie liczy się do twoich statystyk.",
     "needsPlus": "Wymaga Plus",
     "shareTitle": "Udostępnij wynik",

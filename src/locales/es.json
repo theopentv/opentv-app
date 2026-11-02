@@ -3669,6 +3669,7 @@
     "notPlayed": "Sin jugar",
     "solvedIn": "Resuelto en {{score}}",
     "missed": "Fallado",
+    "kept": "Conservado · resultado no guardado",
     "archiveNote": "Del archivo. No cuenta para tus estadísticas.",
     "needsPlus": "Requiere Plus",
     "shareTitle": "Comparte tu resultado",

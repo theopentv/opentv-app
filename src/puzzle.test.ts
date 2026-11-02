@@ -4,6 +4,7 @@
  * posted by a thousand people.
  */
 import {
+  KEPT_LEVEL,
   withBackupDays,
   withServerDays,
   RESTORED_ID,
@@ -221,11 +222,11 @@ describe('history and the month of squares', () => {
     expect(parsePublicPuzzle('x')).toBeNull();
     expect(parsePublicPuzzle({})).toEqual({ days: [], stats: null });
     // A value from before 14 Oct: the streak is ignored, and there are no stats.
-    // Levels clamp to -1 (a close loss) … 6.
+    // Levels clamp to -2 (a kept day, 2.2.2) … 6.
     expect(parsePublicPuzzle({ n: 3.7, days: [['2026-11-02', 9], ['bad', 1], [1, 2], ['2026-11-03', -3]] })).toEqual({
       days: [
         ['2026-11-02', 6],
-        ['2026-11-03', -1],
+        ['2026-11-03', -2],
       ],
       stats: null,
     });
@@ -650,7 +651,7 @@ describe('right series, wrong part', () => {
     expect(publicPuzzle([resultOf(lost)], '2026-11').days).toEqual([['2026-11-03', CLOSE_LEVEL]]);
     expect(parsePublicPuzzle({ days: [['2026-11-03', -1], ['2026-11-04', -7]] })?.days).toEqual([
       ['2026-11-03', CLOSE_LEVEL],
-      ['2026-11-04', CLOSE_LEVEL],
+      ['2026-11-04', KEPT_LEVEL],
     ]);
   });
 
@@ -832,5 +833,15 @@ describe('days back from a backup', () => {
     const out = withBackupDays(here, backup);
     expect(out).toEqual([backup[0], here[0]]);
     expect(withBackupDays(here, [])).toBe(here);
+  });
+});
+
+describe('a kept day', () => {
+  it('holds the streak, draws apart, and stays out of the numbers', () => {
+    const kept = { d: '2026-11-01', id: RESTORED_ID, tries: 0, won: true };
+    const real = { d: '2026-11-02', id: 42, tries: 2, won: true };
+    expect(winLevel(kept)).toBe(KEPT_LEVEL);
+    expect(puzzleStreak([kept, real], '2026-11-02')).toBe(2);
+    expect(puzzleStats([kept, real])).toEqual({ played: 1, win: 100, avg: 2 });
   });
 });

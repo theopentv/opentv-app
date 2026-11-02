@@ -616,7 +616,19 @@ export function withResult(history: readonly Result[], r: Result): Result[] {
  */
 export const CLOSE_LEVEL = -1;
 
+/**
+ * -2 (2.2.2): a day kept rather than scored. Played, so it holds the streak,
+ * but how it went is unknown: L8X's days from before the server kept any,
+ * put back by hand after our crash cost him them. Like Duolingo's frozen
+ * day, it is drawn apart (an outline, not a shade of green) and left out of
+ * the three numbers. A real game never has 0 tries, so 0 is the mark.
+ */
+export const KEPT_LEVEL = -2;
+
+export const isKept = (r: Result): boolean => r.tries === 0;
+
 export function winLevel(r: Result): number {
+  if (isKept(r)) return KEPT_LEVEL;
   if (r.won) return Math.max(1, MAX_TRIES + 1 - r.tries);
   return r.close ? CLOSE_LEVEL : 0;
 }
@@ -635,7 +647,9 @@ export function winLevel(r: Result): number {
  */
 export type Stats = { played: number; win: number; avg: number | null };
 
-export function puzzleStats(history: readonly Result[]): Stats {
+export function puzzleStats(all: readonly Result[]): Stats {
+  // A kept day has no result to count.
+  const history = all.filter((r) => !isKept(r));
   const wins = history.filter((r) => r.won);
   const played = history.length;
   return {
@@ -779,7 +793,7 @@ export function parsePublicPuzzle(v: unknown): PublicPuzzle | null {
     for (const item of o.days) {
       if (!Array.isArray(item) || typeof item[0] !== 'string' || typeof item[1] !== 'number') continue;
       if (!/^\d{4}-\d{2}-\d{2}$/.test(item[0])) continue;
-      days.push([item[0], Math.min(MAX_TRIES, Math.max(CLOSE_LEVEL, Math.floor(item[1])))]);
+      days.push([item[0], Math.min(MAX_TRIES, Math.max(KEPT_LEVEL, Math.floor(item[1])))]);
     }
   }
   const st = o.stats as Partial<Record<keyof Stats, unknown>> | null | undefined;

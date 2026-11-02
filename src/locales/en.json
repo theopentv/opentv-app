@@ -3669,6 +3669,7 @@
     "notPlayed": "Not played",
     "solvedIn": "Solved in {{score}}",
     "missed": "Missed",
+    "kept": "Kept · result not saved",
     "archiveNote": "From the archive. It doesn't count towards your stats.",
     "needsPlus": "Needs Plus",
     "shareTitle": "Share your result",

@@ -33,7 +33,7 @@ import { CLOSE_SQUARE } from '@/components/puzzle-share-card';
 import { currentLocale, fmtDecimal, t } from '@/i18n';
 import { formatPeriod, intlTag } from '@/locale-resolve';
 import type { WidgetSpan } from '@/profile-layout';
-import { MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
+import { KEPT_LEVEL, MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
 import { calendarMonth, mixHex, shiftMonth } from '@/pure';
 import { ACCENTS, colors, ls } from '@/theme';
 
@@ -111,7 +111,7 @@ function MonthGrid({ weeks, levels, today, cell }: { weeks: (string | null)[][];
                 key={day}
                 style={[
                   { width: cell, height: cell, borderRadius: radius },
-                  level == null ? s.empty : { backgroundColor: levelColor(level) },
+                  level == null ? s.empty : level === KEPT_LEVEL ? s.kept : { backgroundColor: levelColor(level) },
                   day === today && s.today,
                 ]}
               />
@@ -249,6 +249,9 @@ const s = StyleSheet.create({
   /* A hollow cell: an edge in both themes (`liftStrong` darkens on paper and
      lightens on black), so "not played" can never be mistaken for a colour. */
   empty: { borderWidth: 1, borderColor: colors.liftStrong },
+  // A kept day (2.2.2): played, result unknown. The green outline says
+  // "counted" without claiming a score.
+  kept: { borderWidth: 2, borderColor: colors.green },
   future: { borderWidth: 1, borderColor: colors.lift },
   today: { borderWidth: 1.5, borderColor: colors.text },
   monthHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

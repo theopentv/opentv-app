@@ -4237,6 +4237,7 @@
     "notPlayed": "لم تلعبه",
     "solvedIn": "حُلّ في {{score}}",
     "missed": "لم يُحلّ",
+    "kept": "محفوظ · النتيجة غير محفوظة",
     "archiveNote": "من الأرشيف. لا يُحسب في إحصاءاتك.",
     "needsPlus": "يتطلب Plus",
     "shareTitle": "شارك نتيجتك",

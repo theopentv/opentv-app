@@ -3669,6 +3669,7 @@
     "notPlayed": "Oynanmadı",
     "solvedIn": "Çözüldü: {{score}}",
     "missed": "Bilinemedi",
+    "kept": "Korundu · sonuç kaydedilmedi",
     "archiveNote": "Arşivden. İstatistiklerine sayılmaz.",
     "needsPlus": "Plus gerekir",
     "shareTitle": "Sonucunu paylaş",

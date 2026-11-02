@@ -1928,6 +1928,7 @@ export type LocaleKey =
   | "puzzlePolish.archiveSub"
   | "puzzlePolish.archiveTitle"
   | "puzzlePolish.avg"
+  | "puzzlePolish.kept"
   | "puzzlePolish.missed"
   | "puzzlePolish.needsPlus"
   | "puzzlePolish.notPlayed"

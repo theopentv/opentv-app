@@ -70,6 +70,7 @@ Both stores. Needs the backend's `GET /v1/puzzle/played` (backend cc38396) deplo
 
 - **A reinstall no longer costs the streak.** The streak is counted from `puzzle.history` on the phone; L8X cleared data and reinstalled to escape the 2.2.1 crash and lost his. Since 2.2.0 every finished day is reported (`reportPlayed`, kept 90 days); on launch `restorePuzzleDays` asks for them and `withServerDays` fills only the gaps (a day the phone has always wins). A restored day carries `RESTORED_ID` (0) as its answer: it counts for the streak and the squares, is never pinned, and `pastGame` shows nothing for it. L8X's own days predate 2.2.0 and were never reported: insert them by hand into `puzzle_days` from what he says.
 - **The streak is in the backup too.** `_opentv_extras.json` now carries `puzzle.history` and `puzzle.archive` (with their real answers); `importZipBytes` folds them back with `withBackupDays` (the phone's own day wins), so iCloud, Google Drive and manual restores all keep it.
+- **A kept day is drawn apart, like Duolingo's frozen day.** A day with no saved result (tries 0, `KEPT_LEVEL` -2: L8X's hand-restored days) holds the streak but is a green outline in the month grid and the archive, reads "Kept · result not saved", cannot be opened, and stays out of played / win % / average. Days restored from the server or a backup keep their real result and colour.
 - **iOS ships it as well:** 2.2.2 build 111 replaces 2.2.0 (110) in review; MARKETING_VERSION 2.2.2 in the pbxproj.
 
 ## 2.2.1 — Android: taps that crashed the app (2 Nov)
