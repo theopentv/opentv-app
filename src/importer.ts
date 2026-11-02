@@ -39,6 +39,7 @@ import db, { dedupeDuplicateMovies, dedupeDuplicateShows, deletedMovieNames, del
 import { withImportLock } from '@/import-lock';
 import { ratingFromStars, ratingFromTen } from '@/star-rating';
 import { notesFromSidecar } from '@/notes-pure';
+import { parseHistory, withBackupDays } from '@/puzzle';
 import { effectiveEpisodesSeen, episodeKey, foundCsvsMessage, isRawJsonBackup, listPlaceholderName, RAW_JSON_BACKUP, NOTHING_READ, SIMKL_CSV, isSimklCsv, orderImportedLists, parseCsv, shouldBulkFill, tvtimeSignIn, uniqueListName, v1WatchIsStale } from '@/pure';
 import { lookupWithRetry, tmdb, pool } from '@/tmdb';
 import { fetchToDocuments } from '@/fetch-to-documents';
@@ -855,6 +856,8 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     epScale?: number;
     /** Private notes, 2.0.0 on. Checked row by row by `notesFromSidecar`. */
     notes?: unknown;
+    /** The daily puzzle's days, 2.2.2 on. Re-checked by `parseHistory`. */
+    puzzle?: { history?: unknown; archive?: unknown };
   };
   let extras: Extras = {};
   try {
@@ -2365,6 +2368,22 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       ex.episode,
       ten,
     ]);
+  }
+  // THE PUZZLE STREAK (2.2.2) comes back with the backup. A day this phone
+  // already has wins, so restoring an old backup never rewrites a game.
+  for (const key of ['history', 'archive'] as const) {
+    const fromBackup = parseHistory(extras.puzzle?.[key]);
+    if (!fromBackup.length) continue;
+    const metaKey = `puzzle.${key}`;
+    let here: unknown = null;
+    try {
+      here = JSON.parse(getMeta(metaKey) ?? 'null');
+    } catch {
+      here = null;
+    }
+    const before = parseHistory(here);
+    const after = withBackupDays(before, fromBackup);
+    if (after !== before) setMeta(metaKey, JSON.stringify(after));
   }
   // Private notes come back only from our own sidecar. A merge never
   // overwrites a note already on this phone — it may be newer than the backup.

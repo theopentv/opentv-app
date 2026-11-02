@@ -4,6 +4,7 @@
  * posted by a thousand people.
  */
 import {
+  withBackupDays,
   withServerDays,
   RESTORED_ID,
   gameOfResult,
@@ -818,5 +819,18 @@ describe('days back from the server', () => {
   it('returns the same history when nothing is missing', () => {
     const h = [mine];
     expect(withServerDays(h, [{ day: '2026-11-02', won: true, tries: 1 }])).toBe(h);
+  });
+});
+
+describe('days back from a backup', () => {
+  it('adds the backup\'s days with their answers, and the phone\'s own day wins', () => {
+    const here = [{ d: '2026-11-02', id: 42, tries: 1, won: true }];
+    const backup = [
+      { d: '2026-11-01', id: 7, tries: 4, won: true },
+      { d: '2026-11-02', id: 9, tries: 6, won: false },
+    ];
+    const out = withBackupDays(here, backup);
+    expect(out).toEqual([backup[0], here[0]]);
+    expect(withBackupDays(here, [])).toBe(here);
   });
 });

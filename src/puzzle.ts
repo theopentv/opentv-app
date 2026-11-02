@@ -592,6 +592,15 @@ export function withServerDays(
     .slice(-HISTORY_MAX);
 }
 
+/** A backup's days (iCloud / Google Drive / export ZIP) folded into this
+ *  phone's, the same rule as the server's: a day the phone has wins. */
+export function withBackupDays(history: readonly Result[], backup: readonly Result[]): readonly Result[] {
+  const have = new Set(history.map((r) => r.d));
+  const missing = backup.filter((r) => !have.has(r.d));
+  if (!missing.length) return history;
+  return [...history, ...missing].sort((a, b) => a.d.localeCompare(b.d)).slice(-HISTORY_MAX);
+}
+
 export function withResult(history: readonly Result[], r: Result): Result[] {
   return [...history.filter((h) => h.d !== r.d), r].sort((a, b) => a.d.localeCompare(b.d)).slice(-HISTORY_MAX);
 }

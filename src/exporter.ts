@@ -57,6 +57,15 @@ function documentBytes(name: string | null | undefined): Uint8Array | null {
  * for that, because notes are promised never to reach our server. Every other
  * destination (iCloud, Drive, WebDAV, the share sheet) is the user's own.
  */
+/** A JSON value kept in `meta`, or null when absent or broken. */
+function parseStored(v: string | null): unknown {
+  try {
+    return v ? (JSON.parse(v) as unknown) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint8Array {
   const uid = getMeta('tvtimeUserId') ?? '0';
   const username = getMeta('username') ?? 'opentv-user';
@@ -504,6 +513,12 @@ export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint
       // `movies[].stars` is out of ten. Without this a restore cannot tell a
       // 2.0.0 backup's 4 (two stars) from an older one's 4 (four stars).
       movieScale: 10,
+      // The daily puzzle's days (2.2.2), so a restored backup keeps the
+      // streak. Raw, as `puzzle-data` stores them; the importer re-checks.
+      puzzle: {
+        history: parseStored(getMeta('puzzle.history')),
+        archive: parseStored(getMeta('puzzle.archive')),
+      },
       // The same for `epStars`, its own key: a backup made between the film
       // and the episode change has `movieScale` and whole episode stars.
       epScale: 10,
