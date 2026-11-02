@@ -67,6 +67,11 @@ import {
   withPinned,
   withResult,
   withServerDays,
+  missedDays,
+  withFrozen,
+  FREEZES_FREE,
+  FREEZES_PLUS,
+  REPAIR_DAYS,
   seriesKey,
   RESTORED_ID,
   type Clues,
@@ -86,6 +91,10 @@ const K = {
   off: 'puzzle.off',
   game: 'puzzle.game',
   history: 'puzzle.history',
+  /** Streak freezes used: `{ m: 'YYYY-MM', used }` (2.2.2). */
+  freezes: 'puzzle.freezes',
+  /** The month a Plus repair was last used, 'YYYY-MM'. */
+  repair: 'puzzle.repair',
   /** Every day ever opened and its answer — `Pinned`. */
   answers: 'puzzle.answers',
   /** Archive results, kept APART from the history so they never move the
@@ -729,16 +738,65 @@ export async function restorePuzzleDays(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { api } = require('@/api') as typeof import('@/api');
     const token = await getToken();
-    if (!token) return;
-    const res = await api<{ days?: { day: string; won: boolean; tries: number }[] }>('/v1/puzzle/played', { token });
+    const res = token ? await api<{ days?: { day: string; won: boolean; tries: number }[] }>('/v1/puzzle/played', { token }) : null;
     const before = loadHistory();
     const after = withServerDays(before, res?.days ?? []);
-    if (after === before) return;
-    setMeta(K.history, JSON.stringify(after));
-    void republishPuzzleBlock();
+    if (after !== before) {
+      setMeta(K.history, JSON.stringify(after));
+      void republishPuzzleBlock();
+    }
   } catch {
     // Offline, or an old server: the streak just stays as it was.
   }
+  // After the server's days, so a freeze is never spent on a day it gives back.
+  applyStreakFreezes();
+}
+
+/*
+ * STREAK FREEZE AND REPAIR (2.2.2), after Duolingo's: a missed day is covered
+ * by a freeze by itself (one a month, three with Plus), so a busy day does not
+ * cost months of streak. A break the freezes could not cover can be repaired
+ * by Plus once a month, within two missed days. A covered day is frozen: it
+ * holds the streak and is never a result (`isFrozen`).
+ */
+function freezesUsed(month: string): number {
+  const u = parse<{ m?: string; used?: number }>(K.freezes);
+  return u?.m === month && typeof u.used === 'number' ? u.used : 0;
+}
+
+export function freezesLeft(day = today()): number {
+  return Math.max(0, (isPlus() ? FREEZES_PLUS : FREEZES_FREE) - freezesUsed(day.slice(0, 7)));
+}
+
+/** Covers the days missed since the last one played, if the freezes left
+ *  cover them all. Run on launch (after the server's days are back) and when
+ *  the puzzle opens. Returns how many days it froze. */
+export function applyStreakFreezes(day = today()): number {
+  const h = loadHistory();
+  const miss = missedDays(h, day);
+  if (!miss.length || miss.length > freezesLeft(day)) return 0;
+  const month = day.slice(0, 7);
+  setMeta(K.history, JSON.stringify(withFrozen(h, miss)));
+  setMeta(K.freezes, JSON.stringify({ m: month, used: freezesUsed(month) + miss.length }));
+  void republishPuzzleBlock();
+  return miss.length;
+}
+
+/** The days a repair would cover now, or null: a streak broken within
+ *  `REPAIR_DAYS` days, and no repair yet this month. Shown to everybody (a
+ *  free tap goes to the paywall); only Plus can use it. */
+export function repairableDays(day = today()): number | null {
+  const miss = missedDays(loadHistory(), day);
+  if (!miss.length || miss.length > REPAIR_DAYS || getMeta(K.repair) === day.slice(0, 7)) return null;
+  return miss.length;
+}
+
+export function repairStreak(day = today()): boolean {
+  if (!isPlus() || repairableDays(day) == null) return false;
+  setMeta(K.history, JSON.stringify(withFrozen(loadHistory(), missedDays(loadHistory(), day))));
+  setMeta(K.repair, day.slice(0, 7));
+  void republishPuzzleBlock();
+  return true;
 }
 
 /** Played, win %, average tries — today's games only, never the archive's. */

@@ -3637,7 +3637,11 @@
     "bannerKeep": {
       "one": "Le puzzle du jour est prêt — gardez votre série de {{count}} jour",
       "other": "Le puzzle du jour est prêt — gardez votre série de {{count}} jours"
-    }
+    },
+    "freezesLeft": "❄️ Gels de série restants ce mois-ci : {{n}}",
+    "repair": "Réparer ma série",
+    "repairSub": "Un jour manqué ? Plus rétablit ta série, une fois par mois, sous deux jours.",
+    "repaired": "Série réparée"
   },
   "puzzleIntro": {
     "howOne": "Un titre par jour, choisi parmi ce que vous avez regardé.",
@@ -3671,6 +3675,7 @@
     "solvedIn": "Trouvé en {{score}}",
     "missed": "Raté",
     "kept": "Conservé · résultat non enregistré",
+    "frozen": "Gelé ❄️ · série conservée",
     "archiveNote": "Des archives. Ne compte pas dans vos statistiques.",
     "needsPlus": "Nécessite Plus",
     "shareTitle": "Partager votre résultat",

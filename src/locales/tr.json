@@ -3637,7 +3637,11 @@
     "bannerKeep": {
       "one": "Bugünün bulmacası hazır — {{count}} günlük serini sürdür",
       "other": "Bugünün bulmacası hazır — {{count}} günlük serini sürdür"
-    }
+    },
+    "freezesLeft": "❄️ Bu ay kalan seri dondurma: {{n}}",
+    "repair": "Serimi onar",
+    "repairSub": "Bir gün mü kaçırdın? Plus serini ayda bir, iki gün içinde geri getirir.",
+    "repaired": "Seri onarıldı"
   },
   "puzzleIntro": {
     "howOne": "Her gün izlediklerinden seçilen bir başlık.",
@@ -3671,6 +3675,7 @@
     "solvedIn": "Çözüldü: {{score}}",
     "missed": "Bilinemedi",
     "kept": "Korundu · sonuç kaydedilmedi",
+    "frozen": "Donduruldu ❄️ · seri korundu",
     "archiveNote": "Arşivden. İstatistiklerine sayılmaz.",
     "needsPlus": "Plus gerekir",
     "shareTitle": "Sonucunu paylaş",

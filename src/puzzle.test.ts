@@ -4,6 +4,10 @@
  * posted by a thousand people.
  */
 import {
+  missedDays,
+  withFrozen,
+  isFrozen,
+  FROZEN_LEVEL,
   seriesKey,
   KEPT_LEVEL,
   withBackupDays,
@@ -223,11 +227,11 @@ describe('history and the month of squares', () => {
     expect(parsePublicPuzzle('x')).toBeNull();
     expect(parsePublicPuzzle({})).toEqual({ days: [], stats: null });
     // A value from before 14 Oct: the streak is ignored, and there are no stats.
-    // Levels clamp to -2 (a kept day, 2.2.2) … 6.
+    // Levels clamp to -3 (a frozen day, 2.2.2) … 6.
     expect(parsePublicPuzzle({ n: 3.7, days: [['2026-11-02', 9], ['bad', 1], [1, 2], ['2026-11-03', -3]] })).toEqual({
       days: [
         ['2026-11-02', 6],
-        ['2026-11-03', -2],
+        ['2026-11-03', -3],
       ],
       stats: null,
     });
@@ -652,7 +656,7 @@ describe('right series, wrong part', () => {
     expect(publicPuzzle([resultOf(lost)], '2026-11').days).toEqual([['2026-11-03', CLOSE_LEVEL]]);
     expect(parsePublicPuzzle({ days: [['2026-11-03', -1], ['2026-11-04', -7]] })?.days).toEqual([
       ['2026-11-03', CLOSE_LEVEL],
-      ['2026-11-04', KEPT_LEVEL],
+      ['2026-11-04', FROZEN_LEVEL],
     ]);
   });
 
@@ -865,5 +869,25 @@ describe('one series a fortnight', () => {
       expect(pickAnswer(day, lib, [], pinned, families)).not.toBe('m:3');
     }
     expect(pickAnswer('2026-11-05', ['m:2', 'm:3'], [], pinned, families)).toBe('m:3');
+  });
+});
+
+describe('streak freezes', () => {
+  const h = [
+    { d: '2026-10-30', id: 1, tries: 2, won: true },
+    { d: '2026-10-31', id: 2, tries: 3, won: true },
+  ];
+  it('finds the days missed since the last one, and never today', () => {
+    expect(missedDays(h, '2026-11-01')).toEqual([]);
+    expect(missedDays(h, '2026-11-02')).toEqual(['2026-11-01']);
+    expect(missedDays(h, '2026-11-03')).toEqual(['2026-11-01', '2026-11-02']);
+    expect(missedDays([], '2026-11-03')).toEqual([]);
+  });
+  it('a frozen day holds the streak, is ice, and is no result', () => {
+    const out = withFrozen(h, ['2026-11-01']);
+    expect(puzzleStreak(out, '2026-11-02')).toBe(3);
+    expect(isFrozen(out[2]!)).toBe(true);
+    expect(winLevel(out[2]!)).toBe(FROZEN_LEVEL);
+    expect(puzzleStats(out).played).toBe(2);
   });
 });

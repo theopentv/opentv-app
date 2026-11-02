@@ -3637,7 +3637,11 @@
     "bannerKeep": {
       "one": "El puzzle de hoy está listo — mantén tu racha de {{count}} día",
       "other": "El puzzle de hoy está listo — mantén tu racha de {{count}} días"
-    }
+    },
+    "freezesLeft": "❄️ Congelaciones restantes este mes: {{n}}",
+    "repair": "Reparar mi racha",
+    "repairSub": "¿Te saltaste un día? Plus recupera tu racha, una vez al mes, en dos días.",
+    "repaired": "Racha reparada"
   },
   "puzzleIntro": {
     "howOne": "Un título al día, elegido entre lo que has visto.",
@@ -3671,6 +3675,7 @@
     "solvedIn": "Resuelto en {{score}}",
     "missed": "Fallado",
     "kept": "Conservado · resultado no guardado",
+    "frozen": "Congelado ❄️ · racha a salvo",
     "archiveNote": "Del archivo. No cuenta para tus estadísticas.",
     "needsPlus": "Requiere Plus",
     "shareTitle": "Comparte tu resultado",

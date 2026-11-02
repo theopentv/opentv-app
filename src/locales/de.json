@@ -3637,7 +3637,11 @@
     "bannerKeep": {
       "one": "Das heutige Rätsel ist bereit — halte deine Serie von {{count}} Tag",
       "other": "Das heutige Rätsel ist bereit — halte deine Serie von {{count}} Tagen"
-    }
+    },
+    "freezesLeft": "❄️ Serienschutz übrig diesen Monat: {{n}}",
+    "repair": "Serie reparieren",
+    "repairSub": "Einen Tag verpasst? Plus holt deine Serie zurück, einmal im Monat, binnen zwei Tagen.",
+    "repaired": "Serie repariert"
   },
   "puzzleIntro": {
     "howOne": "Ein Titel pro Tag, ausgewählt aus dem, was du gesehen hast.",
@@ -3671,6 +3675,7 @@
     "solvedIn": "Gelöst in {{score}}",
     "missed": "Verpasst",
     "kept": "Behalten · Ergebnis nicht gespeichert",
+    "frozen": "Eingefroren ❄️ · Serie bleibt",
     "archiveNote": "Aus dem Archiv. Zählt nicht für deine Statistiken.",
     "needsPlus": "Braucht Plus",
     "shareTitle": "Teil dein Ergebnis",

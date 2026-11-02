@@ -659,7 +659,39 @@ export const KEPT_LEVEL = -2;
 
 export const isKept = (r: Result): boolean => r.tries === 0;
 
+/**
+ * -3 (2.2.2): a frozen day. Not played at all, but a streak freeze (one a
+ * month, three with Plus) or a Plus repair covered it, so the streak holds.
+ * Drawn ice blue, out of the numbers like a kept day. Marked by tries < 0.
+ */
+export const FROZEN_LEVEL = -3;
+export const isFrozen = (r: Result): boolean => r.tries < 0;
+
+/** Freezes a month: a missed day uses one by itself. */
+export const FREEZES_FREE = 1;
+export const FREEZES_PLUS = 3;
+/** A Plus repair reaches back this many missed days, once a month. */
+export const REPAIR_DAYS = 2;
+
+/** The days missed between the last one in `history` and `today` (both
+ *  excluded: today not played yet breaks nothing). Empty with no history. */
+export function missedDays(history: readonly Result[], today: string): string[] {
+  const last = history.reduce<string | null>((m, r) => (r.d < today && (m == null || r.d > m) ? r.d : m), null);
+  if (last == null) return [];
+  const out: string[] = [];
+  for (let d = shiftDay(last, 1); d < today; d = shiftDay(d, 1)) out.push(d);
+  return out;
+}
+
+/** `days` added as frozen. */
+export function withFrozen(history: readonly Result[], days: readonly string[]): Result[] {
+  const have = new Set(history.map((r) => r.d));
+  const add = days.filter((d) => !have.has(d)).map((d) => ({ d, id: RESTORED_ID, tries: -1, won: false }));
+  return [...history, ...add].sort((a, b) => a.d.localeCompare(b.d)).slice(-HISTORY_MAX);
+}
+
 export function winLevel(r: Result): number {
+  if (isFrozen(r)) return FROZEN_LEVEL;
   if (isKept(r)) return KEPT_LEVEL;
   if (r.won) return Math.max(1, MAX_TRIES + 1 - r.tries);
   return r.close ? CLOSE_LEVEL : 0;
@@ -680,8 +712,8 @@ export function winLevel(r: Result): number {
 export type Stats = { played: number; win: number; avg: number | null };
 
 export function puzzleStats(all: readonly Result[]): Stats {
-  // A kept day has no result to count.
-  const history = all.filter((r) => !isKept(r));
+  // A kept or frozen day has no result to count.
+  const history = all.filter((r) => r.tries > 0);
   const wins = history.filter((r) => r.won);
   const played = history.length;
   return {
@@ -825,7 +857,7 @@ export function parsePublicPuzzle(v: unknown): PublicPuzzle | null {
     for (const item of o.days) {
       if (!Array.isArray(item) || typeof item[0] !== 'string' || typeof item[1] !== 'number') continue;
       if (!/^\d{4}-\d{2}-\d{2}$/.test(item[0])) continue;
-      days.push([item[0], Math.min(MAX_TRIES, Math.max(KEPT_LEVEL, Math.floor(item[1])))]);
+      days.push([item[0], Math.min(MAX_TRIES, Math.max(FROZEN_LEVEL, Math.floor(item[1])))]);
     }
   }
   const st = o.stats as Partial<Record<keyof Stats, unknown>> | null | undefined;

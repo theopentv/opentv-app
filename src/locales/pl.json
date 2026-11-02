@@ -3921,7 +3921,11 @@
       "few": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dni",
       "many": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dni",
       "other": "Dzisiejsza zagadka jest gotowa — utrzymaj serię: {{count}} dnia"
-    }
+    },
+    "freezesLeft": "❄️ Zamrożenia w tym miesiącu: {{n}}",
+    "repair": "Napraw moją serię",
+    "repairSub": "Opuszczony dzień? Plus przywraca serię raz w miesiącu, w ciągu dwóch dni.",
+    "repaired": "Seria naprawiona"
   },
   "puzzleIntro": {
     "howOne": "Jeden tytuł dziennie, wybrany z tego, co obejrzałeś.",
@@ -3955,6 +3959,7 @@
     "solvedIn": "Rozwiązane w {{score}}",
     "missed": "Pominięta",
     "kept": "Zachowany · wynik niezapisany",
+    "frozen": "Zamrożony ❄️ · seria trwa",
     "archiveNote": "Z archiwum. Nie liczy się do twoich statystyk.",
     "needsPlus": "Wymaga Plus",
     "shareTitle": "Udostępnij wynik",

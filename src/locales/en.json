@@ -3637,7 +3637,11 @@
     "bannerKeep": {
       "one": "Today's puzzle is ready — keep your {{count}}-day streak",
       "other": "Today's puzzle is ready — keep your {{count}}-day streak"
-    }
+    },
+    "freezesLeft": "❄️ Streak freezes left this month: {{n}}",
+    "repair": "Repair my streak",
+    "repairSub": "Missed a day? Plus brings your streak back, once a month, within two days.",
+    "repaired": "Streak repaired"
   },
   "puzzleIntro": {
     "howOne": "One title a day, picked from what you've watched.",
@@ -3671,6 +3675,7 @@
     "solvedIn": "Solved in {{score}}",
     "missed": "Missed",
     "kept": "Kept · result not saved",
+    "frozen": "Frozen ❄️ · streak kept",
     "archiveNote": "From the archive. It doesn't count towards your stats.",
     "needsPlus": "Needs Plus",
     "shareTitle": "Share your result",

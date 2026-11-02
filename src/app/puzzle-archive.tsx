@@ -29,14 +29,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { PuzzleMonths, StatsRow, levelColor, puzzleDay } from '@/components/puzzle-block';
+import { FROZEN_BLUE, PuzzleMonths, StatsRow, levelColor, puzzleDay } from '@/components/puzzle-block';
 import { NavHeader, Screen, useDetailRouter } from '@/components/ui';
 import { currentLocale, t } from '@/i18n';
 import { requirePlus, usePlus } from '@/plus';
-import { MAX_TRIES, archiveDays, isKept, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
-import { firstPlayedDay, loadHistory, puzzleTitles, resultsByDay, today } from '@/puzzle-data';
+import { MAX_TRIES, archiveDays, isFrozen, isKept, historyUnlocked, longestStreak, puzzleNumber, puzzleStats, winLevel, type PuzzleId, type Result, type Stats } from '@/puzzle';
+import { applyStreakFreezes, firstPlayedDay, freezesLeft, loadHistory, puzzleTitles, repairableDays, repairStreak, resultsByDay, today } from '@/puzzle-data';
 import { colors, radius, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
 
@@ -53,10 +53,14 @@ export default function PuzzleArchiveScreen() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [day, setDay] = useState(today);
   const [levels, setLevels] = useState<Map<string, number>>(new Map());
+  const [freezes, setFreezes] = useState(0);
+  const [repair, setRepair] = useState<number | null>(null);
 
-  useFocusEffect(
-    useCallback(() => {
+  const load = useCallback(() => {
       const now = today();
+      applyStreakFreezes(now);
+      setFreezes(freezesLeft(now));
+      setRepair(repairableDays(now));
       const history = loadHistory();
       const results = resultsByDay();
       const first = firstPlayedDay();
@@ -68,14 +72,16 @@ export default function PuzzleArchiveScreen() {
       setRows(list);
       setNames(puzzleTitles(list.flatMap((row) => (row.r ? [row.r.id] : []))));
       setSummary(history.length ? { stats: puzzleStats(history), longest: longestStreak(history), first } : null);
-    }, []),
-  );
+    }, []);
+  useFocusEffect(load);
 
   const status = (r: Result | null): string =>
     r == null
       ? t('puzzlePolish.notPlayed')
-      : isKept(r)
-        ? t('puzzlePolish.kept')
+      : isFrozen(r)
+        ? t('puzzlePolish.frozen')
+        : isKept(r)
+          ? t('puzzlePolish.kept')
         : r.won
         ? t('puzzlePolish.solvedIn', { score: `${r.tries}/${MAX_TRIES}` })
         : t('puzzlePolish.missed');
@@ -94,6 +100,23 @@ export default function PuzzleArchiveScreen() {
           <StatsRow stats={summary.stats} big />
           {summary.longest > 0 && <Text style={s.line}>{t('puzzleHistory.longest', { count: summary.longest })}</Text>}
           {summary.first && <Text style={s.line}>{t('puzzleHistory.firstDay', { date: puzzleDay(summary.first) })}</Text>}
+          <Text style={s.line}>{t('puzzleStreak.freezesLeft', { n: freezes })}</Text>
+          {repair != null && (
+            <Pressable
+              style={s.repair}
+              accessibilityRole="button"
+              onPress={() => {
+                if (!requirePlus('puzzle.repair')) return;
+                if (repairStreak()) {
+                  setRepair(null);
+                  load();
+                  Alert.alert(t('puzzleStreak.repaired'));
+                }
+              }}>
+              <Text style={s.repairTitle}>❄️ {t('puzzleStreak.repair')}</Text>
+              <Text style={s.repairSub}>{t('puzzleStreak.repairSub')}</Text>
+            </Pressable>
+          )}
           {!plus && <Text style={s.lockLine}>{t('puzzleHistory.locked')}</Text>}
         </View>
       )}
@@ -128,7 +151,7 @@ export default function PuzzleArchiveScreen() {
               onPress={() =>
                 locked
                   ? requirePlus('puzzle.history')
-                  : item.r && isKept(item.r)
+                  : item.r && (isKept(item.r) || isFrozen(item.r))
                     ? undefined // a kept day has no game to show
                     : !played
                       ? open(item.d)
@@ -137,7 +160,7 @@ export default function PuzzleArchiveScreen() {
               accessibilityRole="button"
               accessibilityLabel={`#${item.n}, ${longDay(item.d)}, ${line}`}
               accessibilityHint={(!played || locked) && !plus ? t('puzzlePolish.needsPlus') : undefined}>
-              <View style={[s.square, !item.r ? s.squareEmpty : isKept(item.r) ? s.squareKept : { backgroundColor: levelColor(winLevel(item.r)) }]} />
+              <View style={[s.square, !item.r ? s.squareEmpty : isFrozen(item.r) ? { backgroundColor: FROZEN_BLUE } : isKept(item.r) ? s.squareKept : { backgroundColor: levelColor(winLevel(item.r)) }]} />
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={s.title} numberOfLines={1}>
                   #{item.n} <Text style={s.date}>· {longDay(item.d)}</Text>
@@ -168,6 +191,9 @@ const s = StyleSheet.create({
   heading: { color: colors.text, fontSize: 18, fontWeight: '800', marginBottom: 4 },
   line: { color: colors.dim, fontSize: 13.5, textAlign: 'center' },
   lockLine: { color: colors.faint, fontSize: 12.5, textAlign: 'center' },
+  repair: { alignSelf: 'stretch', marginTop: 6, borderRadius: radius.card, borderWidth: 1.5, borderColor: FROZEN_BLUE, paddingVertical: 10, paddingHorizontal: 14, gap: 2 },
+  repairTitle: { color: colors.text, fontSize: 15, fontWeight: '800', textAlign: 'center' },
+  repairSub: { color: colors.dim, fontSize: 12.5, textAlign: 'center' },
   sub: { color: colors.dim, fontSize: 13.5, lineHeight: 19, paddingHorizontal: space.lg, paddingBottom: 12 },
   empty: { color: colors.dim, fontSize: 15, textAlign: 'center', padding: 40 },
   row: {

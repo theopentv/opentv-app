@@ -3637,7 +3637,11 @@
     "bannerKeep": {
       "one": "O puzzle de hoje está pronto — mantenha sua sequência de {{count}} dia",
       "other": "O puzzle de hoje está pronto — mantenha sua sequência de {{count}} dias"
-    }
+    },
+    "freezesLeft": "❄️ Congelamentos restantes este mês: {{n}}",
+    "repair": "Reparar minha sequência",
+    "repairSub": "Perdeu um dia? O Plus traz sua sequência de volta, uma vez por mês, em até dois dias.",
+    "repaired": "Sequência reparada"
   },
   "puzzleIntro": {
     "howOne": "Um título por dia, escolhido entre o que você assistiu.",
@@ -3671,6 +3675,7 @@
     "solvedIn": "Acertou em {{score}}",
     "missed": "Errou",
     "kept": "Mantido · resultado não salvo",
+    "frozen": "Congelado ❄️ · sequência mantida",
     "archiveNote": "Do arquivo. Não conta para as suas estatísticas.",
     "needsPlus": "Requer Plus",
     "shareTitle": "Compartilhe seu resultado",

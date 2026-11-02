@@ -33,7 +33,7 @@ import { CLOSE_SQUARE } from '@/components/puzzle-share-card';
 import { currentLocale, fmtDecimal, t } from '@/i18n';
 import { formatPeriod, intlTag } from '@/locale-resolve';
 import type { WidgetSpan } from '@/profile-layout';
-import { KEPT_LEVEL, MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
+import { FROZEN_LEVEL, KEPT_LEVEL, MAX_TRIES, type PublicPuzzle, type Stats } from '@/puzzle';
 import { calendarMonth, mixHex, shiftMonth } from '@/pure';
 import { ACCENTS, colors, ls } from '@/theme';
 
@@ -111,7 +111,7 @@ function MonthGrid({ weeks, levels, today, cell }: { weeks: (string | null)[][];
                 key={day}
                 style={[
                   { width: cell, height: cell, borderRadius: radius },
-                  level == null ? s.empty : level === KEPT_LEVEL ? s.kept : { backgroundColor: levelColor(level) },
+                  level == null ? s.empty : level === KEPT_LEVEL ? s.kept : level === FROZEN_LEVEL ? s.frozen : { backgroundColor: levelColor(level) },
                   day === today && s.today,
                 ]}
               />
@@ -242,6 +242,9 @@ export function PuzzleBlock({
   );
 }
 
+/** Ice for a frozen day: reads as "held" next to the greens, never as a win. */
+export const FROZEN_BLUE = '#7DD3FC';
+
 const s = StyleSheet.create({
   calStack: { flex: 1, minHeight: 0, justifyContent: 'center' },
   calSide: { flex: 1, minWidth: 0, justifyContent: 'center' },
@@ -252,6 +255,8 @@ const s = StyleSheet.create({
   // A kept day (2.2.2): played, result unknown. The green outline says
   // "counted" without claiming a score.
   kept: { borderWidth: 2, borderColor: colors.green },
+  // A frozen day (2.2.2): not played, covered by a freeze. Ice, not green.
+  frozen: { backgroundColor: FROZEN_BLUE },
   future: { borderWidth: 1, borderColor: colors.lift },
   today: { borderWidth: 1.5, borderColor: colors.text },
   monthHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
