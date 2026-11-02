@@ -81,13 +81,13 @@ Actions. Five, and the workflow refuses to run without the two blobs.
 | `ANDROID_KEY_PASSWORD` | the same password (PKCS12, see above) |
 | `APP_CONFIG_BASE64` | the gitignored config files, see below |
 
-The bundle imports seven files the repository does not carry — the same ones
+The bundle imports eight files the repository does not carry — the same ones
 `.easignore` lets through to EAS. One secret holds them all:
 
 ```bash
 cd mobile
 tar czf - src/tmdb-token.ts src/tvdb-key.ts src/rc-keys.ts src/api-config.ts \
-  src/auth-config.ts src/giphy-key.ts src/trakt-keys.ts | base64 | pbcopy
+  src/auth-config.ts src/giphy-key.ts src/trakt-keys.ts src/simkl-key.ts | base64 | pbcopy
 ```
 
 Re-run that and paste again whenever one of the keys changes. `.env` is not in

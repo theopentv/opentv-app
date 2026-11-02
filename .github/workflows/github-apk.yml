@@ -86,7 +86,7 @@ jobs:
             exit 1
           fi
           echo "$APP_CONFIG_BASE64" | base64 -d | tar xz
-          ls src/tmdb-token.ts src/tvdb-key.ts src/rc-keys.ts src/api-config.ts src/auth-config.ts src/giphy-key.ts src/trakt-keys.ts
+          ls src/tmdb-token.ts src/tvdb-key.ts src/rc-keys.ts src/api-config.ts src/auth-config.ts src/giphy-key.ts src/trakt-keys.ts src/simkl-key.ts
 
       - name: The signing key
         env:
