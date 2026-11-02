@@ -9,7 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
-| 2.2.2 | 137 | 111 | **2 Nov 2026** — the puzzle streak survives a wiped or new phone (server + backups); iOS 111 replaces 2.2.0 (110) in review |
+| 2.2.2 | 140 | 111 | **2 Nov 2026** — the puzzle streak survives a wiped or new phone (server + backups); iOS 111 replaces 2.2.0 (110) in review |
 | 2.2.1 | 135 | — | **2 Nov 2026** — Android only: the "imperative router is unavailable" crash (expo-router patch). iOS stays on 2.2.0 (110) |
 | 2.2.0 | 134 | 110 | **1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes (reviewed by Mahmood on the simulator), real film runtimes, puzzle results to the dashboard (106/130, 107/131, 108/132 and 109/133 were never released; 109/133 add the CommsUni partner terms, 110/134 the star fix) |
 | 2.1.1 | 129 | 105 | **submitted 31 Oct 2026, both stores** (iOS 105 replaces 2.1.0 in review, Android on top of 2.1.0) — upright Emotion calendar, film and rewatch fixes for merged imports, Henrike's other fixes |
