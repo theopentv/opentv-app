@@ -110,7 +110,8 @@ jobs:
           # Gradle's 2 GB default ran out compiling the ART profile (2.2.2);
           # the runner has 16 GB.
           sed -i '/^org.gradle.jvmargs=/d' android/gradle.properties
-          echo 'org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8' >> android/gradle.properties
+          printf '\norg.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8\n' >> android/gradle.properties
+          grep jvmargs android/gradle.properties
           cat > android/app/github-signing.gradle <<'EOF'
           android {
               signingConfigs {
