@@ -100,8 +100,12 @@ Plan only (Mahmood, 3 Nov). Build each item only on his go.
   finished season). Ratings move search rank, and the store page is where the growth goal
   is lost today (3 Nov: impressions +608%, conversion down 76%).
 
-**Timing:** Black Friday (27 Nov) and the free month (1 Dec) need a build by ~20 Nov. MCP and
-the website will not be ready by then, so those two dates may need a smaller 2.2.3 first.
+**CONFIRMED 3 Nov (Mahmood): 2.3.0 is ALL of it** — the iOS half of the picture fix, Black
+Friday offers, the 1 Dec free month, a whole-year Wrapped, the rating prompt, account deletion
+removing backups, the TV Time parity list, AND MCP + the website. **MCP is built first.** The
+in-app AI chat (OpenRouter, a paid no-training model, Free 10 messages a week / Plus 30 a day,
+the phone sends only the slice a question needs) is decided AFTER MCP. Black Friday (27 Nov)
+and 1 Dec still bind: whatever is not ready by ~20 Nov ships after, the dates do not move.
 
 
 ## 2.1.1 — Henrike's fixes (31 Oct)
