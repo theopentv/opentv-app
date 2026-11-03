@@ -4041,5 +4041,37 @@
       "one": "{{n}} de {{count}} título",
       "other": "{{n}} de {{count}} títulos"
     }
+  },
+  "aiConnect": {
+    "title": "Claude e ChatGPT",
+    "rowSub": "Pergunte a eles sobre o que você assistiu.",
+    "intro": "Conecte o OpenTV ao Claude ou ao ChatGPT e pergunte sobre o que você assistiu com suas palavras: o que você avaliou melhor no ano passado ou qual série terminou mais rápido.",
+    "plusBody": "Claude e ChatGPT fazem parte do OpenTV Plus.",
+    "getPlus": "Ver o OpenTV Plus",
+    "signInBody": "Entre primeiro. A conexão pertence à sua conta do OpenTV.",
+    "signIn": "Entrar",
+    "backupBody": "O Claude e o ChatGPT leem o seu backup do OpenTV, então ele precisa estar ativado.",
+    "turnOnBackup": "Ativar o backup do OpenTV",
+    "consent": "O Claude ou o ChatGPT poderão ler o seu backup do OpenTV — o que você assistiu e quando, avaliações, listas e comentários — quando você perguntar sobre ele. Suas notas privadas nunca são incluídas. O que você pergunta vai para a Anthropic ou a OpenAI. Remova a conexão aqui a qualquer momento.",
+    "agree": "Entendi, continuar",
+    "step1": "1. Adicione o OpenTV como conector",
+    "step1Body": "Copie este endereço e adicione no Claude (Configurações → Conectores → Adicionar conector personalizado) ou no ChatGPT (Configurações → Conectores, com o modo de desenvolvedor ativado).",
+    "copy": "Copiar endereço",
+    "copied": "Copiado",
+    "step2": "2. Digite um código",
+    "step2Body": "Quando a página pedir um código, pegue um aqui e digite.",
+    "getCode": "Obter um código",
+    "newCode": "Obter um novo código",
+    "copyCode": "Copiar código",
+    "expiresIn": "Expira em {{time}}",
+    "expired": "Este código expirou.",
+    "connected": "Conectados",
+    "addedOn": "Adicionado em {{date}}",
+    "removeTitle": "Remover {{name}}?",
+    "removeBody": "{{name}} não poderá mais ler o seu backup do OpenTV. Você pode conectá-lo de novo depois.",
+    "removeA11y": "Remover {{name}}",
+    "errPlus": "O servidor ainda não vê o OpenTV Plus nesta conta. Se você acabou de assinar, tente de novo em um minuto.",
+    "errNoBackup": "Ainda não há um backup do OpenTV no servidor. Abra Backup, toque em Fazer backup agora e depois obtenha um código.",
+    "errNotConfigured": "Este servidor não oferece Claude e ChatGPT."
   }
 }

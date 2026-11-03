@@ -834,6 +834,19 @@ export default function SettingsScreen() {
               sub={t('settings.backup.intro')}
               onPress={() => router.push('/backup')}
             />
+            {/* UNDER BACKUP, because it reads it: Claude and ChatGPT see your
+                OpenTV Backup and nothing else, so the row lives with the copy
+                it depends on. The screen itself explains each missing piece
+                (Plus, account, backup) rather than this row refusing. */}
+            {plusUi && (
+              <MenuRow
+                trackId="aiConnect.row"
+                title={t('aiConnect.title')}
+                sub={t('aiConnect.rowSub')}
+                right={plus ? undefined : <PlusChip />}
+                onPress={() => router.push('/ai-connect')}
+              />
+            )}
             <MenuRow trackId="settings.data.import" title={t('settings.data.import')} sub={t('settings.data.importSub')} onPress={() => router.push('/import')} />
             {/* For the phone that already started fresh and now wants the old
                 one's library: which phone it was decides which of the rows

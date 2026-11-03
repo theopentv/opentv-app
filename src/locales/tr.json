@@ -4041,5 +4041,37 @@
       "one": "{{n}} / {{count}} yapım",
       "other": "{{n}} / {{count}} yapım"
     }
+  },
+  "aiConnect": {
+    "title": "Claude ve ChatGPT",
+    "rowSub": "İzlediklerini onlara sor.",
+    "intro": "OpenTV’yi Claude ya da ChatGPT’ye bağla ve izlediklerini kendi sözlerinle sor: geçen yıl en yüksek puanı neye verdin, hangi diziyi en hızlı bitirdin.",
+    "plusBody": "Claude ve ChatGPT, OpenTV Plus’ın bir parçası.",
+    "getPlus": "OpenTV Plus’a göz at",
+    "signInBody": "Önce giriş yap. Bağlantı OpenTV hesabına aittir.",
+    "signIn": "Giriş yap",
+    "backupBody": "Claude ve ChatGPT OpenTV Yedeğini okur, bu yüzden önce açık olması gerekir.",
+    "turnOnBackup": "OpenTV Yedeğini aç",
+    "consent": "Claude ya da ChatGPT, onlara sorduğunda OpenTV Yedeğini okuyabilecek: neyi ne zaman izlediğin, puanlar, listeler ve yorumlar. Özel notların asla dahil edilmez. Sorduğun şeyler Anthropic’e ya da OpenAI’a gider. Bağlantıyı istediğin zaman buradan kaldırabilirsin.",
+    "agree": "Anladım, devam et",
+    "step1": "1. OpenTV’yi bağlayıcı olarak ekle",
+    "step1Body": "Bu adresi kopyala ve Claude’da (Ayarlar → Bağlayıcılar → Özel bağlayıcı ekle) ya da ChatGPT’de (Ayarlar → Bağlayıcılar, geliştirici modu açıkken) ekle.",
+    "copy": "Adresi kopyala",
+    "copied": "Kopyalandı",
+    "step2": "2. Bir kod gir",
+    "step2Body": "Sayfa kod istediğinde buradan bir kod al ve yaz.",
+    "getCode": "Kod al",
+    "newCode": "Yeni kod al",
+    "copyCode": "Kodu kopyala",
+    "expiresIn": "{{time}} içinde sona erer",
+    "expired": "Bu kodun süresi doldu.",
+    "connected": "Bağlı",
+    "addedOn": "Eklenme: {{date}}",
+    "removeTitle": "{{name}} kaldırılsın mı?",
+    "removeBody": "{{name}} artık OpenTV Yedeğini okuyamayacak. Daha sonra yeniden bağlayabilirsin.",
+    "removeA11y": "{{name}} kaldır",
+    "errPlus": "Sunucu bu hesapta henüz OpenTV Plus görmüyor. Yeni abone olduysan bir dakika sonra tekrar dene.",
+    "errNoBackup": "Sunucuda henüz bir OpenTV Yedeği yok. Yedekleme’yi aç, Şimdi yedekle’ye dokun, sonra bir kod al.",
+    "errNotConfigured": "Bu sunucu Claude ve ChatGPT sunmuyor."
   }
 }

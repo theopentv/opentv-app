@@ -102,6 +102,10 @@ export type ApiErrorCode =
   // live rooms). Not an outage: the answer is to hide the feature here for
   // good, which a bare 503 from an edge proxy must never be mistaken for.
   | 'not_configured'
+  // "Claude & ChatGPT" asked for a code, and there is no OpenTV Backup on the
+  // server for them to read. Its own code because the answer is a screen —
+  // turn backup on — not a retry.
+  | 'no_backup'
   | 'internal'
   // ── synthetic, client-side only ──
   | 'network'
@@ -131,6 +135,7 @@ const SERVER_CODES: readonly string[] = [
   'device_removed',
   'device_limit',
   'not_configured',
+  'no_backup',
   'internal',
 ];
 

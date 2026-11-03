@@ -4041,5 +4041,37 @@
       "one": "{{n}} of {{count}} title",
       "other": "{{n}} of {{count}} titles"
     }
+  },
+  "aiConnect": {
+    "title": "Claude & ChatGPT",
+    "rowSub": "Ask them about what you’ve watched.",
+    "intro": "Connect OpenTV to Claude or ChatGPT and ask about what you’ve watched in your own words — what you rated highest last year, or which show you finished fastest.",
+    "plusBody": "Claude & ChatGPT is part of OpenTV Plus.",
+    "getPlus": "See OpenTV Plus",
+    "signInBody": "Sign in first. The connection belongs to your OpenTV account.",
+    "signIn": "Sign in",
+    "backupBody": "Claude and ChatGPT read your OpenTV Backup, so it has to be on first.",
+    "turnOnBackup": "Turn on OpenTV Backup",
+    "consent": "Claude or ChatGPT will be able to read your OpenTV Backup — what you watched and when, ratings, lists and comments — when you ask them about it. Your private notes are never included. What you ask goes to Anthropic or OpenAI. Remove the connection here at any time.",
+    "agree": "I understand, continue",
+    "step1": "1. Add OpenTV as a connector",
+    "step1Body": "Copy this address and add it in Claude (Settings → Connectors → Add custom connector) or in ChatGPT (Settings → Connectors, with developer mode on).",
+    "copy": "Copy address",
+    "copied": "Copied",
+    "step2": "2. Enter a code",
+    "step2Body": "When the page asks for a code, get one here and type it in.",
+    "getCode": "Get a code",
+    "newCode": "Get a new code",
+    "copyCode": "Copy code",
+    "expiresIn": "Expires in {{time}}",
+    "expired": "This code has expired.",
+    "connected": "Connected",
+    "addedOn": "Added {{date}}",
+    "removeTitle": "Remove {{name}}?",
+    "removeBody": "{{name}} will no longer be able to read your OpenTV Backup. You can connect it again later.",
+    "removeA11y": "Remove {{name}}",
+    "errPlus": "The server doesn’t see OpenTV Plus on this account yet. If you’ve just subscribed, try again in a minute.",
+    "errNoBackup": "There’s no OpenTV Backup on the server yet. Open Backup, tap Back up now, then get a code.",
+    "errNotConfigured": "This server doesn’t offer Claude & ChatGPT."
   }
 }

@@ -777,6 +777,7 @@ export default function RootLayout() {
         <Stack.Screen name="free-month-ended" />
         <Stack.Screen name="cloud-backup" />
         <Stack.Screen name="devices" />
+        <Stack.Screen name="ai-connect" />
         <Stack.Screen name="support" />
         <Stack.Screen name="self-host" />
         <Stack.Protected guard={onboarded && !askNotify}>
