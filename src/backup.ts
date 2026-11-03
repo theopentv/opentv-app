@@ -12,6 +12,7 @@ import db, { getMeta, libraryDirtyRev, setMeta, hasLibrary } from '@/db';
 import { libraryRestored } from '@/community-publish';
 import { withImportLock } from '@/import-lock';
 import { isOnboarded } from '@/session-store';
+import { IMAGES_FOLDER, fetchImages, imageNamesIn, sendImages, type ImageStore } from '@/backup-images';
 
 import type { ImportResult, Progress } from '@/importer';
 
@@ -136,9 +137,24 @@ export function libraryZip(sig: string): Uint8Array {
   if (lastZip?.sig === sig) return lastZip.zip;
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { buildTvTimeZip } = require('@/exporter') as typeof import('@/exporter');
-  const zip = buildTvTimeZip();
+  // Pictures travel beside it, not inside — see `backup-images.ts`.
+  const zip = buildTvTimeZip({ images: false });
   lastZip = { sig, zip };
   return zip;
+}
+
+/** The pictures, in `OpenTV Images/` next to the ZIP in the user's iCloud. */
+function icloudImages(): ImageStore {
+  return {
+    put: (name, bytes) => ICloud!.writeFile(`${IMAGES_FOLDER}/${name}`, bytesToB64(bytes)),
+    async get(name) {
+      try {
+        return b64ToBytes(await ICloud!.readFile(`${IMAGES_FOLDER}/${name}`, 30000));
+      } catch {
+        return null;
+      }
+    },
+  };
 }
 
 /** The backup waiting in this user's iCloud, if any — cheap enough for the
@@ -215,6 +231,9 @@ export async function backupNow(force = false): Promise<'done' | 'skipped' | 'un
   try {
     await ICloud.writeFile(BACKUP_ZIP, bytesToB64(zip));
     await ICloud.writeFile(BACKUP_INFO, stringToB64(info));
+    // After the ZIP, so the library is safe first. A failure part-way leaves
+    // the stamps unset and the next backup sends the rest.
+    await sendImages('icloud', imageNamesIn(zip), icloudImages());
   } catch (e) {
     // The system's own words. "Backup failed" is the same sentence for a full
     // account and for iCloud Drive switched off, and only one of those the
@@ -241,6 +260,9 @@ export async function restoreFromCloud(onProgress: (p: Progress) => void): Promi
   if (!ICloud) throw new Error('This build has no iCloud support');
   onProgress({ phase: 'Downloading your backup…', done: 0, total: 1 });
   const zip = b64ToBytes(await ICloud.readFile(BACKUP_ZIP, 60000));
+  // Before the import: it links a picture only if the file is already here.
+  onProgress({ phase: 'Downloading your pictures…', done: 0, total: 1 });
+  await fetchImages('icloud', zip, icloudImages());
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { importZipBytes } = require('@/importer') as typeof import('@/importer');
   // under the shared import lock: a restore must not run concurrently with a

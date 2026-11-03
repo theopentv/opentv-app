@@ -39,7 +39,7 @@ const commentKey = (c: { entity: string; date: string; text: string }) =>
 
 // bytes of an image saved in the app's documents, or null — the export must
 // never fail over one unreadable file
-function documentBytes(name: string | null | undefined): Uint8Array | null {
+export function documentBytes(name: string | null | undefined): Uint8Array | null {
   if (!name) return null;
   try {
     const f = new File(Paths.document, name);
@@ -66,7 +66,16 @@ function parseStored(v: string | null): unknown {
   }
 }
 
-export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint8Array {
+/**
+ * `images: false` leaves the picture files out and lists their names instead
+ * (`imageFiles` in the sidecar). The automatic backups ask for that and send
+ * the pictures beside the ZIP, one at a time and only once each — see
+ * `backup-images.ts`. Bundled, a library with 300 TV Time GIFs was a 540 MB ZIP
+ * built in memory on the JS thread every time it changed, and the app froze
+ * (OnePlus 10R, 3 Nov). The share-sheet export still bundles them: it is one
+ * file somebody carries away, and it only runs when they press the button.
+ */
+export function buildTvTimeZip({ notes = true, images = true }: { notes?: boolean; images?: boolean } = {}): Uint8Array {
   const uid = getMeta('tvtimeUserId') ?? '0';
   const username = getMeta('username') ?? 'opentv-user';
 
@@ -467,9 +476,11 @@ export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint
       (n): n is string => !!n,
     ),
   );
-  for (const name of imageNames) {
-    const bytes = documentBytes(name);
-    if (bytes) files[`_opentv_images/${name}`] = [bytes, { level: 0 }]; // already-compressed media
+  if (images) {
+    for (const name of imageNames) {
+      const bytes = documentBytes(name);
+      if (bytes) files[`_opentv_images/${name}`] = [bytes, { level: 0 }]; // already-compressed media
+    }
   }
 
   // OpenTV-only sidecar: database links made in-app (import matching + Fix
@@ -510,6 +521,9 @@ export function buildTvTimeZip({ notes = true }: { notes?: boolean } = {}): Uint
       profile: { avatarFile, coverFile },
       commentImages: commentImageRows.filter((r) => r.imageUrl).map((r) => ({ url: r.imageUrl!, file: r.image })),
       socialImages: socialPairs,
+      // Every picture this library uses, bundled or not: a ZIP without them
+      // tells the restore which files to fetch from beside it (3 Nov).
+      imageFiles: [...imageNames],
       // `movies[].stars` is out of ten. Without this a restore cannot tell a
       // 2.0.0 backup's 4 (two stars) from an older one's 4 (four stars).
       movieScale: 10,

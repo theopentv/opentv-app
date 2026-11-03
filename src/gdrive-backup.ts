@@ -40,6 +40,7 @@ import { configureGoogle } from '@/community-auth';
 import { libraryRestored } from '@/community-publish';
 import { withImportLock } from '@/import-lock';
 import type { ImportResult, Progress } from '@/importer';
+import { IMAGES_FOLDER, fetchImages, imageNamesIn, sendImages, type ImageStore } from '@/backup-images';
 
 /** Same names as the iCloud copy, so the two are recognisably one thing. */
 export const DRIVE_ZIP = 'OpenTV Backup.zip';
@@ -276,6 +277,56 @@ async function putFile(token: string, name: string, mime: string, bytes: Uint8Ar
   if (!res.ok) throw new Error(`Drive upload failed (${res.status})`);
 }
 
+/**
+ * THE PICTURES, in an `OpenTV Images` folder beside the ZIP (3 Nov) — a folder
+ * so the user's Drive shows two things, not three hundred. Created by this
+ * app, so `drive.file` covers it and everything put in it.
+ */
+async function imagesFolder(token: string): Promise<string> {
+  const q = encodeURIComponent(`name='${IMAGES_FOLDER}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const found = await fetch(`${API}/files?q=${q}&fields=files(id)&pageSize=1`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (found.ok) {
+    const id = ((await found.json()) as { files?: { id: string }[] }).files?.[0]?.id;
+    if (id) return id;
+  }
+  const made = await fetch(`${API}/files?fields=id`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: IMAGES_FOLDER, mimeType: 'application/vnd.google-apps.folder' }),
+  });
+  if (!made.ok) throw new Error(`Drive folder failed (${made.status})`);
+  return ((await made.json()) as { id: string }).id;
+}
+
+function driveImages(token: string): ImageStore {
+  let folder: Promise<string> | null = null;
+  return {
+    async put(name, bytes) {
+      folder ??= imagesFolder(token);
+      const parent = await folder;
+      const meta = await fetch(`${API}/files?fields=id`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, parents: [parent] }),
+      });
+      if (!meta.ok) throw new Error(`Drive create failed (${meta.status})`);
+      const { id } = (await meta.json()) as { id: string };
+      const res = await fetch(`${UPLOAD}/files/${id}?uploadType=media`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+        body: bytes.slice().buffer as ArrayBuffer,
+      });
+      if (!res.ok) throw new Error(`Drive upload failed (${res.status})`);
+    },
+    async get(name) {
+      const file = await findFile(token, name);
+      return file ? getBytes(token, file.id) : null;
+    },
+  };
+}
+
 async function getBytes(token: string, id: string): Promise<Uint8Array> {
   const res = await fetch(`${API}/files/${id}?alt=media`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -352,6 +403,9 @@ export async function driveBackupNow(force = false): Promise<'done' | 'skipped' 
 
   await putFile(token, DRIVE_ZIP, 'application/zip', zip);
   await putFile(token, DRIVE_INFO, 'application/json', new TextEncoder().encode(info));
+  // After the ZIP, so the library is safe first; a failure here leaves the
+  // stamps unset and the next backup sends the rest.
+  await sendImages('drive', imageNamesIn(zip), driveImages(token));
 
   setMeta(HASH_KEY, hash);
   setMeta(SIG_KEY, sig);
@@ -369,6 +423,9 @@ export async function restoreFromDrive(onProgress: (p: Progress) => void): Promi
   const file = await findFile(token, DRIVE_ZIP);
   if (!file) throw new Error('No backup found in Google Drive');
   const zip = await getBytes(token, file.id);
+  // Before the import: it links a picture only if the file is already here.
+  onProgress({ phase: 'Downloading your pictures…', done: 0, total: 1 });
+  await fetchImages('drive', zip, driveImages(token));
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { importZipBytes } = require('@/importer') as typeof import('@/importer');

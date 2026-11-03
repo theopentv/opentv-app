@@ -9,6 +9,7 @@ Play Console record rather than per-change.
 
 | Version | Android versionCode | iOS build | Status |
 |---|---|---|---|
+| 2.2.3 | (next) | — | **3 Nov 2026** — Android only: a library with many pictures no longer freezes the app; backup pictures travel beside the ZIP |
 | 2.2.2 | 140 | 111 | **2 Nov 2026** — the puzzle streak survives a wiped or new phone (server + backups); iOS 111 replaces 2.2.0 (110) in review |
 | 2.2.1 | 135 | — | **2 Nov 2026** — Android only: the "imperative router is unavailable" crash (expo-router patch). iOS stays on 2.2.0 (110) |
 | 2.2.0 | 134 | 110 | **1 Nov 2026** — Wrapped Save all, the puzzle's past months, iPhone Duo two panes (reviewed by Mahmood on the simulator), real film runtimes, puzzle results to the dashboard (106/130, 107/131, 108/132 and 109/133 were never released; 109/133 add the CommsUni partner terms, 110/134 the star fix) |
@@ -45,6 +46,62 @@ Play Console record rather than per-change.
 | 1.1.0 | 3 | — | released 13 Jul 2026 |
 
 ---
+
+
+## 2.2.3 — Android: the backup that froze the app (3 Nov)
+
+Android only, this fix and nothing else (Mahmood, 3 Nov). iOS stays on 2.2.2 and gets it with
+the next iOS build (the iCloud half needs the native module change, already in this branch).
+
+- **Backup pictures beside the ZIP, not inside it** — the first item of the 2.3.0 plan below,
+  built. `backup-images.ts`; `buildTvTimeZip({ images: false })` for every automatic backup;
+  Drive (`OpenTV Images` folder), OpenTV (`/v1/backup/images/:name`, backend 2.2.3) and WebDAV
+  send each picture once; every restore fetches them before the import. The share-sheet export
+  still bundles. Tests: `backup-images.test.ts`, backend `backup.test.ts`.
+- **Backend 2.2.3 must be deployed before the app reaches anybody**, or the OpenTV-backup
+  pictures get 404s (the ZIP itself still lands; the pictures are retried on the next backup).
+
+
+## 2.3.0 — the plan (3 Nov 2026; nothing built yet)
+
+Plan only (Mahmood, 3 Nov). Build each item only on his go.
+
+- ~~**Backup pictures beside the ZIP, not inside it.**~~ **Built in 2.2.3 (Android).** The freeze that has kept
+  pratik_waghmare's app stuck since 21 Oct (OnePlus 10R, 296 TV Time GIFs). Every backup bundles
+  every picture into one ZIP built in memory on the JS thread: 300 GIFs = a 540 MB ZIP.
+  Reproduced 3 Nov on the Android 14 emulator with 2.2.2: native memory at launch 83 MB without
+  the GIF files, 616 MB with them (rows unchanged). Runs on open when OpenTV Backup is on
+  (Plus), and on every background when any backup is on. The server would refuse it anyway
+  (`MAX_BACKUP_BYTES` 25 MB).
+  - Fix: the ZIP lists `imageFiles` in its sidecar and carries no pictures; each picture is
+    sent once, one at a time with a yield between, into `OpenTV Images/` beside the ZIP in
+    the same place (iCloud, Drive folder, our R2 under `backup-images/<profile>/`, WebDAV
+    folder). "Sent" is a set of names per destination in `meta`. Restore fetches the
+    pictures BEFORE the import, because the importer links a picture only if the file is
+    already on disk. Old ZIPs with `_opentv_images/` keep working. The share-sheet export
+    keeps bundling (one file somebody carries away, only on a tap).
+  - Started 3 Nov and set aside: `git stash list` in mobile and backend, "backup-images WIP".
+    Mobile: `backup-images.ts`, `exporter.ts` (`images` flag), wiring in `backup.ts`,
+    `gdrive-backup.ts`, `cloud-backup.ts`, and the iCloud module writing into a subfolder
+    (native, needs an iOS build). Backend: `PUT/GET /v1/backup/images/:name` (Plus to
+    write, 15 MB each), `DELETE /v1/backup` also removes them. Tests not written yet.
+  - pratik: his 296 GIFs set back to `pending` on 3 Nov (does not help: the files are on
+    his phone). Waiting on his phone model and app version. Re-approve once this ships.
+  - Test data to clean up: 300 `GIFTEST` comments + `comment-img-giftest-*.gif` on the
+    'iPhone Duo' simulator (DB backup in the 3 Nov scratchpad `gifbak/`), and the
+    `opentv-test` emulator.
+- **Deleting an account leaves its backups in R2.** `routes/auth.ts` scrubs the profile and
+  deletes the avatar, but `backups/<profile>/` stays. Delete the ZIPs (and the pictures,
+  above) with the account.
+- **MCP and the website, both Plus.** As written under 2.0.4 below: one per-user database
+  built from the backup with consent, MCP tools for Claude and ChatGPT, the website on the
+  same sign-in. Depends on the backup ZIP being small, so the picture fix comes first.
+- **Asking for a rating at a good moment** (after a Wrapped, a 7-day puzzle streak, a
+  finished season). Ratings move search rank, and the store page is where the growth goal
+  is lost today (3 Nov: impressions +608%, conversion down 76%).
+
+**Timing:** Black Friday (27 Nov) and the free month (1 Dec) need a build by ~20 Nov. MCP and
+the website will not be ready by then, so those two dates may need a smaller 2.2.3 first.
 
 
 ## 2.1.1 — Henrike's fixes (31 Oct)

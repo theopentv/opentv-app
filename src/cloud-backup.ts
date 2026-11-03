@@ -37,6 +37,7 @@ import { basicAuth, davFileUrl as davUrl, utf8ToB64 } from '@/pure';
 import { serverUrl } from '@/server-url';
 import type { ImportResult, Progress } from '@/importer';
 import { deviceId } from '@/device-sync';
+import { IMAGES_FOLDER, fetchImages, forgetSentImages, imageNamesIn, sendImages, type ImageStore } from '@/backup-images';
 
 export type BackupDestination = 'opentv' | 'webdav';
 
@@ -252,7 +253,9 @@ export async function connectWebdav(url: string, user: string, pass: string): Pr
   await SecureStore.setItemAsync(DAV_CRED_KEY, JSON.stringify({ user, pass }));
   setMeta(DAV_URL_KEY, trimmed);
   setDestination('webdav');
-  stamp(zip);
+  // Stamped only when there is nothing more to send. With pictures, the next
+  // automatic backup sends them, one by one, instead of this screen waiting.
+  if (imageNamesIn(zip).length === 0) stamp(zip);
   return 'ok';
 }
 
@@ -310,7 +313,7 @@ function buildZip(dest: BackupDestination | null = null): Uint8Array {
   if (dest === 'opentv') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { buildTvTimeZip } = require('@/exporter') as typeof import('@/exporter');
-    return buildTvTimeZip({ notes: false });
+    return buildTvTimeZip({ notes: false, images: false });
   }
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { libraryZip, librarySignature } = require('@/backup') as typeof import('@/backup');
@@ -334,6 +337,9 @@ function infoHeader(): string {
 }
 
 function clearStamps(): void {
+  // A new destination, or none: it has none of the pictures either.
+  forgetSentImages('opentv');
+  forgetSentImages('webdav');
   setMeta(HASH_KEY, '');
   setMeta(SIG_KEY, '');
   setMeta(AT_KEY, '');
@@ -345,6 +351,59 @@ function stamp(zip: Uint8Array): void {
   setMeta(HASH_KEY, hashBytes(zip));
   setMeta(SIG_KEY, librarySignature());
   setMeta(AT_KEY, String(Date.now()));
+}
+
+/**
+ * THE PICTURES, beside the ZIP (3 Nov) — see `backup-images.ts`. On our server
+ * under the same account, gated on Plus like the ZIP; on the reader's own
+ * server in an `OpenTV Images` folder next to the file.
+ */
+async function serverImages(dest: BackupDestination): Promise<ImageStore | null> {
+  if (dest === 'opentv') {
+    const token = await getToken();
+    if (!token) return null;
+    const url = (name: string) => `${serverUrl()}/v1/backup/images/${encodeURIComponent(name)}`;
+    return {
+      async put(name, bytes) {
+        const res = await fetch(url(name), {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+          body: bytes.slice().buffer as ArrayBuffer,
+        });
+        if (res.status === 402) throw Object.assign(new Error('plus_required'), { code: 'plus_required' });
+        if (!res.ok) throw new Error(`Picture upload failed (${res.status})`);
+      },
+      async get(name) {
+        const res = await fetch(url(name), { headers: { Authorization: `Bearer ${token}` } });
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`Picture download failed (${res.status})`);
+        return new Uint8Array(await res.arrayBuffer());
+      },
+    };
+  }
+  const c = await davCreds();
+  if (!c) return null;
+  const auth = { Authorization: basicAuth(c.user, c.pass) };
+  const folder = davFileUrl(c.url).replace(/[^/]+$/, encodeURIComponent(IMAGES_FOLDER));
+  let made = false;
+  return {
+    async put(name, bytes) {
+      if (!made) {
+        // 405 is "already there", which is the usual answer after the first time.
+        const res = await fetch(folder, { method: 'MKCOL', headers: auth });
+        if (!res.ok && res.status !== 405) throw new Error(`Folder failed (${res.status})`);
+        made = true;
+      }
+      const res = await fetch(`${folder}/${encodeURIComponent(name)}`, { method: 'PUT', headers: auth, body: bytes.slice().buffer as ArrayBuffer });
+      if (!res.ok) throw new Error(`Picture upload failed (${res.status})`);
+    },
+    async get(name) {
+      const res = await fetch(`${folder}/${encodeURIComponent(name)}`, { headers: auth });
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error(`Picture download failed (${res.status})`);
+      return new Uint8Array(await res.arrayBuffer());
+    },
+  };
 }
 
 export type BackupOutcome = 'done' | 'skipped' | 'unavailable' | 'plus-required' | 'failed';
@@ -409,6 +468,14 @@ export async function serverBackupNow(force = false): Promise<BackupOutcome> {
         if (startedActive) setMeta(FAILED_KEY, String(Date.now()));
         return 'failed';
       }
+    }
+    // After the ZIP, so the library is safe first. A failure part-way leaves
+    // the stamps unset and the next backup sends the rest.
+    const images = imageNamesIn(zip);
+    if (images.length) {
+      const store = await serverImages(dest);
+      if (!store) return 'unavailable';
+      await sendImages(dest, images, store);
     }
   } catch (e) {
     // The one failure worth naming: Plus lapsed or was never on. Everything
@@ -518,6 +585,13 @@ export async function restoreFromServerBackup(
   // backup", which is how a device decides once, wrongly, and for ever.
   if (!res.ok) throw Object.assign(new Error(`No backup found (${res.status})`), { status: res.status });
   const zip = new Uint8Array(await res.arrayBuffer());
+
+  // Before the import: it links a picture only if the file is already here.
+  const store = await serverImages(dest);
+  if (store) {
+    onProgress({ phase: 'Downloading your pictures…', done: 0, total: 1 });
+    await fetchImages(dest, zip, store);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { importZipBytes } = require('@/importer') as typeof import('@/importer');

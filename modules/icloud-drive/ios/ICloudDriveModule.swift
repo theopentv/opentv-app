@@ -59,6 +59,12 @@ public class ICloudDriveModule: Module {
     return try syncRoot().appendingPathComponent(name)
   }
 
+  // iCloud's stand-in for a file not downloaded yet: `.<name>.icloud` in the
+  // SAME folder as the file, which matters once a name has a folder in it.
+  private static func placeholder(for url: URL) -> URL {
+    url.deletingLastPathComponent().appendingPathComponent(".\(url.lastPathComponent).icloud")
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ICloudDrive")
 
@@ -76,6 +82,8 @@ public class ICloudDriveModule: Module {
     AsyncFunction("writeFile") { (name: String, base64: String) in
       guard let data = Data(base64Encoded: base64) else { throw BadBase64Exception() }
       let url = try self.containerDocuments().appendingPathComponent(name)
+      // A backup's pictures live in `OpenTV Images/` beside the ZIP (3 Nov).
+      try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
       try data.write(to: url, options: .atomic)
     }
 
@@ -85,7 +93,7 @@ public class ICloudDriveModule: Module {
     AsyncFunction("fileInfo") { (name: String) -> [String: Any?] in
       let docs = try self.containerDocuments()
       let real = docs.appendingPathComponent(name)
-      let placeholder = docs.appendingPathComponent(".\(name).icloud")
+      let placeholder = ICloudDriveModule.placeholder(for: real)
       let fm = FileManager.default
       let downloaded = fm.fileExists(atPath: real.path)
       let exists = downloaded || fm.fileExists(atPath: placeholder.path)
@@ -107,7 +115,7 @@ public class ICloudDriveModule: Module {
     AsyncFunction("readFile") { (name: String, timeoutMs: Int) -> String in
       let docs = try self.containerDocuments()
       let url = docs.appendingPathComponent(name)
-      let placeholder = docs.appendingPathComponent(".\(name).icloud")
+      let placeholder = ICloudDriveModule.placeholder(for: url)
       let fm = FileManager.default
       if !fm.fileExists(atPath: url.path) {
         guard fm.fileExists(atPath: placeholder.path) else { throw FileMissingException() }
