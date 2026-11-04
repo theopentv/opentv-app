@@ -2901,6 +2901,11 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v230": {
+      "assistants": "OpenTV in Claude and ChatGPT: with Plus, ask about what you watched and have it mark, rate or add to your watchlist, with your OK each time",
+      "unmark": "Un-marking an episode now asks first, offers Undo, and takes its rating and feelings with it",
+      "fixes": "Fixes: tidier Edit Profile and avatar decoration screens, and backups with lots of pictures no longer slow the app"
+    },
     "v220": {
       "saveAll": "Wrapped: Save all puts every card of your month in one share, ready for Photos or a post",
       "puzzleMonths": "Daily puzzle: page back through past months and see every day you played",

@@ -34,6 +34,11 @@ const NOTES: Record<string, { icon: string; tint: string; key: LocaleKey; iosOnl
   // TV Time re-import line is the one thing those people most need to read.
   // No free-month row: the offer is switched on from the dashboard and shows
   // itself on the Profile when it is open (Mahmood, 28 Oct).
+  '2.3.0': [
+    { icon: '🤖', tint: ACCENTS.yellow, key: 'whatsNew.v230.assistants', to: '/ai-connect' },
+    { icon: '↩️', tint: '#3E8BFF', key: 'whatsNew.v230.unmark' },
+    { icon: '🛠️', tint: '#78BE3D', key: 'whatsNew.v230.fixes' },
+  ],
   '2.2.0': [
     { icon: '🎁', tint: ACCENTS.yellow, key: 'whatsNew.v220.saveAll', to: '/wrapped' },
     { icon: '🧩', tint: '#9B7BFF', key: 'whatsNew.v220.puzzleMonths', to: '/puzzle-archive' },

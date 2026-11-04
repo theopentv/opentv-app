@@ -2901,6 +2901,11 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v230": {
+      "assistants": "OpenTV no Claude e no ChatGPT: com o Plus, pergunte o que você assistiu e peça para marcar, avaliar ou adicionar à sua lista, sempre com sua permissão",
+      "unmark": "Desmarcar um episódio agora pede confirmação, oferece Desfazer e remove a avaliação e as emoções",
+      "fixes": "Correções: telas Editar perfil e decoração do avatar mais organizadas, e backups com muitas imagens não deixam mais o app lento"
+    },
     "v220": {
       "saveAll": "Wrapped: Salvar tudo junta todos os cards do mês em um só compartilhamento, prontos para Fotos ou um post",
       "puzzleMonths": "Enigma do dia: volte pelos meses anteriores e veja cada dia que você jogou",

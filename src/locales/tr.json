@@ -2901,6 +2901,11 @@
     "overlayAuto": "Otomatik"
   },
   "whatsNew": {
+    "v230": {
+      "assistants": "Claude ve ChatGPT'de OpenTV: Plus ile ne izlediğini sor; işaretlemesini, puanlamasını ya da listene eklemesini iste, her seferinde onayınla",
+      "unmark": "Bir bölümün işaretini kaldırmak artık önce sorar, Geri al sunar ve puanı ile hisleri de kaldırır",
+      "fixes": "Düzeltmeler: Profili düzenle ve avatar süsü ekranları daha derli toplu, çok görselli yedekler artık uygulamayı yavaşlatmıyor"
+    },
     "v220": {
       "saveAll": "Wrapped: Tümünü kaydet, ayın tüm kartlarını tek paylaşımda toplar; Fotoğraflar'a ya da bir gönderiye hazır",
       "puzzleMonths": "Günlük bulmaca: geçmiş aylara dön ve oynadığın her günü gör",

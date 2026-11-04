@@ -2901,6 +2901,11 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v230": {
+      "assistants": "OpenTV in Claude und ChatGPT: Mit Plus fragst du, was du geschaut hast, und lässt markieren, bewerten oder auf die Merkliste setzen, jedes Mal mit deiner Zustimmung",
+      "unmark": "Ungesehen markieren fragt jetzt nach, bietet Rückgängig an und entfernt Bewertung und Gefühle",
+      "fixes": "Fehlerbehebungen: aufgeräumtere Bildschirme für Profil und Avatar-Deko, und Backups mit vielen Bildern bremsen die App nicht mehr"
+    },
     "v220": {
       "saveAll": "Wrapped: Alle speichern legt alle Karten deines Monats in ein Teilen, bereit für Fotos oder einen Post",
       "puzzleMonths": "Tägliches Rätsel: blättere durch vergangene Monate und sieh jeden Tag, an dem du gespielt hast",
