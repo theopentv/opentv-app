@@ -14,14 +14,20 @@
  */
 import { api, ApiError } from '@/api';
 import { getToken } from '@/community-session';
-import { serverUrl } from '@/server-url';
+import { isCustomServer, serverUrl } from '@/server-url';
 
 export type McpCode = { code: string; expiresAt: string };
 export type McpConnection = { id: string; client: string; createdAt: string };
 
 /** The address somebody pastes into Claude or ChatGPT. */
+/**
+ * SHORT ENOUGH TO TYPE. OpenTV's own server answers the connector at
+ * theopentv.com/mcp (the site routes only that path and its OAuth to the
+ * Worker), because people type this into Claude or ChatGPT by hand. A
+ * self-hosted server is reached at its own address.
+ */
 export function mcpConnectorUrl(): string {
-  return `${serverUrl()}/mcp`;
+  return isCustomServer() ? `${serverUrl()}/mcp` : 'https://theopentv.com/mcp';
 }
 
 /** No token is the same failure the server would give, said without asking it. */
