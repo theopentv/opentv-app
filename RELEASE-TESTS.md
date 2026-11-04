@@ -15,7 +15,7 @@ failure written next to it, not in a commit message.
 
 ## 2.3.0
 
-iOS 112, Android 143. Simulator lines are marked; the rest wants a real iPhone and a real Android.
+iOS 112, Android 144. Simulator lines are marked; the rest wants a real iPhone and a real Android.
 
 **Claude & ChatGPT (MCP)**
 - [x] Claude (web + iPhone app): connect with a 6-digit code, ask, mark an episode; it reached the phone (4 Nov)
@@ -26,6 +26,8 @@ iOS 112, Android 143. Simulator lines are marked; the rest wants a real iPhone a
 **Un-mark an episode**
 - [x] iPhone (dev): asks first; Undo counts 5→1 on the button, sits low (4 Nov)
 - [~] Undo sits ABOVE the tab bar on a tab screen: Android 143 release (emulator), it COVERS the tab bar for its 5 s (4 Nov)
+- [x] Fixed (7af8f04): Android 144 release (emulator), Undo sits above the tab bar, tabs stay visible (4 Nov)
+- [ ] iPhone: Undo above the floating tab bar on Shows
 - [ ] Undo brings back the rating, feelings and favourite character
 - [x] Android 143 release (emulator): asks first, Undo 5→4 counts, Undo puts the episode back (4 Nov)
 
