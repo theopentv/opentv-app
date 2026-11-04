@@ -72,7 +72,7 @@ the next iOS build (the iCloud half needs the native module change, already in t
   feeling — writes go through Sync, Claude asks before each. Usage counted by shape only
   (dashboard card). Backend deployed (latest a046bdad); guide theopentv.com/claude; blog post in 9
   languages scheduled 25 Nov. Directory submissions dropped.
-- **Un-marking an episode** asks first, offers Undo (5 s, countdown on the button) and takes the
+- **Un-marking an episode** asks first, offers Undo (5 s, countdown on the button; above the tab bar on tab screens) and takes the
   rating, feelings, favourite character and community vote with it; comments stay. Same from
   Claude/other devices, without the question.
 - **Rating prompt** after a 7-day puzzle streak, only on a win, 1.5 s after the result.

@@ -12,12 +12,14 @@
  * about. Android's modals live inside the stack, so a plain view after it
  * already draws on top. Touches outside the pill pass straight through.
  */
+import { useSegments } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FullWindowOverlay } from 'react-native-screens';
 
+import { classicTabBarOn } from '@/classic-tab-bar';
 import { Text } from '@/components/text';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
@@ -25,6 +27,15 @@ import { colors, radius } from '@/theme';
 
 /** Long enough to read the line and reach the button; short enough not to linger. */
 const SHOW_MS = 5000;
+
+/**
+ * ABOVE THE TAB BAR, NOT ON IT (4 Nov). Low on the screen as asked, but on a
+ * tab screen the pill covered Shows/Movies/Explore/Profile for its 5 s. The
+ * bar's height is not readable from out here (this sits outside the tabs), so
+ * these are the bars' own heights: classic 60 (tabs/_layout), Material 3's
+ * navigation bar 80 dp, and the iOS floating bar with room to spare.
+ */
+const tabBarHeight = (classic: boolean) => (classic ? 60 : Platform.OS === 'ios' ? 64 : 80);
 
 type Toast = { id: number; message: string; onUndo: () => void };
 
@@ -48,6 +59,8 @@ export function showUndo(message: string, onUndo: () => void): void {
 
 export function UndoToast() {
   const insets = useSafeAreaInsets();
+  const onTab = useSegments()[0] === '(tabs)';
+  const [classic] = useState(classicTabBarOn);
   const [toast, setToast] = useState<Toast | null>(current);
   // THE SECONDS LEFT, on the button itself (Mahmood, 4 Nov): "Undo 4, 3, 2, 1"
   // says how long the choice is open better than a bar that just vanishes.
@@ -71,7 +84,7 @@ export function UndoToast() {
       <Animated.View
         key={toast.id}
         entering={FadeInDown.duration(180)}
-        style={[s.pill, { bottom: insets.bottom + 12 }]}
+        style={[s.pill, { bottom: insets.bottom + 12 + (onTab ? tabBarHeight(classic) : 0) }]}
         accessibilityLiveRegion="polite">
         <Text style={s.text} numberOfLines={2}>
           {toast.message}
