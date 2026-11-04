@@ -259,3 +259,26 @@ describe('the design op', () => {
     expect(designSnapshot((k) => meta[k] ?? null, 2026).yearlyGoalOn).toBe('');
   });
 });
+
+/**
+ * OPS THE ASSISTANT WRITES (2.3.0). Claude and ChatGPT change a library only by
+ * putting ops in the relay, from a device called "assistant" — the server's
+ * `backend/src/mcp/library.ts` plans them and `backend/test/mcp.test.ts`
+ * pins the same payloads. Every one must parse here to the action a phone's
+ * own tap would have queued, or the change silently never lands.
+ */
+describe('ops the assistant writes', () => {
+  const cases: [string, string, Action][] = [
+    ['watch', '{"show":300,"s":1,"e":1,"at":"2026-11-01 12:00:00"}', { t: 'watch', show: 300, s: 1, e: 1, at: '2026-11-01 12:00:00' }],
+    ['unwatch', '{"show":100,"s":1,"e":2}', { t: 'unwatch', show: 100, s: 1, e: 2 }],
+    ['movieAdd', '{"name":"Arrival","poster":null,"year":"2016","tmdbId":null}', { t: 'movieAdd', name: 'Arrival', poster: null, year: '2016', tmdbId: null }],
+    ['movieWatch', '{"name":"Arrival","on":true}', { t: 'movieWatch', name: 'Arrival', on: true }],
+    ['rate', '{"show":100,"s":2,"e":1,"ten":7,"stars":4}', { t: 'rate', show: 100, s: 2, e: 1, ten: 7, stars: 4 }],
+    ['movieStars', '{"name":"Amélie","ten":1,"stars":1}', { t: 'movieStars', name: 'Amélie', ten: 1, stars: 1 }],
+    ['showFlag', '{"show":400,"flag":"followed","on":true}', { t: 'showFlag', show: 400, flag: 'followed', on: true }],
+    ['emotion', '{"show":300,"s":1,"e":1,"emotion":11,"on":true}', { t: 'emotion', show: 300, s: 1, e: 1, emotion: 11, on: true }],
+  ];
+  it.each(cases)('%s parses to the same action a tap queues', (kind, payload, action) => {
+    expect(parseOp(kind, payload)).toEqual(action);
+  });
+});
