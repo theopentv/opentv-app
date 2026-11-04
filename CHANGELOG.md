@@ -62,7 +62,30 @@ the next iOS build (the iCloud half needs the native module change, already in t
   pictures get 404s (the ZIP itself still lands; the pictures are retried on the next backup).
 
 
-## 2.3.0 — the plan (3 Nov 2026; nothing built yet)
+## 2.3.0 — built 3–4 Nov on branch `2.3.0` (not released yet)
+
+- **OpenTV in Claude and ChatGPT (MCP), Plus.** Connector `https://theopentv.com/mcp`, free on both
+  (Claude: Add custom connector; ChatGPT web: Plugins → Add custom MCP server). Sign-in with a
+  6-digit code from Settings → Library → Claude & ChatGPT (works once, 5 min, in D1) or an
+  email account. 13 tools: search, history, show progress, episode details (feelings, favourite
+  character, comments), stats, ratings, lists; mark/unmark episode, mark film, rate, watchlist,
+  feeling — writes go through Sync, Claude asks before each. Usage counted by shape only
+  (dashboard card). Backend deployed (latest a046bdad); guide theopentv.com/claude; blog post in 9
+  languages scheduled 25 Nov. Directory submissions dropped.
+- **Un-marking an episode** asks first, offers Undo (5 s, countdown on the button) and takes the
+  rating, feelings, favourite character and community vote with it; comments stay. Same from
+  Claude/other devices, without the question.
+- **Rating prompt** after a 7-day puzzle streak, only on a win, 1.5 s after the result.
+- **Edit Profile and the avatar decoration page** as native sheets (no empty band; Done closes one).
+- **Profile tab:** no white "index" bar (also in Android 2.2.4).
+- **iOS:** backup pictures beside the ZIP (Android had it in 2.2.3).
+- **Server:** deleting an account deletes its backups and pictures.
+- Version 2.3.0, iOS 112; What's New rows; store notes in store-notes-2.3.0.md.
+
+Not in 2.3.0 (moved on): the website, the TV Time parity list, the in-app AI chat, invite a friend.
+
+
+## 2.3.0 — the plan (3 Nov 2026)
 
 Plan only (Mahmood, 3 Nov). Build each item only on his go.
 
