@@ -2904,7 +2904,7 @@
     "v230": {
       "assistants": "OpenTV in Claude e ChatGPT: con Plus, chiedi cosa hai guardato e fagli segnare, votare o aggiungere alla tua lista, con il tuo consenso ogni volta",
       "unmark": "Togliere il segno a un episodio ora chiede conferma, offre Annulla e rimuove voto ed emozioni",
-      "fixes": "Correzioni: schermate Modifica profilo e decorazione dell'avatar più ordinate, e i backup con molte immagini non rallentano più l'app"
+      "fixes": "Correzioni: nella ricerca un segnalibro indica i film nella tua lista e una spunta verde quelli già visti; toccala per toglierlo. Schermate Modifica profilo e decorazione dell'avatar più ordinate, e i backup con molte immagini non rallentano più l'app"
     },
     "v220": {
       "saveAll": "Wrapped: Salva tutto mette tutte le card del mese in un'unica condivisione, pronte per Foto o un post",

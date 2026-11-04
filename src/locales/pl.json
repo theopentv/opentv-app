@@ -3124,7 +3124,7 @@
     "v230": {
       "assistants": "OpenTV w Claude i ChatGPT: z Plus pytaj, co oglądałeś, i każ oznaczać, oceniać lub dodawać do listy, zawsze za twoją zgodą",
       "unmark": "Odznaczenie odcinka teraz pyta o potwierdzenie, daje Cofnij i usuwa ocenę oraz emocje",
-      "fixes": "Poprawki: uporządkowane ekrany Edytuj profil i ozdoba awatara, a kopie z wieloma obrazami nie spowalniają już aplikacji"
+      "fixes": "Poprawki: w wyszukiwaniu zakładka oznacza filmy z Twojej listy, a zielony znacznik obejrzane; dotknij go, aby usunąć film. Uporządkowane ekrany Edytuj profil i ozdoba awatara, a kopie z wieloma obrazami nie spowalniają już aplikacji"
     },
     "v220": {
       "saveAll": "Wrapped: Zapisz wszystko daje wszystkie karty miesiąca w jednym udostępnieniu, gotowe do Zdjęć lub posta",

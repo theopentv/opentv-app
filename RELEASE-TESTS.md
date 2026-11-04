@@ -13,6 +13,41 @@ failure written next to it, not in a commit message.
 ---
 
 
+## 2.3.0
+
+iOS 112, Android 143. Simulator lines are marked; the rest wants a real iPhone and a real Android.
+
+**Claude & ChatGPT (MCP)**
+- [x] Claude (web + iPhone app): connect with a 6-digit code, ask, mark an episode; it reached the phone (4 Nov)
+- [x] ChatGPT web: Add custom MCP server, connect, ask (4 Nov)
+- [ ] Settings → Library → Claude & ChatGPT: the code disappears once used; Remove stops the connection at once
+- [ ] Non-Plus account: tools answer the neutral "not included" line, no upgrade text
+
+**Un-mark an episode**
+- [x] iPhone (dev): asks first; Undo counts 5→1 on the button, sits low (4 Nov)
+- [ ] Undo sits ABOVE the tab bar on a tab screen, not under it
+- [ ] Undo brings back the rating, feelings and favourite character
+- [ ] Android: same
+
+**Search**
+- [x] iPhone (dev): watchlist film → bookmark; tap → removed in one tap (4 Nov)
+- [x] iPhone (dev): tapping the field fades the page in, no slide from the right (4 Nov)
+- [ ] Watched film → green tick; tap → asks before removing
+- [ ] Two series with one title: adding one ticks only that one
+- [ ] Android: same
+
+**Screens**
+- [ ] Edit Profile and avatar decoration: native sheet, Done/Save closes one screen only
+- [ ] Seasonal banner page opens as a sheet and closes back to the profile
+- [ ] Profile tab: no white "index" bar (iOS and Android)
+
+**Other**
+- [ ] Rating prompt only after a won puzzle on a 7-day streak
+- [ ] iOS backup with pictures: pictures upload beside the ZIP, app stays smooth
+- [ ] What's New shows the 2.3.0 rows in English and Arabic
+
+---
+
 ## 2.2.0
 
 iOS 107, Android 131. Simulator lines are marked; the rest wants a real iPhone and a real Android.

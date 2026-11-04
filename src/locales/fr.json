@@ -2904,7 +2904,7 @@
     "v230": {
       "assistants": "OpenTV dans Claude et ChatGPT : avec Plus, demandez ce que vous avez regardé et faites-lui marquer, noter ou ajouter à votre liste, avec votre accord à chaque fois",
       "unmark": "Démarquer un épisode demande maintenant confirmation, propose Annuler et retire sa note et ses émotions",
-      "fixes": "Corrections : écrans Modifier le profil et décoration d'avatar plus clairs, et les sauvegardes avec beaucoup d'images ne ralentissent plus l'appli"
+      "fixes": "Corrections : dans la recherche, un marque-page signale les films de votre liste et une coche verte ceux que vous avez vus ; touchez-la pour retirer le film. Écrans Modifier le profil et décoration d'avatar plus clairs, et les sauvegardes avec beaucoup d'images ne ralentissent plus l'appli"
     },
     "v220": {
       "saveAll": "Wrapped : Tout enregistrer met toutes les cartes de votre mois dans un seul partage, prêtes pour Photos ou un post",

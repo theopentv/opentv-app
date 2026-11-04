@@ -2904,7 +2904,7 @@
     "v230": {
       "assistants": "OpenTV in Claude und ChatGPT: Mit Plus fragst du, was du geschaut hast, und lässt markieren, bewerten oder auf die Merkliste setzen, jedes Mal mit deiner Zustimmung",
       "unmark": "Ungesehen markieren fragt jetzt nach, bietet Rückgängig an und entfernt Bewertung und Gefühle",
-      "fixes": "Fehlerbehebungen: aufgeräumtere Bildschirme für Profil und Avatar-Deko, und Backups mit vielen Bildern bremsen die App nicht mehr"
+      "fixes": "Fehlerbehebungen: In der Suche zeigt ein Lesezeichen Filme auf deiner Merkliste und ein grüner Haken gesehene Filme; tippe darauf, um den Film zu entfernen. Aufgeräumtere Bildschirme für Profil und Avatar-Deko, und Backups mit vielen Bildern bremsen die App nicht mehr"
     },
     "v220": {
       "saveAll": "Wrapped: Alle speichern legt alle Karten deines Monats in ein Teilen, bereit für Fotos oder einen Post",

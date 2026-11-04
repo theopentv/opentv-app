@@ -2904,7 +2904,7 @@
     "v230": {
       "assistants": "OpenTV en Claude y ChatGPT: con Plus, pregunta qué viste y pídele que marque, valore o añada a tu lista, con tu permiso cada vez",
       "unmark": "Desmarcar un episodio ahora pide confirmación, ofrece Deshacer y quita su valoración y emociones",
-      "fixes": "Correcciones: pantallas Editar perfil y decoración del avatar más ordenadas, y las copias con muchas imágenes ya no ralentizan la app"
+      "fixes": "Correcciones: en la búsqueda, un marcador indica las películas de tu lista y un tick verde las que ya has visto; tócalo para quitarla. Pantallas Editar perfil y decoración del avatar más ordenadas, y las copias con muchas imágenes ya no ralentizan la app"
     },
     "v220": {
       "saveAll": "Wrapped: Guardar todo reúne todas las tarjetas de tu mes en un solo compartir, listas para Fotos o un post",
