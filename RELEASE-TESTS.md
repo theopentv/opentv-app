@@ -25,26 +25,29 @@ iOS 112, Android 143. Simulator lines are marked; the rest wants a real iPhone a
 
 **Un-mark an episode**
 - [x] iPhone (dev): asks first; Undo counts 5→1 on the button, sits low (4 Nov)
-- [ ] Undo sits ABOVE the tab bar on a tab screen, not under it
+- [~] Undo sits ABOVE the tab bar on a tab screen: Android 143 release (emulator), it COVERS the tab bar for its 5 s (4 Nov)
 - [ ] Undo brings back the rating, feelings and favourite character
-- [ ] Android: same
+- [x] Android 143 release (emulator): asks first, Undo 5→4 counts, Undo puts the episode back (4 Nov)
 
 **Search**
 - [x] iPhone (dev): watchlist film → bookmark; tap → removed in one tap (4 Nov)
 - [x] iPhone (dev): tapping the field fades the page in, no slide from the right (4 Nov)
 - [ ] Watched film → green tick; tap → asks before removing
-- [ ] Two series with one title: adding one ticks only that one
-- [ ] Android: same
+- [x] Two series with one title: adding one ticks only that one — Android 143 release (emulator, "Casino") (4 Nov)
+- [x] Android 143 release (emulator): film → bookmark, series → tick, both removed in one tap (4 Nov)
 
 **Screens**
-- [ ] Edit Profile and avatar decoration: native sheet, Done/Save closes one screen only
+- [x] Android 143 release (emulator): Edit Profile has no empty band, close returns to the profile (4 Nov)
+- [ ] iPhone: Edit Profile and avatar decoration: native sheet, Done/Save closes one screen only
 - [ ] Seasonal banner page opens as a sheet and closes back to the profile
-- [ ] Profile tab: no white "index" bar (iOS and Android)
+- [x] Profile tab: no white "index" bar — Android 143 release (emulator) (4 Nov)
+- [ ] Profile tab: no white "index" bar — iPhone
 
 **Other**
 - [ ] Rating prompt only after a won puzzle on a 7-day streak
 - [ ] iOS backup with pictures: pictures upload beside the ZIP, app stays smooth
-- [ ] What's New shows the 2.3.0 rows in English and Arabic
+- [x] What's New 2.3.0 in English: iPhone 16 simulator (dev) and Android 143 release (4 Nov)
+- [ ] What's New in Arabic
 
 ---
 
