@@ -4383,5 +4383,20 @@
     "errPlus": "Serwer nie widzi jeszcze OpenTV Plus na tym koncie. Jeśli właśnie wykupiłeś subskrypcję, spróbuj ponownie za minutę.",
     "errNoBackup": "Na serwerze nie ma jeszcze kopii zapasowej OpenTV. Otwórz Kopię zapasową, dotknij Zrób kopię teraz, a potem pobierz kod.",
     "errNotConfigured": "Ten serwer nie oferuje Claude i ChatGPT."
+  },
+  "unmark": {
+    "title": "Odznaczyć ten odcinek?",
+    "plain": "Wróci do stanu nieobejrzanego.",
+    "losesOne": "Twoja ocena, emocja i ulubiona postać dla tego odcinka też zostaną usunięte.",
+    "losesMany": "Twoje oceny, emocje i ulubione postacie dla tych odcinków też zostaną usunięte.",
+    "button": "Odznacz",
+    "toastOne": "Odznaczono S{{season}}E{{episode}}",
+    "toastMany": {
+      "one": "Odznaczono {{count}} odcinek",
+      "few": "Odznaczono {{count}} odcinki",
+      "many": "Odznaczono {{count}} odcinków",
+      "other": "Odznaczono {{count}} odcinka"
+    },
+    "undo": "Cofnij"
   }
 }

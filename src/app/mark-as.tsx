@@ -9,7 +9,6 @@ import {
   setEpisodeWatchDate,
   setMovieWatchDate,
   setMovieWatched,
-  unmarkWatched,
 } from '@/db';
 import { tapLight } from '@/haptics';
 import { a11yHidden } from '@/a11y';
@@ -17,6 +16,7 @@ import { currentLocale, t } from '@/i18n';
 import { calendarMonth, recentDayOptions, shiftMonth } from '@/pure';
 import { colors, space } from '@/theme';
 import { intlTag } from '@/locale-resolve';
+import { confirmUnmark } from '@/unmark';
 
 /** Today, as the local `YYYY-MM-DD` the calendar and the database both speak. */
 function localDay(d: Date): string {
@@ -62,7 +62,6 @@ export default function MarkAsSheet() {
   const [step, setStep] = useState<'main' | 'days' | 'calendar'>('main');
   const [month, setMonth] = useState(() => today.slice(0, 7));
 
-  const unwatch = () => (movie ? setMovieWatched(movie, false) : unmarkWatched(showId, season, episode));
   const rewatch = () => (movie ? addMovieRewatch(movie) : markRewatched(showId, season, episode));
   const setDay = (day: string) =>
     movie ? setMovieWatchDate(movie, day) : setEpisodeWatchDate(showId, season, episode, day);
@@ -191,7 +190,16 @@ export default function MarkAsSheet() {
           </>
         ) : (
           <>
-            <Pressable style={styles.row} onPress={() => act(unwatch)} accessibilityRole="button">
+            <Pressable
+              style={styles.row}
+              accessibilityRole="button"
+              onPress={() => {
+                if (movie) return act(() => setMovieWatched(movie, false));
+                // An episode's un-mark takes its reactions too, so it asks
+                // first, over the sheet; the sheet closes only on a yes, and
+                // Undo rides above whatever screen is under it.
+                confirmUnmark(showId, [{ season, episode }], () => router.back());
+              }}>
               <Ionicons name="eye-off-outline" size={22} color={colors.text} />
               <Text style={styles.label}>{t('media.notWatched')}</Text>
             </Pressable>

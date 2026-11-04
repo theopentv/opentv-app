@@ -28,6 +28,7 @@ import { dedupeOwnComments } from '@/db';
 import { resumeInterruptedImport, runStartupRepairs } from '@/migrations';
 import { backfillMovieTvdbIds } from '@/movie-tvdb-match';
 import { initPurchases } from '@/purchases';
+import { UndoToast } from '@/components/undo-toast';
 import { MetaFillBar } from '@/components/meta-fill-bar';
 import { cacheAllShowMetadata, fillMissingEpisodeStills, fillMissingMoviePosters, fillMissingListNames,
   fillMissingListPosters,
@@ -1104,6 +1105,7 @@ export default function RootLayout() {
         </Stack>
         <MetaFillBar />
         <UpdateGate />
+        <UndoToast />
         {repairPhase != null && (
           <View style={[StyleSheet.absoluteFill, styles.repairOverlay]}>
             <ActivityIndicator size="large" color={colors.brand} />

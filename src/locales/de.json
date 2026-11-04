@@ -4073,5 +4073,18 @@
     "errPlus": "Der Server sieht OpenTV Plus für dieses Konto noch nicht. Wenn du gerade abonniert hast, versuch es in einer Minute noch einmal.",
     "errNoBackup": "Auf dem Server liegt noch kein OpenTV-Backup. Öffne Backup, tippe auf Jetzt sichern und hol dir dann einen Code.",
     "errNotConfigured": "Dieser Server bietet Claude & ChatGPT nicht an."
+  },
+  "unmark": {
+    "title": "Markierung für diese Folge aufheben?",
+    "plain": "Sie gilt wieder als nicht gesehen.",
+    "losesOne": "Deine Bewertung, dein Gefühl und deine Lieblingsfigur für diese Folge werden ebenfalls entfernt.",
+    "losesMany": "Deine Bewertungen, Gefühle und Lieblingsfiguren für diese Folgen werden ebenfalls entfernt.",
+    "button": "Aufheben",
+    "toastOne": "Markierung für S{{season}}E{{episode}} aufgehoben",
+    "toastMany": {
+      "one": "Markierung für {{count}} Folge aufgehoben",
+      "other": "Markierung für {{count}} Folgen aufgehoben"
+    },
+    "undo": "Rückgängig"
   }
 }

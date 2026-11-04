@@ -36,6 +36,7 @@ import {
   setShowFinished,
   setShowName,
   setShowPoster,
+  snapshotHasReactions,
   toggleEpisodeEmotion,
   unmarkWatched,
 } from '@/db';
@@ -115,9 +116,27 @@ function apply(a: Action, ts = 0): void {
     case 'watch':
       markWatched(a.show, a.s, a.e, a.at || undefined);
       break;
-    case 'unwatch':
-      unmarkWatched(a.show, a.s, a.e);
+    case 'unwatch': {
+      /*
+       * THE REACTIONS GO HERE TOO, with no question and no Undo: the person
+       * already said yes — on the other device, or to Claude. Clearing locally
+       * emits nothing (the echo guard is up), so this cannot loop; when the
+       * other device was the app, its own `unrate`/`emotion`/`charVote` ops
+       * follow and find nothing left to do.
+       *
+       * The community vote is withdrawn from here as well, because an un-mark
+       * from Claude reaches the phone only as this op. A second withdrawal of
+       * a vote the other device already took back is an upsert of nothing.
+       */
+      const snap = unmarkWatched(a.show, a.s, a.e);
+      if (snapshotHasReactions(snap)) {
+        // Lazily: the community module draws in the network and the UI, and
+        // this one must stay loadable without them.
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        (require('@/unmark') as typeof import('@/unmark')).withdrawCommunity(snap);
+      }
       break;
+    }
     case 'rewatch':
       markRewatched(a.show, a.s, a.e);
       break;

@@ -950,32 +950,166 @@ export function markWatchedMany(
   });
 }
 
-/** The un-check of many episodes of one show, for the same reason and with the
- *  same promise as `markWatchedMany`: one commit, identical rows and ops. */
-export function unmarkWatchedMany(showId: number, episodes: readonly { season: number; episode: number }[]): void {
-  if (episodes.length === 0) return;
+/** Everything an un-mark takes away from one episode, kept so Undo can put it back. */
+export type UnmarkedEpisode = {
+  season: number;
+  episode: number;
+  /** Every watch row, rewatches included, with the day it was really watched. */
+  watches: { watchedAt: string; rewatch: number; runtime: number | null }[];
+  /** Out of ten, as `episode_ratings.stars` stores it. */
+  stars: number | null;
+  emotions: number[];
+  character: { name: string | null; charId: number | null } | null;
+};
+export type UnmarkSnapshot = { showId: number; episodes: UnmarkedEpisode[] };
+
+/** What an un-mark of these episodes would take, read before anything is deleted. */
+export function snapshotEpisodes(
+  showId: number,
+  episodes: readonly { season: number; episode: number }[],
+): UnmarkSnapshot {
+  return {
+    showId,
+    episodes: episodes.map(({ season, episode }) => {
+      const at = [showId, season, episode];
+      const where = 'WHERE showId = ? AND season = ? AND episode = ?';
+      return {
+        season,
+        episode,
+        watches: db.getAllSync<UnmarkedEpisode['watches'][number]>(
+          `SELECT watchedAt, rewatch, runtime FROM watches ${where} ORDER BY id`,
+          at,
+        ),
+        stars: db.getFirstSync<{ stars: number }>(`SELECT stars FROM episode_ratings ${where}`, at)?.stars ?? null,
+        emotions: db
+          .getAllSync<{ emotion: number }>(`SELECT emotion FROM episode_emotions ${where} ORDER BY emotion`, at)
+          .map((r) => r.emotion),
+        character: db.getFirstSync<{ name: string | null; charId: number | null }>(
+          `SELECT name, charId FROM character_votes ${where}`,
+          at,
+        ),
+      };
+    }),
+  };
+}
+
+/** True when an un-mark would cost a rating, a feeling or a favourite — the
+ *  case the confirmation has to name. */
+export function snapshotHasReactions(snap: UnmarkSnapshot): boolean {
+  return snap.episodes.some((e) => e.stars != null || e.emotions.length > 0 || e.character != null);
+}
+
+/**
+ * The un-check of many episodes of one show, for the same reason and with the
+ * same promise as `markWatchedMany`: one commit, identical rows and ops.
+ *
+ * AND THE REACTIONS GO WITH THE TICK (4 Nov). A rating, a feeling or a
+ * favourite character for an episode you have not watched is a wrong fact: in
+ * the stats, in the community averages, and in what Claude reads back. They are
+ * cleared through the same ops a hand clear emits — `unrate`, `emotion` off,
+ * `charVote` null — so every other device agrees. The comment stays: writing is
+ * never deleted by a tick.
+ *
+ * `keepReactions` is for the one un-mark that is not one: cancelling the
+ * "mark the earlier ones too?" prompt takes back a tick made a second ago, and
+ * must leave the episode exactly as it was before that tick.
+ *
+ * Returns what it took, so Undo can restore it exactly.
+ */
+export function unmarkWatchedMany(
+  showId: number,
+  episodes: readonly { season: number; episode: number }[],
+  opts?: { keepReactions?: boolean },
+): UnmarkSnapshot {
+  const snap = snapshotEpisodes(showId, episodes);
+  if (episodes.length === 0) return snap;
   db.withTransactionSync(() => {
     const keys = unmarkedEpisodeKeys();
     for (const { season, episode } of episodes) {
       db.runSync('DELETE FROM watches WHERE showId = ? AND season = ? AND episode = ?', [showId, season, episode]);
+      // remember it, or the next import (including the silent self-repair) puts
+      // it straight back — the user's correction has to outlive the export
       keys.add(episodeKey(showId, season, episode));
     }
     saveUnmarkedEpisodes(keys);
     recountShow(showId);
     for (const { season, episode } of episodes) queueOp({ t: 'unwatch', show: showId, s: season, e: episode });
+    if (opts?.keepReactions) return;
+    for (const ep of snap.episodes) {
+      const at = [showId, ep.season, ep.episode];
+      if (ep.stars != null) clearEpisodeRating(showId, ep.season, ep.episode);
+      for (const emotion of ep.emotions) {
+        db.runSync('DELETE FROM episode_emotions WHERE showId = ? AND season = ? AND episode = ? AND emotion = ?', [...at, emotion]);
+        queueOp({ t: 'emotion', show: showId, s: ep.season, e: ep.episode, emotion, on: false });
+      }
+      if (ep.character) {
+        setCharacterVoteExact(showId, ep.season, ep.episode, null);
+        queueOp({ t: 'charVote', show: showId, s: ep.season, e: ep.episode, name: null });
+      }
+    }
   });
+  return snap;
 }
 
-/** Remove all watch records of an episode (un-check). */
-export function unmarkWatched(showId: number, season: number, episode: number): void {
-  db.runSync('DELETE FROM watches WHERE showId = ? AND season = ? AND episode = ?', [showId, season, episode]);
-  // remember it, or the next import (including the silent self-repair) puts it
-  // straight back — the user's correction has to outlive the export
-  const keys = unmarkedEpisodeKeys();
-  keys.add(episodeKey(showId, season, episode));
-  saveUnmarkedEpisodes(keys);
-  recountShow(showId);
-  queueOp({ t: 'unwatch', show: showId, s: season, e: episode });
+/** Remove all watch records of an episode (un-check), and its reactions — see
+ *  `unmarkWatchedMany`, which this is the one-episode case of. */
+export function unmarkWatched(
+  showId: number,
+  season: number,
+  episode: number,
+  opts?: { keepReactions?: boolean },
+): UnmarkSnapshot {
+  return unmarkWatchedMany(showId, [{ season, episode }], opts);
+}
+
+/**
+ * UNDO AN UN-MARK, exactly: the same watch rows with their own dates, the
+ * rating, the feelings, the favourite, and the tombstone withdrawn.
+ *
+ * The ops are the ones a re-mark and a re-rate emit, so another device lands
+ * where this one does. One limit: `rewatch` carries no date in the sync
+ * vocabulary, so a restored rewatch is dated "now" on the OTHER devices; this
+ * one keeps the true day.
+ */
+export function restoreUnmarked(snap: UnmarkSnapshot): void {
+  const { showId } = snap;
+  db.withTransactionSync(() => {
+    const keys = unmarkedEpisodeKeys();
+    for (const ep of snap.episodes) {
+      const at = [showId, ep.season, ep.episode];
+      for (const w of ep.watches) {
+        db.runSync('INSERT INTO watches (showId, season, episode, watchedAt, rewatch, runtime) VALUES (?, ?, ?, ?, ?, ?)', [
+          ...at,
+          w.watchedAt,
+          w.rewatch,
+          w.runtime,
+        ]);
+        queueOp(
+          w.rewatch
+            ? { t: 'rewatch', show: showId, s: ep.season, e: ep.episode }
+            : { t: 'watch', show: showId, s: ep.season, e: ep.episode, at: w.watchedAt },
+        );
+      }
+      if (ep.watches.length > 0) keys.delete(episodeKey(showId, ep.season, ep.episode));
+      if (ep.stars != null) setEpisodeRating(showId, ep.season, ep.episode, ep.stars);
+      for (const emotion of ep.emotions) {
+        db.runSync('INSERT OR IGNORE INTO episode_emotions (showId, season, episode, emotion) VALUES (?, ?, ?, ?)', [...at, emotion]);
+        queueOp({ t: 'emotion', show: showId, s: ep.season, e: ep.episode, emotion, on: true });
+      }
+      if (ep.character) {
+        db.runSync('INSERT OR REPLACE INTO character_votes (showId, season, episode, name, charId) VALUES (?, ?, ?, ?, ?)', [
+          ...at,
+          ep.character.name,
+          ep.character.charId,
+        ]);
+        // A TV Time vote has no name, and `name: null` on the wire means
+        // "cleared" — so only a named favourite is told to the other devices.
+        if (ep.character.name) queueOp({ t: 'charVote', show: showId, s: ep.season, e: ep.episode, name: ep.character.name });
+      }
+    }
+    saveUnmarkedEpisodes(keys);
+    recountShow(showId, { neverLower: true });
+  });
 }
 
 /**

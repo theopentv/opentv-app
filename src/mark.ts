@@ -65,7 +65,9 @@ export function markWatchedWithPrompt(showId: number, season: number, episode: n
       text: t('common.cancel'),
       style: 'cancel',
       onPress: () => {
-        unmarkWatched(showId, season, episode);
+        // Not an un-mark: the tick of a second ago, taken back. Whatever the
+        // episode held before it — a rating made before watching — stays.
+        unmarkWatched(showId, season, episode, { keepReactions: true });
         onDone();
       },
     },

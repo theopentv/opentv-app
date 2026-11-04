@@ -10,6 +10,7 @@ import { a11yAction, a11yHidden } from '@/a11y';
 import { ActionSheet } from '@/components/action-sheet';
 import { Poster, posterSpeech } from '@/components/poster';
 import { CheckCircle, EmptyState, Screen, TopTabs, useDetailRouter, useScreenWidth } from '@/components/ui';
+import { useRemoteChange } from '@/device-sync';
 import { archiveCounts, getHistory, getMeta, getMovieTotals, getShowProgress, getTotals, libraryOwner, setMeta, type ShowProgress } from '@/db';
 import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
@@ -175,6 +176,9 @@ function ShowsScreen() {
       setFocusPass((p) => p + 1);
     }, []),
   );
+  // An Undo from the toast lands while this tab is already focused, so focus
+  // never re-reads it; neither does another device's tick.
+  useRemoteChange(() => setTick((t) => t + 1));
 
   const rows = useMemo<Row[]>(() => {
     // completed / caught-up shows have nothing to watch next — the Watch List

@@ -4073,5 +4073,18 @@
     "errPlus": "O servidor ainda não vê o OpenTV Plus nesta conta. Se você acabou de assinar, tente de novo em um minuto.",
     "errNoBackup": "Ainda não há um backup do OpenTV no servidor. Abra Backup, toque em Fazer backup agora e depois obtenha um código.",
     "errNotConfigured": "Este servidor não oferece Claude e ChatGPT."
+  },
+  "unmark": {
+    "title": "Desmarcar este episódio?",
+    "plain": "Ele volta a não assistido.",
+    "losesOne": "Sua nota, sua emoção e seu personagem favorito deste episódio também serão removidos.",
+    "losesMany": "Suas notas, emoções e personagens favoritos destes episódios também serão removidos.",
+    "button": "Desmarcar",
+    "toastOne": "S{{season}}E{{episode}} desmarcado",
+    "toastMany": {
+      "one": "{{count}} episódio desmarcado",
+      "other": "{{count}} episódios desmarcados"
+    },
+    "undo": "Desfazer"
   }
 }

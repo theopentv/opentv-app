@@ -4073,5 +4073,18 @@
     "errPlus": "The server doesn’t see OpenTV Plus on this account yet. If you’ve just subscribed, try again in a minute.",
     "errNoBackup": "There’s no OpenTV Backup on the server yet. Open Backup, tap Back up now, then get a code.",
     "errNotConfigured": "This server doesn’t offer Claude & ChatGPT."
+  },
+  "unmark": {
+    "title": "Unmark this episode?",
+    "plain": "It goes back to not watched.",
+    "losesOne": "Your rating, feeling and favorite character for it will be removed too.",
+    "losesMany": "Your ratings, feelings and favorite characters for these episodes will be removed too.",
+    "button": "Unmark",
+    "toastOne": "Unmarked S{{season}}E{{episode}}",
+    "toastMany": {
+      "one": "Unmarked {{count}} episode",
+      "other": "Unmarked {{count}} episodes"
+    },
+    "undo": "Undo"
   }
 }

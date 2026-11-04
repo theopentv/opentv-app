@@ -28,7 +28,8 @@ import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
 import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
-import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, unmarkWatchedMany, type EpisodeWatch } from '@/db';
+import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, type EpisodeWatch } from '@/db';
+import { confirmUnmark } from '@/unmark';
 import { tapSelection } from '@/haptics';
 import { markWatchedWithPrompt } from '@/mark';
 import { showTvdbIdForTmdb } from '@/catalog';
@@ -1882,17 +1883,11 @@ export default function ShowScreen() {
                     { text: t('common.cancel'), style: 'cancel' },
                   ]);
                 } else {
-                  Alert.alert(t('show.unmarkAllTitle', { title: show.name }), t('show.unmarkAllBody'), [
-                    {
-                      text: t('show.unmarkAll'),
-                      style: 'destructive',
-                      onPress: () => {
-                        unmarkWatchedMany(show.tvdbId, all.map((x) => ({ season: x.s, episode: x.e })));
-                        setTick((t) => t + 1);
-                      },
-                    },
-                    { text: t('common.cancel'), style: 'cancel' },
-                  ]);
+                  confirmUnmark(show.tvdbId, all.map((x) => ({ season: x.s, episode: x.e })), bump, {
+                    title: t('show.unmarkAllTitle', { title: show.name }),
+                    body: t('show.unmarkAllBody'),
+                    button: t('show.unmarkAll'),
+                  });
                 }
               }}>
               <Ionicons name="checkmark-circle-outline" size={22} color={colors.dim} />
@@ -1970,16 +1965,11 @@ export default function ShowScreen() {
                         if (!total) return;
                         const label = sr.season === 0 ? t('show.specials') : t('show.season', { n: sr.season });
                         if (complete) {
-                          Alert.alert(t('show.unmarkSeasonTitle', { label }), t('show.unmarkSeasonBody'), [
-                            {
-                              text: t('show.unmarkSeason'),
-                              onPress: () => {
-                                unmarkWatchedMany(show.tvdbId, Array.from({ length: total }, (_, i) => ({ season: sr.season, episode: i + 1 })));
-                                setTick((t) => t + 1);
-                              },
-                            },
-                            { text: t('common.cancel'), style: 'cancel' },
-                          ]);
+                          confirmUnmark(show.tvdbId, Array.from({ length: total }, (_, i) => ({ season: sr.season, episode: i + 1 })), bump, {
+                            title: t('show.unmarkSeasonTitle', { label }),
+                            body: t('show.unmarkSeasonBody'),
+                            button: t('show.unmarkSeason'),
+                          });
                         } else {
                           /**
                            * A SEASON MARK STOPS AT WHAT HAS AIRED.

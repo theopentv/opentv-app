@@ -4073,5 +4073,18 @@
     "errPlus": "Il server non vede ancora OpenTV Plus su questo account. Se ti sei appena abbonato, riprova tra un minuto.",
     "errNoBackup": "Sul server non c’è ancora un backup OpenTV. Apri Backup, tocca Fai il backup ora, poi ottieni un codice.",
     "errNotConfigured": "Questo server non offre Claude e ChatGPT."
+  },
+  "unmark": {
+    "title": "Togliere il segno da questo episodio?",
+    "plain": "Tornerà a non visto.",
+    "losesOne": "Verranno rimossi anche il tuo voto, la tua emozione e il tuo personaggio preferito per questo episodio.",
+    "losesMany": "Verranno rimossi anche i tuoi voti, le tue emozioni e i tuoi personaggi preferiti per questi episodi.",
+    "button": "Togli il segno",
+    "toastOne": "Segno tolto da S{{season}}E{{episode}}",
+    "toastMany": {
+      "one": "Segno tolto da {{count}} episodio",
+      "other": "Segno tolto da {{count}} episodi"
+    },
+    "undo": "Annulla"
   }
 }

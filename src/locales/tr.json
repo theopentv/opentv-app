@@ -4073,5 +4073,18 @@
     "errPlus": "Sunucu bu hesapta henüz OpenTV Plus görmüyor. Yeni abone olduysan bir dakika sonra tekrar dene.",
     "errNoBackup": "Sunucuda henüz bir OpenTV Yedeği yok. Yedekleme’yi aç, Şimdi yedekle’ye dokun, sonra bir kod al.",
     "errNotConfigured": "Bu sunucu Claude ve ChatGPT sunmuyor."
+  },
+  "unmark": {
+    "title": "Bu bölümün işareti kaldırılsın mı?",
+    "plain": "Bölüm izlenmedi durumuna döner.",
+    "losesOne": "Bu bölüme verdiğin puan, duygu ve favori karakter de silinecek.",
+    "losesMany": "Bu bölümlere verdiğin puanlar, duygular ve favori karakterler de silinecek.",
+    "button": "İşareti kaldır",
+    "toastOne": "S{{season}}E{{episode}} işareti kaldırıldı",
+    "toastMany": {
+      "one": "{{count}} bölümün işareti kaldırıldı",
+      "other": "{{count}} bölümün işareti kaldırıldı"
+    },
+    "undo": "Geri al"
   }
 }
