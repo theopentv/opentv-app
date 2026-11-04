@@ -4064,6 +4064,7 @@
     "newCode": "Obtener un código nuevo",
     "copyCode": "Copiar código",
     "expiresIn": "Caduca en {{time}}",
+    "codeOnce": "Cada código funciona una sola vez. Para volver a conectar, pide uno nuevo.",
     "expired": "Este código ha caducado.",
     "connected": "Conectados",
     "addedOn": "Añadido el {{date}}",

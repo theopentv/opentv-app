@@ -131,6 +131,7 @@ export type LocaleKey =
   | "aiConnect.addedOn"
   | "aiConnect.agree"
   | "aiConnect.backupBody"
+  | "aiConnect.codeOnce"
   | "aiConnect.connected"
   | "aiConnect.consent"
   | "aiConnect.copied"

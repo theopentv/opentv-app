@@ -4064,6 +4064,7 @@
     "newCode": "Yeni kod al",
     "copyCode": "Kodu kopyala",
     "expiresIn": "{{time}} içinde sona erer",
+    "codeOnce": "Her kod yalnızca bir kez çalışır. Yeniden bağlanmak için yeni bir kod al.",
     "expired": "Bu kodun süresi doldu.",
     "connected": "Bağlı",
     "addedOn": "Eklenme: {{date}}",

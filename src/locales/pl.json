@@ -4374,6 +4374,7 @@
     "newCode": "Pobierz nowy kod",
     "copyCode": "Kopiuj kod",
     "expiresIn": "Wygasa za {{time}}",
+    "codeOnce": "Każdy kod działa tylko raz. Aby połączyć ponownie, pobierz nowy.",
     "expired": "Ten kod wygasł.",
     "connected": "Połączone",
     "addedOn": "Dodano {{date}}",

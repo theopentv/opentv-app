@@ -53,6 +53,9 @@ function errorText(e: unknown): string {
   return key ? t(key) : communityErrorText(e);
 }
 
+/** How long a code lives on the server (`POST /v1/mcp/code`). */
+const CODE_LIFE_MS = 5 * 60 * 1000;
+
 export default function AiConnectScreen() {
   /* PLUS, OR A SERVER OF THEIR OWN — the rule cloud backup uses, because what
      the chatbot reads IS that backup. A self-hosted box that does not run the
@@ -80,7 +83,13 @@ export default function AiConnectScreen() {
     if (!account || !backup) return;
     setListError(null);
     void fetchMcpConnections()
-      .then(setConnections)
+      .then((list) => {
+        setConnections(list);
+        // A CODE WORKS ONCE (4 Nov). The connection it made is the proof it was
+        // used, and showing it on after that sent people back to Claude with a
+        // code the server had already spent. Gone as soon as its connection is.
+        setCode((prev) => (prev && list.some((c) => Date.parse(c.createdAt) >= Date.parse(prev.expiresAt) - CODE_LIFE_MS - 5000) ? null : prev));
+      })
       .catch((e: unknown) => {
         setConnections((prev) => prev ?? []);
         setListError(communityErrorText(e));
@@ -93,8 +102,14 @@ export default function AiConnectScreen() {
   useEffect(() => {
     if (!code) return;
     const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [code]);
+    // While a code is on screen, look for the connection it makes every few
+    // seconds, so a code used in the browser disappears here by itself.
+    const poll = setInterval(refresh, 5000);
+    return () => {
+      clearInterval(id);
+      clearInterval(poll);
+    };
+  }, [code, refresh]);
 
   const left = code ? secondsLeft(code.expiresAt, now) : 0;
 
@@ -211,6 +226,7 @@ export default function AiConnectScreen() {
                         <Ionicons name={copied === 'code' ? 'checkmark' : 'copy-outline'} size={20} color={copied === 'code' ? colors.green : colors.dim} />
                       </Pressable>
                       <Text style={styles.countdown}>{t('aiConnect.expiresIn', { time: formatCountdown(left) })}</Text>
+                      <Text style={styles.countdown}>{t('aiConnect.codeOnce')}</Text>
                     </>
                   ) : (
                     <>
