@@ -105,7 +105,14 @@ export default function SeasonalScreen() {
 
   return (
     <Screen>
-      <NavHeader title={t('seasonal.title')} />
+      {/* A sheet: close on the left, Done on the right. Choices save as they
+          are made, so Done only closes -- it is there because a page with
+          no way to say "finished" reads as if nothing was saved. */}
+      <NavHeader
+        title={t('seasonal.title')}
+        close
+        items={[{ type: 'button', label: t('common.done'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => router.back() }]}
+      />
       <ScrollView contentContainerStyle={{ paddingBottom: 48 }}>
         <ContentColumn>
           <MenuRow

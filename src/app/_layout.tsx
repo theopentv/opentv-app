@@ -890,7 +890,9 @@ export default function RootLayout() {
         <Stack.Screen name="calendar-sync" />
         <Stack.Screen name="smart-reminders" />
         <Stack.Screen name="my-services" />
-        <Stack.Screen name="seasonal" />
+        {/* A sheet of its own: opened from Edit Profile (itself a sheet), a plain
+            push landed behind it, and leaving closed both (4 Nov). */}
+        <Stack.Screen name="seasonal" options={{ presentation: 'modal', headerShown: true }} />
         <Stack.Screen name="yearly-goal" />
         <Stack.Screen name="tonight" />
         <Stack.Screen name="ratings/[id]" />

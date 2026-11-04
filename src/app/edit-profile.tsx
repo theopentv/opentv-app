@@ -12,7 +12,7 @@ import { getHandle, useJoined } from '@/community-session';
 import { openCoverAdjust } from '@/cover-frame-live';
 import { PromptModal } from '@/components/prompt-modal';
 import { LayoutPicker } from '@/components/layout-picker';
-import { ContentColumn, Screen } from '@/components/ui';
+import { ContentColumn, Screen, NavHeader } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import seed from '@/seed';
 import { getMeta, getProfileLayout, setMeta } from '@/db';
@@ -275,17 +275,14 @@ export default function EditProfileScreen() {
 
   return (
     <Screen>
-      <View style={styles.head}>
-        <Pressable onPress={() => router.back()} hitSlop={8} accessibilityRole="button" accessibilityLabel={t('a11y.close')}>
-          <Ionicons name="close" size={24} color={colors.text} />
-        </Pressable>
-        <Text style={styles.headTitle} accessibilityRole="header">
-          {t('editProfile.title')}
-        </Text>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} hitSlop={8}>
-          <Text style={{ color: colors.text, fontSize: 15, fontWeight: '600' }}>{t('editProfile.save')}</Text>
-        </Pressable>
-      </View>
+      {/* The native header, not a drawn one: the layout gives this sheet a
+          header, and a drawn row under it left an empty band above the X and
+          Save (4 Nov). Changes save as they are made; Save closes. */}
+      <NavHeader
+        title={t('editProfile.title')}
+        close
+        items={[{ type: 'button', label: t('editProfile.save'), icon: { type: 'sfSymbol', name: 'checkmark' }, onPress: () => router.back() }]}
+      />
       <ScrollView>
         <ContentColumn>
           <Pressable accessibilityRole="button" style={styles.photoRow} onPress={() => pickPhoto('avatar')}>
@@ -493,14 +490,6 @@ export default function EditProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  head: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: space.lg,
-    paddingVertical: 12,
-  },
-  headTitle: { color: colors.text, fontSize: 17, fontWeight: '600' },
   photoRow: {
     flexDirection: 'row',
     alignItems: 'center',
