@@ -745,6 +745,10 @@ export default function RootLayout() {
             gestureEnabled: false,
           }}
         />
+        {/* TAPPING THE SEARCH FIELD SHOULD NOT SLIDE A NEW PAGE IN (4 Nov): the
+            field is on screen already, so a push from the right read as the
+            phone jumping. A quick fade opens it in place, like system search. */}
+        <Stack.Screen name="search" options={{ animation: 'fade', animationDuration: 150 }} />
         <Stack.Screen
           name="cover-adjust"
           options={{

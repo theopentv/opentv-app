@@ -4116,21 +4116,26 @@ export type LibraryCandidate = {
  * at all — the GDPR export never matched them against anything.
  */
 export function inLibrary(item: LibraryCandidate): boolean {
+  return libraryMatch(item) != null;
+}
+
+/** The library row `inLibrary` matched: a show's tvdbId or a film's row name
+ *  (which can carry a "(year)" suffix), so a remove hits that exact row. */
+export function libraryMatch(item: LibraryCandidate): { showId: number } | { movie: string } | null {
   if (item.kind === 'show') {
     if (item.tvdbId != null) {
-      const byId = db.getFirstSync<{ n: number }>(
-        'SELECT 1 AS n FROM shows WHERE tvdbId = ?',
+      const byId = db.getFirstSync<{ tvdbId: number }>(
+        'SELECT tvdbId FROM shows WHERE tvdbId = ?',
         [item.tvdbId],
       );
-      if (byId) return true;
+      if (byId) return { showId: byId.tvdbId };
     }
     // A TMDB-only row has no TheTVDB id yet, so the title is the only evidence.
-    return (
-      db.getFirstSync<{ n: number }>(
-        'SELECT 1 AS n FROM shows WHERE LOWER(name) = ?',
-        [item.name.trim().toLowerCase()],
-      ) != null
+    const byName = db.getFirstSync<{ tvdbId: number }>(
+      'SELECT tvdbId FROM shows WHERE LOWER(name) = ?',
+      [item.name.trim().toLowerCase()],
     );
+    return byName ? { showId: byName.tvdbId } : null;
   }
 
   // Films go through the identity matcher rather than a query, because the
@@ -4142,7 +4147,7 @@ export function inLibrary(item: LibraryCandidate): boolean {
     tmdbId: number | null;
     year: string | null;
   }>('SELECT name, originalName, tmdbId, year FROM movies');
-  return rows.some((m) =>
+  const hit = rows.find((m) =>
     movieIdentityMatches(
       {
         tmdbId: item.tmdbId ?? null,
@@ -4159,6 +4164,7 @@ export function inLibrary(item: LibraryCandidate): boolean {
       { strict: true },
     ),
   );
+  return hit ? { movie: hit.name } : null;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

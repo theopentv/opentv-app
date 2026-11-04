@@ -8919,3 +8919,24 @@ export function isTitleOfFilm(name: string, titles: readonly (string | null | un
   const want = filmTitleKey(name);
   return want !== '' && titles.some((x) => x != null && filmTitleKey(x) === want);
 }
+
+/**
+ * Which search results get the ✓: each library row is ticked on ONE result.
+ * A result holding the row by its exact tvdbId owns it; otherwise the first
+ * (best-ranked) match does. Without this, two series both called "Casino"
+ * were both ticked after adding one (Raul, 4 Nov).
+ */
+export function oneTickPerRow(
+  hits: readonly { key: string; tvdbId?: number | null; hit: { showId: number } | { movie: string } | null }[],
+): Set<string> {
+  const rowOf = (h: (typeof hits)[number]['hit']) => (h == null ? null : 'movie' in h ? `m:${h.movie}` : `s:${h.showId}`);
+  const owner = new Map<string, string>();
+  for (const { key, tvdbId, hit } of hits) if (hit && 'showId' in hit && tvdbId === hit.showId) owner.set(rowOf(hit)!, key);
+  const ticked = new Set<string>();
+  for (const { key, hit } of hits) {
+    const row = rowOf(hit);
+    if (row && !owner.has(row)) owner.set(row, key);
+    if (row && owner.get(row) === key) ticked.add(key);
+  }
+  return ticked;
+}

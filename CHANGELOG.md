@@ -80,6 +80,9 @@ the next iOS build (the iCloud half needs the native module change, already in t
 - **Profile tab:** no white "index" bar (also in Android 2.2.4).
 - **iOS:** backup pictures beside the ZIP (Android had it in 2.2.3).
 - **Server:** deleting an account deletes its backups and pictures.
+- **Search: the yellow tick takes it back out** (Raul, 4 Nov). It was a plain icon. Nothing
+  watched → one tap; any history → asks first (same rule as the Explore tick). And adding one
+  series no longer ticks another series with the same title (each library row ticks one result).
 - Version 2.3.0, iOS 112; What's New rows; store notes in store-notes-2.3.0.md.
 
 Not in 2.3.0 (moved on): the website, the TV Time parity list, the in-app AI chat, invite a friend.

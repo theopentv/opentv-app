@@ -8,13 +8,23 @@ import { searchUsers, type UserSearchResult } from '@/community-profiles';
 import { FollowChip, PersonRow } from '@/components/person-row';
 import { Screen, TopTabs } from '@/components/ui';
 import { clearSearchHistory, forgetSearch, getSearchHistory, rememberSearch } from '@/search-history';
-import db, { addMovieToWatchlist, addShow, inLibrary, setMovieFavorite, setShowFavorited } from '@/db';
+import db, {
+  addMovieToWatchlist,
+  addShow,
+  deleteMovie,
+  deleteShow,
+  getMovie,
+  libraryMatch,
+  setMovieFavorite,
+  setShowFavorited,
+  showWatchCount,
+} from '@/db';
 import { searchCatalog, tvdbIdFor, type CatalogItem } from '@/catalog';
 import { useJoined } from '@/community-session';
 import { tapLight } from '@/haptics';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
 import { avatarUri } from '@/community-comments';
-import { displayTitle, movieRoute, movieYear, type SearchHistoryEntry } from '@/pure';
+import { displayTitle, movieRoute, movieYear, oneTickPerRow, type SearchHistoryEntry } from '@/pure';
 import { colors, space, ls } from '@/theme';
 import { a11yAction } from '@/a11y';
 import { currentLocale, t } from '@/i18n';
@@ -126,16 +136,26 @@ export default function SearchScreen() {
 
   // keys of results currently in the library — derived fresh from the DB, so
   // the ✓/＋ always reflects reality (recomputes on new results or on focus)
-  const libSet = useMemo(() => {
-    const next = new Set<string>();
-    if (!results.length) return next;
+  const { libSet, seenSet } = useMemo(() => {
+    const seenSet = new Set<string>();
+    if (!results.length) return { libSet: new Set<string>(), seenSet };
     // ONE ANSWER, from `inLibrary` in db.ts — see the note there for what four
     // disagreeing answers cost. This screen held its own copy of the rule: a
     // name compare for shows and the identity matcher for films.
-    for (const r of results) {
-      if (inLibrary({ kind: r.kind, name: r.name, tvdbId: r.tvdbId, tmdbId: r.tmdbId, year: r.year })) next.add(r.key);
+    //
+    // ONE TICK PER LIBRARY ROW (Raul, 4 Nov): adding the series "Casino" also
+    // ticked a second, different series "Casino", because the show fallback
+    // matches on the title. A row the list holds by its exact id belongs to
+    // that result; otherwise the first (best-ranked) title match takes it.
+    const hits = results.map((r) => ({ key: r.key, tvdbId: r.tvdbId, hit: libraryMatch(r) }));
+    const libSet = oneTickPerRow(hits);
+    // WATCHED OR ONLY SAVED (Raul, 4 Nov): one yellow ✓ for both read as
+    // "watched". A film only on the watchlist gets a bookmark; a watched one
+    // gets the green ✓ its own page shows (green CONFIRMS).
+    for (const { key, hit } of hits) {
+      if (libSet.has(key) && hit && 'movie' in hit && getMovie(hit.movie)?.watchedAt != null) seenSet.add(key);
     }
-    return next;
+    return { libSet, seenSet };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [results, libTick]);
 
@@ -349,6 +369,40 @@ export default function SearchScreen() {
     }
   };
 
+  /*
+   * THE TICK TAKES IT BACK OUT (Raul, 4 Nov): it was a plain icon, so a film
+   * added by mistake could only be removed from its own page. Same rule as the
+   * Explore tick: nothing watched → one tap; any history → ask first, because
+   * deleteShow/deleteMovie take the watches and ratings with them.
+   */
+  const remove = (item: Result) => {
+    const hit = libraryMatch(item);
+    const done = () => setLibTick((n) => n + 1);
+    if (!hit) return done();
+    if ('movie' in hit) {
+      const go = () => {
+        deleteMovie(hit.movie);
+        done();
+      };
+      if (getMovie(hit.movie)?.watchedAt == null) return go();
+      Alert.alert(t('media.removeConfirmTitle', { title: item.title ?? item.name }), t('movie.removeConfirmBody'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.remove'), style: 'destructive', onPress: go },
+      ]);
+      return;
+    }
+    const go = () => {
+      deleteShow(hit.showId);
+      done();
+    };
+    const watched = showWatchCount(hit.showId);
+    if (watched === 0) return go();
+    Alert.alert(item.title ?? item.name, t('show.removeWithHistory', { count: watched }), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('show.removeAnyway'), style: 'destructive', onPress: go },
+    ]);
+  };
+
   return (
     <Screen>
       <View style={styles.searchRow}>
@@ -530,7 +584,13 @@ export default function SearchScreen() {
                         color={favSet.has(item.key) ? colors.yellow : colors.dim}
                       />
                     </Pressable>
-                    <Ionicons name="checkmark-circle" size={26} color={colors.yellow} />
+                    <Pressable hitSlop={10} onPress={() => remove(item)} accessibilityRole="button" accessibilityLabel={t('common.remove')}>
+                      {item.kind === 'movie' && !seenSet.has(item.key) ? (
+                        <Ionicons name="bookmark" size={24} color={colors.yellow} />
+                      ) : (
+                        <Ionicons name="checkmark-circle" size={26} color={seenSet.has(item.key) ? colors.green : colors.yellow} />
+                      )}
+                    </Pressable>
                   </View>
                 ) : (
                   <Pressable hitSlop={10} onPress={() => void oneAtATime(`add:${item.key}`, () => add(item))} accessibilityRole="button" accessibilityLabel={t('a11y.addToLibrary')}>
