@@ -8,5 +8,9 @@ import { colors } from '@/theme';
  * iOS moves into the iPhone Duo's strip. A tab on its own has no header.
  */
 export default function ProfileTabLayout() {
-  return <Stack screenOptions={{ contentStyle: { backgroundColor: colors.bg } }} />;
+  // THE DEFAULTS THE SCREEN'S OWN OPTIONS ARRIVE ON TOP OF (4 Nov). `index.tsx`
+  // sets a transparent, untitled header from inside its render, and until that
+  // lands -- or on a path that returns before it -- the stack drew its default:
+  // a white bar titled with the route's file name, "index" (L8X, Android 2.2.2).
+  return <Stack screenOptions={{ title: '', headerTransparent: true, contentStyle: { backgroundColor: colors.bg } }} />;
 }
