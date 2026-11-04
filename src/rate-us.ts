@@ -155,3 +155,23 @@ export function maybeAskForRatingAfterShare(): void {
     // never let a rating prompt break a share
   }
 }
+
+/** A week in a row is a habit, and somebody with a habit likes the app. */
+export const STREAK_MOMENT = 7;
+
+/**
+ * THE FOURTH MOMENT (2.3.0): a puzzle streak reaching a week, at the result
+ * screen of the day that made it. Native sheet only, like the share: it lands
+ * on a win screen, and an Alert there would cover the result being enjoyed.
+ * Once per version, sharing the others' stamp.
+ */
+export function maybeAskForRatingAfterStreak(streak: number): void {
+  try {
+    if (streak < STREAK_MOMENT || SIDELOADED || ratePromptAlreadyShown()) return;
+    void nativeAsk().then((shown) => {
+      if (shown) setMeta(KEY, Constants.expoConfig?.version ?? '');
+    });
+  } catch {
+    // never let a rating prompt break the puzzle
+  }
+}

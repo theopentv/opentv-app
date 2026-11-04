@@ -239,7 +239,10 @@ export default function PuzzleScreen() {
     track('puzzle_finished', { won: next.won ? 1 : 0, tries: next.guesses.length, archive: archive ? 1 : 0 });
     if (archive) return;
     setStats(currentStats());
-    setInfo(streakInfo(day));
+    const done = streakInfo(day);
+    setInfo(done);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    (require('@/rate-us') as typeof import('@/rate-us')).maybeAskForRatingAfterStreak(done.streak);
     // Today's "you haven't played" is now moot: re-plan so it is dropped.
     void syncEpisodeNotifications(true);
   };
