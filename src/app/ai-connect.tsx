@@ -22,7 +22,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Clipboard from 'expo-clipboard';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { ApiError } from '@/api';
@@ -208,6 +208,19 @@ export default function AiConnectScreen() {
                   <Ionicons name={copied === 'url' ? 'checkmark' : 'copy-outline'} size={20} color={copied === 'url' ? colors.green : colors.dim} />
                 </Pressable>
                 <Text style={styles.copyHint}>{copied === 'url' ? t('aiConnect.copied') : t('aiConnect.copy')}</Text>
+                {/* Verified 4 Nov 2026 on both free plans. Their button names stay
+                    in English inside the strings: that is how those apps show them.
+                    Product names, not copy: nothing to translate. */}
+                <Text style={styles.app}>{'Claude'}</Text>
+                <Text style={styles.howTo}>{t('aiConnect.step1Claude')}</Text>
+                <Text style={styles.app}>{'ChatGPT'}</Text>
+                <Text style={styles.howTo}>{t('aiConnect.step1ChatGPT')}</Text>
+                <Text
+                  style={styles.link}
+                  accessibilityRole="link"
+                  onPress={() => void Linking.openURL('https://theopentv.com/claude').catch(() => {})}>
+                  {t('aiConnect.fullGuide')}
+                </Text>
 
                 <Text accessibilityRole="header" style={styles.step}>{t('aiConnect.step2')}</Text>
                 <Text style={styles.body}>{t('aiConnect.step2Body')}</Text>
@@ -320,6 +333,9 @@ const styles = StyleSheet.create({
   },
   url: { color: colors.text, fontSize: 15, fontWeight: '600', flex: 1, writingDirection: 'ltr', textAlign: 'left' },
   copyHint: { color: colors.faint, fontSize: 12, paddingHorizontal: space.lg, paddingTop: 6 },
+  app: { color: colors.text, fontSize: 14.5, fontWeight: '700', paddingHorizontal: space.lg, paddingTop: 16 },
+  howTo: { color: colors.dim, fontSize: 14, lineHeight: 20, paddingHorizontal: space.lg, paddingTop: 4 },
+  link: { color: colors.blue, fontSize: 14, fontWeight: '600', paddingHorizontal: space.lg, paddingTop: 14, alignSelf: 'flex-start' },
   codeBox: { margin: space.lg, padding: 20, borderRadius: radius.card, backgroundColor: colors.card, alignItems: 'center', gap: 14 },
   codeRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   // Digits the reader types into a browser: Western, left to right, wide apart.
