@@ -96,6 +96,10 @@ Plan only (Mahmood, 3 Nov). Build each item only on his go.
 - **MCP and the website, both Plus.** As written under 2.0.4 below: one per-user database
   built from the backup with consent, MCP tools for Claude and ChatGPT, the website on the
   same sign-in. Depends on the backup ZIP being small, so the picture fix comes first.
+- **Invite a friend (later, plan only; 4 Nov):** of 175 members who joined in 14 days, only 7 followed
+  anyone, but those few look like friends bringing friends (rcovisa joined 3 Nov, alexluvies 4 Nov,
+  mutual follows within a minute). Nothing records who invited whom. Idea: an "Invite a friend" link
+  to your profile; joining through it follows both ways and the dashboard counts invites per member.
 - **Asking for a rating at a good moment** (after a Wrapped, a 7-day puzzle streak, a
   finished season). Ratings move search rank, and the store page is where the growth goal
   is lost today (3 Nov: impressions +608%, conversion down 76%).
