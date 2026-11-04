@@ -4052,7 +4052,7 @@
     "signIn": "Giriş yap",
     "backupBody": "Claude ve ChatGPT OpenTV Yedeğini okur, bu yüzden önce açık olması gerekir.",
     "turnOnBackup": "OpenTV Yedeğini aç",
-    "consent": "Claude ya da ChatGPT, onlara sorduğunda OpenTV Yedeğini okuyabilecek: neyi ne zaman izlediğin, puanlar, listeler ve yorumlar. Özel notların asla dahil edilmez. Sorduğun şeyler Anthropic’e ya da OpenAI’a gider. Bağlantıyı istediğin zaman buradan kaldırabilirsin.",
+    "consent": "Claude ya da ChatGPT, onlara sorduğunda OpenTV Yedeğini okuyabilecek: neyi ne zaman izlediğin, puanlar, listeler ve yorumlar. Her seferinde onayladığın değişiklikleri de yapabilirler: bölümleri ve filmleri izlendi olarak işaretlemek, puanlamak, izleme listene eklemek. Değişiklikler bu telefona senkronizasyonla ulaşır. Özel notların asla dahil edilmez. Sorduğun şeyler Anthropic’e ya da OpenAI’a gider. Bağlantıyı istediğin zaman buradan kaldırabilirsin.",
     "agree": "Anladım, devam et",
     "step1": "1. OpenTV’yi bağlayıcı olarak ekle",
     "step1Body": "Bu adresi kopyala ve Claude’da (Ayarlar → Bağlayıcılar → Özel bağlayıcı ekle) ya da ChatGPT’de (Ayarlar → Bağlayıcılar, geliştirici modu açıkken) ekle.",

@@ -4362,7 +4362,7 @@
     "signIn": "Zaloguj się",
     "backupBody": "Claude i ChatGPT czytają Twoją kopię zapasową OpenTV, więc najpierw musi być włączona.",
     "turnOnBackup": "Włącz kopię zapasową OpenTV",
-    "consent": "Claude lub ChatGPT będą mogły czytać Twoją kopię zapasową OpenTV — co i kiedy oglądałeś, oceny, listy i komentarze — gdy o nią zapytasz. Twoje prywatne notatki nigdy nie są dołączane. To, o co pytasz, trafia do Anthropic lub OpenAI. Połączenie możesz tu usunąć w każdej chwili.",
+    "consent": "Claude lub ChatGPT będą mogły czytać Twoją kopię zapasową OpenTV — co i kiedy oglądałeś, oceny, listy i komentarze — gdy o nią zapytasz. Mogą też wprowadzać zmiany, które za każdym razem zatwierdzasz: oznaczać odcinki i filmy jako obejrzane, oceniać je, dodawać do listy. Zmiany docierają na ten telefon przez synchronizację. Twoje prywatne notatki nigdy nie są dołączane. To, o co pytasz, trafia do Anthropic lub OpenAI. Połączenie możesz tu usunąć w każdej chwili.",
     "agree": "Rozumiem, dalej",
     "step1": "1. Dodaj OpenTV jako łącznik",
     "step1Body": "Skopiuj ten adres i dodaj go w Claude (Ustawienia → Łączniki → Dodaj własny łącznik) lub w ChatGPT (Ustawienia → Łączniki, z włączonym trybem dewelopera).",

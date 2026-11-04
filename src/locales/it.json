@@ -4052,7 +4052,7 @@
     "signIn": "Accedi",
     "backupBody": "Claude e ChatGPT leggono il tuo backup OpenTV, quindi deve essere attivo.",
     "turnOnBackup": "Attiva il backup OpenTV",
-    "consent": "Claude o ChatGPT potranno leggere il tuo backup OpenTV — cosa hai guardato e quando, voti, liste e commenti — quando chiedi loro qualcosa al riguardo. Le tue note private non sono mai incluse. Ciò che chiedi va ad Anthropic o OpenAI. Puoi rimuovere la connessione qui in qualsiasi momento.",
+    "consent": "Claude o ChatGPT potranno leggere il tuo backup OpenTV — cosa hai guardato e quando, voti, liste e commenti — quando chiedi loro qualcosa al riguardo. Possono anche fare modifiche che approvi ogni volta: segnare episodi e film come visti, votarli, aggiungerli alla tua lista. Le modifiche arrivano su questo telefono tramite la sincronizzazione. Le tue note private non sono mai incluse. Ciò che chiedi va ad Anthropic o OpenAI. Puoi rimuovere la connessione qui in qualsiasi momento.",
     "agree": "Ho capito, continua",
     "step1": "1. Aggiungi OpenTV come connettore",
     "step1Body": "Copia questo indirizzo e aggiungilo in Claude (Impostazioni → Connettori → Aggiungi connettore personalizzato) o in ChatGPT (Impostazioni → Connettori, con la modalità sviluppatore attiva).",
