@@ -159,18 +159,27 @@ export function maybeAskForRatingAfterShare(): void {
 /** A week in a row is a habit, and somebody with a habit likes the app. */
 export const STREAK_MOMENT = 7;
 
+/** Long enough for the win to land on screen before the sheet does. */
+const AFTER_WIN_MS = 1500;
+
 /**
- * THE FOURTH MOMENT (2.3.0): a puzzle streak reaching a week, at the result
- * screen of the day that made it. Native sheet only, like the share: it lands
- * on a win screen, and an Alert there would cover the result being enjoyed.
- * Once per version, sharing the others' stamp.
+ * THE FOURTH MOMENT (2.3.0): a puzzle streak of a week or more, and ONLY ON A
+ * WIN (Mahmood, 4 Nov). Somebody who has just missed the answer is the last
+ * person to ask for stars; a loss on day 7 waits for the next day they get it,
+ * day 8 or later. Called once the game is over, never while it is played, and
+ * a moment after the result appears. Native sheet only, like the share: an
+ * Alert would cover the win. Once per version, sharing the others' stamp.
  */
-export function maybeAskForRatingAfterStreak(streak: number): void {
+export function maybeAskForRatingAfterStreak(streak: number, won: boolean): void {
   try {
-    if (streak < STREAK_MOMENT || SIDELOADED || ratePromptAlreadyShown()) return;
-    void nativeAsk().then((shown) => {
-      if (shown) setMeta(KEY, Constants.expoConfig?.version ?? '');
-    });
+    if (!won || streak < STREAK_MOMENT || SIDELOADED || ratePromptAlreadyShown()) return;
+    setTimeout(() => {
+      void nativeAsk()
+        .then((shown) => {
+          if (shown) setMeta(KEY, Constants.expoConfig?.version ?? '');
+        })
+        .catch(() => {});
+    }, AFTER_WIN_MS);
   } catch {
     // never let a rating prompt break the puzzle
   }

@@ -242,7 +242,7 @@ export default function PuzzleScreen() {
     const done = streakInfo(day);
     setInfo(done);
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    (require('@/rate-us') as typeof import('@/rate-us')).maybeAskForRatingAfterStreak(done.streak);
+    (require('@/rate-us') as typeof import('@/rate-us')).maybeAskForRatingAfterStreak(done.streak, next.won);
     // Today's "you haven't played" is now moot: re-plan so it is dropped.
     void syncEpisodeNotifications(true);
   };
