@@ -49,19 +49,29 @@ export function showUndo(message: string, onUndo: () => void): void {
 export function UndoToast() {
   const insets = useSafeAreaInsets();
   const [toast, setToast] = useState<Toast | null>(current);
+  // THE SECONDS LEFT, on the button itself (Mahmood, 4 Nov): "Undo 4, 3, 2, 1"
+  // says how long the choice is open better than a bar that just vanishes.
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     listeners.add(setToast);
     return () => {
       listeners.delete(setToast);
     };
   }, []);
+  useEffect(() => {
+    if (!toast) return;
+    const id = setInterval(() => setNow(Date.now()), 250);
+    return () => clearInterval(id);
+  }, [toast]);
+  // A toast's id is the moment it was shown, so the count needs no state of its own.
+  const left = toast ? Math.min(SHOW_MS / 1000, Math.max(1, Math.ceil((toast.id + SHOW_MS - now) / 1000))) : 0;
 
   const body = toast && (
     <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
       <Animated.View
         key={toast.id}
         entering={FadeInDown.duration(180)}
-        style={[s.pill, { bottom: insets.bottom + 72 }]}
+        style={[s.pill, { bottom: insets.bottom + 12 }]}
         accessibilityLiveRegion="polite">
         <Text style={s.text} numberOfLines={2}>
           {toast.message}
@@ -74,7 +84,9 @@ export function UndoToast() {
             set(null);
             toast.onUndo();
           }}>
-          <Text style={s.undo}>{t('unmark.undo')}</Text>
+          <Text style={s.undo}>
+            {t('unmark.undo')} <Text style={s.count}>{left}</Text>
+          </Text>
         </Pressable>
       </Animated.View>
     </View>
@@ -100,4 +112,5 @@ const s = StyleSheet.create({
   },
   text: { flex: 1, color: colors.text, fontSize: 15, fontWeight: '600' },
   undo: { color: colors.yellow, fontSize: 15, fontWeight: '800' },
+  count: { fontVariant: ['tabular-nums'] },
 });
