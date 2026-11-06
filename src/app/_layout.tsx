@@ -885,7 +885,16 @@ export default function RootLayout() {
         {/* The page behind the "On this day" strip — every memory, not today's. */}
         <Stack.Screen name="memories" />
         {/* The daily "Guess the show", and its own corner of Settings. */}
-        <Stack.Screen name="puzzle" />
+        {/* A past day opened from the archive fades in place, like search
+            (7 Nov): it slid a second puzzle page in from the right over the
+            archive. Today's, from the banner, is a normal push. */}
+        <Stack.Screen
+          name="puzzle"
+          options={({ route }) => {
+            const p = route.params as { view?: string; day?: string } | undefined;
+            return p?.view || p?.day ? { animation: 'fade', animationDuration: 150 } : {};
+          }}
+        />
         <Stack.Screen name="puzzle-intro" />
         {/* "New: Activity" (2.0.0), from the Profile banner. */}
         <Stack.Screen name="activity-intro" />

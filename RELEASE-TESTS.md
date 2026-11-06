@@ -15,12 +15,14 @@ failure written next to it, not in a commit message.
 
 ## 2.3.1
 
-iOS 114, Android 147. Two fixes on top of 2.3.0.
+iOS 115, Android 148. Fixes on top of 2.3.0.
 
 - [ ] Profile, arrange mode: no minus on the empty block at the bottom; the bell and ⋯ stay after Done
 - [ ] A layout saved without `extra` (L8X): bell and ⋯ back after updating
 - [ ] iPhone, VoiceOver on: open a show from Shows, focus the back button — it says "Back" ("Retour" in French)
 - [ ] iPhone Duo, VoiceOver: the pane's back says Back
+- [ ] iPhone: someone's profile from Following — the back button is an arrow only, no word
+- [ ] Puzzle archive: tap a played day — it fades in, no slide from the right, no odd background
 
 
 ## 2.3.0

@@ -146,7 +146,13 @@ Branch `2.3.1`, cut from main (= the 2.3.0 that shipped). Nothing else in it.
 - **VoiceOver says Back** (Sophie, 2 Nov). iOS names a native back button after the screen
   behind, and ours are untitled or "(tabs)". Every native back now carries "Back" (hidden by
   `minimal`, still spoken). The Duo pane's back was labelled Close.
-- Version 2.3.1, iOS 114 (2.4.1 was built as iOS 113 / Android 146, then renamed; those builds are unused). No What's New row (fixes only).
+- **Back is an arrow on every screen.** A back title on a screen without `minimal` would have
+  drawn the word beside the arrow; `minimal` is now the default everywhere.
+- **Puzzle archive: a past day fades in** instead of sliding a second puzzle page in from the
+  right over the archive (Mahmood, 7 Nov) — the same fix search got in 2.3.0. Today's puzzle
+  from the banner is still a normal push.
+- Version 2.3.1, iOS 115, Android 148 (2.4.1 was built as iOS 113 / Android 146 and 2.3.1 first
+  as iOS 114 / Android 147; all unused). No What's New row (fixes only).
 
 
 ## 2.2.3 — Android: the backup that froze the app (3 Nov)
