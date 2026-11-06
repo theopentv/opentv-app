@@ -369,6 +369,13 @@ export function normalise(stored: Saved | readonly Placed[] | null, shelfKeys: r
     out.unshift({ uid: LOCKED, id: LOCKED, span: specOf(LOCKED).span });
     seen.add(LOCKED);
   }
+  // Nor is `extra`: it is the caller's children, and on the Profile tab those
+  // set the header -- the bell and the ⋯. Removed in arranging, it took the
+  // only way into Settings with it, for good (L8X, 7 Nov).
+  if (!seen.has('extra')) {
+    out.push({ uid: 'extra', id: 'extra', span: specOf('extra').span });
+    seen.add('extra');
+  }
 
   // Anything this build added since the layout was saved. Appended rather than
   // slotted into its default position: the user's order is theirs, and a new

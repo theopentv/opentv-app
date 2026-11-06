@@ -117,6 +117,12 @@ describe('Everything I watch is a shelf, placed by its switch (27 Oct)', () => {
     expect(out.indexOf(EVERYTHING_SHELF)).toBe(out.indexOf('shelf:shows') - 1);
   });
 
+  it('puts extra back on a layout that lost it (it carries the header buttons)', () => {
+    const saved = normalise(parseLayout(serialise([c('banners'), c('lists'), c('shelf:shows')], null)), keys);
+    expect(ids(saved).filter((id) => id === 'extra')).toEqual(['extra']);
+    expect(ids(saved).at(-1)).toBe('extra');
+  });
+
   it('goes after Lists when Shows was removed', () => {
     const out = ids(withEverythingShelf([c('banners'), c('lists'), c('shelf:movies'), c('extra')], true));
     expect(out).toEqual(['banners', 'lists', EVERYTHING_SHELF, 'shelf:movies', 'extra']);

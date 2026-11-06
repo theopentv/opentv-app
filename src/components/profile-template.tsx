@@ -1485,7 +1485,7 @@ export function ProfileTemplate({
                     key={`${b.uid}#${arrangeRun}`}
                     index={b.at}
                     editing={editing}
-                    canRemove={b.id !== LOCKED}
+                    canRemove={b.id !== LOCKED && b.id !== 'extra'}
                     accent={themeColor ?? colors.yellow}
                     rect={{ x: b.x, y: b.y, w: b.w, h: b.h }}
                     fixedHeight={b.fixed}
