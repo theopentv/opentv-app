@@ -13,6 +13,16 @@ failure written next to it, not in a commit message.
 ---
 
 
+## 2.4.1
+
+iOS 113, Android (EAS assigns). Two fixes on top of 2.3.0.
+
+- [ ] Profile, arrange mode: no minus on the empty block at the bottom; the bell and ⋯ stay after Done
+- [ ] A layout saved without `extra` (L8X): bell and ⋯ back after updating
+- [ ] iPhone, VoiceOver on: open a show from Shows, focus the back button — it says "Back" ("Retour" in French)
+- [ ] iPhone Duo, VoiceOver: the pane's back says Back
+
+
 ## 2.3.0
 
 iOS 112, Android 144. Simulator lines are marked; the rest wants a real iPhone and a real Android.
