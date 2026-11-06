@@ -891,8 +891,9 @@ export default function RootLayout() {
         <Stack.Screen
           name="puzzle"
           options={({ route }) => {
-            const p = route.params as { view?: string; day?: string } | undefined;
-            return p?.view || p?.day ? { animation: 'fade', animationDuration: 150 } : {};
+            // `from=archive` is today's row (2.3.1 still slid that one in).
+            const p = route.params as { view?: string; day?: string; from?: string } | undefined;
+            return p?.view || p?.day || p?.from ? { animation: 'fade', animationDuration: 150 } : {};
           }}
         />
         <Stack.Screen name="puzzle-intro" />

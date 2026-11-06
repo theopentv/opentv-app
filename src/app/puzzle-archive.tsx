@@ -160,7 +160,7 @@ export default function PuzzleArchiveScreen() {
                       ? undefined // a kept or frozen day has no game to show
                     : !played
                       ? open(item.d)
-                      : router.push(item.d === day ? '/puzzle' : `/puzzle?view=${item.d}`)
+                      : router.push(item.d === day ? '/puzzle?from=archive' : `/puzzle?view=${item.d}`)
               }
               accessibilityRole="button"
               accessibilityLabel={`#${item.n}, ${longDay(item.d)}, ${line}`}
