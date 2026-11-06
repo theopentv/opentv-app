@@ -13,9 +13,9 @@ failure written next to it, not in a commit message.
 ---
 
 
-## 2.4.1
+## 2.3.1
 
-iOS 113, Android (EAS assigns). Two fixes on top of 2.3.0.
+iOS 114, Android 147. Two fixes on top of 2.3.0.
 
 - [ ] Profile, arrange mode: no minus on the empty block at the bottom; the bell and ⋯ stay after Done
 - [ ] A layout saved without `extra` (L8X): bell and ⋯ back after updating

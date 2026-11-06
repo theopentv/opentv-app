@@ -134,9 +134,9 @@ newest-first comments.
 ---
 
 
-## 2.4.1 — two fixes on top of 2.3.0 (7 Nov)
+## 2.3.1 — two fixes on top of 2.3.0 (7 Nov)
 
-Branch `2.4.1`, cut from main (= the 2.3.0 that shipped). Nothing else in it.
+Branch `2.3.1`, cut from main (= the 2.3.0 that shipped). Nothing else in it.
 
 - **Profile: the bell and ⋯ can't vanish any more** (L8X, Android, 7 Nov). Arranging the
   profile let you remove the invisible `extra` block, which is what sets the Profile tab's
@@ -146,7 +146,7 @@ Branch `2.4.1`, cut from main (= the 2.3.0 that shipped). Nothing else in it.
 - **VoiceOver says Back** (Sophie, 2 Nov). iOS names a native back button after the screen
   behind, and ours are untitled or "(tabs)". Every native back now carries "Back" (hidden by
   `minimal`, still spoken). The Duo pane's back was labelled Close.
-- Version 2.4.1, iOS 113. No What's New row (fixes only).
+- Version 2.3.1, iOS 114 (2.4.1 was built as iOS 113 / Android 146, then renamed; those builds are unused). No What's New row (fixes only).
 
 
 ## 2.2.3 — Android: the backup that froze the app (3 Nov)
