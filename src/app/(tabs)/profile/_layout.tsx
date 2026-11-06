@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 
+import { t } from '@/i18n';
 import { colors } from '@/theme';
 
 /**
@@ -12,5 +13,5 @@ export default function ProfileTabLayout() {
   // sets a transparent, untitled header from inside its render, and until that
   // lands -- or on a path that returns before it -- the stack drew its default:
   // a white bar titled with the route's file name, "index" (L8X, Android 2.2.2).
-  return <Stack screenOptions={{ title: '', headerTransparent: true, contentStyle: { backgroundColor: colors.bg } }} />;
+  return <Stack screenOptions={{ title: '', headerTransparent: true, headerBackTitle: t('a11y.back'), contentStyle: { backgroundColor: colors.bg } }} />;
 }

@@ -16,7 +16,7 @@ export function PaneBar({ actions }: { actions?: SheetAction[] }) {
   return (
     <>
       {pane.canBack && (
-        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.close')} hitSlop={8} style={[s.btn, s.back]} onPress={pane.back}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('a11y.back')} hitSlop={8} style={[s.btn, s.back]} onPress={pane.back}>
           <Ionicons name={I18nManager.isRTL ? 'chevron-forward' : 'chevron-back'} size={20} color="#FFF" />
         </Pressable>
       )}

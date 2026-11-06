@@ -689,6 +689,10 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.bg },
+          // VoiceOver names iOS's native back button after the screen behind,
+          // and ours are mostly untitled or "(tabs)" -- so it said nothing
+          // useful (Sophie, 2 Nov). Hidden by 'minimal', still spoken.
+          headerBackTitle: t('a11y.back'),
         }}
         // Opens the push lock in `nav-guard` the moment a screen has arrived:
         // taps made while it was still opening are dropped, the next is not.
