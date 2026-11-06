@@ -85,6 +85,8 @@ for web, one more Sync device, no watch tables on the server.
 
 ## Next update — the plan (6 Nov 2026, not started)
 
+Already on main for it: **puzzle archive, today's row fades in too** (b33d48a) — 2.3.1 faded past days only.
+
 Bringing back TV Time behaviour, one item at a time as Mahmood names them.
 
 - **Continue tracking moves on by itself.** On a show's Episodes tab, ticking the
