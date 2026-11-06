@@ -13,5 +13,5 @@ export default function ProfileTabLayout() {
   // sets a transparent, untitled header from inside its render, and until that
   // lands -- or on a path that returns before it -- the stack drew its default:
   // a white bar titled with the route's file name, "index" (L8X, Android 2.2.2).
-  return <Stack screenOptions={{ title: '', headerTransparent: true, headerBackTitle: t('a11y.back'), contentStyle: { backgroundColor: colors.bg } }} />;
+  return <Stack screenOptions={{ title: '', headerTransparent: true, headerBackTitle: t('a11y.back'), headerBackButtonDisplayMode: 'minimal', contentStyle: { backgroundColor: colors.bg } }} />;
 }
