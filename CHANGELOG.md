@@ -48,6 +48,92 @@ Play Console record rather than per-change.
 ---
 
 
+## Later — close the backend, publish `opentv-core` (decided 6 Nov 2026, not started)
+
+Mahmood: the full server should not stay public ("anyone can take it and make his own
+app"). The app and the website stay open source; the server becomes closed; a new public
+repo `opentv-core` (AGPL) holds what self-hosting needs. Do it later, on his go.
+- **In the core:** email sign-in (auto-confirmed without mail), optional Google/Apple,
+  sessions + renewal + revoke, `/v1/me` (everyone Plus), backup + backup pictures, Sync +
+  devices, account deletion, puzzle streak (`/v1/puzzle/played`), `/v1/links` health
+  check, and a new `GET /v1/info` saying the server is core-only.
+- **One implementation:** the closed server imports `opentv-core` as a package and adds
+  community, CommsUni, MCP, moderation and admin on top. Never two copies of sync/auth.
+- **App:** on a core-only server, hide community, comments, profiles, lists, rooms,
+  Watch together and MCP instead of erroring.
+- **Self-hosters:** the core opens their existing database as is (extra tables ignored);
+  rewrite `SELF-HOSTING.md` (no community on a self-hosted server). The 2.5.0 website
+  runs against the core too.
+- **Order:** core public and working → app update shipped → site/`llms.txt`/sponsor/
+  "open source" article/AlternativeTo wording updated → only then `OpenTv-backend` private.
+- **Know going in:** 303 clones in 14 days (6 Nov), so old AGPL copies stay out there;
+  the table's 🏠 column may drop from Full to Partial (−0.5). Ask facc whether the
+  CommsUni integration code may be public meanwhile. Git history scanned 6 Nov with
+  gitleaks: no secrets (only the public Firebase and Nuvio publishable keys).
+- Size: 4–6 days.
+
+## 2.5.0 — the website (planned 6 Nov 2026, not started; build on Mahmood's go)
+
+OpenTV in the browser for Plus members at `app.theopentv.com`: the app's own code built
+for web, one more Sync device, no watch tables on the server.
+- Design (43 screens): `design/web-2.5.0/screens/`, canvas `design/web-2.5.0/opentv-web-design-v2.html`.
+- Spec: `docs/superpowers/specs/2026-11-06-web-2.5.0-design.md`.
+- Plan 1 (spikes + foundation, 10 tasks): `docs/superpowers/plans/2026-11-06-web-2.5.0-plan-1-foundation.md`.
+  Plan 2 (the screens) is written after the spikes report.
+- Execution: subagent per task + reviewer (recommended), branch `2.5.0-web` in both repos.
+- Open source like the app and the backend: the website is the same public code.
+
+## Next update — the plan (6 Nov 2026, not started)
+
+Bringing back TV Time behaviour, one item at a time as Mahmood names them.
+
+- **Continue tracking moves on by itself.** On a show's Episodes tab, ticking the
+  ✓ on the card should slide the rail to the next episode, as TV Time did. Today
+  the card just turns watched and stays put; the rail only jumps when you press ↻
+  (`show/[id].tsx` ~1711, `scrollToIndex` to `carouselStart`). Fix: after a
+  mark from the rail, scroll to the new first unwatched card. Do NOT move it when
+  un-marking, or when the tick was on a card ahead of the next one (peeking).
+
+### TV Time behaviour research (6 Nov) — candidates, Mahmood picks
+
+Sources, all in `design/referance/tvtime-behaviour/`: `official.md` (133 facts,
+TV Time's own help centre/blog/release notes via Wayback), `users.md` (~110 facts
+from ~1,000 r/TVTime posts 2019–2026 + YouTube), `local-vs-opentv.md` (52
+screenshots vs our code: 137 same, 50 different, 25 missing).
+
+Already the same as TV Time (checked in code, don't redo): "Mark previous
+episodes?" with "Never for this show"; pick a watch date (`mark-as.tsx`); spoiler
+gate on film comments; badges imported and drawn.
+
+**Most loved, and we lack it**
+1. Swipe RIGHT on a Watch List row = mark watched, next episode slides in
+   (official since 7.0). Swipe LEFT = Watch Later / Stop watching. No swipe rows
+   exist anywhere in the app today.
+2. Continue tracking rail advances after ✓ (above).
+3. Long-press on a row for a context menu (9.8).
+4. Upcoming scrolls back into past releases, a season drop collapsed to one
+   entry with an arrow. Verify ours.
+5. Watch Next capped at 10 shows (`shows.tsx:202`): TV Time had no cap.
+6. PREMIERE tag on Watch Next / Upcoming cards.
+
+**Visible gaps from the screenshots**
+7. Comment counts on the COMMENTS pills (episode, film, show).
+8. Sort on a title's comments (TV Time: "Most relevant"; users hated newest-first).
+9. Where to watch pills that open the service.
+10. Dead "SORT BY" labels on lists, favourites, my comments.
+11. Movies Upcoming grouped by release date, plus a grid/list toggle.
+12. Show page air time ("Sat | 12:30 AM"), not just the weekday.
+13. Settings → Upcoming (filter networks, hide watched).
+14. Following: search box + "FOLLOWS YOU".
+15. Help center row goes nowhere; lists have no Share.
+
+**Don't copy (users hated it)**: the favourite-character pop-up after every
+check; rewatches that never come back to Watch Next (verify ours does);
+newest-first comments.
+
+---
+
+
 ## 2.2.3 — Android: the backup that froze the app (3 Nov)
 
 Android only, this fix and nothing else (Mahmood, 3 Nov). iOS stays on 2.2.2 and gets it with
