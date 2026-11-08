@@ -15,7 +15,7 @@ failure written next to it, not in a commit message.
 
 ## 2.3.2
 
-iOS 116. Fixes on top of 2.3.1.
+iOS 117. Fixes on top of 2.3.1.
 
 - [ ] A library imported from Letterboxd / Trakt / extension CSVs (no TV Time export): no "Finish upgrading your library" banner on Shows
 - [ ] A TV Time export import: no banner (the export is kept)
