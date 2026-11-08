@@ -151,7 +151,7 @@ Fixes only, from main. Nothing from the `2.5.0-web` branch.
 - **Shows: the sort and grid buttons stay on screen after switching to the grid** (Mahmood, 8 Nov).
   The list sits scrolled past the watched history and the grid kept that offset, so the row with
   both buttons went above the screen. A switch now goes back to the top and re-anchors.
-- Version 2.3.2, iOS 117, Android (EAS assigns). iOS 116 was uploaded before the grid fix and
+- Version 2.3.2, iOS 117, Android 150. iOS 116 was uploaded before the grid fix and
   is unused. No What's New row (fixes only).
 
 
