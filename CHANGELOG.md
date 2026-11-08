@@ -148,6 +148,9 @@ Fixes only, from main. Nothing from the `2.5.0-web` branch.
 - **Puzzle archive: today's row fades in too** (b33d48a) — 2.3.1 faded past days only.
 - **Filters show every chip** (Mahmood, 8 Nov). Genres and the other long groups stopped at 12
   behind "Show more"; in a filter sheet that is one more tap to find what you came for.
+- **Shows: the sort and grid buttons stay on screen after switching to the grid** (Mahmood, 8 Nov).
+  The list sits scrolled past the watched history and the grid kept that offset, so the row with
+  both buttons went above the screen. A switch now goes back to the top and re-anchors.
 - Version 2.3.2, iOS 116, Android (EAS assigns). No What's New row (fixes only).
 
 

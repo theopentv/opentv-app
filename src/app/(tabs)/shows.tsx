@@ -607,6 +607,12 @@ function ShowsScreen() {
                           const next = view === 'list' ? 'grid' : 'list';
                           setView(next);
                           setMeta('showsView', next);
+                          // The list sits scrolled past the watched history; the
+                          // grid has none, so that offset put this row, and these
+                          // two buttons, above the screen (Mahmood, 8 Nov). Back to
+                          // the top, and the list re-anchors at WATCH NEXT.
+                          anchored.current = false;
+                          listRef.current?.scrollToOffset({ offset: 0, animated: false });
                         }}>
                         <Ionicons name={view === 'list' ? 'grid' : 'list'} size={22} color={colors.text} />
                       </Pressable>

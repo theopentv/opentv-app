@@ -22,6 +22,7 @@ iOS 116. Fixes on top of 2.3.1.
 - [ ] A TV Time library whose export is gone (delete tvtime-original.zip on a dev build): the banner still shows and opens Import
 - [ ] Puzzle archive: tap TODAY's row — it fades in like the past days
 - [ ] Shows and Movies filters: every genre is listed, no "Show more"
+- [ ] Shows: grid button → grid with WATCH NEXT + both buttons visible; again → list anchored at WATCH NEXT
 
 
 ## 2.3.1
