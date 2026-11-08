@@ -85,6 +85,17 @@ for web, one more Sync device, no watch tables on the server.
 
 ## Next update — the plan (6 Nov 2026, not started)
 
+- **Where each member's library came from, in the dashboard** (Mahmood, 8 Nov). The phone
+  records the import source when it imports: `tvtime`, `simkl`, `trakt`, `letterboxd`,
+  `imdb`, `serializd`, `extension_csv` (the browser-extension CSVs) or `fresh`, and sends that
+  one word with a call it already makes (members only; no new request). A library imported
+  before the update reports on its first open after it (`importedTvTimeExport` from 2.3.2
+  answers TV Time; the rest from what the importer can still tell). Backend: one column on
+  `profiles`, shown next to each name in the dashboard with a count per source. Where you came
+  from, never what you watch, so it fits "shape, never content"; one sentence in privacy.html.
+  Why: knowing TV Time vs other sources for marketing, and catching bugs that hit one source
+  (the 2.3.2 banner hit everyone who was not a TV Time import).
+
 Bringing back TV Time behaviour, one item at a time as Mahmood names them.
 
 - **Continue tracking moves on by itself.** On a show's Episodes tab, ticking the
