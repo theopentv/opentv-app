@@ -96,6 +96,14 @@ for web, one more Sync device, no watch tables on the server.
   Why: knowing TV Time vs other sources for marketing, and catching bugs that hit one source
   (the 2.3.2 banner hit everyone who was not a TV Time import).
 
+- **Share shows and movies together, from the profile's ⋯ menu** (Mahmood, 8 Nov). Today
+  `share-favorites.tsx` makes one picture from ONE type's favourites (top N preselected, tap
+  to change, only counts that tile). The ask: one picture that mixes shows and movies, picked
+  from the whole library, not only favourites. Reuse that screen (same tiling counts, posters
+  without titles, same share sheet): add a Shows / Movies switch in its picker so a pick from
+  each lands on the same card, and start it from the profile ⋯ menu's Share. No new card
+  layout and nothing sent to the server: the picture is built on the phone.
+
 Bringing back TV Time behaviour, one item at a time as Mahmood names them.
 
 - **Continue tracking moves on by itself.** On a show's Episodes tab, ticking the
