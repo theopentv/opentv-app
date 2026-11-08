@@ -17,6 +17,7 @@ import {
   recentDayOptions,
   dominantEmotion,
   importLostHistory,
+  needsTvTimeOriginal,
   importVerdict,
   linkCapacity,
   parseProfileLinks,
@@ -4228,5 +4229,22 @@ describe('isTitleOfFilm', () => {
   it('wants the whole title', () => {
     expect(isTitleOfFilm('Dune', ['Dune: Part Two'])).toBe(false);
     expect(isTitleOfFilm('...', ['...'])).toBe(false);
+  });
+});
+
+describe('needsTvTimeOriginal', () => {
+  const base = { owner: 'imported' as const, importedTvTimeExport: false, tvtimeUserId: null, original: 'no' as const };
+  it('asks a TV Time importer whose export is missing', () => {
+    expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true })).toBe(true);
+    expect(needsTvTimeOriginal({ ...base, tvtimeUserId: '12345' })).toBe(true);
+  });
+  it('never asks after another import (Letterboxd, Trakt, extension CSVs)', () => {
+    expect(needsTvTimeOriginal(base)).toBe(false);
+    expect(needsTvTimeOriginal({ ...base, tvtimeUserId: '0' })).toBe(false);
+  });
+  it('is quiet when the export is kept, unknown, or nothing was imported', () => {
+    expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, original: 'yes' })).toBe(false);
+    expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, original: 'unknown' })).toBe(false);
+    expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, owner: 'fresh' })).toBe(false);
   });
 });

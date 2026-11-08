@@ -7124,6 +7124,27 @@ export function importLostHistory(x: {
 }
 
 /**
+ * "FINISH UPGRADING YOUR LIBRARY" ASKS FOR A TV TIME EXPORT, so it is only for
+ * somebody who imported one. Every import marks the library `imported`, but
+ * only a TV Time export is kept as the original — so after Letterboxd, Trakt,
+ * Simkl or the browser-extension CSVs the banner asked, for ever, for a file
+ * that person never had (two of them wrote in on 7–8 Nov 2026).
+ *
+ * `tvtimeUserId` answers it for libraries imported before the flag existed:
+ * only TV Time's own user.csv carries one. '0' is what an OpenTV backup writes
+ * when it has none, so it is not an answer.
+ */
+export function needsTvTimeOriginal(x: {
+  owner: 'seed' | 'imported' | 'fresh';
+  importedTvTimeExport: boolean;
+  tvtimeUserId: string | null;
+  original: 'yes' | 'no' | 'unknown';
+}): boolean {
+  if (x.owner !== 'imported' || x.original !== 'no') return false;
+  return x.importedTvTimeExport || (!!x.tvtimeUserId && x.tvtimeUserId !== '0');
+}
+
+/**
  * What an import actually did, so that "it imported nothing" can be answered.
  *
  * WRITTEN AFTER AN ACCOUNT NOBODY COULD DIAGNOSE. A real user's export produced

@@ -16,7 +16,7 @@ import { markWatchedWithPrompt } from '@/mark';
 import { usePlus } from '@/plus';
 import { episodeMeta, showMeta } from '@/metadata';
 import { hasOriginalZip } from '@/migrations';
-import { gridGeometry, importLostHistory, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
+import { gridGeometry, importLostHistory, needsTvTimeOriginal, seasonAirState, sortWatchList, validWatchListSort, WATCH_LIST_SORTS, type WatchListSort } from '@/pure';
 import { fetchShowMeta, showMetaIsStale } from '@/show-meta-fetch';
 import { pool } from '@/tmdb';
 import { FoldSplit } from '@/components/fold-split';
@@ -318,7 +318,13 @@ function ShowsScreen() {
     void (async () => {
       try {
         if (libraryOwner() !== 'imported') return;
-        if ((await hasOriginalZip()) === 'no' && alive) setNeedsOriginal(true);
+        const show = needsTvTimeOriginal({
+          owner: 'imported',
+          importedTvTimeExport: getMeta('importedTvTimeExport') === '1',
+          tvtimeUserId: getMeta('tvtimeUserId'),
+          original: await hasOriginalZip(),
+        });
+        if (show && alive) setNeedsOriginal(true);
       } catch {}
     })();
     return () => {

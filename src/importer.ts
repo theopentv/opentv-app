@@ -556,6 +556,9 @@ export async function pickAndImport(
     // what is actually inside the file.
     try {
       if (isTvTimeExport(bytes)) {
+        // Before the copy: a full disk can fail the write, and the banner that
+        // asks for the export again is only for people who had one.
+        setMeta('importedTvTimeExport', '1');
         const orig = new File(Paths.document, 'tvtime-original.zip');
         if (orig.exists) orig.delete();
         orig.writeSync(bytes);
