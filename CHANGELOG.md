@@ -85,8 +85,6 @@ for web, one more Sync device, no watch tables on the server.
 
 ## Next update — the plan (6 Nov 2026, not started)
 
-Already on main for it: **puzzle archive, today's row fades in too** (b33d48a) — 2.3.1 faded past days only.
-
 Bringing back TV Time behaviour, one item at a time as Mahmood names them.
 
 - **Continue tracking moves on by itself.** On a show's Episodes tab, ticking the
@@ -134,6 +132,21 @@ check; rewatches that never come back to Watch Next (verify ours does);
 newest-first comments.
 
 ---
+
+
+## 2.3.2 — the banner that never went away (8 Nov)
+
+Fixes only, from main. Nothing from the `2.5.0-web` branch.
+
+- **"Finish upgrading your library" only for people who imported a TV Time export** (Rutger by
+  email, @bari in-app, 7–8 Nov). Every import marks the library `imported`, but only a TV Time
+  export is kept as the original, so after Letterboxd, Trakt, Simkl, IMDb or the
+  browser-extension CSVs the banner asked for ever for a file that person never had. The
+  importer now records `importedTvTimeExport`; older libraries are recognised by TV Time's own
+  user id (`tvtimeUserId`, never the '0' an OpenTV backup writes). `needsTvTimeOriginal` in
+  pure.ts, tested.
+- **Puzzle archive: today's row fades in too** (b33d48a) — 2.3.1 faded past days only.
+- Version 2.3.2, iOS 116, Android (EAS assigns). No What's New row (fixes only).
 
 
 ## 2.3.1 — two fixes on top of 2.3.0 (7 Nov)
