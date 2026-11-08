@@ -94,12 +94,9 @@ function labelOf(axis: FilterAxis, value: string, kind: FilterKind): string {
   return value;
 }
 
-/** Long axes (genres on a big library) collapse to a first screenful. */
 /** Everything beyond the sort and progress that shipped free in 1.2 — one
  *  list, shared with the store that stops applying them without Plus. */
 const ADVANCED_AXES = PLUS_FILTER_AXES;
-
-const COLLAPSED = 12;
 
 function Chip({ label, count, on, onPress }: { label: string; count: number; on: boolean; onPress: () => void }) {
   return (
@@ -141,13 +138,12 @@ function AxisSection({
   kind: FilterKind;
   onToggle: (value: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
   if (options.length === 0) return null;
-  // a selected chip always stays visible, even if the collapse would hide it
-  const visible = expanded ? options : options.filter((o, i) => i < COLLAPSED || selected.includes(o.value));
+  // Every chip, always: a "Show more" inside a filter sheet is one more tap to
+  // find the genre you came for (Mahmood, 8 Nov).
   return (
     <Section title={title}>
-      {visible.map((o) => (
+      {options.map((o) => (
         <Chip
           key={o.value}
           label={labelOf(axis, o.value, kind)}
@@ -156,11 +152,6 @@ function AxisSection({
           onPress={() => onToggle(o.value)}
         />
       ))}
-      {options.length > visible.length || expanded ? (
-        <Pressable accessibilityRole="button" accessibilityState={{ expanded }} style={styles.moreBtn} onPress={() => setExpanded((e) => !e)}>
-          <Text style={styles.moreText}>{expanded ? t('filters.showLess') : t('filters.showMore')}</Text>
-        </Pressable>
-      ) : null}
     </Section>
   );
 }
@@ -525,8 +516,6 @@ const styles = StyleSheet.create({
   chipTextOff: { color: colors.text },
   chipCount: { fontSize: 12, fontWeight: '700' },
   chipCountOff: { color: colors.dim },
-  moreBtn: { paddingVertical: 8, paddingHorizontal: 6 },
-  moreText: { color: colors.yellow, fontSize: 13, fontWeight: '700' },
   savePresetBtn: {
     flexDirection: 'row',
     alignItems: 'center',

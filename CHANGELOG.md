@@ -146,6 +146,8 @@ Fixes only, from main. Nothing from the `2.5.0-web` branch.
   user id (`tvtimeUserId`, never the '0' an OpenTV backup writes). `needsTvTimeOriginal` in
   pure.ts, tested.
 - **Puzzle archive: today's row fades in too** (b33d48a) — 2.3.1 faded past days only.
+- **Filters show every chip** (Mahmood, 8 Nov). Genres and the other long groups stopped at 12
+  behind "Show more"; in a filter sheet that is one more tap to find what you came for.
 - Version 2.3.2, iOS 116, Android (EAS assigns). No What's New row (fixes only).
 
 
