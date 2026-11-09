@@ -113,6 +113,66 @@ for web, one more Sync device, no watch tables on the server.
   page), so the grey card sits on a grey page and its edges vanish. Fix: when `rows.length ===
   0`, use the black page background so it matches Shows Upcoming and both Movies tabs.
 
+- **BUG: the keyboard covers the name field at setup** (u/AnonP_Alt, iPhone X, 10 Nov).
+  `setup-profile.tsx` is a fixed column (title, sub, avatar, `autoFocus` TextInput, Start
+  tracking button) with no keyboard handling, so on an 812 pt phone the keyboard covers the
+  field and hides the button entirely: a new user's first step. Fix: handle the keyboard the way
+  `email-sign-in.tsx` / `set-password.tsx` already do (scroll with
+  `automaticallyAdjustKeyboardInsets`, or KeyboardAvoidingView) so field and button sit above it.
+
+- **BUG: a show opened from search Recent never loads** (u/AnonP_Alt, 10 Nov, screen
+  recording: Better Call Saul from Recent → "Couldn't load this show — check your connection";
+  the same show from the results opens). `search.tsx` `open()` calls `rememberSearch` BEFORE
+  resolving a TMDB-only result's TheTVDB id, with `value: String(item.tvdbId ?? item.name)`, so
+  a TMDB-fallback show is saved under its NAME, and Recent pushes `/show/<name>`. Fix: remember
+  after `tvdbIdFor` with the resolved id; and in the Recent tap, a non-numeric show value with a
+  `tmdbId` resolves through `tvdbIdFor` first (heals rows already saved).
+
+- **Search: sort by popularity, not exact name** (u/AnonP_Alt, 10 Nov: "Better" puts the 2023
+  show "Better" above Better Call Saul; TV Time sorted by popularity). TheTVDB `/search` returns
+  no popularity field and its own order is poor (Better Call Saul is not in its top 8 for
+  "Better"); our `rankByQuery` (`pure.ts`) then lifts exact > starts-with. TMDB's results carry
+  `popularity` (Better Call Saul 95.4, Better 2.8) and `searchCatalog` already fetches both in
+  parallel. Fix: give each TheTVDB row the popularity of the TMDB row with the same
+  kind+title+year, sort by it, exact name only as a tie-break; rows TMDB does not know keep
+  their order at the end. No extra request.
+
+- **BUG: the Add Show bar covers the end of a show page** (u/AnonP_Alt, 10 Nov: S01E08 hidden
+  under it). `show/[id].tsx`: the yellow bar is absolute (~80 pt with the inset) but the About
+  and Episodes ScrollViews keep `paddingBottom: 24`. The movie page already adds `+ 80` when not
+  in the library (`movie/[name].tsx` ~1083). Fix: the same `+ (dbShow ? 0 : 80)` on both tabs.
+
+- **BUG (lead, test first): white header band and a big top gap on iOS before 26**
+  (u/AnonP_Alt, iPhone X on iOS 16: Settings, About, actor pages; the actor page's name is cut
+  off under it). `NavHeader` (`ui.tsx`) sets `headerStyle.backgroundColor` on Android only
+  ("iOS keeps its glass header and draws no background"), which is true from iOS 26 (Liquid
+  Glass) but not on 16–18, where the native bar is solid and painted by iOS. Fix: give iOS < 26
+  the same `headerStyle: { backgroundColor: colors.bg }` as Android. Verify on an iOS 16 or 18
+  simulator before shipping; iOS 26 must keep its glass.
+
+- **BUG: About flashes on the first launch** (u/AnonP_Alt, 10 Nov, screen recording: About
+  "Version 2.3.2 / Your privacy" for ~0.5 s, then Welcome). With `(tabs)` behind the onboarded
+  guard, expo-router falls back to the first route by file name, `about.tsx`; the 2.0.1 fix in
+  `_layout.tsx` redirects with `router.replace('/welcome')` in an effect, which runs after paint.
+  Fix: keep the splash up (or render nothing) until the first segment is a pre-onboarding route,
+  so About is never drawn.
+
+- **BUG: the Cards layout drawing overflows on 375 pt phones** (u/AnonP_Alt, iPhone X).
+  `layout-picker.tsx` `artTile` is `width: '47%'` with `gap: 5`; two fit only when 6% of the
+  inner width ≥ 5 pt (≈ 83 pt). At 375 pt the inner width is ≈ 81 pt, so the four tiles stack
+  into one column twice the 56 pt box and stick out over "PROFILE LAYOUT". Fix: `flexGrow: 1,
+  flexBasis: '40%'` so there are always two per row.
+
+- **BUG: film rows on the actor page misalign the years** (u/AnonP_Alt, 10 Nov). In
+  `person/[id].tsx` `CreditRow`, films are not openable so they get no chevron (on purpose), but
+  nothing keeps its 16 pt, so a film's year sits further right than a series'. Fix: an empty
+  16 pt view where the chevron would be. (Open question for Mahmood: should films open the movie
+  page by name and get the chevron too?)
+
+- **Thanks:** credit AnonP-Alt (github.com/AnonP-Alt) for the ten reports above in this
+  release's App Store and Play notes (one short line, Play has 500 characters per language) and
+  in a Thanks section of the GitHub README. Not his email.
+
 - **Share shows and movies together, from the profile's ⋯ menu** (Mahmood, 8 Nov). Today
   `share-favorites.tsx` makes one picture from ONE type's favourites (top N preselected, tap
   to change, only counts that tile). The ask: one picture that mixes shows and movies, picked
