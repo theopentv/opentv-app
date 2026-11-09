@@ -96,6 +96,23 @@ for web, one more Sync device, no watch tables on the server.
   Why: knowing TV Time vs other sources for marketing, and catching bugs that hit one source
   (the 2.3.2 banner hit everyone who was not a TV Time import).
 
+- **BUG: a slow scroll on Explore opens a title** (reported by u/AnonP_Alt, 9 Nov, with a
+  screen recording: scrolling the Feed slowly, finger ending on the Nocturne card, opened it).
+  Since 2.2.2 (`ba953610`, 31 Oct; same change in `c37eb84c` for the profile, and on
+  `show/[id].tsx`) the page ScrollViews carry `disableScrollViewPanResponder`, so a starting
+  scroll no longer takes the JS responder from the Pressable under the finger, and a short,
+  slow drag ends inside its press rect and fires `onPress`. Keep the prop (it fixes "a gliding
+  rail freezes the next one"); instead ignore a press when the page was dragging: track
+  `onScrollBeginDrag` / momentum end in one shared place in `ui.tsx` and check it in the card
+  and poster presses. Test on a phone: slow short scroll starting on a card must not open it;
+  a plain tap must; rails must still not freeze. Check Explore, profile and show pages.
+
+- **BUG: Shows Watch List empty state has no visible card** (u/AnonP_Alt, 9 Nov). All four
+  empty states use `EmptyState` (`ui.tsx`: panel-grey card, 12 pt margin, 24 pt padding), but
+  the Watch List FlatList sets `backgroundColor: colors.panel` (TV Time: black cards on a grey
+  page), so the grey card sits on a grey page and its edges vanish. Fix: when `rows.length ===
+  0`, use the black page background so it matches Shows Upcoming and both Movies tabs.
+
 - **Share shows and movies together, from the profile's ⋯ menu** (Mahmood, 8 Nov). Today
   `share-favorites.tsx` makes one picture from ONE type's favourites (top N preselected, tap
   to change, only counts that tile). The ask: one picture that mixes shows and movies, picked
