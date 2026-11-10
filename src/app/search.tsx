@@ -24,7 +24,7 @@ import { useJoined } from '@/community-session';
 import { tapLight } from '@/haptics';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
 import { avatarUri } from '@/community-comments';
-import { displayTitle, movieRoute, movieYear, oneTickPerRow, type SearchHistoryEntry } from '@/pure';
+import { displayTitle, movieRoute, movieYear, oneTickPerRow, recentShowNeedsResolve, type SearchHistoryEntry } from '@/pure';
 import { colors, space, ls } from '@/theme';
 import { a11yAction } from '@/a11y';
 import { currentLocale, t } from '@/i18n';

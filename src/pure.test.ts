@@ -80,6 +80,7 @@ import {
   annualSavingPercent,
   liveCreatorCode,
   rankByQuery,
+  recentShowNeedsResolve,
   tvdbHitName,
   displayNameFrom,
   suggestedHandle,
@@ -4246,5 +4247,14 @@ describe('needsTvTimeOriginal', () => {
     expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, original: 'yes' })).toBe(false);
     expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, original: 'unknown' })).toBe(false);
     expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, owner: 'fresh' })).toBe(false);
+  });
+});
+
+describe('recentShowNeedsResolve', () => {
+  it('flags a show saved by name, not by id', () => {
+    expect(recentShowNeedsResolve({ kind: 'show', value: 'Better Call Saul', tmdbId: 60059 })).toBe(true);
+    expect(recentShowNeedsResolve({ kind: 'show', value: '273181', tmdbId: 60059 })).toBe(false);
+    expect(recentShowNeedsResolve({ kind: 'show', value: 'Better Call Saul' })).toBe(false);
+    expect(recentShowNeedsResolve({ kind: 'movie', value: 'Heat', tmdbId: 1 })).toBe(false);
   });
 });
