@@ -1371,7 +1371,8 @@
     "share": "Share",
     "helpCenter": "Help center",
     "findPeople": "Find people",
-    "memories": "Memories"
+    "memories": "Memories",
+    "shareLibrary": "Share shows and films"
   },
   "notOnTvdb": {
     "title": "Not on TheTVDB yet",
@@ -2804,7 +2805,12 @@
     },
     "showTitles": "Show titles",
     "showProfile": "Show my profile",
-    "hintRemove": "Tap a chosen poster to remove it."
+    "hintRemove": "Tap a chosen poster to remove it.",
+    "titleMixed": "Share shows and films",
+    "headingMixed": "What I watch",
+    "tabShows": "Shows",
+    "tabMovies": "Films",
+    "emptyMixed": "Add a show or a film first, then share them here."
   },
   "commsuni": {
     "byline": "Comments by CommsUni.tv",
@@ -3609,7 +3615,10 @@
     "badge": {
       "one": "Shared · {{count}} person",
       "other": "Shared · {{count}} people"
-    }
+    },
+    "explain": "Build a list with someone. You both add to it, you each tick it off.",
+    "joinLink": "Got a code? Join one",
+    "togetherLink": "Watch a show together ›"
   },
   "ratingBreakdown": {
     "title": "Community ratings",

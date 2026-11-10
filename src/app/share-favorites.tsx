@@ -40,7 +40,7 @@ import { Text } from '@/components/text';
 import { posterSpeech } from '@/components/poster';
 import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { getHandle } from '@/community-session';
-import { getFavoriteMovies, getFavoriteShows, getRecentMovies, getRecentShows } from '@/db';
+import { getFavoriteMovies, getFavoriteShows, getLibraryMovies, getLibraryShows, getRecentMovies, getRecentShows } from '@/db';
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { profileImageUri } from '@/library';
@@ -373,6 +373,11 @@ export default function ShareFavoritesScreen() {
    * whichever it is told and the readers in `db.ts` return the same shape.
    */
   const isRecent = source === 'recent';
+  /* MIXED: the whole library, shows and films on one card (profile menu). The
+     Shows / Films switch only filters the picker; picks from both land in the
+     same `picked` list. */
+  const isMixed = source === 'library';
+  const [tab, setTab] = useState<'shows' | 'movies'>('shows');
   /* Read once: neither can change while this screen is open. */
   const [handle] = useState(getHandle);
   const [avatarUri] = useState(() => profileImageUri('avatar'));
@@ -383,6 +388,18 @@ export default function ShareFavoritesScreen() {
   const cardH = shape === 'story' ? STORY_H : POST_H;
 
   const items = useMemo(() => {
+    if (isMixed) {
+      // Alternated, so the opening picks are already a mix. Keys are prefixed:
+      // a show id and a film name must never collide.
+      const sh = getLibraryShows().map((s) => ({ key: `s:${s.tvdbId}`, poster: s.posterUrl, title: s.name, on: null as string | null, kind: 'shows' }));
+      const mv = getLibraryMovies().map((m) => ({ key: `m:${m.name}`, poster: m.poster, title: m.title, on: null as string | null, kind: 'movies' }));
+      const out: typeof sh = [];
+      for (let i = 0; i < Math.max(sh.length, mv.length); i++) {
+        if (sh[i]) out.push(sh[i]);
+        if (mv[i]) out.push(mv[i]);
+      }
+      return out;
+    }
     if (isRecent) {
       return isShows
         ? getRecentShows().map((s) => ({ key: String(s.tvdbId), poster: s.posterUrl, title: s.name, on: s.watchedOn }))
@@ -391,7 +408,7 @@ export default function ShareFavoritesScreen() {
     return isShows
       ? getFavoriteShows().map((s) => ({ key: String(s.tvdbId), poster: s.posterUrl, title: s.name, on: null }))
       : getFavoriteMovies().map((m) => ({ key: m.name, poster: m.poster, title: m.title, on: null }));
-  }, [isShows, isRecent]);
+  }, [isShows, isRecent, isMixed]);
 
   /** Titles under the posters. OFF by default: the posters are the picture,
    *  and at 16 or 24 a caption under each is a wall of six-point text.
@@ -557,7 +574,9 @@ export default function ShareFavoritesScreen() {
     return { long: t('shareFavorites.watchedRange', { range }), short: range };
   }, [isRecent, shown]);
 
-  const heading = isRecent
+  const heading = isMixed
+    ? t('shareFavorites.headingMixed')
+    : isRecent
     ? isShows
       ? t('shareFavorites.recentShows')
       : t('shareFavorites.recentMovies')
@@ -610,9 +629,9 @@ export default function ShareFavoritesScreen() {
   if (!count) {
     return (
       <Screen>
-        <NavHeader title={isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
+        <NavHeader title={isMixed ? t('shareFavorites.titleMixed') : isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
         <Text style={s.empty}>
-          {isShows ? t('shareFavorites.emptyShows') : t('shareFavorites.emptyMovies')}
+          {isMixed ? t('shareFavorites.emptyMixed') : isShows ? t('shareFavorites.emptyShows') : t('shareFavorites.emptyMovies')}
         </Text>
       </Screen>
     );
@@ -620,7 +639,7 @@ export default function ShareFavoritesScreen() {
 
   return (
     <Screen>
-      <NavHeader title={isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
+      <NavHeader title={isMixed ? t('shareFavorites.titleMixed') : isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
       <ScrollView
         contentContainerStyle={{ alignItems: 'center', gap: 14, paddingBottom: 28, paddingTop: 6 }}>
         {/* The count, and nothing else to decide. Hidden entirely when there is
@@ -878,12 +897,29 @@ export default function ShareFavoritesScreen() {
           of every favourite would push the share button off the screen for
           anybody with more than a dozen.
         */}
+        {isMixed && (
+          <View style={s.counts}>
+            {(['shows', 'movies'] as const).map((k) => (
+              <Pressable accessibilityRole="tab" accessibilityState={{ selected: tab === k }}
+                key={k}
+                style={[s.shapeTab, tab === k && s.countTabOn]}
+                onPress={() => {
+                  tapSelection();
+                  setTab(k);
+                }}>
+                <Text style={[s.countText, tab === k && { color: colors.onBrand }]}>
+                  {t(k === 'shows' ? 'shareFavorites.tabShows' : 'shareFavorites.tabMovies')}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={s.shelf}
           style={{ alignSelf: 'stretch' }}>
-          {items.map((it) => {
+          {(isMixed ? items.filter((i) => 'kind' in i && i.kind === tab) : items).map((it) => {
             const at = picked.indexOf(it.key);
             const on = at >= 0;
             return (

@@ -8,7 +8,7 @@ import { listsChanged } from '@/community-publish';
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { collageHeight, ListCollage } from '@/components/list-collage';
 import { SortableRows } from '@/components/sortable-rows';
-import { NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
+import { BlueLink, NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
 import { getCustomLists, getMeta, setListsOrder, setMeta } from '@/db';
 import { useJoined } from '@/community-session';
 import { fetchSharedLists, type SharedListRow } from '@/community-shared-lists';
@@ -276,32 +276,6 @@ export default function ListsScreen() {
             );
           }}
         />
-        {/*
-         * SHARED WITH FRIENDS, AS ITS OWN SECTION (item 19). Starting one was a
-         * toggle inside "Create a new list", joining was a small link shown only
-         * when signed in, and a shared row differed from yours by a tiny mark.
-         * Now both doors sit under a heading of their own, above the lists they
-         * lead to, for everybody: somebody not signed in lands on the screen
-         * that explains why an account is needed, which is better than not
-         * learning the feature exists. Not for the demo library.
-         */}
-        {!seedLib && (
-          <View style={sharedStyles.section}>
-            <Text accessibilityRole="header" style={sharedStyles.heading}>
-              {t('sharedLists.sectionTitle')}
-            </Text>
-            <View style={sharedStyles.doors}>
-              <PillButton
-                small
-                label={t('shared.startOne')}
-                trackId="shared_start"
-                onPress={() => router.push(joined ? '/shared/create' : '/shared')}
-              />
-              <PillButton small variant="outline" label={t('listsIndex.joinWithCode')} trackId="shared_join" onPress={() => router.push('/shared')} />
-            </View>
-          </View>
-        )}
-        {shared.lists.map(sharedRow)}
         {/* QUIET, AND NOT A WALL. Nothing here is blocked: every list on this
             screen exists, opens and can be edited. What the row says is that
             the PROFILE shows ten of them — an offer, in the same faint grey as
@@ -319,14 +293,44 @@ export default function ListsScreen() {
             </Text>
           </Pressable>
         ) : null}
+        {/* Directly under the user's own cards, and only for lists that really
+            came from the TV Time export (the only importer that writes lists):
+            after the shared section it read as describing shared lists. */}
+        {!isSeedLibrary() && !overCap && getMeta('importedTvTimeExport') === '1' && lists.some((l) => !('userCreated' in l && l.userCreated)) ? (
+          <Text style={styles.note}>{t('listsIndex.importedNote')}</Text>
+        ) : null}
+        {/*
+         * SHARED WITH FRIENDS, AS ITS OWN SECTION (item 19). Starting one was a
+         * toggle inside "Create a new list", joining was a small link shown only
+         * when signed in, and a shared row differed from yours by a tiny mark.
+         * Now both doors sit under a heading of their own, above the lists they
+         * lead to, for everybody: somebody not signed in lands on the screen
+         * that explains why an account is needed, which is better than not
+         * learning the feature exists. Not for the demo library.
+         */}
+        {!seedLib && (
+          <View style={sharedStyles.section}>
+            <Text accessibilityRole="header" style={sharedStyles.heading}>
+              {t('sharedLists.sectionTitle')}
+            </Text>
+            <Text style={sharedStyles.explain}>{t('sharedLists.explain')}</Text>
+            {/* Full width: the list cards run edge to edge like the ones above. */}
+            <View style={{ alignSelf: 'stretch' }}>{shared.lists.map(sharedRow)}</View>
+            <PillButton
+              label={t('shared.startOne')}
+              trackId="shared_start"
+              onPress={() => router.push(joined ? '/shared/create' : '/shared')}
+            />
+            <BlueLink label={t('sharedLists.joinLink')} trackId="shared_join" onPress={() => router.push('/shared')} />
+            <BlueLink label={t('sharedLists.togetherLink')} trackId="shared_together" onPress={() => router.push('/together')} />
+          </View>
+        )}
         {/* Where the lists CAME FROM matters less than what the profile does
             with them, so it steps aside rather than stacking a second line of
             grey under the first. */}
         {/* "No lists yet" only when there are none of ANY kind: it sat under
             a column of shared lists, contradicting them (21 Oct). */}
-        {lists.length > 0 ? (
-          !isSeedLibrary() && !overCap && <Text style={styles.note}>{t('listsIndex.importedNote')}</Text>
-        ) : shared.lists.length === 0 ? (
+        {lists.length === 0 && shared.lists.length === 0 ? (
           <Text style={styles.note}>{t('listsIndex.emptyNote')}</Text>
         ) : null}
       </Animated.ScrollView>
@@ -369,7 +373,7 @@ const styles = StyleSheet.create({
 
 /** Kept apart from `styles` so the shared section is easy to find in here. */
 const sharedStyles = StyleSheet.create({
-  section: { marginTop: 26, paddingHorizontal: 14, gap: 10 },
-  heading: { color: colors.text, fontSize: 18, fontWeight: '800' },
-  doors: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  section: { marginTop: 26, alignItems: 'center', gap: 12 },
+  heading: { color: colors.text, fontSize: 18, fontWeight: '800', textAlign: 'center' },
+  explain: { color: colors.dim, fontSize: 14, lineHeight: 20, textAlign: 'center', paddingHorizontal: 28 },
 });

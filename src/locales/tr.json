@@ -1371,7 +1371,8 @@
     "share": "Paylaş",
     "helpCenter": "Yardım merkezi",
     "findPeople": "Kişi bul",
-    "memories": "Anılar"
+    "memories": "Anılar",
+    "shareLibrary": "Dizileri ve filmleri paylaş"
   },
   "notOnTvdb": {
     "title": "Henüz TheTVDB'de yok",
@@ -2804,7 +2805,12 @@
     },
     "showTitles": "Başlıkları göster",
     "showProfile": "Profilimi göster",
-    "hintRemove": "Kaldırmak için seçili bir postere dokun."
+    "hintRemove": "Kaldırmak için seçili bir postere dokun.",
+    "titleMixed": "Dizileri ve filmleri paylaş",
+    "headingMixed": "İzlediklerim",
+    "tabShows": "Diziler",
+    "tabMovies": "Filmler",
+    "emptyMixed": "Önce bir dizi ya da film ekle, sonra burada paylaş."
   },
   "commsuni": {
     "byline": "Yorumlar CommsUni.tv'den",
@@ -3609,7 +3615,10 @@
     "badge": {
       "one": "Paylaşılan · {{count}} kişi",
       "other": "Paylaşılan · {{count}} kişi"
-    }
+    },
+    "explain": "Biriyle bir liste oluştur. İkiniz de başlık eklersiniz, herkes kendi izlediğini işaretler.",
+    "joinLink": "Kodun mu var? Bir listeye katıl",
+    "togetherLink": "Bir diziyi birlikte izle ›"
   },
   "ratingBreakdown": {
     "title": "Topluluk puanları",

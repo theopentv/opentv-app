@@ -1371,7 +1371,8 @@
     "share": "Condividi",
     "helpCenter": "Centro assistenza",
     "findPeople": "Trova persone",
-    "memories": "Ricordi"
+    "memories": "Ricordi",
+    "shareLibrary": "Condividi serie e film"
   },
   "notOnTvdb": {
     "title": "Non ancora su TheTVDB",
@@ -2804,7 +2805,12 @@
     },
     "showTitles": "Mostra i titoli",
     "showProfile": "Mostra il mio profilo",
-    "hintRemove": "Tocca un poster scelto per toglierlo."
+    "hintRemove": "Tocca un poster scelto per toglierlo.",
+    "titleMixed": "Condividi serie e film",
+    "headingMixed": "Quello che guardo",
+    "tabShows": "Serie",
+    "tabMovies": "Film",
+    "emptyMixed": "Aggiungi prima una serie o un film, poi condividili da qui."
   },
   "commsuni": {
     "byline": "Commenti da CommsUni.tv",
@@ -3609,7 +3615,10 @@
     "badge": {
       "one": "Condivisa · {{count}} persona",
       "other": "Condivisa · {{count}} persone"
-    }
+    },
+    "explain": "Crea una lista con qualcuno. Aggiungete titoli entrambi e ognuno spunta i suoi.",
+    "joinLink": "Hai un codice? Unisciti a una lista",
+    "togetherLink": "Guarda una serie insieme ›"
   },
   "ratingBreakdown": {
     "title": "Voti della community",
