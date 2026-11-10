@@ -152,7 +152,8 @@ function CreditRow({ credit }: { credit: PersonCredit }) {
         ) : null}
       </View>
       {credit.year ? <Text style={styles.rowYear}>{credit.year}</Text> : null}
-      {openable ? <Ionicons name="chevron-forward" size={16} color={colors.faint} /> : null}
+      {/* films are not openable, but keep the chevron's 16pt so the years align */}
+      {openable ? <Ionicons name="chevron-forward" size={16} color={colors.faint} /> : <View style={{ width: 16 }} />}
     </Pressable>
   );
 }

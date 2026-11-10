@@ -107,7 +107,7 @@ const s = StyleSheet.create({
   artRailRow: { flexDirection: 'row', gap: 5 },
   artRail: { height: 26, borderRadius: 4, backgroundColor: colors.raise },
   artGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
-  artTile: { width: '47%', height: 24, borderRadius: 4, backgroundColor: colors.raise },
+  artTile: { flexGrow: 1, flexBasis: '40%', height: 24, borderRadius: 4, backgroundColor: colors.raise },
   artPoster: { height: 30, borderRadius: 4, backgroundColor: colors.line },
   layoutName: { color: colors.dim, fontSize: 13, fontWeight: '700', textAlign: 'center' },
 });
