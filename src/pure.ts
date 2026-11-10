@@ -4974,6 +4974,12 @@ export function addSearchHistory(
   return [{ ...entry, label }, ...without].slice(0, SEARCH_HISTORY_MAX);
 }
 
+/** A remembered show saved under its NAME (a TMDB-fallback result, before 2.4.0)
+ *  has no TheTVDB id to open; it must be resolved from its tmdbId first. */
+export function recentShowNeedsResolve(h: Pick<SearchHistoryEntry, 'kind' | 'value' | 'tmdbId'>): boolean {
+  return h.kind === 'show' && !/^\d+$/.test(h.value) && h.tmdbId != null;
+}
+
 /** Drop one entry — a person can un-remember a single search without clearing
  *  everything, which is the difference between a list and a confession. */
 export function removeSearchHistory(

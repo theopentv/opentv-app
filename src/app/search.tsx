@@ -280,14 +280,12 @@ export default function SearchScreen() {
     return () => clearTimeout(timer);
   }, [query, tab]);
 
-  const open = async (item: Result) => {
-    // The THING, not the query. Somebody who typed "sev" and opened Severance
-    // wants Severance back; the letters were only how they got there.
+  const remember = (item: Result, value: string) =>
     setHistory(
       rememberSearch({
         kind: item.kind === 'movie' ? 'movie' : 'show',
         label: item.name,
-        value: item.kind === 'movie' ? item.name : String(item.tvdbId ?? item.name),
+        value,
         poster: item.poster ?? null,
         // The same identity the push below uses. A remembered film must reopen
         // the film that was opened, not another one sharing a title.
@@ -296,6 +294,14 @@ export default function SearchScreen() {
         year: item.year,
       }),
     );
+
+  const open = async (item: Result) => {
+    // The THING, not the query. Somebody who typed "sev" and opened Severance
+    // wants Severance back; the letters were only how they got there.
+    // A TMDB-only show is remembered AFTER its TheTVDB id is resolved below:
+    // saved by name, Recent pushed /show/<name> and it never loaded.
+    if (item.kind === 'movie') remember(item, item.name);
+    else if (item.tvdbId != null) remember(item, String(item.tvdbId));
     if (item.kind === 'movie') {
       // tmdbId is real identity — pass it whenever the result has one, not
       // only when no row exists yet. Title alone can't tell two different
@@ -315,6 +321,7 @@ export default function SearchScreen() {
     // page fetches its metadata on its own
     const tvdbId = await tvdbIdFor({ kind: 'tv', tvdbId: item.tvdbId, tmdbId: item.tmdbId } as CatalogItem);
     if (tvdbId) {
+      remember(item, String(tvdbId));
       router.push(`/show/${tvdbId}?tmdbId=${item.tmdbId}`);
       return;
     }
@@ -463,7 +470,7 @@ export default function SearchScreen() {
               accessibilityRole="button"
               // The ✕ inside is offered as the row's action too — see `a11y.ts`.
               {...a11yAction('forget', t('common.remove'), () => setHistory(forgetSearch(item.kind, item.value)))}
-              onPress={() => {
+              onPress={async () => {
                 if (item.kind === 'query') {
                   setQuery(item.value);
                   return;
@@ -481,6 +488,13 @@ export default function SearchScreen() {
                       year: item.year,
                     }) as never,
                   );
+                  return;
+                }
+                if (recentShowNeedsResolve(item)) {
+                  // saved by name before 2.4.0: resolve the TheTVDB id now
+                  const id = await tvdbIdFor({ kind: 'tv', tmdbId: item.tmdbId } as CatalogItem);
+                  if (id) router.push(`/show/${id}?tmdbId=${item.tmdbId}`);
+                  else alertNotOnTvdb(item.label);
                   return;
                 }
                 router.push(`/show/${item.value}`);
