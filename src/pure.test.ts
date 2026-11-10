@@ -4267,4 +4267,10 @@ describe('rankSearchByPopularity', () => {
     const tmdb = [row('Better Call Saul', '2015', 95.4), row('Better', '2023', 2.8)];
     expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['Better Call Saul', 'Better', 'Obscure']);
   });
+  it('keeps the merged order when the names do not match (a translated TheTVDB answer)', () => {
+    const tvdb = [row('مسلسل أ', '2015'), row('مسلسل ب', '2020')];
+    const tmdb = [row('Show A', '2015', 90), row('Show C', '2019', 50)];
+    // The pre-2.4.0 interleave: a TheTVDB row still leads, not sunk below TMDB.
+    expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['مسلسل أ', 'Show A', 'مسلسل ب', 'Show C']);
+  });
 });

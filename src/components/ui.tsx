@@ -46,7 +46,9 @@ export function useTopInset(): number {
 let blockPressUntil = 0;
 const DRAG_GRACE_MS = 150;
 export const pageDrag = {
-  onScrollBeginDrag: () => { blockPressUntil = Infinity; },
+  // Capped, not Infinity: a page that unmounts mid-drag never sends its end,
+  // and an open-ended block would leave every card in the app dead.
+  onScrollBeginDrag: () => { blockPressUntil = Date.now() + 2000; },
   onScrollEndDrag: () => { blockPressUntil = Date.now() + DRAG_GRACE_MS; },
   onMomentumScrollEnd: () => { blockPressUntil = Date.now() + DRAG_GRACE_MS; },
 };

@@ -1743,10 +1743,14 @@ export function mergeSearchFallback<T extends SearchHit>(primary: readonly T[], 
 export function rankSearchByPopularity<T extends SearchHit & { popularity?: number }>(primary: readonly T[], supplement: readonly T[]): T[] {
   const pop = new Map<string, number>();
   for (const r of supplement) if (r.popularity != null) pop.set(searchDedupeKey(r), r.popularity);
-  const merged = mergeSearchFallback(
-    primary.map((r) => ({ ...r, popularity: r.popularity ?? pop.get(searchDedupeKey(r)) })),
-    supplement,
-  );
+  const withPop = primary.map((r) => ({ ...r, popularity: r.popularity ?? pop.get(searchDedupeKey(r)) }));
+  const merged = mergeSearchFallback(withPop, supplement);
+  // ONLY WHEN THE TWO SOURCES AGREE ON NAMES. TheTVDB answers in the user's
+  // language, TMDB here in English, so in Arabic or French almost nothing
+  // matches; sorting then sank every TheTVDB row below TMDB-only copies with no
+  // id. Fewer than half matched: keep the merged order as it was before 2.4.0.
+  const matched = withPop.filter((r) => r.popularity != null).length;
+  if (matched * 2 < withPop.length) return merged;
   return merged
     .map((r, i) => ({ r, i }))
     .sort((a, b) => (b.r.popularity ?? -1) - (a.r.popularity ?? -1) || a.i - b.i)

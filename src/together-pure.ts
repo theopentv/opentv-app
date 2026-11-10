@@ -199,10 +199,17 @@ export function catchUpEpisodes(
   counts: Readonly<Record<number, number | undefined>>,
 ): Position[] | null {
   if (theirs.season < 1 || theirs.episode < 1 || comparePositions(theirs, mine) >= 0) return [];
+  // THEIR POSITION MUST EXIST IN MY SHOW. A partner whose library numbers it
+  // differently (absolute anime numbering: S1E250 against my 24), or a member
+  // sending nonsense, would otherwise write episodes that do not exist into my
+  // library and sync them everywhere. Unknown length: wait, as below.
+  const theirSeason = counts[theirs.season];
+  if (theirSeason == null || !(theirSeason > 0)) return null;
+  if (theirs.episode > theirSeason) return [];
   const out: Position[] = [];
   for (let season = mine?.season ?? 1; season <= theirs.season; season++) {
     const last = season === theirs.season ? theirs.episode : counts[season];
-    if (last == null || !(last >= 0)) return null;
+    if (last == null || !(last > 0)) return null;
     for (let episode = season === mine?.season ? mine.episode + 1 : 1; episode <= last; episode++) out.push({ season, episode });
   }
   return out;

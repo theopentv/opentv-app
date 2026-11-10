@@ -34,7 +34,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, FlatList, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { posterSpeech } from '@/components/poster';
@@ -541,6 +541,9 @@ export default function ShareFavoritesScreen() {
   );
 
   const byKey = useMemo(() => new Map(items.map((i) => [i.key, i])), [items]);
+  // The whole library can be thousands of posters: a FlatList draws what is on
+  // screen, and the filtered array is memoised so it is not rebuilt every render.
+  const shelf = useMemo(() => (isMixed ? items.filter((i) => 'kind' in i && i.kind === tab) : items), [items, isMixed, tab]);
   /* SLICED, because `count` no longer only changes when somebody taps a
      count. Turning titles on, or switching to Post, can take the option they
      were on away -- and then `picked` still holds twenty keys while the grid
@@ -914,17 +917,20 @@ export default function ShareFavoritesScreen() {
             ))}
           </View>
         )}
-        <ScrollView
+        <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={s.shelf}
-          style={{ alignSelf: 'stretch' }}>
-          {(isMixed ? items.filter((i) => 'kind' in i && i.kind === tab) : items).map((it) => {
+          style={{ alignSelf: 'stretch' }}
+          data={shelf}
+          keyExtractor={(it) => it.key}
+          extraData={picked}
+          initialNumToRender={8}
+          renderItem={({ item: it }) => {
             const at = picked.indexOf(it.key);
             const on = at >= 0;
             return (
               <Pressable accessibilityRole="checkbox" accessibilityLabel={posterSpeech(it.title)} accessibilityState={{ checked: on }}
-                key={it.key}
                 onPress={() => toggle(it.key)}
                 style={[s.pick, on && s.pickOn]}>
                 {it.poster ? (
@@ -943,8 +949,8 @@ export default function ShareFavoritesScreen() {
                 )}
               </Pressable>
             );
-          })}
-        </ScrollView>
+          }}
+        />
 
         {/*
           TWO LINES, AND THE SECOND ONE IS ALWAYS TRUE.

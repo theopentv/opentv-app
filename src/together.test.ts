@@ -170,8 +170,14 @@ describe('catchUpEpisodes', () => {
   });
   it('refuses to guess a season it has to cross', () => {
     expect(catchUpEpisodes(p(1, 2), p(3, 1), { 1: 10 })).toBeNull();
-    // Inside the partner's own season no length is needed.
-    expect(catchUpEpisodes(p(1, 10), p(2, 2), { 1: 10 })).toEqual([p(2, 1), p(2, 2)]);
+    // The partner's own season needs a length too: their position must exist.
+    expect(catchUpEpisodes(p(1, 10), p(2, 2), { 1: 10 })).toBeNull();
+    expect(catchUpEpisodes(p(1, 2), p(2, 1), { 1: 10, 2: 0 })).toBeNull();
+  });
+  it('never writes an episode my show does not have', () => {
+    // Absolute anime numbering on their side: S1E250 against my 10.
+    expect(catchUpEpisodes(p(1, 3), p(1, 250), counts)).toEqual([]);
+    expect(catchUpEpisodes(null, p(1, 9999), counts)).toEqual([]);
   });
   it('ignores a specials position', () => {
     expect(catchUpEpisodes(null, p(0, 3), counts)).toEqual([]);
