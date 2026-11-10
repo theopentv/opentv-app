@@ -1030,8 +1030,8 @@ export default function ShowScreen() {
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
           onScrollBeginDrag={() => { pageDrag.onScrollBeginDrag(); onScrollBeginDrag(); }}
-          onScrollEndDrag={() => { pageDrag.onScrollEndDrag(); onContentScrollSettled(); }}
-          onMomentumScrollEnd={() => { pageDrag.onMomentumScrollEnd(); onContentScrollSettled(); }}
+          onScrollEndDrag={(e) => { pageDrag.onScrollEndDrag(); onContentScrollSettled(e); }}
+          onMomentumScrollEnd={(e) => { pageDrag.onMomentumScrollEnd(); onContentScrollSettled(e); }}
           scrollEventThrottle={16}
           bounces>
           <View style={styles.rowBetween}>
