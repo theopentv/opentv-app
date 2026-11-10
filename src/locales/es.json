@@ -1371,7 +1371,8 @@
     "share": "Compartir",
     "helpCenter": "Centro de ayuda",
     "findPeople": "Buscar personas",
-    "memories": "Recuerdos"
+    "memories": "Recuerdos",
+    "shareLibrary": "Compartir series y películas"
   },
   "notOnTvdb": {
     "title": "Todavía no está en TheTVDB",
@@ -2804,7 +2805,12 @@
     },
     "showTitles": "Mostrar títulos",
     "showProfile": "Mostrar mi perfil",
-    "hintRemove": "Toca un póster elegido para quitarlo."
+    "hintRemove": "Toca un póster elegido para quitarlo.",
+    "titleMixed": "Compartir series y películas",
+    "headingMixed": "Lo que veo",
+    "tabShows": "Series",
+    "tabMovies": "Películas",
+    "emptyMixed": "Añade primero una serie o una película y compártelas aquí."
   },
   "commsuni": {
     "byline": "Comentarios de CommsUni.tv",
