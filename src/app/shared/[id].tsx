@@ -26,15 +26,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Share, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, RefreshControl, Share, StyleSheet, Switch, View } from 'react-native';
 import { Text } from '@/components/text';
 
 import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { TitlePicker } from '@/components/title-picker';
-import { NavHeader, PillButton, Screen, moreMenuItem, useScreenWidth } from '@/components/ui';
+import { MenuRow, NavHeader, PillButton, Screen, moreMenuItem, useScreenWidth } from '@/components/ui';
 import { track } from '@/analytics';
 import { communityErrorText } from '@/community-error-text';
-import { forgetTogether, noteTogetherDetail, togetherShowState } from '@/community-together';
+import { forgetTogether, noteTogetherDetail, setTogetherMarkTogether, togetherShowState } from '@/community-together';
 import { MemberDot, MembersStrip, memberName } from '@/components/shared-members';
 import { positionText, togetherMembers, togetherSummaryText } from '@/components/together-strip';
 import { addShow, listAddChoices } from '@/db';
@@ -67,6 +67,8 @@ export default function SharedListScreen() {
   const [busy, setBusy] = useState<string | null>(null);
   /** The together's show on this phone — set here, in the callback, never read in render. */
   const [showState, setShowState] = useState<'local' | 'absent' | 'unreadable'>('local');
+  /** The "Mark it for both of us" switch while its request is out. */
+  const [marking, setMarking] = useState(false);
   /*
    * ADDING FROM THE LIST ITSELF, as well as from a title's own page.
    *
@@ -128,6 +130,20 @@ export default function SharedListScreen() {
       void load();
     }, [load]),
   );
+
+  const toggleMarkTogether = async (on: boolean) => {
+    if (marking) return;
+    setMarking(true);
+    try {
+      const mark = await setTogetherMarkTogether(String(id), on);
+      tapSelection();
+      setList((l) => (l ? { ...l, mark_together: mark } : l));
+    } catch (e) {
+      Alert.alert(t('together.title'), communityErrorText(e));
+    } finally {
+      setMarking(false);
+    }
+  };
 
   const me = useMemo(() => list?.members.find((m) => m.is_me) ?? null, [list]);
   const together = list?.kind === 'together';
@@ -384,6 +400,30 @@ export default function SharedListScreen() {
           {/* The invitee who does not track the show yet: one tap, and their
               ticks start moving their face. Until then they are "Not started". */}
           {showState === 'absent' && <PillButton label={t('together.addToMyShows')} onPress={addToMyShows} trackId="together_add_show" />}
+          {/* "MARK IT FOR BOTH OF US" (2.4.0): one phone does the ticking for
+              everybody, but only once EVERYBODY has said yes — it writes into
+              their libraries. Absent from an older server: no switch, since
+              it could not be kept. Free at every tier. */}
+          {list.mark_together != null && (
+            <MenuRow
+              title={t('together.markBoth')}
+              sub={
+                list.mark_together.all
+                  ? t('together.markBothOn')
+                  : list.mark_together.me
+                    ? t('together.markBothWaiting')
+                    : t('together.markBothSub')
+              }
+              right={
+                <Switch
+                  value={list.mark_together.me}
+                  disabled={marking}
+                  onValueChange={(on) => void toggleMarkTogether(on)}
+                  trackColor={{ true: colors.green }}
+                />
+              }
+            />
+          )}
         </View>
       )}
 

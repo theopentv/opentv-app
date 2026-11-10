@@ -1,5 +1,6 @@
 import {
   aheadBy,
+  catchUpEpisodes,
   comparePositions,
   ownedTogetherFor,
   positionLabel,
@@ -145,5 +146,34 @@ describe('togetherCards / publishedTogether', () => {
     const cards = togetherCards([{ listId: 'x', tvdbId: 9 }, ...entries], details);
     expect(publishedTogether(cards)).toEqual({ shows: [{ title: 'Index A', members: 2 }, { title: 'Detail B', members: 3 }] });
     expect(publishedTogether(togetherCards([{ listId: 'x', tvdbId: 9 }], {}))).toBeNull();
+  });
+});
+
+describe('catchUpEpisodes', () => {
+  const p = (season: number, episode: number) => ({ season, episode });
+  it('marks from just after mine up to and including theirs, inside one season', () => {
+    expect(catchUpEpisodes(p(1, 3), p(1, 6), counts)).toEqual([p(1, 4), p(1, 5), p(1, 6)]);
+  });
+  it('crosses seasons by their lengths', () => {
+    expect(catchUpEpisodes(p(1, 9), p(3, 1), counts)).toEqual([
+      p(1, 10),
+      ...Array.from({ length: 8 }, (_, i) => p(2, i + 1)),
+      p(3, 1),
+    ]);
+  });
+  it('starts at S1E1 when I have not started', () => {
+    expect(catchUpEpisodes(null, p(1, 2), counts)).toEqual([p(1, 1), p(1, 2)]);
+  });
+  it('is forward only: level or behind marks nothing', () => {
+    expect(catchUpEpisodes(p(2, 4), p(2, 4), counts)).toEqual([]);
+    expect(catchUpEpisodes(p(2, 4), p(1, 9), counts)).toEqual([]);
+  });
+  it('refuses to guess a season it has to cross', () => {
+    expect(catchUpEpisodes(p(1, 2), p(3, 1), { 1: 10 })).toBeNull();
+    // Inside the partner's own season no length is needed.
+    expect(catchUpEpisodes(p(1, 10), p(2, 2), { 1: 10 })).toEqual([p(2, 1), p(2, 2)]);
+  });
+  it('ignores a specials position', () => {
+    expect(catchUpEpisodes(null, p(0, 3), counts)).toEqual([]);
   });
 });

@@ -3782,6 +3782,8 @@ export const COMMUNITY_META_KEYS = [
   'communityTogetherSent',
   'communityTogetherDetails',
   'communityTogetherIndexAt',
+  // Which lead "mark it for both of us" last followed (2.4.0).
+  'communityTogetherCaught',
 ] as const;
 
 /**
@@ -3918,6 +3920,8 @@ export const COMMUNITY_SIGN_OUT_META_KEYS = [
   'communityTogetherSent',
   'communityTogetherDetails',
   'communityTogetherIndexAt',
+  // Which lead "mark it for both of us" last followed (2.4.0).
+  'communityTogetherCaught',
 ] as const;
 
 /** A fresh array, for the same reason `metaKeysClearedOnAccountDeletion` returns one. */

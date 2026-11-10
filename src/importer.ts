@@ -920,6 +920,17 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
   let v1 = csv('tracking-prod-records.csv');
 
   /*
+   * WHERE THIS LIBRARY CAME FROM (2.4.0), one word, set by whichever branch
+   * below claims the file and stamped as `importSource` with the commit (last
+   * import wins). The publisher sends it, members only, for the dashboard's
+   * "TV Time or elsewhere" count: where you came from, never what you watch.
+   * Our own backup carries the sidecar and is a restore, not a source, so it
+   * leaves the stamp alone; so does a file nothing claimed.
+   */
+  const restore = files['_opentv_extras.json'] != null;
+  let source: string | null = !restore && v2all.length + showRows.length + v1.length > 0 ? 'tvtime' : null;
+
+  /*
    * A LIBRARY FROM A TRACKER THAT IS STILL ALIVE — Letterboxd today, and the
    * same door for the others. Detected by CONTENT, so a renamed ZIP still
    * imports as whatever is actually inside it.
@@ -946,6 +957,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     const mapped = letterboxdRows(parsed);
     v1 = mapped.movieRows;
     foreignMovieRatings = mapped.movieRatings;
+    source = 'letterboxd';
   }
 
   /*
@@ -976,6 +988,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       foreignEpRatings = mapped.episodeRatings ?? [];
       foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
       foreignExtra = mapped;
+      source = 'bingers';
     }
   }
 
@@ -1016,12 +1029,15 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
         imdbTv.push(...mapped.imdbTv);
         v1 = [...v1, ...mapped.movieRows];
         foreignMovieRatings = [...foreignMovieRatings, ...mapped.movieRatings];
+        source = 'imdb';
         continue;
       }
       if (!isLetterboxdImportCsv(header)) continue;
       const mapped = letterboxdImportRows(parsed);
       v1 = [...v1, ...mapped.movieRows];
       foreignMovieRatings = [...foreignMovieRatings, ...mapped.movieRatings];
+      // The import shape is Letterboxd's own; IMDb wins a ZIP holding both.
+      source = source ?? 'letterboxd';
     }
     // IMDb's series and episodes, once every file is read so a show rated in
     // one and its episodes in another resolve together -- see `imdbTvLinks`.
@@ -1079,6 +1095,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       foreignMovieRatings = mapped.movieRatings;
       foreignEpRatings = mapped.episodeRatings ?? [];
       foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
+      source = 'sofatime';
     } else if (found) {
       // Serializd's rows are keyed by TMDB id and need the one networked step
       // first — see `serializdLinks`. The other two arrive already on TheTVDB ids.
@@ -1097,6 +1114,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
       foreignNotes = mapped.notes ?? foreignNotes;
       foreignMovieTmdb = new Map((mapped.movieTmdb ?? []).map((x) => [x.name, x.tmdbId]));
       foreignExtra = mapped;
+      source = found.source;
     }
   }
 
@@ -1108,6 +1126,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     showRows = community.showRows;
     v2all = community.episodeRows;
     v1 = community.movieRows;
+    if (!restore && showRows.length + v2all.length + v1.length > 0) source = 'extension_csv';
   }
 
   // ---- shows + follow state --------------------------------------------------
@@ -2327,6 +2346,7 @@ export async function importZipBytes(zipBytes: Uint8Array, onProgress: (p: Progr
     ]);
     db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('moviesVersion', 'imported')");
     db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('libraryOwner', 'imported')");
+    if (source) db.runSync("INSERT OR REPLACE INTO meta (key, value) VALUES ('importSource', ?)", [source]);
     // freshly imported shows need metadata — let the offline pre-cache resume
     db.runSync("DELETE FROM meta WHERE key = 'metaCacheComplete'");
   });
