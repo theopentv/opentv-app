@@ -384,6 +384,13 @@ export default function ShowScreen() {
   // completed → open directly on the "Finished" card
   const firstUnwatchedIdx = carousel.findIndex((i) => i.kind === 'ep' && !i.watched);
   const carouselStart = firstUnwatchedIdx === -1 ? Math.max(carousel.length - 1, 0) : firstUnwatchedIdx;
+  // Set by a mark of the next card; consumed once the rail's start has moved.
+  const followNext = useRef(false);
+  useEffect(() => {
+    if (!followNext.current) return;
+    followNext.current = false;
+    if (carousel.length) carouselRef.current?.scrollToIndex({ index: Math.min(carouselStart, carousel.length - 1), animated: true, viewPosition: 0 });
+  }, [carouselStart, carousel.length]);
 
   // TMDB's per-episode scores (0–5 scale) by season — the fallback series for
   // the chart below, and what it drew from exclusively before the community
@@ -1831,7 +1838,15 @@ export default function ShowScreen() {
                         if (item.watched) {
                           router.push(`/mark-as?show=${show.tvdbId}&s=${item.season}&e=${item.episode}`);
                         } else {
-                          markWatchedWithPrompt(show.tvdbId, item.season, item.episode, () => setTick((t) => t + 1));
+                          // Slide on to the next card, but only when this WAS the next
+                          // one: a tick on a card ahead (peeking) must not yank the rail
+                          // back. Un-marking goes through /mark-as and never gets here.
+                          const next = carousel[firstUnwatchedIdx];
+                          const wasNext = next?.kind === 'ep' && next.season === item.season && next.episode === item.episode;
+                          markWatchedWithPrompt(show.tvdbId, item.season, item.episode, () => {
+                            if (wasNext) followNext.current = true;
+                            setTick((t) => t + 1);
+                          });
                         }
                       }}
                     />
