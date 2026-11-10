@@ -20,7 +20,7 @@ import { Text } from '@/components/text';
 import { ArrangingContext } from '@/components/profile-arrange';
 import { useContext } from 'react';
 
-import { CONTENT_MAX_WIDTH, GRID_GUTTER, PROFILE_MAX_WIDTH, gridMetrics, useScreenWidth } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, GRID_GUTTER, PROFILE_MAX_WIDTH, gridMetrics, guardPress, useScreenWidth } from '@/components/ui';
 import { Poster, posterSpeech } from '@/components/poster';
 import { currentLocale, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -138,7 +138,7 @@ export function PosterRail({
       renderItem={({ item }) => (
         <Pressable
           style={{ width }}
-          onPress={() => onItemPress?.(item.key)}
+          onPress={guardPress(() => onItemPress?.(item.key))}
           disabled={arranging}
           accessibilityRole="button"
           accessibilityLabel={posterSpeech(item.name)}>

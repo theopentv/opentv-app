@@ -479,7 +479,7 @@ function ShowsScreen() {
         <FlatList
           ref={listRef}
           // TV Time: black cards on a grey page, not grey cards on black.
-          style={{ backgroundColor: colors.panel }}
+          style={{ backgroundColor: rows.length === 0 ? colors.bg : colors.panel }}
           data={rows}
           keyExtractor={(r) => r.key}
           onScroll={(e) => onListScroll(e.nativeEvent.contentOffset.y)}

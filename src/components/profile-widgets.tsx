@@ -20,7 +20,7 @@ import type { ReactNode } from 'react';
 import { I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
 
-import { gridMetrics, useScreenWidth } from '@/components/ui';
+import { gridMetrics, guardPress, useScreenWidth } from '@/components/ui';
 // Imports `WidgetBox` back from here, at render time only — safe both ways.
 import { goalWidgetValue, renderGoalWidget } from '@/components/yearly-goal';
 import {
@@ -200,7 +200,7 @@ function TogetherRows({ rows, withPoster, editing }: {
           // phone: capped at 64; wide: the rows share the whole box
           style={[s.togetherRow, scale > 1 && { maxHeight: undefined }, { gap: 10 * type }]}
           disabled={!r.open || editing}
-          onPress={r.open}
+          onPress={guardPress(r.open)}
           accessibilityRole={r.open ? 'button' : undefined}
           accessibilityLabel={`${r.title}, ${r.line}`}>
           {withPoster &&

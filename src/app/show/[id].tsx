@@ -26,7 +26,7 @@ import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, pageDrag, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, type EpisodeWatch } from '@/db';
 import { confirmUnmark } from '@/unmark';
@@ -1026,12 +1026,12 @@ export default function ShowScreen() {
 
       {tab === 'About' ? (
         <ScrollView disableScrollViewPanResponder keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 24, paddingTop: 12 }}
+          contentContainerStyle={{ paddingBottom: 24 + (dbShow ? 0 : 80), paddingTop: 12 }}
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
-          onScrollBeginDrag={onScrollBeginDrag}
-          onScrollEndDrag={onContentScrollSettled}
-          onMomentumScrollEnd={onContentScrollSettled}
+          onScrollBeginDrag={() => { pageDrag.onScrollBeginDrag(); onScrollBeginDrag(); }}
+          onScrollEndDrag={(e) => { pageDrag.onScrollEndDrag(); onContentScrollSettled(e); }}
+          onMomentumScrollEnd={(e) => { pageDrag.onMomentumScrollEnd(); onContentScrollSettled(e); }}
           scrollEventThrottle={16}
           bounces>
           <View style={styles.rowBetween}>
@@ -1694,7 +1694,7 @@ export default function ShowScreen() {
       ) : (
         <ScrollView keyboardShouldPersistTaps="handled"
           style={{ backgroundColor: colors.panel }}
-          contentContainerStyle={{ paddingBottom: 24 }}
+          contentContainerStyle={{ paddingBottom: 24 + (dbShow ? 0 : 80) }}
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
           onScrollBeginDrag={onScrollBeginDrag}

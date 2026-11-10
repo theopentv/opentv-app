@@ -1136,6 +1136,11 @@ export default function RootLayout() {
         </Stack.Protected>
         </Stack>
         </ThemeProvider>
+        {/* The router falls back to `about` for a frame or two before the effect
+            above has replaced it with Welcome; nobody should see that frame. */}
+        {!onboarded && !preOnboardingRoute && (
+          <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.bg }]} />
+        )}
         <MetaFillBar />
         <UpdateGate />
         <UndoToast />

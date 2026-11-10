@@ -14,7 +14,7 @@
 import { runtimeLabel } from '@/duration';
 import { genreText, plotTvdbCodes } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
-import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, translatedOverview, tvdbHitName, tvdbNameRecord } from '@/pure';
+import { TVDB_LANG, artworkUrl, rankByQuery, rankSearchByPopularity, splitYearQuery, translatedOverview, tvdbHitName, tvdbNameRecord } from '@/pure';
 import { readyPrefix } from '@/feed-cache';
 import { pool, tmdb } from '@/tmdb';
 
@@ -40,6 +40,8 @@ export type CatalogItem = {
   /** popularity, shown as a rounded count. TheTVDB's `score` and TMDB's
    *  `vote_count` are different scales; both are only ever displayed. */
   votes: number;
+  /** TMDB search popularity, search rows only; ranks the result list. */
+  popularity?: number;
 };
 
 // ---- TheTVDB ---------------------------------------------------------------
@@ -259,7 +261,7 @@ async function tmdbFeed(limit: number): Promise<CatalogItem[]> {
 
 async function tmdbSearch(query: string): Promise<CatalogItem[]> {
   const d = await tmdb<{
-    results: { id: number; media_type: string; name?: string; title?: string; poster_path?: string | null; overview?: string; first_air_date?: string; release_date?: string }[];
+    results: { id: number; media_type: string; popularity?: number; name?: string; title?: string; poster_path?: string | null; overview?: string; first_air_date?: string; release_date?: string }[];
   }>(`/search/multi?query=${encodeURIComponent(query)}&include_adult=false`);
   return (d.results ?? [])
     .filter((r) => r.media_type === 'tv' || r.media_type === 'movie')
@@ -277,6 +279,7 @@ async function tmdbSearch(query: string): Promise<CatalogItem[]> {
         overview: r.overview ?? '',
         sub: ((kind === 'movie' ? r.release_date : r.first_air_date) ?? '').slice(0, 4),
         votes: 0,
+        popularity: r.popularity ?? 0,
       };
     });
 }
@@ -431,7 +434,7 @@ export async function searchCatalog(query: string): Promise<CatalogItem[]> {
     tmdbSearch(q).catch(() => [] as CatalogItem[]), // unreachable/rate-limited
   ]);
   if (!viaTvdb) return byYear(viaTmdb, year);
-  return byYear(mergeSearchFallback(viaTvdb, viaTmdb), year);
+  return byYear(rankSearchByPopularity(viaTvdb, viaTmdb), year);
 }
 
 /**
