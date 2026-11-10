@@ -80,6 +80,7 @@ import {
   annualSavingPercent,
   liveCreatorCode,
   rankByQuery,
+  rankSearchByPopularity,
   recentShowNeedsResolve,
   tvdbHitName,
   displayNameFrom,
@@ -4256,5 +4257,14 @@ describe('recentShowNeedsResolve', () => {
     expect(recentShowNeedsResolve({ kind: 'show', value: '273181', tmdbId: 60059 })).toBe(false);
     expect(recentShowNeedsResolve({ kind: 'show', value: 'Better Call Saul' })).toBe(false);
     expect(recentShowNeedsResolve({ kind: 'movie', value: 'Heat', tmdbId: 1 })).toBe(false);
+  });
+});
+
+describe('rankSearchByPopularity', () => {
+  const row = (title: string, sub: string, popularity?: number) => ({ kind: 'tv' as const, title, sub, popularity });
+  it('lifts the popular show above the exact-name one; unknown rows keep order at the end', () => {
+    const tvdb = [row('Better', '2023'), row('Obscure', '2001'), row('Better Call Saul', '2015')];
+    const tmdb = [row('Better Call Saul', '2015', 95.4), row('Better', '2023', 2.8)];
+    expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['Better Call Saul', 'Better', 'Obscure']);
   });
 });

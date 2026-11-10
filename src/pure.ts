@@ -1733,6 +1733,27 @@ export function mergeSearchFallback<T extends SearchHit>(primary: readonly T[], 
 }
 
 /**
+ * SEARCH, MOST POPULAR FIRST (2.4.0). TheTVDB's /search carries no popularity and
+ * its own order is poor ("Better" -> Better Call Saul is not in its top 8), so each
+ * TheTVDB row borrows the popularity of the TMDB row with the same kind+title+year
+ * (already fetched in parallel, no extra request). Rows TMDB does not know stay
+ * unranked and keep their order after the ranked ones; ties keep the incoming
+ * order, which `rankByQuery` already made exact-name-first.
+ */
+export function rankSearchByPopularity<T extends SearchHit & { popularity?: number }>(primary: readonly T[], supplement: readonly T[]): T[] {
+  const pop = new Map<string, number>();
+  for (const r of supplement) if (r.popularity != null) pop.set(searchDedupeKey(r), r.popularity);
+  const merged = mergeSearchFallback(
+    primary.map((r) => ({ ...r, popularity: r.popularity ?? pop.get(searchDedupeKey(r)) })),
+    supplement,
+  );
+  return merged
+    .map((r, i) => ({ r, i }))
+    .sort((a, b) => (b.r.popularity ?? -1) - (a.r.popularity ?? -1) || a.i - b.i)
+    .map((x) => x.r);
+}
+
+/**
  * Whether a periodic background resync should actually run this time.
  *
  * Rescheduling every episode reminder means cancelling all pending
