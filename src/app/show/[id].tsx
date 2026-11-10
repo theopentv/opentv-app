@@ -47,7 +47,7 @@ import { isPlus, plusUiVisible, requirePlus } from '@/plus';
 import { currentLocale, fmtDecimal, genreText, statusText, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
 import { communityErrorText } from '@/community-error-text';
-import { startTogether } from '@/community-together';
+import { startTogether, startsPlus } from '@/community-together';
 import { TogetherStrip } from '@/components/together-strip';
 import { intlTag } from '@/locale-resolve';
 
@@ -786,13 +786,13 @@ export default function ShowScreen() {
         text: t('media.actions.addToList'),
         onPress: () => router.push(`/add-to-list?type=show&id=${show.tvdbId}`),
       },
-      // WATCHING TOGETHER (2.0.0): Plus to start, free to join — so it
-      // is offered to every member and the paywall says what it costs.
+      // WATCHING TOGETHER (2.0.0): the first one free (2.4.0), Plus past
+      // it, free to join — offered to every member; the server counts.
       ...(joined
         ? [
             {
               icon: 'people-outline' as const,
-              text: isPlus() ? t('together.start') : t('together.startPlus'),
+              text: startsPlus() ? t('together.startPlus') : t('together.start'),
               // ASK FIRST (22 Oct): start one, or join the friend's
               // code — so two people never end up in two separate
               // togethers for the same show. Already in one for this
@@ -805,7 +805,7 @@ export default function ShowScreen() {
                     })
                     .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)));
                 Alert.alert(t('together.title'), t('together.askBody'), [
-                  { text: isPlus() ? t('together.askStart') : t('together.askStartPlus'), onPress: go },
+                  { text: startsPlus() ? t('together.askStartPlus') : t('together.askStart'), onPress: go },
                   { text: t('together.haveCode'), onPress: () => router.push('/together?join=1') },
                   { text: t('common.cancel'), style: 'cancel' },
                 ]);

@@ -27,10 +27,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { track } from '@/analytics';
 import { ApiError, api } from '@/api';
 import { getProfileId, getToken, isJoined } from '@/community-session';
-import { fetchSharedList, fetchSharedLists, type SharedListDetail, type SharedListRow } from '@/community-shared-lists';
-import { furthestWatched, getMeta, getShowBrief, onLocalChange, onRemoteChange, setMeta, showWatchCount } from '@/db';
-import { PLUS_AVAILABLE, requirePlus } from '@/plus';
-import { ownedTogetherFor, positionStamp, resolveTogetherShow, togetherCards, type ShowResolution, type TogetherCard } from '@/together-pure';
+import {
+  fetchSharedList,
+  fetchSharedLists,
+  setMarkTogether,
+  type MarkTogether,
+  type SharedListDetail,
+  type SharedListRow,
+} from '@/community-shared-lists';
+import { furthestWatched, getMeta, getShowBrief, markWatchedMany, notifyRemoteChange, onLocalChange, onRemoteChange, setMeta, showWatchCount } from '@/db';
+import { showMeta } from '@/metadata';
+import { isPlus, PLUS_AVAILABLE } from '@/plus';
+import { catchUpEpisodes, comparePositions, ownedTogetherFor, positionStamp, resolveTogetherShow, togetherCards, type ShowResolution, type TogetherCard } from '@/together-pure';
 
 const ACTIVE_KEY = 'communityTogetherActive';
 /** `[{ listId, tvdbId, itemId? }]` — which togethers this account is in. */
@@ -41,13 +49,26 @@ const SENT_KEY = 'communityTogetherSent';
 const DETAILS_KEY = 'communityTogetherDetails';
 /** When the index was last read, for the once-a-day refresh at launch. */
 const INDEX_AT_KEY = 'communityTogetherIndexAt';
+/** `{ owner, caught: { [listId]: "memberId:2:4" } }` — the lead each catch-up last followed. */
+const CAUGHT_KEY = 'communityTogetherCaught';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** The sync idiom's debounce (`device-sync.ts`): a season ticked off in one go is one send. */
 const PUSH_AFTER_MS = 1200;
 
-/** `title`/`poster`/`members` come from the index row, for the Profile block. */
-type Entry = { listId: string; tvdbId: number; itemId?: string; title?: string | null; poster?: string | null; members?: number };
+/**
+ * `title`/`poster`/`members` come from the index row, for the Profile block;
+ * `owned` from its `is_owner`, for the "· Plus" labels (`startsPlus`).
+ */
+type Entry = {
+  listId: string;
+  tvdbId: number;
+  itemId?: string;
+  title?: string | null;
+  poster?: string | null;
+  members?: number;
+  owned?: boolean;
+};
 
 function readJson<T>(key: string, fallback: T): T {
   try {
@@ -71,6 +92,12 @@ function readSent(): Record<string, string> {
 const writeSent = (sent: Record<string, string>) => setMeta(SENT_KEY, JSON.stringify({ owner: getProfileId(), sent }));
 
 const active = () => isJoined() && getMeta(ACTIVE_KEY) === '1';
+
+function readCaught(): Record<string, string> {
+  const v = readJson<{ owner?: string; caught?: Record<string, string> }>(CAUGHT_KEY, {});
+  return v.owner === getProfileId() && v.caught ? v.caught : {};
+}
+const writeCaught = (caught: Record<string, string>) => setMeta(CAUGHT_KEY, JSON.stringify({ owner: getProfileId(), caught }));
 
 // ── listeners: the `community-feed` pattern ─────────────────────────────────
 
@@ -174,6 +201,7 @@ export function noteTogetherIndex(rows: readonly SharedListRow[]): void {
       title: r.show?.title ?? null,
       poster: r.show?.poster ?? null,
       members: r.members,
+      owned: r.is_owner,
     })),
   );
   // A together that left the index (deleted by its owner, or left elsewhere) leaves the cache.
@@ -201,8 +229,62 @@ export function noteTogetherDetail(d: SharedListDetail): void {
   const at = prev ? all.indexOf(prev) : shows.length;
   shows.splice(at, 0, { ...prev, listId: d.id, tvdbId: Number(item.target_key), itemId: item.id });
   writeShows(shows);
+  catchUp(d);
   emit();
   schedulePublish();
+}
+
+/**
+ * "MARK IT FOR BOTH OF US" (2.4.0): when EVERY member has it on, the member
+ * furthest ahead moves my own library up to them — the episodes they have
+ * passed and I have not, dated by when they got there. Runs on every fresh
+ * detail: opening the together, the show page, and the launch / foreground
+ * refresh in `syncTogetherIfNeeded`. No push, no history: their cursor is all
+ * there is, and it is all the server already holds.
+ *
+ * Through `markWatchedMany`, the path every other mark takes, so the counters,
+ * sync ops and widgets follow; my new cursor then goes up by the ordinary
+ * publish that a local change schedules.
+ *
+ * ONCE PER MOVE OF THE LEAD. The lead it followed is remembered, so un-ticking
+ * an episode here afterwards stays un-ticked until the partner moves again —
+ * otherwise every open would quietly put it back. Forward only besides
+ * (`catchUpEpisodes`): it never un-marks anything.
+ */
+function catchUp(d: SharedListDetail): void {
+  try {
+    if (d.mark_together?.all !== true) return;
+    const item = d.items[0];
+    const r = item ? resolve(Number(item.target_key)) : null;
+    if (!item || r?.kind !== 'local') return;
+    const me = d.members.find((m) => m.is_me);
+    const lead = (item.positions ?? [])
+      .filter((p) => p.member_id !== me?.id)
+      .sort((a, b) => comparePositions(a, b))[0];
+    if (!lead) return;
+    const stamp = `${lead.member_id}:${lead.season}:${lead.episode}`;
+    const caught = readCaught();
+    if (caught[d.id] === stamp) return;
+    const counts: Record<number, number | undefined> = {};
+    for (const [n, sv] of Object.entries(showMeta(r.id)?.seasons ?? {})) counts[Number(n)] = sv?.count;
+    const todo = catchUpEpisodes(furthestWatched(r.id), lead, counts);
+    // A season length not known yet: no stamp, so the next open tries again.
+    if (todo == null) return;
+    if (todo.length > 0) {
+      // The server's `datetime('now')` or an ISO string; the column wants UTC
+      // as "YYYY-MM-DD HH:MM:SS". Anything else: now, rather than a bad date.
+      const at = /^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\d/.test(lead.updated_at)
+        ? lead.updated_at.slice(0, 19).replace('T', ' ')
+        : undefined;
+      markWatchedMany(r.id, todo, at);
+      // The show page is already open when its own fetch lands here.
+      notifyRemoteChange();
+      track('together_catch_up');
+    }
+    writeCaught({ ...caught, [d.id]: stamp });
+  } catch {
+    // Best effort: the next open tries again.
+  }
 }
 
 /** Left, deleted, or answered 404: off this phone's books. */
@@ -221,10 +303,25 @@ export function noteTogetherJoined(): void {
 }
 
 /**
- * Start one. PLUS, always — no free first one (D11). `requirePlus` is the
- * phone's half of the gate; a `plus_required` from the server is the paywall
- * too, the `shared/create` pattern. Null when it did not happen. Resolves to
- * the existing one when I already own a together for this show.
+ * Whether starting another one would be Plus, AS FAR AS THIS PHONE CAN TELL —
+ * for the "· Plus" on the buttons only, never as a gate.
+ *
+ * THE FIRST ONE IS FREE (2.4.0), and the SERVER counts it: one a person
+ * started, live or deleted after somebody joined it. The phone knows only the
+ * live ones it has seen in an index, so a deleted one is missed and the label
+ * reads plain; the server's `plus_required` still opens the paywall. A label
+ * that is sometimes too quiet costs nothing; one that says Plus to somebody
+ * whose first one is free would talk them out of it.
+ */
+export function startsPlus(): boolean {
+  return !isPlus() && readShows().some((e) => e.owned === true);
+}
+
+/**
+ * Start one. The first is free and the server decides the rest (2.4.0, was
+ * Plus every time — D11): a `plus_required` is the paywall, the
+ * `shared/create` pattern. Null when it did not happen. Resolves to the
+ * existing one when I already own a together for this show.
  */
 export async function startTogether(show: {
   tvdbId: number;
@@ -234,8 +331,8 @@ export async function startTogether(show: {
   /*
    * ONE PER SHOW (22 Oct). Tapping "Watch together" again on a show I already
    * started one for opens that one rather than a duplicate. Asked of the
-   * server's index, not the cache, and BEFORE the Plus gate: a lapsed Plus
-   * owner can still open the one they have.
+   * server's index, not the cache, and before the create the server may
+   * refuse: a lapsed Plus owner can still open the one they have.
    */
   const rows = await fetchSharedLists();
   noteTogetherIndex(rows);
@@ -245,7 +342,6 @@ export async function startTogether(show: {
     return r.kind === 'local' && r.id === show.tvdbId;
   });
   if (mine) return { id: mine.id };
-  if (!requirePlus('together')) return null;
   const token = await getToken();
   if (!token) throw new ApiError('unauthenticated', 401, 'Not signed in.');
   try {
@@ -260,7 +356,7 @@ export async function startTogether(show: {
     setMeta(ACTIVE_KEY, '1');
     writeShows([
       ...readShows().filter((e) => e.listId !== r.id),
-      { listId: r.id, tvdbId: show.tvdbId, title: show.title, poster: show.poster, members: 1 },
+      { listId: r.id, tvdbId: show.tvdbId, title: show.title, poster: show.poster, members: 1, owned: true },
     ]);
     track('together_create');
     // The creator may be halfway through already: publish without waiting for a tick.
@@ -269,6 +365,15 @@ export async function startTogether(show: {
   } catch (e) {
     if (e instanceof ApiError && e.code === 'plus_required') {
       if (PLUS_AVAILABLE) router.push('/paywall?from=together');
+      else {
+        // Lazy, like `requirePlus`'s free-month: this module's tests run in
+        // plain Node, and only this rare branch needs React Native.
+        /* eslint-disable @typescript-eslint/no-require-imports */
+        const { Alert } = require('react-native') as typeof import('react-native');
+        const { t } = require('@/i18n') as typeof import('@/i18n');
+        /* eslint-enable @typescript-eslint/no-require-imports */
+        Alert.alert(t('together.title'), t('together.plusSoon'));
+      }
       return null;
     }
     throw e;
@@ -392,7 +497,33 @@ export async function syncTogetherIfNeeded(): Promise<void> {
     }
   }
   if (!active()) return;
+  /*
+   * THE CATCH-UP ON OPENING THE APP (2.4.0), for the togethers where everyone
+   * said "mark it for both of us" — the cached detail says which. One detail
+   * each, and only for them: nobody else pays a request for it.
+   */
+  const details = readDetails();
+  for (const { listId } of readShows()) {
+    if (details[listId]?.mark_together?.all !== true) continue;
+    try {
+      noteTogetherDetail(await fetchSharedList(listId));
+    } catch (e) {
+      if (e instanceof ApiError && e.code === 'not_found') forgetTogether(listId);
+    }
+  }
   await publishPositions();
+}
+
+/**
+ * My "Mark it for both of us" switch (2.4.0). The answer carries whether
+ * everybody now has it on; when they do, catching up starts at once.
+ */
+export async function setTogetherMarkTogether(listId: string, on: boolean): Promise<MarkTogether> {
+  const mark = await setMarkTogether(listId, on);
+  track('together_mark_together', { on: on ? 1 : 0 });
+  const d = readDetails()[listId];
+  if (d) noteTogetherDetail({ ...d, mark_together: mark });
+  return mark;
 }
 
 let wired = false;

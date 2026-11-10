@@ -20,7 +20,7 @@ import { Text } from '@/components/text';
 import { NavHeader, PillButton, Screen, useScreenWidth } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { t } from '@/i18n';
-import { requirePlus, usePlus } from '@/plus';
+import { usePlus } from '@/plus';
 import { inviteCodeFrom, splitShared, TABLET_MIN_W } from '@/pure';
 import { colors, ls, radius, space } from '@/theme';
 
@@ -68,10 +68,10 @@ export default function TogetherScreen() {
   );
 
   const start = () => {
+    // No gate here (2.4.0): the first one is free and the server counts, so
+    // `startTogether` meets any paywall. The "· Plus" on the button warns first.
     if (!isJoined()) router.push('/join');
-    // The same gate `startTogether` applies, asked BEFORE the picker so nobody
-    // chooses a show only to meet a paywall.
-    else if (requirePlus('together')) router.push('/lists/add-remove?together=1');
+    else router.push('/lists/add-remove?together=1');
   };
 
   // The same join `shared/index.tsx` does; a pasted link works too.
@@ -103,7 +103,13 @@ export default function TogetherScreen() {
     <View style={styles.head}>
       {rows != null && rows.length === 0 && <Text style={styles.blurb}>{t('together.emptyBlurb')}</Text>}
       <View style={{ alignItems: 'center' }}>
-        <PillButton label={plus ? t('together.pickStart') : t('together.pickStartPlus')} trackId="together_start" onPress={start} />
+        {/* "· Plus" only past the free one: a together of my own is in the
+            index already (a deleted one is the server's to count). */}
+        <PillButton
+          label={!plus && rows?.some((r) => r.is_owner) ? t('together.pickStartPlus') : t('together.pickStart')}
+          trackId="together_start"
+          onPress={start}
+        />
       </View>
       <Text style={styles.label}>{t('listsIndex.joinWithCode')}</Text>
       <View style={styles.codeRow}>
