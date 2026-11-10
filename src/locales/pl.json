@@ -1447,7 +1447,8 @@
     "share": "Udostępnij",
     "helpCenter": "Centrum pomocy",
     "findPeople": "Znajdź ludzi",
-    "memories": "Wspomnienia"
+    "memories": "Wspomnienia",
+    "shareLibrary": "Udostępnij seriale i filmy"
   },
   "notOnTvdb": {
     "title": "Jeszcze nie ma w TheTVDB",
@@ -3024,7 +3025,12 @@
     },
     "showTitles": "Pokaż tytuły",
     "showProfile": "Pokaż mój profil",
-    "hintRemove": "Stuknij wybrany plakat, aby go usunąć."
+    "hintRemove": "Stuknij wybrany plakat, aby go usunąć.",
+    "titleMixed": "Udostępnij seriale i filmy",
+    "headingMixed": "Co oglądam",
+    "tabShows": "Seriale",
+    "tabMovies": "Filmy",
+    "emptyMixed": "Najpierw dodaj serial lub film, a potem udostępnij je tutaj."
   },
   "commsuni": {
     "byline": "Komentarze z CommsUni.tv",
@@ -3885,7 +3891,10 @@
       "few": "Wspólna · {{count}} osoby",
       "many": "Wspólna · {{count}} osób",
       "other": "Wspólna · {{count}} osoby"
-    }
+    },
+    "explain": "Stwórz listę z kimś. Oboje dodajecie tytuły i każde odhacza swoje.",
+    "joinLink": "Masz kod? Dołącz do listy",
+    "togetherLink": "Oglądaj serial razem ›"
   },
   "ratingBreakdown": {
     "title": "Oceny społeczności",

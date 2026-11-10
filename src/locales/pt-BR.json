@@ -3615,7 +3615,10 @@
     "badge": {
       "one": "Compartilhada · {{count}} pessoa",
       "other": "Compartilhada · {{count}} pessoas"
-    }
+    },
+    "explain": "Crie uma lista com alguém. Vocês dois adicionam títulos e cada um marca os seus.",
+    "joinLink": "Tem um código? Entre em uma lista",
+    "togetherLink": "Assistir a uma série juntos ›"
   },
   "ratingBreakdown": {
     "title": "Avaliações da comunidade",

@@ -3615,7 +3615,10 @@
     "badge": {
       "one": "Partagée · {{count}} personne",
       "other": "Partagée · {{count}} personnes"
-    }
+    },
+    "explain": "Créez une liste avec quelqu’un. Vous y ajoutez des titres tous les deux, et chacun coche les siens.",
+    "joinLink": "Un code ? Rejoindre une liste",
+    "togetherLink": "Regarder une série ensemble ›"
   },
   "ratingBreakdown": {
     "title": "Notes de la communauté",

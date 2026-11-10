@@ -3615,7 +3615,10 @@
     "badge": {
       "one": "Condivisa · {{count}} persona",
       "other": "Condivisa · {{count}} persone"
-    }
+    },
+    "explain": "Crea una lista con qualcuno. Aggiungete titoli entrambi e ognuno spunta i suoi.",
+    "joinLink": "Hai un codice? Unisciti a una lista",
+    "togetherLink": "Guarda una serie insieme ›"
   },
   "ratingBreakdown": {
     "title": "Voti della community",

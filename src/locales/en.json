@@ -3615,7 +3615,10 @@
     "badge": {
       "one": "Shared · {{count}} person",
       "other": "Shared · {{count}} people"
-    }
+    },
+    "explain": "Build a list with someone. You both add to it, you each tick it off.",
+    "joinLink": "Got a code? Join one",
+    "togetherLink": "Watch a show together ›"
   },
   "ratingBreakdown": {
     "title": "Community ratings",
