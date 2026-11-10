@@ -13,6 +13,39 @@ failure written next to it, not in a commit message.
 ---
 
 
+## 2.4.0
+
+Server 2.4.0 deployed 11 Nov (Worker 78ac4f21, migration 0073). Not built for the stores yet.
+
+Back swipe and Lists
+- [x] Swipe back on Lists / Favourite shows / Shows: no white corners or edges (Mahmood, 11 Nov)
+- [ ] Lists: "Imported from your TV Time export" sits under your own lists, not under Shared
+- [ ] Lists: Shared section centred, one START A SHARED LIST button, "Got a code? Join one" and "Watch a show together ›" links open the right screens (also in Arabic)
+
+Watching together (needs two accounts)
+- [ ] A free account starts its first together: no paywall
+- [ ] The same account starts a second together: paywall
+- [ ] A list someone joined, then deleted: the next one still asks for Plus; a list nobody joined, deleted: the next one is free
+- [ ] "Mark it for both of us": on for one member only, nothing is marked; on for both, the phone behind marks up to the other's episode on open, dated by theirs
+- [ ] Un-mark an episode after a catch-up: it is not re-marked on the next open (until the partner moves again)
+
+Features
+- [ ] Profile ⋯ → "Share shows and films": shows and films on one card, Shows/Films switch, picks from the whole library
+- [ ] Show page Continue tracking: tick the next episode, the rail slides to the following one; un-mark does not move it
+
+AnonP-Alt fixes
+- [ ] Explore: a slow short scroll starting on a card does not open it; a tap does; rails still don't freeze
+- [ ] Shows → Watch List empty: the empty card is visible
+- [ ] Setup profile on a small phone: keyboard does not cover the name field or the button
+- [ ] Search → open a show from Recent that was a TMDB-only result: it loads
+- [ ] Search "Better": Better Call Saul above "Better"; search in Arabic still shows TheTVDB results first
+- [ ] A show not in the library: the last episode / About text is not under the Add Show bar
+- [ ] iOS 16–18: no white band under the header on Settings / About / actor page
+- [ ] Fresh install: About never flashes before Welcome
+- [ ] Settings → profile layout on a 375 pt phone: Cards drawing stays in its box
+- [ ] Actor page: film and series years line up
+
+
 ## 2.3.2
 
 iOS 117, Android 150. Fixes on top of 2.3.1.
