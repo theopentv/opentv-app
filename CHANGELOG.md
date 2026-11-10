@@ -83,7 +83,7 @@ for web, one more Sync device, no watch tables on the server.
 - Execution: subagent per task + reviewer (recommended), branch `2.5.0-web` in both repos.
 - Open source like the app and the backend: the website is the same public code.
 
-## Next update — the plan (6 Nov 2026, not started)
+## 2.4.0 — the next update (planned 6 Nov 2026, not started; the website moves to after it)
 
 - **Where each member's library came from, in the dashboard** (Mahmood, 8 Nov). The phone
   records the import source when it imports: `tvtime`, `simkl`, `trakt`, `letterboxd`,
@@ -169,6 +169,17 @@ for web, one more Sync device, no watch tables on the server.
   16 pt view where the chevron would be. (Open question for Mahmood: should films open the movie
   page by name and get the chevron too?)
 
+- **BUG: white corners during every swipe back on iOS** (Mahmood, 11 Nov, screen recording:
+  Lists, Favourite shows, Shows, all of them; his phone is in DARK mode). iOS 26 rounds and
+  shrinks the page being swiped away and moves the one behind it, and the stack's own
+  container shows at the corners and edges. No `ThemeProvider` was ever given, so React
+  Navigation painted that container in its LIGHT default, `rgb(242,242,242)`, whatever the
+  app theme. (A first try with `expo-system-ui` did nothing: that is a different layer.)
+  Fix (on branch 2.4.0): the root Stack in `_layout.tsx` is wrapped in a `ThemeProvider`
+  whose `background`/`card` are `colors.bg`, Dark or Default base by `appliedLight()`, so it
+  follows the theme (a theme change restarts the app). Keep the swipe itself: Mahmood likes
+  it. Test on the phone with a dev build.
+
 - **Thanks:** credit AnonP-Alt (github.com/AnonP-Alt) for the ten reports above in this
   release's App Store and Play notes (one short line, Play has 500 characters per language) and
   in a Thanks section of the GitHub README. Not his email.
@@ -180,6 +191,53 @@ for web, one more Sync device, no watch tables on the server.
   without titles, same share sheet): add a Shows / Movies switch in its picker so a pick from
   each lands on the same card, and start it from the profile ⋯ menu's Share. No new card
   layout and nothing sent to the server: the picture is built on the phone.
+
+- **The first Watching together is free** (Mahmood, 11 Nov). Today starting one is Plus every
+  time (D11). New rule, the same as shared lists: each person starts ONE free, counted on its
+  own (a free together does not use up the free shared list, or the other way round); joining
+  stays free. Shows only: a film has no episodes, and a shared list already ticks films. Why:
+  u/Possibility-Wooden (r/iPhoneduoapp, 11 Nov) asked exactly this for him and his wife, and
+  every together brings a second person into the app; the paywall then comes at the second
+  show, after they've used it. Order matters:
+  1. **Server first** (`backend/src/routes/shared-lists.ts` ~206): count the person's
+     non-deleted `kind = 'together'` lists; ≥ 1 and not Plus → `plus_required`, like the
+     `FREE_OWNED_LISTS` block below it. Safe for old apps, which still gate on their side.
+     Update `test/together.test.ts` ("always Plus") → first succeeds, second is
+     `plus_required`, a Plus user can start several.
+  2. **App**: drop the local `requirePlus('together')` in `community-together.ts:248` and
+     `together/index.tsx:74`; let the server decide and open the paywall on
+     `plus_required`, as `shared/create.tsx` does. The "· Plus" labels (`startPlus`,
+     `pickStartPlus`) show only when the person already has a together and no Plus.
+  3. **Words**: the Plus description on the site (`landing-build/src/*.html`, "Adds Watch
+     together…") → "unlimited Watch together", and the same in the paywall and store
+     text if they list it. All six app languages / nine site languages.
+  **Deleting does NOT give the free one back** (Mahmood, 11 Nov: otherwise delete, start the
+  next show, repeat, and it's free for ever). Lists are soft-deleted (`deleted_at`, the row
+  stays), so the count includes deleted togethers. The only ones that don't count: a
+  together nobody else ever joined, so picking the wrong show by mistake doesn't cost the
+  free one, and the trick would need a friend to re-join every time. A new account gets a new
+  free one; accepted.
+  **The same rule for ordinary shared lists** (Mahmood, 11 Nov): today their count
+  (`shared-lists.ts` ~220) has `deleted_at IS NULL`, so delete-and-restart is free there too.
+  Both counts become "lists this person started that somebody else joined, deleted or not".
+  "Somebody joined" can't be read from `shared_list_members`, because a member who LEAVES is
+  hard-deleted from it (~716), so join, leave, delete would slip through. Add one column,
+  `shared_lists.was_shared INTEGER NOT NULL DEFAULT 0`, set to 1 on the first non-owner join
+  (~304) and never cleared, and count on it. Backfill at migration: 1 where a non-owner
+  member row exists today. Existing users keep what they have; the rule only bites the next
+  create.
+
+- **Watching together: "Mark it for both of us"** (Mahmood, 11 Nov; same Reddit couple: "only
+  one of us has our phone… if we do it independently it would lead to chaos"). Today each
+  member's position is their own. New opt-in per together: when EVERY member has it on, a
+  phone that opens the together (or the app) and finds a member further ahead marks the
+  episodes up to that position in its OWN library, dated by that member's `updated_at`.
+  No new table and no history on the server: it reuses the existing per-member cursor in
+  `shared_list_positions`. Rules: forward only (an un-mark never un-marks the other phone);
+  needs every member's yes, because it writes into somebody else's library; no push, it
+  applies on open (D12). For a couple who want ONE library for everything, Google Drive
+  sync already does that (free, since 2.0.1); this is for people who keep their own
+  libraries but watch one show together.
 
 Bringing back TV Time behaviour, one item at a time as Mahmood names them.
 
