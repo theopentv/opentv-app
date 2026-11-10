@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { ContentColumn, NavHeader, Screen } from '@/components/ui';
 import { hasLibrary, setMeta, wipeAllData } from '@/db';
@@ -86,6 +86,8 @@ export default function SetupProfileScreen() {
   return (
     <Screen>
       <NavHeader />
+      {/* the keyboard covered the field and the button on a small phone */}
+      <ScrollView automaticallyAdjustKeyboardInsets keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: space.lg }}>
       <ContentColumn style={{ paddingHorizontal: space.xl, gap: 18, marginTop: 12 }}>
         <Text accessibilityRole="header" style={styles.title}>{t('setupProfile.title')}</Text>
         <Text style={styles.sub}>{t('setupProfile.sub')}</Text>
@@ -120,6 +122,7 @@ export default function SetupProfileScreen() {
           <Text style={styles.ctaText}>{t('setupProfile.startTracking')}</Text>
         </Pressable>
       </ContentColumn>
+      </ScrollView>
     </Screen>
   );
 }
