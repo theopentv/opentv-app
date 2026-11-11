@@ -2909,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Regarder ensemble : la première est gratuite, et « Cocher pour nous deux » coche les épisodes sur les deux téléphones",
+      "share": "Partager séries et films : une image de toute ta bibliothèque, avec ton propre titre",
+      "search": "La recherche met la série la plus populaire en premier, et les résumés s'affichent plus souvent dans ta langue",
+      "fixes": "Corrections : un double appui ouvre une seule page, plus de coins blancs en revenant, et le bouton retour reste après un changement de langue"
+    },
     "v230": {
       "assistants": "OpenTV dans Claude et ChatGPT : avec Plus, demandez ce que vous avez regardé et faites-lui marquer, noter ou ajouter à votre liste, avec votre accord à chaque fois",
       "unmark": "Démarquer un épisode demande maintenant confirmation, propose Annuler et retire sa note et ses émotions",

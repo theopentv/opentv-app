@@ -2909,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Watching together: your first one is free, and \"Mark it for both of us\" ticks the episodes on both phones",
+      "share": "Share shows and films: one picture from your whole library, with your own title",
+      "search": "Search puts the most popular show first, and descriptions appear in your language more often",
+      "fixes": "Fixes: a double tap opens a page once, no white corners when you swipe back, and the back button stays after a language change"
+    },
     "v230": {
       "assistants": "OpenTV in Claude and ChatGPT: with Plus, ask about what you watched and have it mark, rate or add to your watchlist, with your OK each time",
       "unmark": "Un-marking an episode now asks first, offers Undo, and takes its rating and feelings with it",

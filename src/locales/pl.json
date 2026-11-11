@@ -3129,6 +3129,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Wspólne oglądanie: pierwsze za darmo, a „Zaznacz dla nas obojga” zaznacza odcinki na obu telefonach",
+      "share": "Udostępnij seriale i filmy: jeden obrazek z całej biblioteki, z własnym tytułem",
+      "search": "Wyszukiwanie pokazuje najpierw najpopularniejszy serial, a opisy częściej są w twoim języku",
+      "fixes": "Poprawki: podwójne stuknięcie otwiera jedną stronę, koniec z białymi rogami przy cofaniu, a przycisk wstecz zostaje po zmianie języka"
+    },
     "v230": {
       "assistants": "OpenTV w Claude i ChatGPT: z Plus pytaj, co oglądałeś, i każ oznaczać, oceniać lub dodawać do listy, zawsze za twoją zgodą",
       "unmark": "Odznaczenie odcinka teraz pyta o potwierdzenie, daje Cofnij i usuwa ocenę oraz emocje",

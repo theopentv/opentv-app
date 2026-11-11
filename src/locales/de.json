@@ -2909,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Gemeinsam schauen: Das erste ist kostenlos, und „Für uns beide abhaken“ hakt die Folgen auf beiden Handys ab",
+      "share": "Serien und Filme teilen: ein Bild aus deiner ganzen Bibliothek, mit eigenem Titel",
+      "search": "Die Suche zeigt die beliebteste Serie zuerst, und Beschreibungen erscheinen öfter in deiner Sprache",
+      "fixes": "Fehlerbehebungen: Ein Doppeltipp öffnet nur eine Seite, keine weißen Ecken beim Zurückwischen, und die Zurück-Taste bleibt nach einem Sprachwechsel"
+    },
     "v230": {
       "assistants": "OpenTV in Claude und ChatGPT: Mit Plus fragst du, was du geschaut hast, und lässt markieren, bewerten oder auf die Merkliste setzen, jedes Mal mit deiner Zustimmung",
       "unmark": "Ungesehen markieren fragt jetzt nach, bietet Rückgängig an und entfernt Bewertung und Gefühle",

@@ -2909,6 +2909,12 @@
     "overlayAuto": "Otomatik"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Birlikte izleme: İlki ücretsiz ve \"İkimiz için işaretle\" bölümleri iki telefonda da işaretliyor",
+      "share": "Dizileri ve filmleri paylaş: tüm kitaplığından, kendi başlığınla tek görsel",
+      "search": "Arama en popüler diziyi öne koyuyor ve açıklamalar daha sık senin dilinde",
+      "fixes": "Düzeltmeler: Çift dokunma tek sayfa açıyor, geri kaydırırken beyaz köşe yok ve dil değişince geri düğmesi kalıyor"
+    },
     "v230": {
       "assistants": "Claude ve ChatGPT'de OpenTV: Plus ile ne izlediğini sor; işaretlemesini, puanlamasını ya da listene eklemesini iste, her seferinde onayınla",
       "unmark": "Bir bölümün işaretini kaldırmak artık önce sorar, Geri al sunar ve puanı ile hisleri de kaldırır",

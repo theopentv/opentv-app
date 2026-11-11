@@ -2909,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Ver juntos: el primero es gratis, y «Marcarlo para los dos» marca los episodios en los dos móviles",
+      "share": "Compartir series y películas: una imagen de toda tu biblioteca, con tu propio título",
+      "search": "La búsqueda pone primero la serie más popular, y las sinopsis salen más a menudo en tu idioma",
+      "fixes": "Correcciones: un doble toque abre una sola página, sin esquinas blancas al volver, y el botón de volver se mantiene tras cambiar de idioma"
+    },
     "v230": {
       "assistants": "OpenTV en Claude y ChatGPT: con Plus, pregunta qué viste y pídele que marque, valore o añada a tu lista, con tu permiso cada vez",
       "unmark": "Desmarcar un episodio ahora pide confirmación, ofrece Deshacer y quita su valoración y emociones",

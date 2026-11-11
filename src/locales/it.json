@@ -2909,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Guardare insieme: la prima è gratis, e «Segna per tutti e due» segna gli episodi su entrambi i telefoni",
+      "share": "Condividi serie e film: un'immagine da tutta la tua libreria, con il tuo titolo",
+      "search": "La ricerca mette prima la serie più popolare, e le trame compaiono più spesso nella tua lingua",
+      "fixes": "Correzioni: un doppio tocco apre una sola pagina, niente angoli bianchi tornando indietro, e il tasto indietro resta dopo il cambio lingua"
+    },
     "v230": {
       "assistants": "OpenTV in Claude e ChatGPT: con Plus, chiedi cosa hai guardato e fagli segnare, votare o aggiungere alla tua lista, con il tuo consenso ogni volta",
       "unmark": "Togliere il segno a un episodio ora chiede conferma, offre Annulla e rimuove voto ed emozioni",
