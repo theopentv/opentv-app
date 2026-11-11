@@ -44,7 +44,7 @@ import { getFavoriteMovies, getFavoriteShows, getLibraryMovies, getLibraryShows,
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { profileImageUri } from '@/library';
-import { SITE_HOST, withLink } from '@/share-link';
+import { withLink } from '@/share-link';
 import { colors, radius, ls, space } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
@@ -600,7 +600,7 @@ export default function ShareFavoritesScreen() {
     return { long: t('shareFavorites.watchedRange', { range }), short: range };
   }, [isRecent, shown]);
 
-  const heading = isMixed
+  const defaultHeading = isMixed
     ? t('shareFavorites.headingMixed')
     : isRecent
     ? isShows
@@ -609,6 +609,10 @@ export default function ShareFavoritesScreen() {
     : isShows
       ? t('shareFavorites.headingShows')
       : t('shareFavorites.headingMovies');
+  // THE CARD'S TITLE IS THEIRS TO WRITE (Mahmood, 11 Nov): "What I watch" is a
+  // default, not a statement everybody wants to make. Empty means the default.
+  const [customTitle, setCustomTitle] = useState('');
+  const heading = customTitle.trim() || defaultHeading;
 
   const share = async () => {
     try {
@@ -749,6 +753,16 @@ export default function ShareFavoritesScreen() {
           ))}
         </View>
 
+        <TextInput
+          value={customTitle}
+          onChangeText={setCustomTitle}
+          placeholder={defaultHeading}
+          placeholderTextColor={colors.faint}
+          accessibilityLabel={t('shareFavorites.titleField')}
+          style={s.titleInput}
+          maxLength={40}
+          returnKeyType="done"
+        />
         <View style={[s.box, { width: preview.w, height: shape === 'story' ? preview.storyH : preview.postH }]}>
           <View style={[s.scale, { transform: [{ scale: preview.scale }] }]}>
             <View ref={cardRef} collapsable={false} style={[s.card, { height: cardH }]}>
@@ -884,16 +898,17 @@ export default function ShareFavoritesScreen() {
                   of the post cares about, the mark only says where it came
                   from (11 Nov). */}
               {!!handle && showProfile && !profile && <Text style={s.handle}>@{handle}</Text>}
-              <View style={[s.brand, !!handle && showProfile && !profile && s.brandUnderHandle]}>
+              <View style={[s.brand, s.brandLeft, !!handle && showProfile && !profile && s.brandUnderHandle]}>
+                {/* The mark, then the name, at the card's left edge, and no
+                    address (Mahmood, 11 Nov): the card is a picture of what
+                    somebody watches, not an advert, and "OpenTV" finds the app
+                    on its own. Left-to-right in every language: it is a logo. */}
                 <Image
                   source={require('@/assets/images/mark.png')}
                   style={s.mark}
                   contentFit="contain"
                 />
                 <Text style={s.brandText}>OPENTV</Text>
-                {/* The address beside the name (2.0.3): the share sheet
-                    carries only this picture. */}
-                <Text style={s.brandUrl}>{SITE_HOST}</Text>
               </View>
               {/*
                 WHOSE CARD THIS IS.
@@ -1159,9 +1174,20 @@ const s = StyleSheet.create({
   // touching.
   brand: { flexDirection: 'row', alignItems: 'center', gap: ss(5), marginTop: ss(14), marginBottom: ss(12) },
   brandUnderHandle: { marginTop: ss(3) },
+  brandLeft: { alignSelf: 'stretch', direction: 'ltr', justifyContent: 'flex-start', paddingStart: ss(20) },
+  titleInput: {
+    alignSelf: 'stretch',
+    marginHorizontal: space.lg,
+    backgroundColor: colors.card,
+    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    color: colors.text,
+    fontSize: 15,
+    textAlign: 'center',
+  },
   mark: { width: ss(13), height: ss(13) },
   brandText: { color: 'rgba(255,255,255,0.85)', fontSize: ss(9.5), fontWeight: '900', letterSpacing: ls(0.8) },
-  brandUrl: { color: 'rgba(255,255,255,0.5)', fontSize: ss(8.5), fontWeight: '700', marginStart: ss(2) },
   handle: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '800', marginTop: ss(14) },
 
   toggles: {

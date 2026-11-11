@@ -2401,6 +2401,7 @@ export type LocaleKey =
   | "shareFavorites.tabMovies"
   | "shareFavorites.tabShows"
   | "shareFavorites.title"
+  | "shareFavorites.titleField"
   | "shareFavorites.titleMixed"
   | "shareFavorites.watchedRange"
   | "shareProfile.dialogTitle"

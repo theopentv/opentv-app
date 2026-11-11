@@ -3251,7 +3251,8 @@
     "tabShows": "مسلسلات",
     "tabMovies": "أفلام",
     "emptyMixed": "أضف مسلسلاً أو فيلماً أولاً، ثم شاركها من هنا.",
-    "search": "ابحث في مكتبتك"
+    "search": "ابحث في مكتبتك",
+    "titleField": "عنوان البطاقة"
   },
   "commsuni": {
     "byline": "تعليقات من CommsUni.tv",

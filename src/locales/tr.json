@@ -2811,7 +2811,8 @@
     "tabShows": "Diziler",
     "tabMovies": "Filmler",
     "emptyMixed": "Önce bir dizi ya da film ekle, sonra burada paylaş.",
-    "search": "Kütüphanende ara"
+    "search": "Kütüphanende ara",
+    "titleField": "Kart başlığı"
   },
   "commsuni": {
     "byline": "Yorumlar CommsUni.tv'den",

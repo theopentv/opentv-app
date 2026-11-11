@@ -2811,7 +2811,8 @@
     "tabShows": "Serien",
     "tabMovies": "Filme",
     "emptyMixed": "Füge zuerst eine Serie oder einen Film hinzu und teile sie dann hier.",
-    "search": "In deiner Bibliothek suchen"
+    "search": "In deiner Bibliothek suchen",
+    "titleField": "Titel der Karte"
   },
   "commsuni": {
     "byline": "Kommentare von CommsUni.tv",

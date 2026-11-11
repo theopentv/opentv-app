@@ -3031,7 +3031,8 @@
     "tabShows": "Seriale",
     "tabMovies": "Filmy",
     "emptyMixed": "Najpierw dodaj serial lub film, a potem udostępnij je tutaj.",
-    "search": "Szukaj w swojej bibliotece"
+    "search": "Szukaj w swojej bibliotece",
+    "titleField": "Tytuł karty"
   },
   "commsuni": {
     "byline": "Komentarze z CommsUni.tv",
