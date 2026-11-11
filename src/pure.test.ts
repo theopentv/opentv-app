@@ -4262,10 +4262,15 @@ describe('recentShowNeedsResolve', () => {
 
 describe('rankSearchByPopularity', () => {
   const row = (title: string, sub: string, popularity?: number) => ({ kind: 'tv' as const, title, sub, popularity });
-  it('lifts the popular show above the exact-name one; unknown rows keep order at the end', () => {
+  it('lifts the popular show above the exact-name one; unranked rows keep their places', () => {
     const tvdb = [row('Better', '2023'), row('Obscure', '2001'), row('Better Call Saul', '2015')];
     const tmdb = [row('Better Call Saul', '2015', 95.4), row('Better', '2023', 2.8)];
     expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['Better Call Saul', 'Better', 'Obscure']);
+  });
+  it('keeps an exact name in the top two however unpopular', () => {
+    const tvdb = [row('Better', '2023'), row('Women lie better', '2008'), row('Better Things', '2016'), row('Better Call Saul', '2015')];
+    const tmdb = [row('Better Call Saul', '2015', 95), row('Better Things', '2016', 40), row('Women lie better', '2008', 30), row('Better', '2023', 2)];
+    expect(rankSearchByPopularity(tvdb, tmdb, 'better').map((r) => r.title).slice(0, 2)).toEqual(['Better Call Saul', 'Better']);
   });
   it('keeps the merged order when the names do not match (a translated TheTVDB answer)', () => {
     const tvdb = [row('مسلسل أ', '2015'), row('مسلسل ب', '2020')];

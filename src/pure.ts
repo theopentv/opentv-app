@@ -1736,25 +1736,40 @@ export function mergeSearchFallback<T extends SearchHit>(primary: readonly T[], 
  * SEARCH, MOST POPULAR FIRST (2.4.0). TheTVDB's /search carries no popularity and
  * its own order is poor ("Better" -> Better Call Saul is not in its top 8), so each
  * TheTVDB row borrows the popularity of the TMDB row with the same kind+title+year
- * (already fetched in parallel, no extra request). Rows TMDB does not know stay
- * unranked and keep their order after the ranked ones; ties keep the incoming
- * order, which `rankByQuery` already made exact-name-first.
+ * (already fetched in parallel, no extra request).
+ *
+ * ONLY THE ROWS WITH A POPULARITY MOVE, and only among their own places. A row
+ * nobody can rank stays exactly where the merge put it. TheTVDB answers in the
+ * user's language and TMDB here in English, so in Arabic almost nothing matches:
+ * sorting everything sank every TheTVDB row below TMDB-only copies with no id.
+ * This way an unmatched list keeps the pre-2.4.0 order, and a matched one
+ * ("Better", "Better Call Saul") still swaps. Ties keep the incoming order,
+ * which `rankByQuery` already made exact-name-first.
  */
-export function rankSearchByPopularity<T extends SearchHit & { popularity?: number }>(primary: readonly T[], supplement: readonly T[]): T[] {
+export function rankSearchByPopularity<T extends SearchHit & { popularity?: number }>(
+  primary: readonly T[],
+  supplement: readonly T[],
+  query = '',
+): T[] {
   const pop = new Map<string, number>();
   for (const r of supplement) if (r.popularity != null) pop.set(searchDedupeKey(r), r.popularity);
-  const withPop = primary.map((r) => ({ ...r, popularity: r.popularity ?? pop.get(searchDedupeKey(r)) }));
-  const merged = mergeSearchFallback(withPop, supplement);
-  // ONLY WHEN THE TWO SOURCES AGREE ON NAMES. TheTVDB answers in the user's
-  // language, TMDB here in English, so in Arabic or French almost nothing
-  // matches; sorting then sank every TheTVDB row below TMDB-only copies with no
-  // id. Fewer than half matched: keep the merged order as it was before 2.4.0.
-  const matched = withPop.filter((r) => r.popularity != null).length;
-  if (matched * 2 < withPop.length) return merged;
-  return merged
-    .map((r, i) => ({ r, i }))
-    .sort((a, b) => (b.r.popularity ?? -1) - (a.r.popularity ?? -1) || a.i - b.i)
-    .map((x) => x.r);
+  const merged = mergeSearchFallback(
+    primary.map((r) => ({ ...r, popularity: r.popularity ?? pop.get(searchDedupeKey(r)) })),
+    supplement,
+  );
+  const slots = merged.flatMap((r, i) => (r.popularity != null ? [i] : []));
+  const ranked = slots
+    .map((i) => ({ r: merged[i], i }))
+    .sort((a, b) => b.r.popularity! - a.r.popularity! || a.i - b.i);
+  const out = merged.slice();
+  slots.forEach((slot, k) => { out[slot] = ranked[k].r; });
+  // THE EXACT NAME STAYS IN THE TOP TWO. Popularity alone sent the 2023 show
+  // "Better" (2.8) to the bottom of a search for "Better": the one result the
+  // person typed letter for letter, unfindable.
+  const q = query.trim().toLowerCase();
+  const exact = q ? out.findIndex((r) => r.title.trim().toLowerCase() === q) : -1;
+  if (exact > 1) out.splice(1, 0, ...out.splice(exact, 1));
+  return out;
 }
 
 /**

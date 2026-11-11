@@ -434,7 +434,7 @@ export async function searchCatalog(query: string): Promise<CatalogItem[]> {
     tmdbSearch(q).catch(() => [] as CatalogItem[]), // unreachable/rate-limited
   ]);
   if (!viaTvdb) return byYear(viaTmdb, year);
-  return byYear(rankSearchByPopularity(viaTvdb, viaTmdb), year);
+  return byYear(rankSearchByPopularity(viaTvdb, viaTmdb, q), year);
 }
 
 /**
