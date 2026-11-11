@@ -92,20 +92,40 @@ export function navTransitionEnded(closing?: boolean, now = Date.now()): void {
   if (lastHref) lastAt = now;
 }
 
+/**
+ * Keep `wrap` around whatever function sits at `router[name]`, for good.
+ *
+ * EXPO-ROUTER REPLACES ITS METHODS AFTER WE WRAP THEM (11 Nov). The root's
+ * routing bridge runs `Object.assign(router, bound)` once the container mounts,
+ * and again whenever it remounts. A plain `router.push = guarded` was therefore
+ * overwritten moments after start-up: no push reached the guard at all, and a
+ * double tap opened every page twice, everywhere. As an accessor, an assignment
+ * only swaps the INNER function; the guard stays on the outside.
+ */
+function guardMethod<K extends 'push' | 'back'>(name: K, wrap: (inner: (typeof router)[K]) => (typeof router)[K]): void {
+  let inner = router[name];
+  const guarded = wrap(((...args: unknown[]) => (inner as (...a: unknown[]) => unknown)(...args)) as (typeof router)[K]);
+  Object.defineProperty(router, name, {
+    configurable: true,
+    enumerable: true,
+    get: () => guarded,
+    set: (fn: (typeof router)[K]) => { inner = fn; },
+  });
+}
+
 /** Called once, from the root layout. Idempotent: a fast refresh that
  *  re-runs this module must not wrap the wrapper. */
 let installed = false;
 export function installNavGuard(): void {
   if (installed) return;
   installed = true;
-  const push = router.push.bind(router);
-  router.push = ((href: Parameters<typeof router.push>[0], options?: Parameters<typeof router.push>[1]) => {
+  guardMethod('push', (push) => ((href: Parameters<typeof router.push>[0], options?: Parameters<typeof router.push>[1]) => {
     // A non-string href (the object form) is keyed on its serialisation —
     // same destination, same string.
     const key = typeof href === 'string' ? href : JSON.stringify(href);
     if (isDuplicatePush(key, Date.now())) return;
     return push(href, options);
-  }) as typeof router.push;
+  }) as typeof router.push);
   /*
    * BACK WITH NOTHING BEHIND IT GOES HOME (21 Oct). A cold deep link
    * (`opentv://movie/X`, a notification) opens a detail screen as the only
@@ -114,9 +134,8 @@ export function installNavGuard(): void {
    * One wrap here covers every caller rather than a fallback in each.
    * Not bound to `this`: swipe-down hands `router.back` to `runOnJS` bare.
    */
-  const back = router.back.bind(router);
-  router.back = () => {
+  guardMethod('back', (back) => () => {
     if (router.canGoBack()) back();
     else router.replace('/');
-  };
+  });
 }

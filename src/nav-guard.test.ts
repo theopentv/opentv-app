@@ -89,3 +89,15 @@ describe('back with nothing behind it', () => {
     expect(replace).not.toHaveBeenCalled();
   });
 });
+
+describe('expo-router re-binding the router', () => {
+  it('keeps the guard when expo-router assigns a new push over it', () => {
+    installNavGuard();
+    const real = jest.fn();
+    // what expo-router's routing bridge does once the container mounts
+    Object.assign(router, { push: real });
+    router.push('/show/99');
+    router.push('/show/99');
+    expect(real).toHaveBeenCalledTimes(1);
+  });
+});
