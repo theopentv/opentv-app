@@ -1,10 +1,10 @@
 import { useHingeStatus } from '../../modules/fold-state';
 import { useDuoFullWidth } from '@/duo-layout';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useLocalSearchParams, useRoute } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
-import { cloneElement, createContext, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, createContext, isValidElement, use, useEffect, useLayoutEffect, useState, type ReactElement, type ReactNode } from 'react';
 import { I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -248,6 +248,25 @@ const DRAWN_HEADER_ROUTES = new Set([
   'cover-adjust', 'add-widget',
 ]);
 
+/**
+ * A SCREEN'S OWN HEADER OPTIONS, set twice. Use this, not `<Stack.Screen
+ * options>`, inside a screen.
+ *
+ * A language switch remounts every screen (`remountOnLocale`). The new screen
+ * sets its options in a layout effect, and only afterwards does the old
+ * screen's SceneView run its passive unmount cleanup, which CLEARS the route's
+ * options: Settings, Language and the show page lost their header and back
+ * button the moment a language was picked (11 Nov). Setting them again in a
+ * passive effect lands after that cleanup. The layout effect stays so the
+ * first paint already has the header.
+ */
+export function ScreenOptions({ options }: { options: Record<string, unknown> }) {
+  const navigation = useNavigation();
+  useLayoutEffect(() => { if (Object.keys(options).length) navigation.setOptions(options); }, [navigation, options]);
+  useEffect(() => { if (Object.keys(options).length) navigation.setOptions(options); }, [navigation, options]);
+  return null;
+}
+
 export function NavHeader({
   title,
   close,
@@ -263,7 +282,7 @@ export function NavHeader({
   const inPane = use(DetailPaneContext) != null;
   if (inPane || DRAWN_HEADER_ROUTES.has(route.name)) return <DrawnNavHeader title={title} close={close} right={right} />;
   return (
-    <Stack.Screen
+    <ScreenOptions
       options={{
         headerShown: true,
         title: title ?? '',

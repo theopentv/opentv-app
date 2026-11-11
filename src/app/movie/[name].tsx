@@ -1,7 +1,7 @@
 import { PaneBar } from '@/components/pane-bar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { NoteRow } from '@/components/note-row';
@@ -15,7 +15,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { SideThread, SplitPage, splitRow, useCommentsSplit } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems, ScreenOptions } from '@/components/ui';
 import {
   addMovieToWatchlist,
   deleteMovie,
@@ -953,7 +953,7 @@ export default function MovieScreen() {
         {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
         <PaneBar actions={movieActions()} />
         {!pane && (
-        <Stack.Screen
+        <ScreenOptions
           options={{
             headerShown: true,
             headerTransparent: true,

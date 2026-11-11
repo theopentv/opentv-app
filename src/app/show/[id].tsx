@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated as RNAnimated, Easing as RNEasing, FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -26,7 +26,7 @@ import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, pageDrag, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, pageDrag, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems, ScreenOptions } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, type EpisodeWatch } from '@/db';
 import { confirmUnmark } from '@/unmark';
@@ -699,7 +699,7 @@ export default function ShowScreen() {
         )}
         {/* The same native close as the loaded page, so it does not jump from
             the iPhone Duo's strip to the top-left while the show loads. */}
-        {!pane && <Stack.Screen
+        {!pane && <ScreenOptions
           options={{ headerShown: true, headerTransparent: true, title: '', headerTintColor: colors.onArt, ...headerItems({ left: [closeItem()] }) }}
         />}
       </View>
@@ -872,7 +872,7 @@ export default function ShowScreen() {
       {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
       <PaneBar actions={showActions()} />
       {!pane && (
-        <Stack.Screen
+        <ScreenOptions
           options={{
             headerShown: true,
             headerTransparent: true,

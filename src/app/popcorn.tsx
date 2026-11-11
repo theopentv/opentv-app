@@ -1,9 +1,9 @@
 /** 🍿 The popcorn game, playable anytime from Settings — beat your best. */
-import { Stack } from 'expo-router';
+
 import { Text, StyleSheet, useWindowDimensions } from 'react-native';
 
 import { PopcornGame } from '@/components/popcorn-game';
-import { NavHeader, Screen } from '@/components/ui';
+import { NavHeader, Screen, ScreenOptions } from '@/components/ui';
 import { colors, space } from '@/theme';
 import { t } from '@/i18n';
 
@@ -13,7 +13,7 @@ export default function PopcornScreen() {
     <Screen>
       {/* sliding the bucket is a horizontal drag — the swipe-back gesture would
           steal it mid-game; the header back button still exits */}
-      <Stack.Screen options={{ gestureEnabled: false }} />
+      <ScreenOptions options={{ gestureEnabled: false }} />
       <NavHeader title={t('popcorn.title')} />
       <Text style={styles.hint}>{t('popcorn.hint')}</Text>
       <PopcornGame height={h} />
