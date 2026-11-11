@@ -469,7 +469,15 @@ export default function ShareFavoritesScreen() {
    * down, and nobody opens a share screen wanting to do subtraction first.
    */
   const initialCount = (opts: readonly number[]) =>
-    opts.length === 0 ? 0 : isRecent ? (opts.includes(4) ? 4 : opts[0]) : opts[opts.length - 1];
+    opts.length === 0
+      ? 0
+      : isRecent
+        ? (opts.includes(4) ? 4 : opts[0])
+        : // An empty card to fill from the whole library: nine is a grid you
+          // can finish, twenty-four is homework.
+          isMixed
+          ? (opts.includes(9) ? 9 : opts[opts.length - 1])
+          : opts[opts.length - 1];
   const [n, setN] = useState(() => initialCount(options));
   const count = (options as readonly number[]).includes(n) ? n : options[options.length - 1];
 
@@ -477,7 +485,11 @@ export default function ShareFavoritesScreen() {
      the first one tapped is the top-left poster. Seeded from the shelf's own
      order, which is why doing nothing already produces the right card. */
   const [picked, setPicked] = useState<string[]>(() =>
-    items.slice(0, initialCount(options)).map((i) => i.key),
+    // FROM THE WHOLE LIBRARY IT STARTS EMPTY (Mahmood, 11 Nov). Favourites are
+    // already a choice, so seeding from them is right; twenty-four titles the
+    // app picked out of a whole library are somebody else's card, every one
+    // of which had to be tapped away before choosing.
+    isMixed ? [] : items.slice(0, initialCount(options)).map((i) => i.key),
   );
 
   /* Changing the grid keeps what is already chosen and fills the rest from the
@@ -488,11 +500,12 @@ export default function ShareFavoritesScreen() {
       setN(next);
       setPicked((prev) => {
         if (prev.length >= next) return prev.slice(0, next);
+        if (isMixed) return prev; // never fill a card the reader is building
         const fill = items.map((i) => i.key).filter((k) => !prev.includes(k));
         return [...prev, ...fill.slice(0, next - prev.length)];
       });
     },
-    [items],
+    [items, isMixed],
   );
 
   /**
@@ -558,6 +571,8 @@ export default function ShareFavoritesScreen() {
      arrangement. */
   const shown = picked.slice(0, count).map((k) => byKey.get(k)).filter((x): x is (typeof items)[number] => !!x);
   const full = picked.length >= count;
+  // A card built from scratch goes out whole: its empty slots are only a guide.
+  const shareOff = isMixed ? !full : !picked.length;
 
   /* One size for every caption on the card -- see `fittedLabelFont`. */
   const labelSize = useMemo(
@@ -850,6 +865,17 @@ export default function ShareFavoritesScreen() {
                     )}
                   </View>
                 ))}
+                {/* The slots still to fill, numbered, on a card being built
+                    from scratch. Share stays off until they are all filled,
+                    so these never reach the picture. */}
+                {isMixed &&
+                  Array.from({ length: Math.max(0, count - shown.length) }, (_, i) => (
+                    <View key={`slot-${i}`} style={{ width: layout.w }}>
+                      <View style={[s.cell, s.slot, { width: layout.w, height: Math.round((layout.w * 3) / 2) }]}>
+                        <Text style={s.slotText}>{shown.length + i + 1}</Text>
+                      </View>
+                    </View>
+                  ))}
               </View>
               </View>
 
@@ -985,9 +1011,9 @@ export default function ShareFavoritesScreen() {
         </Text>
         <Text style={s.hintQuiet}>{t('shareFavorites.hintRemove')}</Text>
 
-        <Pressable accessibilityRole="button" accessibilityState={{ disabled: !picked.length }}
-          style={[s.shareBtn, !picked.length && s.shareBtnOff]}
-          disabled={!picked.length}
+        <Pressable accessibilityRole="button" accessibilityState={{ disabled: shareOff }}
+          style={[s.shareBtn, shareOff && s.shareBtnOff]}
+          disabled={shareOff}
           onPress={() => void oneAtATime('share', share)}>
           <Ionicons name="share-outline" size={18} color={colors.onBrand} />
           <Text style={s.shareText}>{t('shareFavorites.share')}</Text>
@@ -1106,6 +1132,15 @@ const s = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, justifyContent: 'center' },
   cell: { borderRadius: ss(8), overflow: 'hidden', backgroundColor: '#1C1C1E' },
   fallback: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#26262A', padding: ss(8) },
+  slot: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: ss(2),
+    borderStyle: 'dashed',
+    borderColor: 'rgba(255,255,255,0.22)',
+  },
+  slotText: { color: 'rgba(255,255,255,0.35)', fontSize: ss(28), fontWeight: '800' },
   fallbackText: { color: colors.brand, fontSize: ss(12), fontWeight: '800', textAlign: 'center' },
   cellTitle: {
     color: 'rgba(255,255,255,0.82)',
