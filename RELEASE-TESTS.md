@@ -36,15 +36,15 @@ Features
 Found while testing (11 Nov)
 - [x] Search: a show in the library is listed once, not again as a + row (Mahmood + simulator, 11 Nov)
 - [x] Double tap on a show/film/Wrapped opens ONE page, in every tab (Mahmood, 11 Nov; guard was being overwritten by expo-router)
-- [ ] Change the language: Language and Settings keep their title and back button (passed on the simulator)
-- [ ] App in Arabic: Shadow and Bone's description is Arabic (TMDB stands in; passed on the simulator)
+- [x] Change the language: Language and Settings keep their title and back button (Mahmood, 11 Nov)
+- [x] App in Arabic: Shadow and Bone's description is Arabic (Mahmood, 11 Nov)
 
 AnonP-Alt fixes
 - [x] Explore: a slow short scroll starting on a card does not open it; a tap does; rails still don't freeze (Mahmood, 11 Nov)
 - [ ] Shows → Watch List empty: the empty card is visible
 - [ ] Setup profile on a small phone: keyboard does not cover the name field or the button
 - [x] Search → open a show from Recent that was a TMDB-only result: it loads (Mahmood, 11 Nov)
-- [x] Search "Better": Better Call Saul above "Better" (Mahmood, 11 Nov); [ ] search in Arabic still shows TheTVDB results first
+- [x] Search "Better": Better Call Saul above "Better" (Mahmood, 11 Nov); [x] search in Arabic still shows TheTVDB results first
 - [x] A show not in the library: the last episode / About text is not under the Add Show bar (Mahmood, 11 Nov)
 - [ ] iOS 16–18: no white band under the header on Settings / About / actor page
 - [ ] Fresh install: About never flashes before Welcome
