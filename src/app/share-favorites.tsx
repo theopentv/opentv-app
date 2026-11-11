@@ -423,12 +423,11 @@ export default function ShareFavoritesScreen() {
   /**
    * WHETHER THIS CARD SAYS WHO MADE IT.
    *
-   * ON by default, because a grid of twelve posters arriving on somebody's
-   * timeline as an anonymous picture with an app's name on it is the thing
-   * the handle was added to fix. But it is a NAME, on a picture that is about
-   * to be posted somewhere public, and that is not a decision to make on
-   * somebody's behalf -- a shelf of films is worth posting to a group chat or
-   * a forum where the reader would rather not be looked up.
+   * OFF by default (Mahmood, 11 Nov; it was on). It is a NAME, on a picture
+   * that is about to be posted somewhere public, and that is not a decision to
+   * make on somebody's behalf -- a shelf of films is worth posting to a group
+   * chat or a forum where the reader would rather not be looked up. One tap
+   * puts it back.
    *
    * It governs the footer line as well as the profile head, and it has to:
    * a switch called "show my profile" that leaves the handle printed at the
@@ -438,7 +437,7 @@ export default function ShareFavoritesScreen() {
    * have no handle, so the card is already anonymous and the control would
    * do nothing.
    */
-  const [showProfile, setShowProfile] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
 
   /* Only the counts they can actually fill -- offering 9 to somebody with five
      favourites is offering a picture with four holes in it -- AND only the
