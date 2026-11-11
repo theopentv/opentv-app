@@ -1603,6 +1603,13 @@ describe('movieMatchState — TheTVDB counts as matched', () => {
 });
 
 describe('mergeSearchFallback — one list from both catalogues', () => {
+  it('keeps the TheTVDB copy even when TMDB lists the same show earlier', () => {
+    const tvdb = [{ kind: 'tv' as const, title: 'Better', sub: '2023', tvdbId: 1 }, { kind: 'tv' as const, title: 'Better Call Saul', sub: '2015', tvdbId: 273181 }];
+    const tmdb = [{ kind: 'tv' as const, title: 'Better Call Saul', sub: '2015' }];
+    const merged = mergeSearchFallback(tvdb, tmdb);
+    expect(merged.filter((r) => r.title === 'Better Call Saul')).toEqual([tvdb[1]]);
+  });
+
   it('interleaves rather than appending, so a good TMDB hit is not buried', () => {
     /*
      * The "partner" report in one test: TheTVDB carries plenty of films and
@@ -4265,7 +4272,7 @@ describe('rankSearchByPopularity', () => {
   it('lifts the popular show above the exact-name one; unranked rows keep their places', () => {
     const tvdb = [row('Better', '2023'), row('Obscure', '2001'), row('Better Call Saul', '2015')];
     const tmdb = [row('Better Call Saul', '2015', 95.4), row('Better', '2023', 2.8)];
-    expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['Better Call Saul', 'Better', 'Obscure']);
+    expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['Better Call Saul', 'Obscure', 'Better']);
   });
   it('keeps an exact name in the top two however unpopular', () => {
     const tvdb = [row('Better', '2023'), row('Women lie better', '2008'), row('Better Things', '2016'), row('Better Call Saul', '2015')];

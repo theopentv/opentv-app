@@ -205,6 +205,10 @@ export default function SearchScreen() {
         const localKey = (kind: string, name: string, year: string | null) =>
           `${kind}:${name.trim().toLowerCase()}:${movieYear(year) ?? ''}`;
         const localNames = new Set(local.map((r) => localKey(r.kind, r.name, r.year)));
+        // And by id, which is identity: a library show whose year never got
+        // cached keys as "name:" and missed "name:2015", so Better Call Saul
+        // was listed twice, once ticked and once with a + (11 Nov).
+        const localShowIds = new Set(local.flatMap((r) => (r.kind === 'show' && r.tvdbId ? [r.tvdbId] : [])));
         const remote: Result[] = hits
           .map((h) => {
             const kind = h.kind === 'tv' ? ('show' as const) : ('movie' as const);
@@ -220,7 +224,7 @@ export default function SearchScreen() {
               inLibrary: localNames.has(localKey(kind, name, (h.sub.match(/\b(\d{4})\b/) ?? [])[1] ?? null)),
             };
           })
-          .filter((r) => r.name && !localNames.has(localKey(r.kind, r.name, r.year)))
+          .filter((r) => r.name && !localNames.has(localKey(r.kind, r.name, r.year)) && !(r.kind === 'show' && r.tvdbId && localShowIds.has(r.tvdbId)))
           .slice(0, 20);
         setResults([...local, ...remote]);
       } catch {

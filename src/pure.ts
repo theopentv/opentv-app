@@ -1718,13 +1718,19 @@ function searchDedupeKey(h: SearchHit): string {
  * agree with itself and show everything twice.
  */
 export function mergeSearchFallback<T extends SearchHit>(primary: readonly T[], supplement: readonly T[]): T[] {
+  // THE THETVDB COPY ALWAYS WINS, wherever it sits in its list. Interleaving
+  // met TMDB's Better Call Saul (its #1) before TheTVDB's (#2) and dropped the
+  // wrong one: a row with no TheTVDB id, so search showed it twice beside the
+  // library copy and never marked it as added (11 Nov). A supplement row is
+  // only ever for what TheTVDB does not have.
+  const primaryKeys = new Set(primary.map(searchDedupeKey));
   const seen = new Set<string>();
   const out: T[] = [];
   for (let i = 0; i < Math.max(primary.length, supplement.length); i++) {
-    for (const row of [primary[i], supplement[i]]) {
+    for (const [row, isPrimary] of [[primary[i], true], [supplement[i], false]] as const) {
       if (!row) continue;
       const key = searchDedupeKey(row);
-      if (seen.has(key)) continue;
+      if (seen.has(key) || (!isPrimary && primaryKeys.has(key))) continue;
       seen.add(key);
       out.push(row);
     }
