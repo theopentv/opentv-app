@@ -66,7 +66,10 @@ const SCREEN_H = Dimensions.get('window').height;
 // 9:16 preview plus a shelf of posters plus a button does not fit otherwise.
 // Width from useScreenWidth, not the window (closed iPhone Duo side strip).
 function usePreview() {
-  const w = Math.round(Math.min(Math.min(useScreenWidth(), 420) - 120, 244, ((SCREEN_H - 420) * 9) / 16));
+  // 580 of the height is everything that is not the card: header, counts,
+  // toggles, shape, title, Shows/Films, search, shelf, hints and Share. It was
+  // 420 before the title and search fields, and the page scrolled (11 Nov).
+  const w = Math.round(Math.min(Math.min(useScreenWidth(), 420) - 120, 244, ((SCREEN_H - 580) * 9) / 16));
   return { w, scale: w / EXPORT_W, storyH: Math.round((w * 16) / 9), postH: Math.round((w * 5) / 4) };
 }
 const SF = EXPORT_W / 268;
@@ -767,7 +770,13 @@ export default function ShareFavoritesScreen() {
           <View style={[s.scale, { transform: [{ scale: preview.scale }] }]}>
             <View ref={cardRef} collapsable={false} style={[s.card, { height: cardH }]}>
               <LinearGradient
-                colors={['#16161A', '#08080A']}
+                // THE APP'S OWN COLOUR at the top, as Wrapped has it (Mahmood,
+                // 11 Nov): the accent glows in and gives way to the dark the
+                // posters sit on, so every card looks like the app it came from.
+                // Fading the accent itself to transparent over the card's own
+                // black: a stop at an opaque grey drew a hard band mid-card.
+                colors={[`${colors.brand}3D`, `${colors.brand}14`, `${colors.brand}00`]}
+                locations={[0, 0.35, 0.7]}
                 style={StyleSheet.absoluteFill}
                 pointerEvents="none"
               />
