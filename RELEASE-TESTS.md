@@ -19,21 +19,22 @@ Server 2.4.0 deployed 11 Nov (Worker 78ac4f21, migration 0073). Not built for th
 
 Back swipe and Lists
 - [x] Swipe back on Lists / Favourite shows / Shows: no white corners or edges (Mahmood, 11 Nov)
-- [ ] Lists: "Imported from your TV Time export" sits under your own lists, not under Shared
-- [ ] Lists: Shared section centred, one START A SHARED LIST button, "Got a code? Join one" and "Watch a show together ›" links open the right screens (also in Arabic)
+- [x] Lists: "Imported from your TV Time export" sits under your own lists, not under Shared (Mahmood, 11 Nov)
+- [x] Lists: Shared section centred, one START A SHARED LIST button, "Got a code? Join one" and "Watch a show together ›" links open the right screens (also in Arabic) (Mahmood, 11 Nov)
 
 Watching together (needs two accounts)
-- [ ] A free account starts its first together: no paywall
-- [ ] The same account starts a second together: paywall
-- [ ] A list someone joined, then deleted: the next one still asks for Plus; a list nobody joined, deleted: the next one is free
-- [ ] "Mark it for both of us": on for one member only, nothing is marked; on for both, the phone behind marks up to the other's episode on open, dated by theirs
-- [ ] Un-mark an episode after a catch-up: it is not re-marked on the next open (until the partner moves again)
+- [x] A free account starts its first together: no paywall (simulator E2E vs local server, 11 Nov)
+- [x] The same account starts a second together: paywall (simulator: '· Plus' label, server 403, paywall opened)
+- [x] A list someone joined, then deleted: the next one still asks for Plus; a list nobody joined, deleted: the next one is free (19/19 HTTP checks vs local server)
+- [x] "Mark it for both of us": on for one member only, nothing is marked; on for both, the phone behind marks up to the other's episode on open, dated by theirs (simulator: nothing at all=false; S1E1-4 marked on switch-on, partner's date)
+- [x] Un-mark an episode after a catch-up: it is not re-marked on the next open (until the partner moves again) (simulator: S1E4 stayed off; partner to S1E6 -> caught up to S1E6)
 
 Features
 - [x] Profile ⋯ → "Share shows and films": starts empty with numbered slots, search, editable title, theme glow, username off by default (Mahmood, 11 Nov)
 - [x] Show page Continue tracking: tick the next episode, the rail slides to the following one; un-mark does not move it (Mahmood, 11 Nov)
 
 Found while testing (11 Nov)
+- [x] Android (emulator, preview APK of 2.4.0): double tap opens one page from Explore, the Shows tab and search (11 Nov)
 - [x] Search: a show in the library is listed once, not again as a + row (Mahmood + simulator, 11 Nov)
 - [x] Double tap on a show/film/Wrapped opens ONE page, in every tab (Mahmood, 11 Nov; guard was being overwritten by expo-router)
 - [x] Change the language: Language and Settings keep their title and back button (Mahmood, 11 Nov)
@@ -49,7 +50,7 @@ AnonP-Alt fixes
 - [ ] iOS 16–18: no white band under the header on Settings / About / actor page
 - [ ] Fresh install: About never flashes before Welcome
 - [ ] Settings → profile layout on a 375 pt phone: Cards drawing stays in its box
-- [ ] Actor page: film and series years line up
+- [x] Actor page: film and series years line up (Mahmood, 11 Nov)
 
 
 ## 2.3.2
