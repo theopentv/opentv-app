@@ -11,6 +11,7 @@
  * TMDB stays as the fallback for the whole feed — if TheTVDB is unreachable or
  * its key has been revoked, Discover keeps working rather than going blank.
  */
+import { getMeta, setMeta } from '@/db';
 import { runtimeLabel } from '@/duration';
 import { genreText, plotTvdbCodes } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
@@ -482,5 +483,17 @@ export async function showTvdbIdForTmdb(tmdbId: number): Promise<number | null> 
 export async function tvdbIdFor(item: CatalogItem): Promise<number | null> {
   if (item.tvdbId) return item.tvdbId;
   if (!item.tmdbId || item.kind !== 'tv') return null;
-  return showTvdbIdForTmdb(item.tmdbId);
+  const id = await showTvdbIdForTmdb(item.tmdbId);
+  // KEEP THE LINK we just learned. A show added from a TMDB result was stored
+  // with no TMDB id until its metadata pass ran, so searching for it again
+  // listed TMDB's copy beside the library one (11 Nov). The same hint the
+  // metadata pass reads first, so it also saves that pass a /find lookup.
+  if (id) {
+    try {
+      if (!getMeta(`showTmdbHint:${id}`)) setMeta(`showTmdbHint:${id}`, String(item.tmdbId));
+    } catch {
+      // no database (tests): the link is only an optimisation
+    }
+  }
+  return id;
 }

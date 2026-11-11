@@ -13,6 +13,7 @@ import db, {
   addShow,
   deleteMovie,
   deleteShow,
+  getMeta,
   getMovie,
   libraryMatch,
   setMovieFavorite,
@@ -20,6 +21,7 @@ import db, {
   showWatchCount,
 } from '@/db';
 import { searchCatalog, tvdbIdFor, type CatalogItem } from '@/catalog';
+import { showMeta } from '@/metadata';
 import { useJoined } from '@/community-session';
 import { tapLight } from '@/haptics';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
@@ -72,9 +74,12 @@ function searchLibrary(q: string): Result[] {
       kind: 'show' as const,
       name: s.name,
       poster: s.posterUrl,
-      year: null,
+      // From the cached metadata: a library row with no year never matched a
+      // catalogue row by name+year, and a show could be listed twice (11 Nov).
+      year: showMeta(s.tvdbId)?.year ?? null,
       // 0 is "matched on TheTVDB, no TMDB id" — not an id to match on.
-      tmdbId: s.tmdbId || null,
+      // The column, else the link learned on add, else the cached metadata's.
+      tmdbId: s.tmdbId || Number(getMeta(`showTmdbHint:${s.tvdbId}`)) || showMeta(s.tvdbId)?.tmdbId || null,
       tvdbId: s.tvdbId,
       inLibrary: true,
     }));
