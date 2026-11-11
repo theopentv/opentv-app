@@ -30,7 +30,7 @@ Watching together (needs two accounts)
 - [ ] Un-mark an episode after a catch-up: it is not re-marked on the next open (until the partner moves again)
 
 Features
-- [ ] Profile ⋯ → "Share shows and films": shows and films on one card, Shows/Films switch, picks from the whole library
+- [x] Profile ⋯ → "Share shows and films": starts empty with numbered slots, search, editable title, theme glow, username off by default (Mahmood, 11 Nov)
 - [ ] Show page Continue tracking: tick the next episode, the rail slides to the following one; un-mark does not move it
 
 Found while testing (11 Nov)
