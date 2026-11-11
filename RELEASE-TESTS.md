@@ -31,7 +31,7 @@ Watching together (needs two accounts)
 
 Features
 - [x] Profile ⋯ → "Share shows and films": starts empty with numbered slots, search, editable title, theme glow, username off by default (Mahmood, 11 Nov)
-- [ ] Show page Continue tracking: tick the next episode, the rail slides to the following one; un-mark does not move it
+- [x] Show page Continue tracking: tick the next episode, the rail slides to the following one; un-mark does not move it (Mahmood, 11 Nov)
 
 Found while testing (11 Nov)
 - [x] Search: a show in the library is listed once, not again as a + row (Mahmood + simulator, 11 Nov)
@@ -43,9 +43,9 @@ AnonP-Alt fixes
 - [x] Explore: a slow short scroll starting on a card does not open it; a tap does; rails still don't freeze (Mahmood, 11 Nov)
 - [ ] Shows → Watch List empty: the empty card is visible
 - [ ] Setup profile on a small phone: keyboard does not cover the name field or the button
-- [ ] Search → open a show from Recent that was a TMDB-only result: it loads
+- [x] Search → open a show from Recent that was a TMDB-only result: it loads (Mahmood, 11 Nov)
 - [x] Search "Better": Better Call Saul above "Better" (Mahmood, 11 Nov); [ ] search in Arabic still shows TheTVDB results first
-- [ ] A show not in the library: the last episode / About text is not under the Add Show bar
+- [x] A show not in the library: the last episode / About text is not under the Add Show bar (Mahmood, 11 Nov)
 - [ ] iOS 16–18: no white band under the header on Settings / About / actor page
 - [ ] Fresh install: About never flashes before Welcome
 - [ ] Settings → profile layout on a 375 pt phone: Cards drawing stays in its box
