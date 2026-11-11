@@ -174,10 +174,11 @@ const RESERVE_TOP_PROFILE =
 /* The floor includes a gap, because the grid used to end exactly where OPENTV
    began. `availH` is a budget the grid spends to the last point, so any room
    left between the two has to be reserved here or it does not exist. */
-/* Mark, handle, tagline, and the gap above all three. Every point of this is
-   height the grid does not get, which is why it is written as the sum of what
-   is actually down there rather than picked. */
-const RESERVE_BOTTOM = ss(14) + ss(18) + ss(16) + ss(16) + ss(14);
+/* The gap, the handle, the mark row and the bottom margin. Every point of this
+   is height the grid does not get, which is why it is written as the sum of
+   what is actually down there rather than picked. The tagline went and the mark
+   shrank (Mahmood, 11 Nov): the posters are the picture, so they take the room. */
+const RESERVE_BOTTOM = ss(14) + ss(16) + ss(3) + ss(14) + ss(12);
 /* The same floor minus the handle's line: on a profile card the name is at the
    top, and printing it twice is how a byline turns into a watermark. */
 const RESERVE_BOTTOM_PROFILE = RESERVE_BOTTOM - ss(16);
@@ -879,7 +880,11 @@ export default function ShareFavoritesScreen() {
               </View>
               </View>
 
-              <View style={s.brand}>
+              {/* WHOSE CARD, then the app, small: the name is what a reader
+                  of the post cares about, the mark only says where it came
+                  from (11 Nov). */}
+              {!!handle && showProfile && !profile && <Text style={s.handle}>@{handle}</Text>}
+              <View style={[s.brand, !!handle && showProfile && !profile && s.brandUnderHandle]}>
                 <Image
                   source={require('@/assets/images/mark.png')}
                   style={s.mark}
@@ -913,10 +918,6 @@ export default function ShareFavoritesScreen() {
                 name brighter, because it is the one a reader cares about, and
                 the slogan quieter underneath it.
               */}
-              {!!handle && showProfile && !profile && <Text style={s.handle}>@{handle}</Text>}
-              <Text style={s.tagline} numberOfLines={2}>
-                {t('shareCard.openSourceTagline')}
-              </Text>
             </View>
           </View>
         </View>
@@ -1156,18 +1157,12 @@ const s = StyleSheet.create({
   // mark. The band above centres what is left over, but when the grid fills its
   // height there IS nothing left over -- and that is exactly when the two were
   // touching.
-  brand: { flexDirection: 'row', alignItems: 'center', gap: ss(6), marginTop: ss(14) },
-  mark: { width: ss(18), height: ss(18) },
-  brandText: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '900', letterSpacing: ls(0.8) },
-  brandUrl: { color: 'rgba(255,255,255,0.6)', fontSize: ss(10.5), fontWeight: '700', marginStart: ss(2) },
-  handle: { color: 'rgba(255,255,255,0.78)', fontSize: ss(11), fontWeight: '700', marginTop: ss(5) },
-  tagline: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: ss(10),
-    fontWeight: '600',
-    marginTop: ss(3),
-    marginBottom: ss(12),
-  },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: ss(5), marginTop: ss(14), marginBottom: ss(12) },
+  brandUnderHandle: { marginTop: ss(3) },
+  mark: { width: ss(13), height: ss(13) },
+  brandText: { color: 'rgba(255,255,255,0.85)', fontSize: ss(9.5), fontWeight: '900', letterSpacing: ls(0.8) },
+  brandUrl: { color: 'rgba(255,255,255,0.5)', fontSize: ss(8.5), fontWeight: '700', marginStart: ss(2) },
+  handle: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '800', marginTop: ss(14) },
 
   toggles: {
     flexDirection: 'row',
