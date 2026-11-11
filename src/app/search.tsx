@@ -63,8 +63,8 @@ type Result = {
 function searchLibrary(q: string): Result[] {
   const like = `%${q}%`;
   const shows = db
-    .getAllSync<{ tvdbId: number; name: string; posterUrl: string | null }>(
-      'SELECT tvdbId, name, posterUrl FROM shows WHERE name LIKE ? LIMIT 10',
+    .getAllSync<{ tvdbId: number; name: string; posterUrl: string | null; tmdbId: number | null }>(
+      'SELECT tvdbId, name, posterUrl, tmdbId FROM shows WHERE name LIKE ? LIMIT 10',
       [like],
     )
     .map((s) => ({
@@ -73,7 +73,8 @@ function searchLibrary(q: string): Result[] {
       name: s.name,
       poster: s.posterUrl,
       year: null,
-      tmdbId: null,
+      // 0 is "matched on TheTVDB, no TMDB id" — not an id to match on.
+      tmdbId: s.tmdbId || null,
       tvdbId: s.tvdbId,
       inLibrary: true,
     }));
@@ -209,6 +210,9 @@ export default function SearchScreen() {
         // cached keys as "name:" and missed "name:2015", so Better Call Saul
         // was listed twice, once ticked and once with a + (11 Nov).
         const localShowIds = new Set(local.flatMap((r) => (r.kind === 'show' && r.tvdbId ? [r.tvdbId] : [])));
+        // A TMDB-only row has no TheTVDB id at all: TheTVDB's own search left
+        // Better Call Saul out of "Better", so only TMDB's copy came back.
+        const localShowTmdb = new Set(local.flatMap((r) => (r.kind === 'show' && r.tmdbId ? [r.tmdbId] : [])));
         const remote: Result[] = hits
           .map((h) => {
             const kind = h.kind === 'tv' ? ('show' as const) : ('movie' as const);
@@ -224,7 +228,7 @@ export default function SearchScreen() {
               inLibrary: localNames.has(localKey(kind, name, (h.sub.match(/\b(\d{4})\b/) ?? [])[1] ?? null)),
             };
           })
-          .filter((r) => r.name && !localNames.has(localKey(r.kind, r.name, r.year)) && !(r.kind === 'show' && r.tvdbId && localShowIds.has(r.tvdbId)))
+          .filter((r) => r.name && !localNames.has(localKey(r.kind, r.name, r.year)) && !(r.kind === 'show' && ((r.tvdbId && localShowIds.has(r.tvdbId)) || (r.tmdbId && localShowTmdb.has(r.tmdbId)))))
           .slice(0, 20);
         setResults([...local, ...remote]);
       } catch {
