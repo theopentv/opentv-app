@@ -33,8 +33,13 @@ Features
 - [ ] Profile ⋯ → "Share shows and films": shows and films on one card, Shows/Films switch, picks from the whole library
 - [ ] Show page Continue tracking: tick the next episode, the rail slides to the following one; un-mark does not move it
 
+Found while testing (11 Nov)
+- [x] Double tap on a show/film/Wrapped opens ONE page, in every tab (Mahmood, 11 Nov; guard was being overwritten by expo-router)
+- [ ] Change the language: Language and Settings keep their title and back button (passed on the simulator)
+- [ ] App in Arabic: Shadow and Bone's description is Arabic (TMDB stands in; passed on the simulator)
+
 AnonP-Alt fixes
-- [ ] Explore: a slow short scroll starting on a card does not open it; a tap does; rails still don't freeze
+- [x] Explore: a slow short scroll starting on a card does not open it; a tap does; rails still don't freeze (Mahmood, 11 Nov)
 - [ ] Shows → Watch List empty: the empty card is visible
 - [ ] Setup profile on a small phone: keyboard does not cover the name field or the button
 - [ ] Search → open a show from Recent that was a TMDB-only result: it loads
