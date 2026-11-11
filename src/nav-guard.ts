@@ -80,8 +80,16 @@ export function isDuplicatePush(href: string, now: number): boolean {
  * The same-destination window above stays in force after this; it is the
  * lock that ends here.
  */
-export function navTransitionEnded(closing?: boolean): void {
-  if (!closing) lockedUntil = 0;
+export function navTransitionEnded(closing?: boolean, now = Date.now()): void {
+  if (closing) return;
+  lockedUntil = 0;
+  // THE SAME PAGE AGAIN STAYS SHUT FOR A MOMENT AFTER IT ARRIVES (11 Nov). A
+  // double tap on a poster still opened the show twice: the second tap was
+  // queued behind the page's first render, the lock opened as the page landed,
+  // and the queued tap came through more than 700ms after the first. The window
+  // now counts from the arrival, so it can only catch a repeat, never block a
+  // different destination.
+  if (lastHref) lastAt = now;
 }
 
 /** Called once, from the root layout. Idempotent: a fast refresh that

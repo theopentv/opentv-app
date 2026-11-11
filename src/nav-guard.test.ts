@@ -9,15 +9,15 @@ describe('nav guard', () => {
 
   it('swallows the same destination within the window, even after the screen has arrived', () => {
     isDuplicatePush('/movie/Alien', 10_000);
-    navTransitionEnded();
+    navTransitionEnded(false, 10_100);
     expect(isDuplicatePush('/movie/Alien', 10_120)).toBe(true);
     expect(isDuplicatePush('/movie/Alien', 10_699)).toBe(true);
   });
 
   it('allows the same destination again once the window has passed', () => {
     isDuplicatePush('/show/42', 20_000);
-    navTransitionEnded();
-    expect(isDuplicatePush('/show/42', 20_700)).toBe(false);
+    navTransitionEnded(false, 20_300);
+    expect(isDuplicatePush('/show/42', 21_000)).toBe(false);
   });
 
   it('blocks a DIFFERENT destination while the first screen is still opening', () => {
@@ -36,7 +36,7 @@ describe('nav guard', () => {
 
   it('opens the lock when the screen has arrived', () => {
     isDuplicatePush('/movie/A', 50_000);
-    navTransitionEnded();
+    navTransitionEnded(false, 50_005);
     expect(isDuplicatePush('/movie/B', 50_010)).toBe(false);
   });
 
@@ -52,11 +52,19 @@ describe('nav guard', () => {
     expect(isDuplicatePush('/movie/B', 71_500)).toBe(false);
   });
 
+  it('swallows a double tap queued behind the page it opened (counted from the arrival)', () => {
+    isDuplicatePush('/show/7', 90_000);
+    // the page took 900ms to land; the second tap of the double tap is only seen after it
+    navTransitionEnded(false, 90_900);
+    expect(isDuplicatePush('/show/7', 90_950)).toBe(true);
+    expect(isDuplicatePush('/show/8', 90_960)).toBe(false);
+  });
+
   it('treats a repeat after an intervening push as new', () => {
     isDuplicatePush('/movie/A', 80_000);
-    navTransitionEnded();
+    navTransitionEnded(false, 80_005);
     isDuplicatePush('/movie/B', 80_010);
-    navTransitionEnded();
+    navTransitionEnded(false, 80_015);
     expect(isDuplicatePush('/movie/A', 80_020)).toBe(false);
   });
 });
