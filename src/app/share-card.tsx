@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, Share, StyleSheet, View, I18nManager } from 'react-native';
 import { Text } from '@/components/text';
 
 import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
@@ -692,7 +692,10 @@ const styles = StyleSheet.create({
   // The visible slot: preview-sized, and it clips the oversized card in it.
   // Height comes from the shape — see the tall branch above.
   storyBox: { borderRadius: 12, overflow: 'hidden' },
-  storyScale: { transformOrigin: 'top left' },
+  // The START corner, which in Arabic is the right: an RTL layout puts the
+  // export-sized card against the box's right edge, and shrinking it towards
+  // the left pulled it out of the box, so the preview was cut in half (11 Nov).
+  storyScale: { transformOrigin: I18nManager.isRTL ? 'top right' : 'top left' },
   story: {
     // Export size, not preview size. This is the rectangle that becomes the
     // PNG; `storyScale` is the only thing that makes it look small.

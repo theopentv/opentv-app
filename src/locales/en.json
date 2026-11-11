@@ -2810,7 +2810,8 @@
     "headingMixed": "What I watch",
     "tabShows": "Shows",
     "tabMovies": "Films",
-    "emptyMixed": "Add a show or a film first, then share them here."
+    "emptyMixed": "Add a show or a film first, then share them here.",
+    "search": "Search your library"
   },
   "commsuni": {
     "byline": "Comments by CommsUni.tv",

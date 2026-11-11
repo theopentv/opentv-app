@@ -2810,7 +2810,8 @@
     "headingMixed": "Lo que veo",
     "tabShows": "Series",
     "tabMovies": "Películas",
-    "emptyMixed": "Añade primero una serie o una película y compártelas aquí."
+    "emptyMixed": "Añade primero una serie o una película y compártelas aquí.",
+    "search": "Busca en tu biblioteca"
   },
   "commsuni": {
     "byline": "Comentarios de CommsUni.tv",

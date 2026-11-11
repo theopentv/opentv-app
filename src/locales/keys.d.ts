@@ -2394,6 +2394,7 @@ export type LocaleKey =
   | "shareFavorites.recentMovies"
   | "shareFavorites.recentShows"
   | "shareFavorites.recentTitle"
+  | "shareFavorites.search"
   | "shareFavorites.share"
   | "shareFavorites.showProfile"
   | "shareFavorites.showTitles"

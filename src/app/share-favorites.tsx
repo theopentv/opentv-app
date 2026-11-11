@@ -34,7 +34,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { type ViewInstance, Alert, Dimensions, FlatList, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, FlatList, PixelRatio, Pressable, ScrollView, Share, StyleSheet, TextInput, View, I18nManager } from 'react-native';
 import { Text } from '@/components/text';
 
 import { posterSpeech } from '@/components/poster';
@@ -45,7 +45,7 @@ import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { profileImageUri } from '@/library';
 import { SITE_HOST, withLink } from '@/share-link';
-import { colors, radius, ls } from '@/theme';
+import { colors, radius, ls, space } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
 
@@ -543,7 +543,14 @@ export default function ShareFavoritesScreen() {
   const byKey = useMemo(() => new Map(items.map((i) => [i.key, i])), [items]);
   // The whole library can be thousands of posters: a FlatList draws what is on
   // screen, and the filtered array is memoised so it is not rebuilt every render.
-  const shelf = useMemo(() => (isMixed ? items.filter((i) => 'kind' in i && i.kind === tab) : items), [items, isMixed, tab]);
+  // A whole library is too long to scroll for one title: the search narrows the
+  // shelf only, never what is already picked (11 Nov).
+  const [query, setQuery] = useState('');
+  const shelf = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const ofTab = isMixed ? items.filter((i) => 'kind' in i && i.kind === tab) : items;
+    return q ? ofTab.filter((i) => i.title.toLowerCase().includes(q)) : ofTab;
+  }, [items, isMixed, tab, query]);
   /* SLICED, because `count` no longer only changes when somebody taps a
      count. Turning titles on, or switching to Post, can take the option they
      were on away -- and then `picked` still holds twenty keys while the grid
@@ -648,11 +655,11 @@ export default function ShareFavoritesScreen() {
         {/* The count, and nothing else to decide. Hidden entirely when there is
             only one grid they can fill — a control with one option is furniture. */}
         {options.length > 1 && (
-          <View style={s.counts}>
+          <View style={[s.counts, s.countsFit]}>
             {options.map((g) => (
               <Pressable accessibilityRole="tab" accessibilityState={{ selected: g === count }}
                 key={g}
-                style={[s.countTab, g === count && s.countTabOn]}
+                style={[s.countTab, s.countTabFit, g === count && s.countTabOn]}
                 onPress={() => {
                   tapSelection();
                   setCount(g);
@@ -917,6 +924,16 @@ export default function ShareFavoritesScreen() {
             ))}
           </View>
         )}
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('shareFavorites.search')}
+          placeholderTextColor={colors.faint}
+          style={s.search}
+          autoCorrect={false}
+          clearButtonMode="while-editing"
+          returnKeyType="search"
+        />
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -986,6 +1003,20 @@ const s = StyleSheet.create({
   counts: { flexDirection: 'row', backgroundColor: colors.card, borderRadius: radius.pill, padding: 3, gap: 2 },
   countTab: { minWidth: 42, alignItems: 'center', paddingVertical: 7, borderRadius: radius.pill },
   countTabOn: { backgroundColor: colors.brand },
+  // ELEVEN COUNTS ACROSS ONE ROW, never wider than the screen: at a larger text
+  // size the fixed 42pt tabs ran off the right edge (11 Nov). They share it.
+  countsFit: { alignSelf: 'stretch', marginHorizontal: space.lg },
+  countTabFit: { flex: 1, minWidth: 0 },
+  search: {
+    alignSelf: 'stretch',
+    marginHorizontal: space.lg,
+    backgroundColor: colors.card,
+    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    color: colors.text,
+    fontSize: 15,
+  },
   countText: { color: colors.dim, fontSize: 13, fontWeight: '700' },
 
   shapeTab: {
@@ -999,7 +1030,10 @@ const s = StyleSheet.create({
 
   // Height comes from the shape — see the preview box above.
   box: { borderRadius: 12, overflow: 'hidden' },
-  scale: { transformOrigin: 'top left' },
+  // The START corner, which in Arabic is the right: an RTL layout puts the
+  // export-sized card against the box's right edge, and shrinking it towards
+  // the left pulled it out of the box, so the preview was cut in half (11 Nov).
+  scale: { transformOrigin: I18nManager.isRTL ? 'top right' : 'top left' },
   card: {
     width: EXPORT_W,
     // Square -- `box` rounds the preview. See the note in share-card.tsx.
