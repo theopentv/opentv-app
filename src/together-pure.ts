@@ -178,3 +178,39 @@ export function publishedTogether(cards: readonly TogetherCard[]): { shows: { ti
   const shows = cards.filter((c) => c.title).map((c) => ({ title: c.title!, members: c.members }));
   return shows.length > 0 ? { shows } : null;
 }
+
+/**
+ * "MARK IT FOR BOTH OF US" (2.4.0): the episodes my library needs so that I am
+ * where `theirs` is — every one after my furthest, up to and including theirs.
+ *
+ * FORWARD ONLY. Nothing behind my own furthest is touched: a gap I left there
+ * is my own business (a skipped episode, an un-mark), and nothing is ever
+ * un-marked — a member behind me changes nothing. Specials never count, the
+ * same rule `furthestWatched` follows.
+ *
+ * Null when a season it has to cross has no known length: the next open, with
+ * the metadata in, does it properly, rather than this one guessing and leaving
+ * a hole that would then sit behind my furthest for ever. An empty list is a
+ * real answer: nothing to do.
+ */
+export function catchUpEpisodes(
+  mine: Position | null,
+  theirs: Position,
+  counts: Readonly<Record<number, number | undefined>>,
+): Position[] | null {
+  if (theirs.season < 1 || theirs.episode < 1 || comparePositions(theirs, mine) >= 0) return [];
+  // THEIR POSITION MUST EXIST IN MY SHOW. A partner whose library numbers it
+  // differently (absolute anime numbering: S1E250 against my 24), or a member
+  // sending nonsense, would otherwise write episodes that do not exist into my
+  // library and sync them everywhere. Unknown length: wait, as below.
+  const theirSeason = counts[theirs.season];
+  if (theirSeason == null || !(theirSeason > 0)) return null;
+  if (theirs.episode > theirSeason) return [];
+  const out: Position[] = [];
+  for (let season = mine?.season ?? 1; season <= theirs.season; season++) {
+    const last = season === theirs.season ? theirs.episode : counts[season];
+    if (last == null || !(last > 0)) return null;
+    for (let episode = season === mine?.season ? mine.episode + 1 : 1; episode <= last; episode++) out.push({ season, episode });
+  }
+  return out;
+}

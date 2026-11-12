@@ -9,7 +9,7 @@ import { Text } from '@/components/text';
 import { tabA11y } from '@/a11y';
 import { FeedList } from '@/components/feed-list';
 import { PuzzleCard } from '@/components/puzzle-card';
-import { ContentColumn, EmptyState, Screen } from '@/components/ui';
+import { ContentColumn, EmptyState, Screen, guardPress, pageDrag } from '@/components/ui';
 import db, { addMovieToWatchlist, addShow, deleteMovie, deleteShow, getMeta, getMovie, inLibrary, setMeta, showWatchCount, trackedShowIds } from '@/db';
 import { dayCacheState, parseDayCache } from '@/feed-cache';
 import { trendingFeed, tvdbIdFor, type CatalogItem } from '@/catalog';
@@ -236,7 +236,7 @@ function FeedCard({ item }: { item: FeedItem }) {
   return (
     // Not one element — the "+" inside has to be reachable (see `a11y.ts`), so
     // the title block is the button that opens the title.
-    <Pressable style={styles.bigCard} onPress={open} accessible={false} importantForAccessibility="no">
+    <Pressable style={styles.bigCard} onPress={guardPress(open)} accessible={false} importantForAccessibility="no">
       <View style={styles.bigArt}>
         {/* the feed only keeps rows that have landscape art, so this is set in
             practice — fall back to the poster rather than render a hole */}
@@ -370,7 +370,7 @@ export default function ExploreScreen() {
       {pill === 'Feed' && (
         // disableScrollViewPanResponder: a rail still gliding must not freeze the
         // next one. See the note in `profile-template.tsx`.
-        <ScrollView disableScrollViewPanResponder contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}>
+        <ScrollView disableScrollViewPanResponder {...pageDrag} contentContainerStyle={{ paddingBottom: 24 + tabBarSpace }}>
           {/* Today's "Guess the show" — local, so it is here before the feed
               has loaded and whether or not it ever does. */}
           <ContentColumn>
@@ -404,7 +404,7 @@ export default function ExploreScreen() {
       )}
 
       {pill === 'Groups' && (
-        <ScrollView disableScrollViewPanResponder contentContainerStyle={{ paddingBottom: tabBarSpace }}>
+        <ScrollView disableScrollViewPanResponder {...pageDrag} contentContainerStyle={{ paddingBottom: tabBarSpace }}>
           <View style={styles.sortRow}>
             <Text style={styles.sortLabel}>
               {t('explore.sortBy')} <Text style={{ color: colors.blue }}>{t('explore.popular')}</Text>

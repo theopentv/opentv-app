@@ -1371,7 +1371,8 @@
     "share": "Condividi",
     "helpCenter": "Centro assistenza",
     "findPeople": "Trova persone",
-    "memories": "Ricordi"
+    "memories": "Ricordi",
+    "shareLibrary": "Condividi serie e film"
   },
   "notOnTvdb": {
     "title": "Non ancora su TheTVDB",
@@ -2803,8 +2804,15 @@
       "other": "Tocca ancora {{count}} poster"
     },
     "showTitles": "Mostra i titoli",
-    "showProfile": "Mostra il mio profilo",
-    "hintRemove": "Tocca un poster scelto per toglierlo."
+    "showProfile": "Mostra il mio nome utente",
+    "hintRemove": "Tocca un poster scelto per toglierlo.",
+    "titleMixed": "Condividi serie e film",
+    "headingMixed": "Quello che guardo",
+    "tabShows": "Serie",
+    "tabMovies": "Film",
+    "emptyMixed": "Aggiungi prima una serie o un film, poi condividili da qui.",
+    "search": "Cerca nella tua libreria",
+    "titleField": "Titolo della card"
   },
   "commsuni": {
     "byline": "Commenti da CommsUni.tv",
@@ -2901,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Guardare insieme: la prima è gratis, e «Segna per tutti e due» segna gli episodi su entrambi i telefoni",
+      "share": "Condividi serie e film: un'immagine da tutta la tua libreria, con il tuo titolo",
+      "search": "La ricerca mette prima la serie più popolare, e le trame compaiono più spesso nella tua lingua",
+      "fixes": "Correzioni: un doppio tocco apre una sola pagina, niente angoli bianchi tornando indietro, e il tasto indietro resta dopo il cambio lingua"
+    },
     "v230": {
       "assistants": "OpenTV in Claude e ChatGPT: con Plus, chiedi cosa hai guardato e fagli segnare, votare o aggiungere alla tua lista, con il tuo consenso ogni volta",
       "unmark": "Togliere il segno a un episodio ora chiede conferma, offre Annulla e rimuove voto ed emozioni",
@@ -3571,6 +3585,11 @@
     "startPlus": "Guarda insieme · Plus",
     "pickStart": "Guarda una serie insieme",
     "pickStartPlus": "Guarda una serie insieme · Plus",
+    "markBoth": "Segna per tutti e due",
+    "markBothSub": "Quando tutti qui lo attivano, aprendo l'app vengono segnati gli episodi visti da chi è più avanti.",
+    "markBothWaiting": "Attivo per te. Parte quando lo attivano anche tutti gli altri.",
+    "markBothOn": "Attivo per tutti. Gli episodi visti da chi è più avanti sono segnati anche nelle tue serie.",
+    "plusSoon": "Guardare insieme più di una serie arriva con OpenTV Plus.",
     "emptyBlurb": "Segui una serie con gli amici — ognuno vede a che episodio è arrivato l'altro.",
     "inviteMessage": "Guardiamo {{show}} insieme su OpenTV — ognuno vedrà a che episodio è l'altro. Codice: {{code}}",
     "inviteBody": "Manda il codice a chi guarda con te. Entra gratis e vede a che episodio sei.",
@@ -3609,7 +3628,10 @@
     "badge": {
       "one": "Condivisa · {{count}} persona",
       "other": "Condivisa · {{count}} persone"
-    }
+    },
+    "explain": "Crea una lista con qualcuno. Aggiungete titoli entrambi e ognuno spunta i suoi.",
+    "joinLink": "Hai un codice? Unisciti a una lista",
+    "togetherLink": "Guarda una serie insieme ›"
   },
   "ratingBreakdown": {
     "title": "Voti della community",

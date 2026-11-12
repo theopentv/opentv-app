@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { router, Stack, useSegments } from 'expo-router';
+import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, AppState, StyleSheet, Text, View } from 'react-native';
@@ -60,6 +60,17 @@ import { publishIfChanged } from '@/community-publish';
 import { restorePuzzleDays } from '@/puzzle-data';
 import { shouldAskForNotifications } from '@/pure';
 import { appliedLight, colors } from '@/theme';
+
+// WHAT SITS BEHIND EVERY PAGE. With no theme given, React Navigation paints the
+// stack's own container in its LIGHT default, rgb(242,242,242), whatever the
+// app looks like. iOS 26 rounds a page while it slides and moves the one behind
+// it, so that near-white showed at the corners and edges of every back swipe
+// (11 Nov). The theme restarts the app when it changes, so this follows it.
+const NAV_BASE = appliedLight() ? DefaultTheme : DarkTheme;
+const NAV_THEME = {
+  ...NAV_BASE,
+  colors: { ...NAV_BASE.colors, background: colors.bg, card: colors.bg },
+};
 
 // Before anything can onboard: an install that is not onboarded yet is new,
 // and never gets a "what's new". See whats-new.tsx.
@@ -682,6 +693,7 @@ export default function RootLayout() {
           * phone resolved to at launch, which is exactly what the bar sits on.
           */}
         <StatusBar style={appliedLight() ? 'dark' : 'light'} />
+        <ThemeProvider value={NAV_THEME}>
         <Stack
         // Re-reads every t() after a language switch. Not (tabs): it holds the
         // tab navigator, which listens for itself and remounts its own screens.
@@ -1123,6 +1135,12 @@ export default function RootLayout() {
         />
         </Stack.Protected>
         </Stack>
+        </ThemeProvider>
+        {/* The router falls back to `about` for a frame or two before the effect
+            above has replaced it with Welcome; nobody should see that frame. */}
+        {!onboarded && !preOnboardingRoute && (
+          <View pointerEvents="none" style={[StyleSheet.absoluteFill, { backgroundColor: colors.bg }]} />
+        )}
         <MetaFillBar />
         <UpdateGate />
         <UndoToast />

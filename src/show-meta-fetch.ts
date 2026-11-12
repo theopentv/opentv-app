@@ -262,7 +262,12 @@ function needsFetch(id: number): boolean {
 /** Cached in another language than the one plots are now wanted in. ABSENT
  *  reads as `eng` — see `showMetaIsStale`. */
 function wrongPlotLang(m: ShowMeta): boolean {
-  return (m.plotLang ?? 'eng') !== plotTvdbCodes()[0];
+  const wanted = plotTvdbCodes()[0];
+  if ((m.plotLang ?? 'eng') !== wanted) return true;
+  // Cached before 2.4.0 in a non-English language: whether TheTVDB actually
+  // had the plot was never recorded, so one refetch lets TMDB's translation
+  // stand in where TheTVDB had none. English readers pay nothing.
+  return wanted !== 'eng' && m.plotLocal === undefined;
 }
 
 /**
@@ -1062,6 +1067,8 @@ async function fetchTvdbStructure(tvdbId: number): Promise<ShowMeta | null> {
       runtime: s.averageRuntime ?? null,
       overview: firstPlot(...plots.map((p) => p?.overview), s.overview),
       plotLang: plotLangs[0],
+      // English mode asks for one language, and it is the one wanted.
+      plotLocal: plotLangs.length === 1 || !!firstPlot(...plots.slice(0, -1).map((p) => p?.overview)),
       // TheTVDB's `score` is a popularity count, not a 0-10 rating — left to TMDB
       rating: 0,
       lastAir: s.lastAired ?? null,
@@ -1098,10 +1105,20 @@ async function fetchTmdbGapFields(tvdbId: number, tmdbIdHint?: number | null): P
     }
     if (tmdbId == null) return null;
 
-    const d = await tmdb<TmdbShow>(`/tv/${tmdbId}?append_to_response=similar,watch/providers`);
+    // TMDB'S TRANSLATIONS ride along when a non-English plot is wanted:
+    // TheTVDB has no Arabic for Shadow and Bone, TMDB does (11 Nov). The list,
+    // not `language=`, so the title is not translated with it.
+    const plotCode = plotTmdbCode();
+    const d = await tmdb<TmdbShow & { translations?: { translations?: { iso_639_1?: string; data?: { overview?: string } }[] } }>(
+      `/tv/${tmdbId}?append_to_response=similar,watch/providers${plotCode ? ',translations' : ''}`,
+    );
+    const localPlot = plotCode
+      ? firstPlot(d.translations?.translations?.find((x) => x.iso_639_1 === plotCode.slice(0, 2).toLowerCase())?.data?.overview)
+      : null;
 
     return {
       tmdbId,
+      ...(localPlot ? { overview: localPlot } : {}),
       rating: d.vote_average ?? 0,
       votes: d.vote_count,
       similar: (d.similar?.results ?? []).slice(0, 10).map((s) => ({
@@ -1157,6 +1174,8 @@ async function doFetch(tvdbId: number, tmdbIdHint?: number | null): Promise<Show
       ? {
           ...tvdbRecord,
           ...mergeEnrichment<ShowMeta>(gaps, tvdbRecord, TMDB_GAP_KEYS),
+          // TheTVDB's own translation wins; TMDB's only replaces an English stand-in.
+          ...(tvdbRecord.plotLocal === false && gaps.overview ? { overview: gaps.overview, plotLocal: true } : {}),
           tmdbId: gaps.tmdbId ?? 0,
           structureSource: 'tvdb',
         }

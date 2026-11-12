@@ -31,6 +31,7 @@ const ITEMS = [
    */
   { name: 'Memories', icon: 'time-outline', labelKey: 'profileMenu.memories' as const, to: '/memories' },
   { name: 'Share', icon: 'share-outline', labelKey: 'profileMenu.share' as const, to: '/share-profile' },
+  { name: 'Share library', icon: 'albums-outline', labelKey: 'profileMenu.shareLibrary' as const, to: '/share-favorites?source=library' },
   { name: 'Help center', icon: 'help-circle-outline', labelKey: 'profileMenu.helpCenter' as const, to: null },
 ] as const;
 

@@ -53,7 +53,7 @@ import { Image, type ImageProps } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 
 import { firstWatchDay, topCharacter, watchStreak } from '@/db';
-import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, useFold, useScreenWidth } from '@/components/ui';
+import { CONTENT_MAX_WIDTH, PROFILE_MAX_WIDTH, guardPress, pageDrag, useFold, useScreenWidth } from '@/components/ui';
 import { Poster } from '@/components/poster';
 import { PosterRail, SectionHeader, StatsGrid, StatsRail, type RailItem, type StatCard } from '@/components/profile-sections';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -744,7 +744,7 @@ export function ProfileTemplate({
               i > 0 && i < cells.length - 1 && layout !== 'cards' && styles.statCellMid,
             ]}
             accessibilityRole="button"
-            onPress={c.onPress}
+            onPress={guardPress(c.onPress)}
             // While arranging, the tap belongs to the block's menu (9 Oct).
             disabled={!c.onPress || editing}>
             {/* The block's height is the grid's, not the text's: past 1.4x the labels were cut in half. */}
@@ -1313,6 +1313,7 @@ export function ProfileTemplate({
         // not start a drag (`_shouldDisableScrollInteraction`). No effect on
         // the page's own scrolling, which is native.
         disableScrollViewPanResponder
+        {...pageDrag}
         onScroll={onScroll}
         scrollEventThrottle={16}
         // insets.bottom: under the native tab bar it includes the bar, which floats over the page.

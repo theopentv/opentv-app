@@ -1718,17 +1718,63 @@ function searchDedupeKey(h: SearchHit): string {
  * agree with itself and show everything twice.
  */
 export function mergeSearchFallback<T extends SearchHit>(primary: readonly T[], supplement: readonly T[]): T[] {
+  // THE THETVDB COPY ALWAYS WINS, wherever it sits in its list. Interleaving
+  // met TMDB's Better Call Saul (its #1) before TheTVDB's (#2) and dropped the
+  // wrong one: a row with no TheTVDB id, so search showed it twice beside the
+  // library copy and never marked it as added (11 Nov). A supplement row is
+  // only ever for what TheTVDB does not have.
+  const primaryKeys = new Set(primary.map(searchDedupeKey));
   const seen = new Set<string>();
   const out: T[] = [];
   for (let i = 0; i < Math.max(primary.length, supplement.length); i++) {
-    for (const row of [primary[i], supplement[i]]) {
+    for (const [row, isPrimary] of [[primary[i], true], [supplement[i], false]] as const) {
       if (!row) continue;
       const key = searchDedupeKey(row);
-      if (seen.has(key)) continue;
+      if (seen.has(key) || (!isPrimary && primaryKeys.has(key))) continue;
       seen.add(key);
       out.push(row);
     }
   }
+  return out;
+}
+
+/**
+ * SEARCH, MOST POPULAR FIRST (2.4.0). TheTVDB's /search carries no popularity and
+ * its own order is poor ("Better" -> Better Call Saul is not in its top 8), so each
+ * TheTVDB row borrows the popularity of the TMDB row with the same kind+title+year
+ * (already fetched in parallel, no extra request).
+ *
+ * ONLY THE ROWS WITH A POPULARITY MOVE, and only among their own places. A row
+ * nobody can rank stays exactly where the merge put it. TheTVDB answers in the
+ * user's language and TMDB here in English, so in Arabic almost nothing matches:
+ * sorting everything sank every TheTVDB row below TMDB-only copies with no id.
+ * This way an unmatched list keeps the pre-2.4.0 order, and a matched one
+ * ("Better", "Better Call Saul") still swaps. Ties keep the incoming order,
+ * which `rankByQuery` already made exact-name-first.
+ */
+export function rankSearchByPopularity<T extends SearchHit & { popularity?: number }>(
+  primary: readonly T[],
+  supplement: readonly T[],
+  query = '',
+): T[] {
+  const pop = new Map<string, number>();
+  for (const r of supplement) if (r.popularity != null) pop.set(searchDedupeKey(r), r.popularity);
+  const merged = mergeSearchFallback(
+    primary.map((r) => ({ ...r, popularity: r.popularity ?? pop.get(searchDedupeKey(r)) })),
+    supplement,
+  );
+  const slots = merged.flatMap((r, i) => (r.popularity != null ? [i] : []));
+  const ranked = slots
+    .map((i) => ({ r: merged[i], i }))
+    .sort((a, b) => b.r.popularity! - a.r.popularity! || a.i - b.i);
+  const out = merged.slice();
+  slots.forEach((slot, k) => { out[slot] = ranked[k].r; });
+  // THE EXACT NAME STAYS IN THE TOP TWO. Popularity alone sent the 2023 show
+  // "Better" (2.8) to the bottom of a search for "Better": the one result the
+  // person typed letter for letter, unfindable.
+  const q = query.trim().toLowerCase();
+  const exact = q ? out.findIndex((r) => r.title.trim().toLowerCase() === q) : -1;
+  if (exact > 1) out.splice(1, 0, ...out.splice(exact, 1));
   return out;
 }
 
@@ -3782,6 +3828,8 @@ export const COMMUNITY_META_KEYS = [
   'communityTogetherSent',
   'communityTogetherDetails',
   'communityTogetherIndexAt',
+  // Which lead "mark it for both of us" last followed (2.4.0).
+  'communityTogetherCaught',
 ] as const;
 
 /**
@@ -3918,6 +3966,8 @@ export const COMMUNITY_SIGN_OUT_META_KEYS = [
   'communityTogetherSent',
   'communityTogetherDetails',
   'communityTogetherIndexAt',
+  // Which lead "mark it for both of us" last followed (2.4.0).
+  'communityTogetherCaught',
 ] as const;
 
 /** A fresh array, for the same reason `metaKeysClearedOnAccountDeletion` returns one. */
@@ -4972,6 +5022,12 @@ export function addSearchHistory(
   if (label === '' || entry.value.trim() === '') return [...history];
   const without = history.filter((h) => !(h.kind === entry.kind && h.value === entry.value));
   return [{ ...entry, label }, ...without].slice(0, SEARCH_HISTORY_MAX);
+}
+
+/** A remembered show saved under its NAME (a TMDB-fallback result, before 2.4.0)
+ *  has no TheTVDB id to open; it must be resolved from its tmdbId first. */
+export function recentShowNeedsResolve(h: Pick<SearchHistoryEntry, 'kind' | 'value' | 'tmdbId'>): boolean {
+  return h.kind === 'show' && !/^\d+$/.test(h.value) && h.tmdbId != null;
 }
 
 /** Drop one entry — a person can un-remember a single search without clearing

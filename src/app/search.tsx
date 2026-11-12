@@ -13,6 +13,7 @@ import db, {
   addShow,
   deleteMovie,
   deleteShow,
+  getMeta,
   getMovie,
   libraryMatch,
   setMovieFavorite,
@@ -20,11 +21,12 @@ import db, {
   showWatchCount,
 } from '@/db';
 import { searchCatalog, tvdbIdFor, type CatalogItem } from '@/catalog';
+import { showMeta } from '@/metadata';
 import { useJoined } from '@/community-session';
 import { tapLight } from '@/haptics';
 import { alertNotOnTvdb } from '@/not-on-tvdb';
 import { avatarUri } from '@/community-comments';
-import { displayTitle, movieRoute, movieYear, oneTickPerRow, type SearchHistoryEntry } from '@/pure';
+import { displayTitle, movieRoute, movieYear, oneTickPerRow, recentShowNeedsResolve, type SearchHistoryEntry } from '@/pure';
 import { colors, space, ls } from '@/theme';
 import { a11yAction } from '@/a11y';
 import { currentLocale, t } from '@/i18n';
@@ -63,8 +65,8 @@ type Result = {
 function searchLibrary(q: string): Result[] {
   const like = `%${q}%`;
   const shows = db
-    .getAllSync<{ tvdbId: number; name: string; posterUrl: string | null }>(
-      'SELECT tvdbId, name, posterUrl FROM shows WHERE name LIKE ? LIMIT 10',
+    .getAllSync<{ tvdbId: number; name: string; posterUrl: string | null; tmdbId: number | null }>(
+      'SELECT tvdbId, name, posterUrl, tmdbId FROM shows WHERE name LIKE ? LIMIT 10',
       [like],
     )
     .map((s) => ({
@@ -72,8 +74,12 @@ function searchLibrary(q: string): Result[] {
       kind: 'show' as const,
       name: s.name,
       poster: s.posterUrl,
-      year: null,
-      tmdbId: null,
+      // From the cached metadata: a library row with no year never matched a
+      // catalogue row by name+year, and a show could be listed twice (11 Nov).
+      year: showMeta(s.tvdbId)?.year ?? null,
+      // 0 is "matched on TheTVDB, no TMDB id" — not an id to match on.
+      // The column, else the link learned on add, else the cached metadata's.
+      tmdbId: s.tmdbId || Number(getMeta(`showTmdbHint:${s.tvdbId}`)) || showMeta(s.tvdbId)?.tmdbId || null,
       tvdbId: s.tvdbId,
       inLibrary: true,
     }));
@@ -205,6 +211,13 @@ export default function SearchScreen() {
         const localKey = (kind: string, name: string, year: string | null) =>
           `${kind}:${name.trim().toLowerCase()}:${movieYear(year) ?? ''}`;
         const localNames = new Set(local.map((r) => localKey(r.kind, r.name, r.year)));
+        // And by id, which is identity: a library show whose year never got
+        // cached keys as "name:" and missed "name:2015", so Better Call Saul
+        // was listed twice, once ticked and once with a + (11 Nov).
+        const localShowIds = new Set(local.flatMap((r) => (r.kind === 'show' && r.tvdbId ? [r.tvdbId] : [])));
+        // A TMDB-only row has no TheTVDB id at all: TheTVDB's own search left
+        // Better Call Saul out of "Better", so only TMDB's copy came back.
+        const localShowTmdb = new Set(local.flatMap((r) => (r.kind === 'show' && r.tmdbId ? [r.tmdbId] : [])));
         const remote: Result[] = hits
           .map((h) => {
             const kind = h.kind === 'tv' ? ('show' as const) : ('movie' as const);
@@ -220,7 +233,7 @@ export default function SearchScreen() {
               inLibrary: localNames.has(localKey(kind, name, (h.sub.match(/\b(\d{4})\b/) ?? [])[1] ?? null)),
             };
           })
-          .filter((r) => r.name && !localNames.has(localKey(r.kind, r.name, r.year)))
+          .filter((r) => r.name && !localNames.has(localKey(r.kind, r.name, r.year)) && !(r.kind === 'show' && ((r.tvdbId && localShowIds.has(r.tvdbId)) || (r.tmdbId && localShowTmdb.has(r.tmdbId)))))
           .slice(0, 20);
         setResults([...local, ...remote]);
       } catch {
@@ -280,14 +293,12 @@ export default function SearchScreen() {
     return () => clearTimeout(timer);
   }, [query, tab]);
 
-  const open = async (item: Result) => {
-    // The THING, not the query. Somebody who typed "sev" and opened Severance
-    // wants Severance back; the letters were only how they got there.
+  const remember = (item: Result, value: string) =>
     setHistory(
       rememberSearch({
         kind: item.kind === 'movie' ? 'movie' : 'show',
         label: item.name,
-        value: item.kind === 'movie' ? item.name : String(item.tvdbId ?? item.name),
+        value,
         poster: item.poster ?? null,
         // The same identity the push below uses. A remembered film must reopen
         // the film that was opened, not another one sharing a title.
@@ -296,6 +307,14 @@ export default function SearchScreen() {
         year: item.year,
       }),
     );
+
+  const open = async (item: Result) => {
+    // The THING, not the query. Somebody who typed "sev" and opened Severance
+    // wants Severance back; the letters were only how they got there.
+    // A TMDB-only show is remembered AFTER its TheTVDB id is resolved below:
+    // saved by name, Recent pushed /show/<name> and it never loaded.
+    if (item.kind === 'movie') remember(item, item.name);
+    else if (item.tvdbId != null) remember(item, String(item.tvdbId));
     if (item.kind === 'movie') {
       // tmdbId is real identity — pass it whenever the result has one, not
       // only when no row exists yet. Title alone can't tell two different
@@ -315,6 +334,7 @@ export default function SearchScreen() {
     // page fetches its metadata on its own
     const tvdbId = await tvdbIdFor({ kind: 'tv', tvdbId: item.tvdbId, tmdbId: item.tmdbId } as CatalogItem);
     if (tvdbId) {
+      remember(item, String(tvdbId));
       router.push(`/show/${tvdbId}?tmdbId=${item.tmdbId}`);
       return;
     }
@@ -463,7 +483,7 @@ export default function SearchScreen() {
               accessibilityRole="button"
               // The ✕ inside is offered as the row's action too — see `a11y.ts`.
               {...a11yAction('forget', t('common.remove'), () => setHistory(forgetSearch(item.kind, item.value)))}
-              onPress={() => {
+              onPress={async () => {
                 if (item.kind === 'query') {
                   setQuery(item.value);
                   return;
@@ -481,6 +501,13 @@ export default function SearchScreen() {
                       year: item.year,
                     }) as never,
                   );
+                  return;
+                }
+                if (recentShowNeedsResolve(item)) {
+                  // saved by name before 2.4.0: resolve the TheTVDB id now
+                  const id = await tvdbIdFor({ kind: 'tv', tmdbId: item.tmdbId } as CatalogItem);
+                  if (id) router.push(`/show/${id}?tmdbId=${item.tmdbId}`);
+                  else alertNotOnTvdb(item.label);
                   return;
                 }
                 router.push(`/show/${item.value}`);

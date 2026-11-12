@@ -107,6 +107,9 @@ export type ShowMeta = {
    *  the current choice by `showMetaIsStale`; absent means `eng`, which is what
    *  every record written before plots followed the app's language holds. */
   plotLang?: string;
+  /** False when TheTVDB had no plot in that language and the text is English.
+   *  Lets TMDB's translation stand in (2.4.0); absent reads as true. */
+  plotLocal?: boolean;
   rating: number;
   votes?: number;
   lastAir?: string | null;

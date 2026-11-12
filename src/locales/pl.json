@@ -1447,7 +1447,8 @@
     "share": "Udostępnij",
     "helpCenter": "Centrum pomocy",
     "findPeople": "Znajdź ludzi",
-    "memories": "Wspomnienia"
+    "memories": "Wspomnienia",
+    "shareLibrary": "Udostępnij seriale i filmy"
   },
   "notOnTvdb": {
     "title": "Jeszcze nie ma w TheTVDB",
@@ -3023,8 +3024,15 @@
       "other": "Stuknij jeszcze {{count}} plakatu"
     },
     "showTitles": "Pokaż tytuły",
-    "showProfile": "Pokaż mój profil",
-    "hintRemove": "Stuknij wybrany plakat, aby go usunąć."
+    "showProfile": "Pokaż moją nazwę użytkownika",
+    "hintRemove": "Stuknij wybrany plakat, aby go usunąć.",
+    "titleMixed": "Udostępnij seriale i filmy",
+    "headingMixed": "Co oglądam",
+    "tabShows": "Seriale",
+    "tabMovies": "Filmy",
+    "emptyMixed": "Najpierw dodaj serial lub film, a potem udostępnij je tutaj.",
+    "search": "Szukaj w swojej bibliotece",
+    "titleField": "Tytuł karty"
   },
   "commsuni": {
     "byline": "Komentarze z CommsUni.tv",
@@ -3121,6 +3129,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Wspólne oglądanie: pierwsze za darmo, a „Zaznacz dla nas obojga” zaznacza odcinki na obu telefonach",
+      "share": "Udostępnij seriale i filmy: jeden obrazek z całej biblioteki, z własnym tytułem",
+      "search": "Wyszukiwanie pokazuje najpierw najpopularniejszy serial, a opisy częściej są w twoim języku",
+      "fixes": "Poprawki: podwójne stuknięcie otwiera jedną stronę, koniec z białymi rogami przy cofaniu, a przycisk wstecz zostaje po zmianie języka"
+    },
     "v230": {
       "assistants": "OpenTV w Claude i ChatGPT: z Plus pytaj, co oglądałeś, i każ oznaczać, oceniać lub dodawać do listy, zawsze za twoją zgodą",
       "unmark": "Odznaczenie odcinka teraz pyta o potwierdzenie, daje Cofnij i usuwa ocenę oraz emocje",
@@ -3839,6 +3853,11 @@
     "startPlus": "Oglądaj razem · Plus",
     "pickStart": "Oglądaj serial razem",
     "pickStartPlus": "Oglądaj serial razem · Plus",
+    "markBoth": "Zaznacz dla nas obojga",
+    "markBothSub": "Gdy wszyscy tutaj to włączą, otwarcie aplikacji zaznacza odcinki obejrzane przez osobę, która jest najdalej.",
+    "markBothWaiting": "Włączone u ciebie. Zacznie działać, gdy pozostali też to włączą.",
+    "markBothOn": "Włączone dla wszystkich. Odcinki obejrzane przez osobę, która jest najdalej, są zaznaczane także w twoich serialach.",
+    "plusSoon": "Oglądanie razem więcej niż jednego serialu pojawi się z OpenTV Plus.",
     "emptyBlurb": "Śledź serial ze znajomymi — każde z was widzi, na którym odcinku jest drugie.",
     "inviteMessage": "Oglądajmy razem serial {{show}} w OpenTV — każde z nas zobaczy, na którym odcinku jest drugie. Kod: {{code}}",
     "inviteBody": "Wyślij kod osobie, z którą oglądasz. Dołącza za darmo i widzi, na którym odcinku jesteś.",
@@ -3885,7 +3904,10 @@
       "few": "Wspólna · {{count}} osoby",
       "many": "Wspólna · {{count}} osób",
       "other": "Wspólna · {{count}} osoby"
-    }
+    },
+    "explain": "Stwórz listę z kimś. Oboje dodajecie tytuły i każde odhacza swoje.",
+    "joinLink": "Masz kod? Dołącz do listy",
+    "togetherLink": "Oglądaj serial razem ›"
   },
   "ratingBreakdown": {
     "title": "Oceny społeczności",

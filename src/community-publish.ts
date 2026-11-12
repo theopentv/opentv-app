@@ -469,6 +469,7 @@ export async function publishProfile(): Promise<PublishResult> {
   // and whether this one is taking the profile over (see `libraryRestored`).
   const device = deviceId();
   const claim = getMeta(PUBLISH_CLAIM_KEY) === '1';
+  const source = importSource();
 
   for (const [kind, titles] of [
     ['show', shows],
@@ -493,6 +494,7 @@ export async function publishProfile(): Promise<PublishResult> {
             stats,
             titles: group,
             device,
+            ...(source ? { import_source: source } : {}),
             ...(claim ? { claim: true } : {}),
             ...(i > 0 ? { append: true } : {}),
           },
@@ -614,6 +616,24 @@ const PUBLISH_MAX_LIST_ITEMS = 200;
 /** What the last successful publish covered. Cleared with the rest of the
  *  community's state on sign-out — see `COMMUNITY_SIGN_OUT_META_KEYS`. */
 const PUBLISH_FINGERPRINT_KEY = 'communityPublishFingerprint';
+
+/**
+ * WHERE THIS LIBRARY CAME FROM (2.4.0): `tvtime`, `letterboxd`, … or `fresh`,
+ * for the dashboard's count per source. The importer stamps `importSource`;
+ * a library imported before 2.4.0 has no stamp and is answered from what an
+ * older version did leave: `importedTvTimeExport` (2.3.2) or TV Time's own
+ * `tvtimeUserId` ('0' is an OpenTV backup's "none"), and a library that was
+ * started empty says so in `libraryOwner`. Anything else stays unsaid.
+ * Read every time rather than stored once: it is three meta reads, and a
+ * later import simply wins.
+ */
+export function importSource(): string | null {
+  const stamped = getMeta('importSource');
+  if (stamped) return stamped;
+  const tvtimeUser = getMeta('tvtimeUserId');
+  if (getMeta('importedTvTimeExport') === '1' || (!!tvtimeUser && tvtimeUser !== '0')) return 'tvtime';
+  return getMeta('libraryOwner') === 'fresh' ? 'fresh' : null;
+}
 
 /**
  * THE SHAPE OF WHAT IS PUBLISHED, bumped by hand when the numbers change
@@ -745,6 +765,10 @@ async function publishIfChangedNow(): Promise<PublishResult | null> {
       isPlus() ? 'plus' : 'free',
       // Simple view changes what others see without changing the library.
       getMeta(SIMPLE_VIEW_KEY) === '1' ? 'simple' : '',
+      // A new field the server could not have had: appended, so every phone
+      // re-publishes once after 2.4.0 (no revision bump needed), and again
+      // only when an import changes the answer.
+      importSource() ?? '',
     ].join('.');
   } catch {
     noteState('fingerprint_failed');

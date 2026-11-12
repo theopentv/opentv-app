@@ -80,6 +80,8 @@ import {
   annualSavingPercent,
   liveCreatorCode,
   rankByQuery,
+  rankSearchByPopularity,
+  recentShowNeedsResolve,
   tvdbHitName,
   displayNameFrom,
   suggestedHandle,
@@ -1601,6 +1603,13 @@ describe('movieMatchState — TheTVDB counts as matched', () => {
 });
 
 describe('mergeSearchFallback — one list from both catalogues', () => {
+  it('keeps the TheTVDB copy even when TMDB lists the same show earlier', () => {
+    const tvdb = [{ kind: 'tv' as const, title: 'Better', sub: '2023', tvdbId: 1 }, { kind: 'tv' as const, title: 'Better Call Saul', sub: '2015', tvdbId: 273181 }];
+    const tmdb = [{ kind: 'tv' as const, title: 'Better Call Saul', sub: '2015' }];
+    const merged = mergeSearchFallback(tvdb, tmdb);
+    expect(merged.filter((r) => r.title === 'Better Call Saul')).toEqual([tvdb[1]]);
+  });
+
   it('interleaves rather than appending, so a good TMDB hit is not buried', () => {
     /*
      * The "partner" report in one test: TheTVDB carries plenty of films and
@@ -4246,5 +4255,34 @@ describe('needsTvTimeOriginal', () => {
     expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, original: 'yes' })).toBe(false);
     expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, original: 'unknown' })).toBe(false);
     expect(needsTvTimeOriginal({ ...base, importedTvTimeExport: true, owner: 'fresh' })).toBe(false);
+  });
+});
+
+describe('recentShowNeedsResolve', () => {
+  it('flags a show saved by name, not by id', () => {
+    expect(recentShowNeedsResolve({ kind: 'show', value: 'Better Call Saul', tmdbId: 60059 })).toBe(true);
+    expect(recentShowNeedsResolve({ kind: 'show', value: '273181', tmdbId: 60059 })).toBe(false);
+    expect(recentShowNeedsResolve({ kind: 'show', value: 'Better Call Saul' })).toBe(false);
+    expect(recentShowNeedsResolve({ kind: 'movie', value: 'Heat', tmdbId: 1 })).toBe(false);
+  });
+});
+
+describe('rankSearchByPopularity', () => {
+  const row = (title: string, sub: string, popularity?: number) => ({ kind: 'tv' as const, title, sub, popularity });
+  it('lifts the popular show above the exact-name one; unranked rows keep their places', () => {
+    const tvdb = [row('Better', '2023'), row('Obscure', '2001'), row('Better Call Saul', '2015')];
+    const tmdb = [row('Better Call Saul', '2015', 95.4), row('Better', '2023', 2.8)];
+    expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['Better Call Saul', 'Obscure', 'Better']);
+  });
+  it('keeps an exact name in the top two however unpopular', () => {
+    const tvdb = [row('Better', '2023'), row('Women lie better', '2008'), row('Better Things', '2016'), row('Better Call Saul', '2015')];
+    const tmdb = [row('Better Call Saul', '2015', 95), row('Better Things', '2016', 40), row('Women lie better', '2008', 30), row('Better', '2023', 2)];
+    expect(rankSearchByPopularity(tvdb, tmdb, 'better').map((r) => r.title).slice(0, 2)).toEqual(['Better Call Saul', 'Better']);
+  });
+  it('keeps the merged order when the names do not match (a translated TheTVDB answer)', () => {
+    const tvdb = [row('مسلسل أ', '2015'), row('مسلسل ب', '2020')];
+    const tmdb = [row('Show A', '2015', 90), row('Show C', '2019', 50)];
+    // The pre-2.4.0 interleave: a TheTVDB row still leads, not sunk below TMDB.
+    expect(rankSearchByPopularity(tvdb, tmdb).map((r) => r.title)).toEqual(['مسلسل أ', 'Show A', 'مسلسل ب', 'Show C']);
   });
 });

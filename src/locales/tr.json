@@ -1371,7 +1371,8 @@
     "share": "Paylaş",
     "helpCenter": "Yardım merkezi",
     "findPeople": "Kişi bul",
-    "memories": "Anılar"
+    "memories": "Anılar",
+    "shareLibrary": "Dizileri ve filmleri paylaş"
   },
   "notOnTvdb": {
     "title": "Henüz TheTVDB'de yok",
@@ -2803,8 +2804,15 @@
       "other": "{{count}} postere daha dokun"
     },
     "showTitles": "Başlıkları göster",
-    "showProfile": "Profilimi göster",
-    "hintRemove": "Kaldırmak için seçili bir postere dokun."
+    "showProfile": "Kullanıcı adımı göster",
+    "hintRemove": "Kaldırmak için seçili bir postere dokun.",
+    "titleMixed": "Dizileri ve filmleri paylaş",
+    "headingMixed": "İzlediklerim",
+    "tabShows": "Diziler",
+    "tabMovies": "Filmler",
+    "emptyMixed": "Önce bir dizi ya da film ekle, sonra burada paylaş.",
+    "search": "Kütüphanende ara",
+    "titleField": "Kart başlığı"
   },
   "commsuni": {
     "byline": "Yorumlar CommsUni.tv'den",
@@ -2901,6 +2909,12 @@
     "overlayAuto": "Otomatik"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Birlikte izleme: İlki ücretsiz ve \"İkimiz için işaretle\" bölümleri iki telefonda da işaretliyor",
+      "share": "Dizileri ve filmleri paylaş: tüm kitaplığından, kendi başlığınla tek görsel",
+      "search": "Arama en popüler diziyi öne koyuyor ve açıklamalar daha sık senin dilinde",
+      "fixes": "Düzeltmeler: Çift dokunma tek sayfa açıyor, geri kaydırırken beyaz köşe yok ve dil değişince geri düğmesi kalıyor"
+    },
     "v230": {
       "assistants": "Claude ve ChatGPT'de OpenTV: Plus ile ne izlediğini sor; işaretlemesini, puanlamasını ya da listene eklemesini iste, her seferinde onayınla",
       "unmark": "Bir bölümün işaretini kaldırmak artık önce sorar, Geri al sunar ve puanı ile hisleri de kaldırır",
@@ -3571,6 +3585,11 @@
     "startPlus": "Birlikte izle · Plus",
     "pickStart": "Bir diziyi birlikte izle",
     "pickStartPlus": "Bir diziyi birlikte izle · Plus",
+    "markBoth": "İkimiz için işaretle",
+    "markBothSub": "Buradaki herkes bunu açınca, uygulamayı açmak en öndekinin izlediği bölümleri işaretler.",
+    "markBothWaiting": "Senin için açık. Diğer herkes de açınca başlar.",
+    "markBothOn": "Herkes için açık. En öndekinin izlediği bölümler senin dizilerinde de işaretlenir.",
+    "plusSoon": "Birden fazla diziyi birlikte izlemek OpenTV Plus ile geliyor.",
     "emptyBlurb": "Bir diziyi arkadaşlarınla takip et — her biriniz diğerinin hangi bölümde olduğunu görür.",
     "inviteMessage": "OpenTV'de birlikte izleyelim: {{show}}. Birbirimizin hangi bölümde olduğunu görürüz. Kod: {{code}}",
     "inviteBody": "Kodu birlikte izlediğin kişiye gönder. Ücretsiz katılır ve hangi bölümde olduğunu görür.",
@@ -3609,7 +3628,10 @@
     "badge": {
       "one": "Paylaşılan · {{count}} kişi",
       "other": "Paylaşılan · {{count}} kişi"
-    }
+    },
+    "explain": "Biriyle bir liste oluştur. İkiniz de başlık eklersiniz, herkes kendi izlediğini işaretler.",
+    "joinLink": "Kodun mu var? Bir listeye katıl",
+    "togetherLink": "Bir diziyi birlikte izle ›"
   },
   "ratingBreakdown": {
     "title": "Topluluk puanları",

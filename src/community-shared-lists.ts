@@ -90,7 +90,15 @@ export type SharedListDetail = {
   created_at: string;
   members: SharedMember[];
   items: SharedItem[];
+  /**
+   * A together, read by a member (2.4.0): whether I have "Mark it for both of
+   * us" on, and whether EVERYBODY in it has (and there are two or more).
+   * Absent on an ordinary list and on an older server, which reads as off.
+   */
+  mark_together?: MarkTogether;
 };
+
+export type MarkTogether = { me: boolean; all: boolean };
 
 async function token(): Promise<string> {
   const t = await getToken();
@@ -181,4 +189,14 @@ export async function rotateSharedInvite(id: string): Promise<string | null> {
  *  member's side both mean "this is off my screen now". */
 export async function leaveOrDeleteSharedList(id: string): Promise<void> {
   await api(`/v1/shared-lists/${encodeURIComponent(id)}`, { method: 'DELETE', token: await token() });
+}
+
+/** My "Mark it for both of us" switch on one together (2.4.0). Free at every tier. */
+export async function setMarkTogether(id: string, on: boolean): Promise<MarkTogether> {
+  const r = await api<{ mark_together: MarkTogether }>(`/v1/shared-lists/${encodeURIComponent(id)}/mark-together`, {
+    method: 'PUT',
+    token: await token(),
+    body: { on },
+  });
+  return r.mark_together;
 }

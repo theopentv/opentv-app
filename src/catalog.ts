@@ -11,10 +11,11 @@
  * TMDB stays as the fallback for the whole feed — if TheTVDB is unreachable or
  * its key has been revoked, Discover keeps working rather than going blank.
  */
+import { getMeta, setMeta } from '@/db';
 import { runtimeLabel } from '@/duration';
 import { genreText, plotTvdbCodes } from '@/i18n';
 import { tvdbIdForTmdb } from '@/metadata';
-import { TVDB_LANG, artworkUrl, mergeSearchFallback, rankByQuery, splitYearQuery, translatedOverview, tvdbHitName, tvdbNameRecord } from '@/pure';
+import { TVDB_LANG, artworkUrl, rankByQuery, rankSearchByPopularity, splitYearQuery, translatedOverview, tvdbHitName, tvdbNameRecord } from '@/pure';
 import { readyPrefix } from '@/feed-cache';
 import { pool, tmdb } from '@/tmdb';
 
@@ -40,6 +41,8 @@ export type CatalogItem = {
   /** popularity, shown as a rounded count. TheTVDB's `score` and TMDB's
    *  `vote_count` are different scales; both are only ever displayed. */
   votes: number;
+  /** TMDB search popularity, search rows only; ranks the result list. */
+  popularity?: number;
 };
 
 // ---- TheTVDB ---------------------------------------------------------------
@@ -259,7 +262,7 @@ async function tmdbFeed(limit: number): Promise<CatalogItem[]> {
 
 async function tmdbSearch(query: string): Promise<CatalogItem[]> {
   const d = await tmdb<{
-    results: { id: number; media_type: string; name?: string; title?: string; poster_path?: string | null; overview?: string; first_air_date?: string; release_date?: string }[];
+    results: { id: number; media_type: string; popularity?: number; name?: string; title?: string; poster_path?: string | null; overview?: string; first_air_date?: string; release_date?: string }[];
   }>(`/search/multi?query=${encodeURIComponent(query)}&include_adult=false`);
   return (d.results ?? [])
     .filter((r) => r.media_type === 'tv' || r.media_type === 'movie')
@@ -277,6 +280,7 @@ async function tmdbSearch(query: string): Promise<CatalogItem[]> {
         overview: r.overview ?? '',
         sub: ((kind === 'movie' ? r.release_date : r.first_air_date) ?? '').slice(0, 4),
         votes: 0,
+        popularity: r.popularity ?? 0,
       };
     });
 }
@@ -431,7 +435,7 @@ export async function searchCatalog(query: string): Promise<CatalogItem[]> {
     tmdbSearch(q).catch(() => [] as CatalogItem[]), // unreachable/rate-limited
   ]);
   if (!viaTvdb) return byYear(viaTmdb, year);
-  return byYear(mergeSearchFallback(viaTvdb, viaTmdb), year);
+  return byYear(rankSearchByPopularity(viaTvdb, viaTmdb, q), year);
 }
 
 /**
@@ -479,5 +483,17 @@ export async function showTvdbIdForTmdb(tmdbId: number): Promise<number | null> 
 export async function tvdbIdFor(item: CatalogItem): Promise<number | null> {
   if (item.tvdbId) return item.tvdbId;
   if (!item.tmdbId || item.kind !== 'tv') return null;
-  return showTvdbIdForTmdb(item.tmdbId);
+  const id = await showTvdbIdForTmdb(item.tmdbId);
+  // KEEP THE LINK we just learned. A show added from a TMDB result was stored
+  // with no TMDB id until its metadata pass ran, so searching for it again
+  // listed TMDB's copy beside the library one (11 Nov). The same hint the
+  // metadata pass reads first, so it also saves that pass a /find lookup.
+  if (id) {
+    try {
+      if (!getMeta(`showTmdbHint:${id}`)) setMeta(`showTmdbHint:${id}`, String(item.tmdbId));
+    } catch {
+      // no database (tests): the link is only an optimisation
+    }
+  }
+  return id;
 }

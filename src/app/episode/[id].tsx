@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
@@ -20,7 +20,7 @@ import { RoomPill } from '@/components/room-pill';
 import { useSwipeDown } from '@/components/swipe-down';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
 import { PaneBar } from '@/components/pane-bar';
-import { CheckCircle, closeItem, ContentColumn, useDetailPane, useDetailPaneStyle, useDetailRouter, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, useDetailPane, useDetailPaneStyle, useDetailRouter, headerItems, ScreenOptions } from '@/components/ui';
 import seed from '@/seed';
 import db, { addShow, getCharacterVote, getEpisodeVote, getEpisodeWatchedOn, getRewatchCount, getRewatchDates, getSeasonEpisodes, getWatch, clearEpisodeRating, setCharacterVote, setEpisodeRating, setEpisodeWatchedOn, toggleEpisodeEmotion } from '@/db';
 import type { Aggregate, CommunityEmotion, SeasonAggregates } from '@/community-ratings';
@@ -1326,7 +1326,7 @@ export default function EpisodePagerScreen() {
             The pager dots below stay in the same row, centred under it. */}
         <PaneBar />
         {!pane && (
-        <Stack.Screen
+        <ScreenOptions
           options={{
             headerShown: true,
             headerTransparent: true,

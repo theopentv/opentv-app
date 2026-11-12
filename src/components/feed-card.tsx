@@ -11,6 +11,7 @@
  * the sentence a sighted reader takes in at a glance; long-press (Report /
  * Block / Unfollow) is offered as its accessibility action.
  */
+import { guardPress } from '@/components/ui';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -98,11 +99,11 @@ export function FeedCard({
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && { opacity: 0.85 }]}
-      onPress={() => {
+      onPress={guardPress(() => {
         // A flagged comment's first tap lifts the curtain; the second opens it.
         if (curtained && item.kind === 'comment') onReveal(item.comment_id);
         else onPress(card);
-      }}
+      })}
       onLongPress={() => onMore(card)}
       accessibilityRole="button"
       accessibilityLabel={[`@${item.actor.handle}`, verb, contentText(card, curtained), ageText].filter(Boolean).join('. ')}

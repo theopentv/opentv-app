@@ -1371,7 +1371,8 @@
     "share": "Share",
     "helpCenter": "Help center",
     "findPeople": "Find people",
-    "memories": "Memories"
+    "memories": "Memories",
+    "shareLibrary": "Share shows and films"
   },
   "notOnTvdb": {
     "title": "Not on TheTVDB yet",
@@ -2803,8 +2804,15 @@
       "other": "Tap {{count}} more posters"
     },
     "showTitles": "Show titles",
-    "showProfile": "Show my profile",
-    "hintRemove": "Tap a chosen poster to remove it."
+    "showProfile": "Show my username",
+    "hintRemove": "Tap a chosen poster to remove it.",
+    "titleMixed": "Share shows and films",
+    "headingMixed": "What I watch",
+    "tabShows": "Shows",
+    "tabMovies": "Films",
+    "emptyMixed": "Add a show or a film first, then share them here.",
+    "search": "Search your library",
+    "titleField": "Card title"
   },
   "commsuni": {
     "byline": "Comments by CommsUni.tv",
@@ -2901,6 +2909,12 @@
     "overlayAuto": "Auto"
   },
   "whatsNew": {
+    "v240": {
+      "together": "Watching together: your first one is free, and \"Mark it for both of us\" ticks the episodes on both phones",
+      "share": "Share shows and films: one picture from your whole library, with your own title",
+      "search": "Search puts the most popular show first, and descriptions appear in your language more often",
+      "fixes": "Fixes: a double tap opens a page once, no white corners when you swipe back, and the back button stays after a language change"
+    },
     "v230": {
       "assistants": "OpenTV in Claude and ChatGPT: with Plus, ask about what you watched and have it mark, rate or add to your watchlist, with your OK each time",
       "unmark": "Un-marking an episode now asks first, offers Undo, and takes its rating and feelings with it",
@@ -3571,6 +3585,11 @@
     "startPlus": "Watch together · Plus",
     "pickStart": "Watch a show together",
     "pickStartPlus": "Watch a show together · Plus",
+    "markBoth": "Mark it for both of us",
+    "markBothSub": "When everyone here turns this on, opening the app marks the episodes whoever is furthest ahead has watched.",
+    "markBothWaiting": "On for you. It starts once everyone else turns it on too.",
+    "markBothOn": "On for everyone. Episodes the one furthest ahead has watched are marked in your shows too.",
+    "plusSoon": "Watching more than one show together is coming with OpenTV Plus.",
     "emptyBlurb": "Follow a show with friends — each of you sees which episode the other is on.",
     "inviteMessage": "Let's watch {{show}} together on OpenTV — we'll each see which episode the other is on. Code: {{code}}",
     "inviteBody": "Send the code to whoever you are watching with. They join for free and see which episode you are on.",
@@ -3609,7 +3628,10 @@
     "badge": {
       "one": "Shared · {{count}} person",
       "other": "Shared · {{count}} people"
-    }
+    },
+    "explain": "Build a list with someone. You both add to it, you each tick it off.",
+    "joinLink": "Got a code? Join one",
+    "togetherLink": "Watch a show together ›"
   },
   "ratingBreakdown": {
     "title": "Community ratings",

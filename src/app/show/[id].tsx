@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated as RNAnimated, Easing as RNEasing, FlatList, I18nManager, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { GestureType } from 'react-native-gesture-handler';
@@ -26,7 +26,7 @@ import { useSwipeDown } from '@/components/swipe-down';
 import { StatusBarOnCover } from '@/components/profile-template';
 import { RatingsGrid } from '@/components/ratings-grid';
 import { SideThread, SplitPage, splitRow, useCommentsSplit, usePageWidth } from '@/components/side-thread';
-import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems } from '@/components/ui';
+import { CheckCircle, closeItem, ContentColumn, moreMenuItem, TopTabs, pageDrag, useDetailPane, useDetailPaneStyle, useDetailRouter, useDetailWidth, headerItems, ScreenOptions } from '@/components/ui';
 import seed from '@/seed';
 import db, { getShowRatings, getInterest, setInterest as saveInterest, addShow, deleteShow, getMeta, showWatchCount, trackedShowIds, getSeasonEpisodes, getSeasons, getWatchedSet, markWatchedMany, setFollowing, setShowArchived, setShowFavorited, setShowFinished, type EpisodeWatch } from '@/db';
 import { confirmUnmark } from '@/unmark';
@@ -47,7 +47,7 @@ import { isPlus, plusUiVisible, requirePlus } from '@/plus';
 import { currentLocale, fmtDecimal, genreText, statusText, t } from '@/i18n';
 import { useRemoteChange } from '@/device-sync';
 import { communityErrorText } from '@/community-error-text';
-import { startTogether } from '@/community-together';
+import { startTogether, startsPlus } from '@/community-together';
 import { TogetherStrip } from '@/components/together-strip';
 import { intlTag } from '@/locale-resolve';
 
@@ -384,6 +384,13 @@ export default function ShowScreen() {
   // completed → open directly on the "Finished" card
   const firstUnwatchedIdx = carousel.findIndex((i) => i.kind === 'ep' && !i.watched);
   const carouselStart = firstUnwatchedIdx === -1 ? Math.max(carousel.length - 1, 0) : firstUnwatchedIdx;
+  // Set by a mark of the next card; consumed once the rail's start has moved.
+  const followNext = useRef(false);
+  useEffect(() => {
+    if (!followNext.current) return;
+    followNext.current = false;
+    if (carousel.length) carouselRef.current?.scrollToIndex({ index: Math.min(carouselStart, carousel.length - 1), animated: true, viewPosition: 0 });
+  }, [carouselStart, carousel.length]);
 
   // TMDB's per-episode scores (0–5 scale) by season — the fallback series for
   // the chart below, and what it drew from exclusively before the community
@@ -692,7 +699,7 @@ export default function ShowScreen() {
         )}
         {/* The same native close as the loaded page, so it does not jump from
             the iPhone Duo's strip to the top-left while the show loads. */}
-        {!pane && <Stack.Screen
+        {!pane && <ScreenOptions
           options={{ headerShown: true, headerTransparent: true, title: '', headerTintColor: colors.onArt, ...headerItems({ left: [closeItem()] }) }}
         />}
       </View>
@@ -779,13 +786,13 @@ export default function ShowScreen() {
         text: t('media.actions.addToList'),
         onPress: () => router.push(`/add-to-list?type=show&id=${show.tvdbId}`),
       },
-      // WATCHING TOGETHER (2.0.0): Plus to start, free to join — so it
-      // is offered to every member and the paywall says what it costs.
+      // WATCHING TOGETHER (2.0.0): the first one free (2.4.0), Plus past
+      // it, free to join — offered to every member; the server counts.
       ...(joined
         ? [
             {
               icon: 'people-outline' as const,
-              text: isPlus() ? t('together.start') : t('together.startPlus'),
+              text: startsPlus() ? t('together.startPlus') : t('together.start'),
               // ASK FIRST (22 Oct): start one, or join the friend's
               // code — so two people never end up in two separate
               // togethers for the same show. Already in one for this
@@ -798,7 +805,7 @@ export default function ShowScreen() {
                     })
                     .catch((e: unknown) => Alert.alert(t('together.title'), communityErrorText(e)));
                 Alert.alert(t('together.title'), t('together.askBody'), [
-                  { text: isPlus() ? t('together.askStart') : t('together.askStartPlus'), onPress: go },
+                  { text: startsPlus() ? t('together.askStartPlus') : t('together.askStart'), onPress: go },
                   { text: t('together.haveCode'), onPress: () => router.push('/together?join=1') },
                   { text: t('common.cancel'), style: 'cancel' },
                 ]);
@@ -865,7 +872,7 @@ export default function ShowScreen() {
       {/* Native, transparent over the backdrop: close and ⋯ go into the iPhone Duo's strip. */}
       <PaneBar actions={showActions()} />
       {!pane && (
-        <Stack.Screen
+        <ScreenOptions
           options={{
             headerShown: true,
             headerTransparent: true,
@@ -1026,12 +1033,12 @@ export default function ShowScreen() {
 
       {tab === 'About' ? (
         <ScrollView disableScrollViewPanResponder keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 24, paddingTop: 12 }}
+          contentContainerStyle={{ paddingBottom: 24 + (dbShow ? 0 : 80), paddingTop: 12 }}
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
-          onScrollBeginDrag={onScrollBeginDrag}
-          onScrollEndDrag={onContentScrollSettled}
-          onMomentumScrollEnd={onContentScrollSettled}
+          onScrollBeginDrag={() => { pageDrag.onScrollBeginDrag(); onScrollBeginDrag(); }}
+          onScrollEndDrag={(e) => { pageDrag.onScrollEndDrag(); onContentScrollSettled(e); }}
+          onMomentumScrollEnd={(e) => { pageDrag.onMomentumScrollEnd(); onContentScrollSettled(e); }}
           scrollEventThrottle={16}
           bounces>
           <View style={styles.rowBetween}>
@@ -1694,7 +1701,7 @@ export default function ShowScreen() {
       ) : (
         <ScrollView keyboardShouldPersistTaps="handled"
           style={{ backgroundColor: colors.panel }}
-          contentContainerStyle={{ paddingBottom: 24 }}
+          contentContainerStyle={{ paddingBottom: 24 + (dbShow ? 0 : 80) }}
           simultaneousHandlers={panRef}
           onScroll={onContentScroll}
           onScrollBeginDrag={onScrollBeginDrag}
@@ -1831,7 +1838,15 @@ export default function ShowScreen() {
                         if (item.watched) {
                           router.push(`/mark-as?show=${show.tvdbId}&s=${item.season}&e=${item.episode}`);
                         } else {
-                          markWatchedWithPrompt(show.tvdbId, item.season, item.episode, () => setTick((t) => t + 1));
+                          // Slide on to the next card, but only when this WAS the next
+                          // one: a tick on a card ahead (peeking) must not yank the rail
+                          // back. Un-marking goes through /mark-as and never gets here.
+                          const next = carousel[firstUnwatchedIdx];
+                          const wasNext = next?.kind === 'ep' && next.season === item.season && next.episode === item.episode;
+                          markWatchedWithPrompt(show.tvdbId, item.season, item.episode, () => {
+                            if (wasNext) followNext.current = true;
+                            setTick((t) => t + 1);
+                          });
                         }
                       }}
                     />

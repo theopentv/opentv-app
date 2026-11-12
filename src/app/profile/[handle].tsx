@@ -28,7 +28,7 @@
  * honest rendering (see `components/person-row.tsx`).
  */
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, Share, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -53,7 +53,7 @@ import { ActionSheet, type SheetAction } from '@/components/action-sheet';
 import { type RailItem } from '@/components/profile-sections';
 import { asProfileLayout, ProfileTemplate, type ProfileListSpec } from '@/components/profile-template';
 import { newUid, parsePublished, type Placed } from '@/profile-layout';
-import { closeItem, moreMenuItem, NavHeader, Screen, headerItems } from '@/components/ui';
+import { closeItem, moreMenuItem, NavHeader, Screen, headerItems, ScreenOptions } from '@/components/ui';
 import { tapLight } from '@/haptics';
 import { currentLocale, monthYear, t } from '@/i18n';
 import { formatCount } from '@/locale-resolve';
@@ -661,7 +661,7 @@ export default function PublicProfileScreen() {
       {/* Native, transparent over the cover: close (the way out of this pushed
           screen) and the ••• go into the iPhone Duo's strip. No ••• on your own
           profile -- blocking or reporting yourself is not a thing. */}
-      <Stack.Screen
+      <ScreenOptions
         options={{
           headerShown: true,
           headerTransparent: true,

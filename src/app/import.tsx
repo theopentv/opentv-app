@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Clipboard from 'expo-clipboard';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, I18nManager, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { a11yAction } from '@/a11y';
 import { offerCommunityIfDue } from '@/community-prompt';
 import { isJoined } from '@/community-session';
-import { ContentColumn, NavHeader, Screen } from '@/components/ui';
+import { ContentColumn, NavHeader, Screen, ScreenOptions } from '@/components/ui';
 import db, { countSeedableCommentRows, getMeta, hasLibrary, libraryOwner, setMeta } from '@/db';
 import { mixHex, NOTHING_READ, RAW_JSON_BACKUP, SIMKL_CSV } from '@/pure';
 import { tapLight } from '@/haptics';
@@ -615,7 +615,7 @@ export default function ImportScreen() {
              inside the game stays the game's; on a normal phone nothing moves. */
           <GHScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 14, paddingTop: 20, flexGrow: 1 }} showsVerticalScrollIndicator={false}>
             {/* the popcorn bucket drags horizontally — don't let swipe-back steal it */}
-            <Stack.Screen options={{ gestureEnabled: false }} />
+            <ScreenOptions options={{ gestureEnabled: false }} />
             {result ? (
               <>
                 <Text style={styles.donePhase}>{t('import.donePhase')}</Text>

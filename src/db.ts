@@ -2773,6 +2773,21 @@ export function getFavoriteMovies(): { name: string; poster: string | null; titl
     .map((r) => ({ name: r.name, poster: r.poster, title: filmTitle(r.name, r.altTitles) }));
 }
 
+/** The whole library for the share picker (favourites first), not only the favourites. */
+export function getLibraryShows(): { tvdbId: number; name: string; posterUrl: string | null }[] {
+  return db.getAllSync(
+    'SELECT tvdbId, name, posterUrl FROM shows ORDER BY favorited DESC, (favoriteRank IS NULL), favoriteRank, name',
+  );
+}
+
+export function getLibraryMovies(): { name: string; poster: string | null; title: string }[] {
+  return db
+    .getAllSync<{ name: string; poster: string | null; altTitles: string | null }>(
+      'SELECT name, poster, altTitles FROM movies WHERE watchedAt IS NOT NULL OR favorited = 1 ORDER BY favorited DESC, (favoriteRank IS NULL), favoriteRank, name',
+    )
+    .map((r) => ({ name: r.name, poster: r.poster, title: filmTitle(r.name, r.altTitles) }));
+}
+
 /**
  * THE SHELVES THE SHARE CARD CAN ALSO DRAW: what was watched most recently.
  *

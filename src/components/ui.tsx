@@ -1,10 +1,10 @@
 import { useHingeStatus } from '../../modules/fold-state';
 import { useDuoFullWidth } from '@/duo-layout';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useLocalSearchParams, useRoute } from 'expo-router';
+import { router, useLocalSearchParams, useNavigation, useRoute } from 'expo-router';
 import { HeaderHeightContext } from 'expo-router/react-navigation';
 import type { NativeStackHeaderItem } from 'expo-router/native-stack';
-import { cloneElement, createContext, isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, createContext, isValidElement, use, useEffect, useLayoutEffect, useState, type ReactElement, type ReactNode } from 'react';
 import { I18nManager, Platform, Pressable, StyleSheet, Switch, View, useWindowDimensions, type StyleProp, type SwitchProps, type ViewStyle } from 'react-native';
 import { Text } from '@/components/text';
 import { initialWindowMetrics, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,6 +38,24 @@ export function useTopInset(): number {
 }
 
 /** The width of the pane a screen sits in, when it is not the whole window. */
+// A PAGE SCROLL ENDING ON A CARD MUST NOT OPEN IT. The page ScrollViews carry
+// `disableScrollViewPanResponder` (so a gliding rail never freezes the next one),
+// which also means a starting drag no longer takes the touch from the Pressable
+// under the finger, and a slow short drag that ends in its rect fires onPress.
+// Page ScrollViews spread `pageDrag`; card/poster presses go through `guardPress`.
+let blockPressUntil = 0;
+const DRAG_GRACE_MS = 150;
+export const pageDrag = {
+  // Capped, not Infinity: a page that unmounts mid-drag never sends its end,
+  // and an open-ended block would leave every card in the app dead.
+  onScrollBeginDrag: () => { blockPressUntil = Date.now() + 2000; },
+  onScrollEndDrag: () => { blockPressUntil = Date.now() + DRAG_GRACE_MS; },
+  onMomentumScrollEnd: () => { blockPressUntil = Date.now() + DRAG_GRACE_MS; },
+};
+export function guardPress<A extends unknown[]>(fn: ((...a: A) => void) | undefined): ((...a: A) => void) | undefined {
+  return fn && ((...a: A) => { if (Date.now() >= blockPressUntil) fn(...a); });
+}
+
 export const ScreenWidthContext = createContext<number | null>(null);
 
 /** The width a page has to lay out in: the window, less the left/right safe
@@ -230,6 +248,25 @@ const DRAWN_HEADER_ROUTES = new Set([
   'cover-adjust', 'add-widget',
 ]);
 
+/**
+ * A SCREEN'S OWN HEADER OPTIONS, set twice. Use this, not `<Stack.Screen
+ * options>`, inside a screen.
+ *
+ * A language switch remounts every screen (`remountOnLocale`). The new screen
+ * sets its options in a layout effect, and only afterwards does the old
+ * screen's SceneView run its passive unmount cleanup, which CLEARS the route's
+ * options: Settings, Language and the show page lost their header and back
+ * button the moment a language was picked (11 Nov). Setting them again in a
+ * passive effect lands after that cleanup. The layout effect stays so the
+ * first paint already has the header.
+ */
+export function ScreenOptions({ options }: { options: Record<string, unknown> }) {
+  const navigation = useNavigation();
+  useLayoutEffect(() => { if (Object.keys(options).length) navigation.setOptions(options); }, [navigation, options]);
+  useEffect(() => { if (Object.keys(options).length) navigation.setOptions(options); }, [navigation, options]);
+  return null;
+}
+
 export function NavHeader({
   title,
   close,
@@ -245,7 +282,7 @@ export function NavHeader({
   const inPane = use(DetailPaneContext) != null;
   if (inPane || DRAWN_HEADER_ROUTES.has(route.name)) return <DrawnNavHeader title={title} close={close} right={right} />;
   return (
-    <Stack.Screen
+    <ScreenOptions
       options={{
         headerShown: true,
         title: title ?? '',
@@ -254,8 +291,9 @@ export function NavHeader({
         headerShadowVisible: false,
         // ANDROID PAINTS ITS NATIVE HEADER WHITE unless told otherwise (2.0.1:
         // every NavHeader screen had a white band with a white, invisible back
-        // arrow on it). iOS keeps its glass header and draws no background.
-        ...(Platform.OS === 'android' ? { headerStyle: { backgroundColor: colors.bg } } : {}),
+        // arrow on it). iOS 26+ keeps its glass header and draws no background; iOS
+        // 16-18 paints a solid bar, white unless told (2.4.0).
+        ...(Platform.OS === 'android' || (Platform.OS === 'ios' && parseInt(String(Platform.Version), 10) < 26) ? { headerStyle: { backgroundColor: colors.bg } } : {}),
         headerBackButtonDisplayMode: 'minimal',
         // Long-pressing back lists the screens behind by title, and the tab
         // container's is its route name, "(tabs)". One step back is all we need.

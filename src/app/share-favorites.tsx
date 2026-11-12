@@ -34,18 +34,18 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { type ViewInstance, Alert, Dimensions, PixelRatio, Pressable, ScrollView, Share, StyleSheet, View } from 'react-native';
+import { type ViewInstance, Alert, Dimensions, FlatList, PixelRatio, Pressable, ScrollView, Share, StyleSheet, TextInput, View, I18nManager } from 'react-native';
 import { Text } from '@/components/text';
 
 import { posterSpeech } from '@/components/poster';
 import { NavHeader, Screen, useScreenWidth } from '@/components/ui';
 import { getHandle } from '@/community-session';
-import { getFavoriteMovies, getFavoriteShows, getRecentMovies, getRecentShows } from '@/db';
+import { getFavoriteMovies, getFavoriteShows, getLibraryMovies, getLibraryShows, getRecentMovies, getRecentShows } from '@/db';
 import { tapLight, tapSelection } from '@/haptics';
 import { currentLocale, t } from '@/i18n';
 import { profileImageUri } from '@/library';
-import { SITE_HOST, withLink } from '@/share-link';
-import { colors, radius, ls } from '@/theme';
+import { withLink } from '@/share-link';
+import { colors, radius, ls, space } from '@/theme';
 import { oneAtATime } from '@/one-at-a-time';
 import { intlTag } from '@/locale-resolve';
 
@@ -66,7 +66,10 @@ const SCREEN_H = Dimensions.get('window').height;
 // 9:16 preview plus a shelf of posters plus a button does not fit otherwise.
 // Width from useScreenWidth, not the window (closed iPhone Duo side strip).
 function usePreview() {
-  const w = Math.round(Math.min(Math.min(useScreenWidth(), 420) - 120, 244, ((SCREEN_H - 420) * 9) / 16));
+  // 580 of the height is everything that is not the card: header, counts,
+  // toggles, shape, title, Shows/Films, search, shelf, hints and Share. It was
+  // 420 before the title and search fields, and the page scrolled (11 Nov).
+  const w = Math.round(Math.min(Math.min(useScreenWidth(), 420) - 120, 244, ((SCREEN_H - 580) * 9) / 16));
   return { w, scale: w / EXPORT_W, storyH: Math.round((w * 16) / 9), postH: Math.round((w * 5) / 4) };
 }
 const SF = EXPORT_W / 268;
@@ -174,10 +177,11 @@ const RESERVE_TOP_PROFILE =
 /* The floor includes a gap, because the grid used to end exactly where OPENTV
    began. `availH` is a budget the grid spends to the last point, so any room
    left between the two has to be reserved here or it does not exist. */
-/* Mark, handle, tagline, and the gap above all three. Every point of this is
-   height the grid does not get, which is why it is written as the sum of what
-   is actually down there rather than picked. */
-const RESERVE_BOTTOM = ss(14) + ss(18) + ss(16) + ss(16) + ss(14);
+/* The gap, the handle, the mark row and the bottom margin. Every point of this
+   is height the grid does not get, which is why it is written as the sum of
+   what is actually down there rather than picked. The tagline went and the mark
+   shrank (Mahmood, 11 Nov): the posters are the picture, so they take the room. */
+const RESERVE_BOTTOM = ss(14) + ss(16) + ss(3) + ss(14) + ss(12);
 /* The same floor minus the handle's line: on a profile card the name is at the
    top, and printing it twice is how a byline turns into a watermark. */
 const RESERVE_BOTTOM_PROFILE = RESERVE_BOTTOM - ss(16);
@@ -373,6 +377,11 @@ export default function ShareFavoritesScreen() {
    * whichever it is told and the readers in `db.ts` return the same shape.
    */
   const isRecent = source === 'recent';
+  /* MIXED: the whole library, shows and films on one card (profile menu). The
+     Shows / Films switch only filters the picker; picks from both land in the
+     same `picked` list. */
+  const isMixed = source === 'library';
+  const [tab, setTab] = useState<'shows' | 'movies'>('shows');
   /* Read once: neither can change while this screen is open. */
   const [handle] = useState(getHandle);
   const [avatarUri] = useState(() => profileImageUri('avatar'));
@@ -383,6 +392,18 @@ export default function ShareFavoritesScreen() {
   const cardH = shape === 'story' ? STORY_H : POST_H;
 
   const items = useMemo(() => {
+    if (isMixed) {
+      // Alternated, so the opening picks are already a mix. Keys are prefixed:
+      // a show id and a film name must never collide.
+      const sh = getLibraryShows().map((s) => ({ key: `s:${s.tvdbId}`, poster: s.posterUrl, title: s.name, on: null as string | null, kind: 'shows' }));
+      const mv = getLibraryMovies().map((m) => ({ key: `m:${m.name}`, poster: m.poster, title: m.title, on: null as string | null, kind: 'movies' }));
+      const out: typeof sh = [];
+      for (let i = 0; i < Math.max(sh.length, mv.length); i++) {
+        if (sh[i]) out.push(sh[i]);
+        if (mv[i]) out.push(mv[i]);
+      }
+      return out;
+    }
     if (isRecent) {
       return isShows
         ? getRecentShows().map((s) => ({ key: String(s.tvdbId), poster: s.posterUrl, title: s.name, on: s.watchedOn }))
@@ -391,7 +412,7 @@ export default function ShareFavoritesScreen() {
     return isShows
       ? getFavoriteShows().map((s) => ({ key: String(s.tvdbId), poster: s.posterUrl, title: s.name, on: null }))
       : getFavoriteMovies().map((m) => ({ key: m.name, poster: m.poster, title: m.title, on: null }));
-  }, [isShows, isRecent]);
+  }, [isShows, isRecent, isMixed]);
 
   /** Titles under the posters. OFF by default: the posters are the picture,
    *  and at 16 or 24 a caption under each is a wall of six-point text.
@@ -402,12 +423,11 @@ export default function ShareFavoritesScreen() {
   /**
    * WHETHER THIS CARD SAYS WHO MADE IT.
    *
-   * ON by default, because a grid of twelve posters arriving on somebody's
-   * timeline as an anonymous picture with an app's name on it is the thing
-   * the handle was added to fix. But it is a NAME, on a picture that is about
-   * to be posted somewhere public, and that is not a decision to make on
-   * somebody's behalf -- a shelf of films is worth posting to a group chat or
-   * a forum where the reader would rather not be looked up.
+   * OFF by default (Mahmood, 11 Nov; it was on). It is a NAME, on a picture
+   * that is about to be posted somewhere public, and that is not a decision to
+   * make on somebody's behalf -- a shelf of films is worth posting to a group
+   * chat or a forum where the reader would rather not be looked up. One tap
+   * puts it back.
    *
    * It governs the footer line as well as the profile head, and it has to:
    * a switch called "show my profile" that leaves the handle printed at the
@@ -417,7 +437,7 @@ export default function ShareFavoritesScreen() {
    * have no handle, so the card is already anonymous and the control would
    * do nothing.
    */
-  const [showProfile, setShowProfile] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
 
   /* Only the counts they can actually fill -- offering 9 to somebody with five
      favourites is offering a picture with four holes in it -- AND only the
@@ -452,7 +472,15 @@ export default function ShareFavoritesScreen() {
    * down, and nobody opens a share screen wanting to do subtraction first.
    */
   const initialCount = (opts: readonly number[]) =>
-    opts.length === 0 ? 0 : isRecent ? (opts.includes(4) ? 4 : opts[0]) : opts[opts.length - 1];
+    opts.length === 0
+      ? 0
+      : isRecent
+        ? (opts.includes(4) ? 4 : opts[0])
+        : // An empty card to fill from the whole library: nine is a grid you
+          // can finish, twenty-four is homework.
+          isMixed
+          ? (opts.includes(9) ? 9 : opts[opts.length - 1])
+          : opts[opts.length - 1];
   const [n, setN] = useState(() => initialCount(options));
   const count = (options as readonly number[]).includes(n) ? n : options[options.length - 1];
 
@@ -460,7 +488,11 @@ export default function ShareFavoritesScreen() {
      the first one tapped is the top-left poster. Seeded from the shelf's own
      order, which is why doing nothing already produces the right card. */
   const [picked, setPicked] = useState<string[]>(() =>
-    items.slice(0, initialCount(options)).map((i) => i.key),
+    // FROM THE WHOLE LIBRARY IT STARTS EMPTY (Mahmood, 11 Nov). Favourites are
+    // already a choice, so seeding from them is right; twenty-four titles the
+    // app picked out of a whole library are somebody else's card, every one
+    // of which had to be tapped away before choosing.
+    isMixed ? [] : items.slice(0, initialCount(options)).map((i) => i.key),
   );
 
   /* Changing the grid keeps what is already chosen and fills the rest from the
@@ -471,11 +503,12 @@ export default function ShareFavoritesScreen() {
       setN(next);
       setPicked((prev) => {
         if (prev.length >= next) return prev.slice(0, next);
+        if (isMixed) return prev; // never fill a card the reader is building
         const fill = items.map((i) => i.key).filter((k) => !prev.includes(k));
         return [...prev, ...fill.slice(0, next - prev.length)];
       });
     },
-    [items],
+    [items, isMixed],
   );
 
   /**
@@ -524,6 +557,16 @@ export default function ShareFavoritesScreen() {
   );
 
   const byKey = useMemo(() => new Map(items.map((i) => [i.key, i])), [items]);
+  // The whole library can be thousands of posters: a FlatList draws what is on
+  // screen, and the filtered array is memoised so it is not rebuilt every render.
+  // A whole library is too long to scroll for one title: the search narrows the
+  // shelf only, never what is already picked (11 Nov).
+  const [query, setQuery] = useState('');
+  const shelf = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const ofTab = isMixed ? items.filter((i) => 'kind' in i && i.kind === tab) : items;
+    return q ? ofTab.filter((i) => i.title.toLowerCase().includes(q)) : ofTab;
+  }, [items, isMixed, tab, query]);
   /* SLICED, because `count` no longer only changes when somebody taps a
      count. Turning titles on, or switching to Post, can take the option they
      were on away -- and then `picked` still holds twenty keys while the grid
@@ -531,6 +574,8 @@ export default function ShareFavoritesScreen() {
      arrangement. */
   const shown = picked.slice(0, count).map((k) => byKey.get(k)).filter((x): x is (typeof items)[number] => !!x);
   const full = picked.length >= count;
+  // A card built from scratch goes out whole: its empty slots are only a guide.
+  const shareOff = isMixed ? !full : !picked.length;
 
   /* One size for every caption on the card -- see `fittedLabelFont`. */
   const labelSize = useMemo(
@@ -557,13 +602,19 @@ export default function ShareFavoritesScreen() {
     return { long: t('shareFavorites.watchedRange', { range }), short: range };
   }, [isRecent, shown]);
 
-  const heading = isRecent
+  const defaultHeading = isMixed
+    ? t('shareFavorites.headingMixed')
+    : isRecent
     ? isShows
       ? t('shareFavorites.recentShows')
       : t('shareFavorites.recentMovies')
     : isShows
       ? t('shareFavorites.headingShows')
       : t('shareFavorites.headingMovies');
+  // THE CARD'S TITLE IS THEIRS TO WRITE (Mahmood, 11 Nov): "What I watch" is a
+  // default, not a statement everybody wants to make. Empty means the default.
+  const [customTitle, setCustomTitle] = useState('');
+  const heading = customTitle.trim() || defaultHeading;
 
   const share = async () => {
     try {
@@ -610,9 +661,9 @@ export default function ShareFavoritesScreen() {
   if (!count) {
     return (
       <Screen>
-        <NavHeader title={isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
+        <NavHeader title={isMixed ? t('shareFavorites.titleMixed') : isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
         <Text style={s.empty}>
-          {isShows ? t('shareFavorites.emptyShows') : t('shareFavorites.emptyMovies')}
+          {isMixed ? t('shareFavorites.emptyMixed') : isShows ? t('shareFavorites.emptyShows') : t('shareFavorites.emptyMovies')}
         </Text>
       </Screen>
     );
@@ -620,17 +671,17 @@ export default function ShareFavoritesScreen() {
 
   return (
     <Screen>
-      <NavHeader title={isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
+      <NavHeader title={isMixed ? t('shareFavorites.titleMixed') : isRecent ? t('shareFavorites.recentTitle') : t('shareFavorites.title')} />
       <ScrollView
         contentContainerStyle={{ alignItems: 'center', gap: 14, paddingBottom: 28, paddingTop: 6 }}>
         {/* The count, and nothing else to decide. Hidden entirely when there is
             only one grid they can fill — a control with one option is furniture. */}
         {options.length > 1 && (
-          <View style={s.counts}>
+          <View style={[s.counts, s.countsFit]}>
             {options.map((g) => (
               <Pressable accessibilityRole="tab" accessibilityState={{ selected: g === count }}
                 key={g}
-                style={[s.countTab, g === count && s.countTabOn]}
+                style={[s.countTab, s.countTabFit, g === count && s.countTabOn]}
                 onPress={() => {
                   tapSelection();
                   setCount(g);
@@ -704,11 +755,27 @@ export default function ShareFavoritesScreen() {
           ))}
         </View>
 
+        <TextInput
+          value={customTitle}
+          onChangeText={setCustomTitle}
+          placeholder={defaultHeading}
+          placeholderTextColor={colors.faint}
+          accessibilityLabel={t('shareFavorites.titleField')}
+          style={s.titleInput}
+          maxLength={40}
+          returnKeyType="done"
+        />
         <View style={[s.box, { width: preview.w, height: shape === 'story' ? preview.storyH : preview.postH }]}>
           <View style={[s.scale, { transform: [{ scale: preview.scale }] }]}>
             <View ref={cardRef} collapsable={false} style={[s.card, { height: cardH }]}>
               <LinearGradient
-                colors={['#16161A', '#08080A']}
+                // THE APP'S OWN COLOUR at the top, as Wrapped has it (Mahmood,
+                // 11 Nov): the accent glows in and gives way to the dark the
+                // posters sit on, so every card looks like the app it came from.
+                // Fading the accent itself to transparent over the card's own
+                // black: a stop at an opaque grey drew a hard band mid-card.
+                colors={[`${colors.brand}3D`, `${colors.brand}14`, `${colors.brand}00`]}
+                locations={[0, 0.35, 0.7]}
                 style={StyleSheet.absoluteFill}
                 pointerEvents="none"
               />
@@ -821,19 +888,35 @@ export default function ShareFavoritesScreen() {
                     )}
                   </View>
                 ))}
+                {/* The slots still to fill, numbered, on a card being built
+                    from scratch. Share stays off until they are all filled,
+                    so these never reach the picture. */}
+                {isMixed &&
+                  Array.from({ length: Math.max(0, count - shown.length) }, (_, i) => (
+                    <View key={`slot-${i}`} style={{ width: layout.w }}>
+                      <View style={[s.cell, s.slot, { width: layout.w, height: Math.round((layout.w * 3) / 2) }]}>
+                        <Text style={s.slotText}>{shown.length + i + 1}</Text>
+                      </View>
+                    </View>
+                  ))}
               </View>
               </View>
 
-              <View style={s.brand}>
+              {/* WHOSE CARD, then the app, small: the name is what a reader
+                  of the post cares about, the mark only says where it came
+                  from (11 Nov). */}
+              {!!handle && showProfile && !profile && <Text style={s.handle}>@{handle}</Text>}
+              <View style={[s.brand, s.brandLeft, !!handle && showProfile && !profile && s.brandUnderHandle]}>
+                {/* The mark, then the name, at the card's left edge, and no
+                    address (Mahmood, 11 Nov): the card is a picture of what
+                    somebody watches, not an advert, and "OpenTV" finds the app
+                    on its own. Left-to-right in every language: it is a logo. */}
                 <Image
                   source={require('@/assets/images/mark.png')}
                   style={s.mark}
                   contentFit="contain"
                 />
                 <Text style={s.brandText}>OPENTV</Text>
-                {/* The address beside the name (2.0.3): the share sheet
-                    carries only this picture. */}
-                <Text style={s.brandUrl}>{SITE_HOST}</Text>
               </View>
               {/*
                 WHOSE CARD THIS IS.
@@ -858,10 +941,6 @@ export default function ShareFavoritesScreen() {
                 name brighter, because it is the one a reader cares about, and
                 the slogan quieter underneath it.
               */}
-              {!!handle && showProfile && !profile && <Text style={s.handle}>@{handle}</Text>}
-              <Text style={s.tagline} numberOfLines={2}>
-                {t('shareCard.openSourceTagline')}
-              </Text>
             </View>
           </View>
         </View>
@@ -878,17 +957,47 @@ export default function ShareFavoritesScreen() {
           of every favourite would push the share button off the screen for
           anybody with more than a dozen.
         */}
-        <ScrollView
+        {isMixed && (
+          <View style={s.counts}>
+            {(['shows', 'movies'] as const).map((k) => (
+              <Pressable accessibilityRole="tab" accessibilityState={{ selected: tab === k }}
+                key={k}
+                style={[s.shapeTab, tab === k && s.countTabOn]}
+                onPress={() => {
+                  tapSelection();
+                  setTab(k);
+                }}>
+                <Text style={[s.countText, tab === k && { color: colors.onBrand }]}>
+                  {t(k === 'shows' ? 'shareFavorites.tabShows' : 'shareFavorites.tabMovies')}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('shareFavorites.search')}
+          placeholderTextColor={colors.faint}
+          style={s.search}
+          autoCorrect={false}
+          clearButtonMode="while-editing"
+          returnKeyType="search"
+        />
+        <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={s.shelf}
-          style={{ alignSelf: 'stretch' }}>
-          {items.map((it) => {
+          style={{ alignSelf: 'stretch' }}
+          data={shelf}
+          keyExtractor={(it) => it.key}
+          extraData={picked}
+          initialNumToRender={8}
+          renderItem={({ item: it }) => {
             const at = picked.indexOf(it.key);
             const on = at >= 0;
             return (
               <Pressable accessibilityRole="checkbox" accessibilityLabel={posterSpeech(it.title)} accessibilityState={{ checked: on }}
-                key={it.key}
                 onPress={() => toggle(it.key)}
                 style={[s.pick, on && s.pickOn]}>
                 {it.poster ? (
@@ -907,8 +1016,8 @@ export default function ShareFavoritesScreen() {
                 )}
               </Pressable>
             );
-          })}
-        </ScrollView>
+          }}
+        />
 
         {/*
           TWO LINES, AND THE SECOND ONE IS ALWAYS TRUE.
@@ -926,9 +1035,9 @@ export default function ShareFavoritesScreen() {
         </Text>
         <Text style={s.hintQuiet}>{t('shareFavorites.hintRemove')}</Text>
 
-        <Pressable accessibilityRole="button" accessibilityState={{ disabled: !picked.length }}
-          style={[s.shareBtn, !picked.length && s.shareBtnOff]}
-          disabled={!picked.length}
+        <Pressable accessibilityRole="button" accessibilityState={{ disabled: shareOff }}
+          style={[s.shareBtn, shareOff && s.shareBtnOff]}
+          disabled={shareOff}
           onPress={() => void oneAtATime('share', share)}>
           <Ionicons name="share-outline" size={18} color={colors.onBrand} />
           <Text style={s.shareText}>{t('shareFavorites.share')}</Text>
@@ -944,6 +1053,20 @@ const s = StyleSheet.create({
   counts: { flexDirection: 'row', backgroundColor: colors.card, borderRadius: radius.pill, padding: 3, gap: 2 },
   countTab: { minWidth: 42, alignItems: 'center', paddingVertical: 7, borderRadius: radius.pill },
   countTabOn: { backgroundColor: colors.brand },
+  // ELEVEN COUNTS ACROSS ONE ROW, never wider than the screen: at a larger text
+  // size the fixed 42pt tabs ran off the right edge (11 Nov). They share it.
+  countsFit: { alignSelf: 'stretch', marginHorizontal: space.lg },
+  countTabFit: { flex: 1, minWidth: 0 },
+  search: {
+    alignSelf: 'stretch',
+    marginHorizontal: space.lg,
+    backgroundColor: colors.card,
+    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    color: colors.text,
+    fontSize: 15,
+  },
   countText: { color: colors.dim, fontSize: 13, fontWeight: '700' },
 
   shapeTab: {
@@ -957,7 +1080,10 @@ const s = StyleSheet.create({
 
   // Height comes from the shape — see the preview box above.
   box: { borderRadius: 12, overflow: 'hidden' },
-  scale: { transformOrigin: 'top left' },
+  // The START corner, which in Arabic is the right: an RTL layout puts the
+  // export-sized card against the box's right edge, and shrinking it towards
+  // the left pulled it out of the box, so the preview was cut in half (11 Nov).
+  scale: { transformOrigin: I18nManager.isRTL ? 'top right' : 'top left' },
   card: {
     width: EXPORT_W,
     // Square -- `box` rounds the preview. See the note in share-card.tsx.
@@ -1030,6 +1156,15 @@ const s = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, justifyContent: 'center' },
   cell: { borderRadius: ss(8), overflow: 'hidden', backgroundColor: '#1C1C1E' },
   fallback: { alignItems: 'center', justifyContent: 'center', backgroundColor: '#26262A', padding: ss(8) },
+  slot: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: ss(2),
+    borderStyle: 'dashed',
+    borderColor: 'rgba(255,255,255,0.22)',
+  },
+  slotText: { color: 'rgba(255,255,255,0.35)', fontSize: ss(28), fontWeight: '800' },
   fallbackText: { color: colors.brand, fontSize: ss(12), fontWeight: '800', textAlign: 'center' },
   cellTitle: {
     color: 'rgba(255,255,255,0.82)',
@@ -1045,18 +1180,23 @@ const s = StyleSheet.create({
   // mark. The band above centres what is left over, but when the grid fills its
   // height there IS nothing left over -- and that is exactly when the two were
   // touching.
-  brand: { flexDirection: 'row', alignItems: 'center', gap: ss(6), marginTop: ss(14) },
-  mark: { width: ss(18), height: ss(18) },
-  brandText: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '900', letterSpacing: ls(0.8) },
-  brandUrl: { color: 'rgba(255,255,255,0.6)', fontSize: ss(10.5), fontWeight: '700', marginStart: ss(2) },
-  handle: { color: 'rgba(255,255,255,0.78)', fontSize: ss(11), fontWeight: '700', marginTop: ss(5) },
-  tagline: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: ss(10),
-    fontWeight: '600',
-    marginTop: ss(3),
-    marginBottom: ss(12),
+  brand: { flexDirection: 'row', alignItems: 'center', gap: ss(5), marginTop: ss(14), marginBottom: ss(12) },
+  brandUnderHandle: { marginTop: ss(3) },
+  brandLeft: { alignSelf: 'stretch', direction: 'ltr', justifyContent: 'flex-start', paddingStart: ss(20) },
+  titleInput: {
+    alignSelf: 'stretch',
+    marginHorizontal: space.lg,
+    backgroundColor: colors.card,
+    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    color: colors.text,
+    fontSize: 15,
+    textAlign: 'center',
   },
+  mark: { width: ss(13), height: ss(13) },
+  brandText: { color: 'rgba(255,255,255,0.85)', fontSize: ss(9.5), fontWeight: '900', letterSpacing: ls(0.8) },
+  handle: { color: '#FFFFFF', fontSize: ss(12), fontWeight: '800', marginTop: ss(14) },
 
   toggles: {
     flexDirection: 'row',

@@ -141,6 +141,12 @@ the app.
 [ROADMAP.md](ROADMAP.md) — what is being built, what is not, and why. Known
 bugs are listed there openly rather than waiting to be found.
 
+## Thanks
+
+- [AnonP-Alt](https://github.com/AnonP-Alt) reported ten bugs from an iPhone X in one go, with screen
+  recordings: a slow scroll opening a title, a keyboard hiding the name field, a search result that
+  never loaded, and more. All ten were fixed in 2.4.0.
+
 ## Licence
 
 MPL-2.0. See [LICENSE](LICENSE).

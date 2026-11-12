@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router, Stack, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, I18nManager, Linking, Pressable, StyleSheet, View } from 'react-native';
 import { Text } from '@/components/text';
@@ -23,7 +23,7 @@ import { visibleCoverUri } from '@/library';
 import { tapLight } from '@/haptics';
 import { manualBackupOverdue, shareLibraryExport } from '@/manual-backup';
 import { FoldSplit } from '@/components/fold-split';
-import { EmptyState, MenuRow, headerItems, useDetailRouter, useScreenWidth } from '@/components/ui';
+import { EmptyState, MenuRow, headerItems, useDetailRouter, useScreenWidth, ScreenOptions } from '@/components/ui';
 import { asProfileLayout, type ProfileLayout, ProfileTemplate } from '@/components/profile-template';
 import {
   normalise,
@@ -1789,7 +1789,7 @@ function ProfileScreen() {
       {/* Native, transparent over the cover: the bell (inbox) and the ⋯ go into
           the iPhone Duo's strip. The bell keeps its yellow -- or the profile's
           theme colour, the moment it changes. */}
-      <Stack.Screen
+      <ScreenOptions
         options={{
           headerShown: true,
           headerTransparent: true,
