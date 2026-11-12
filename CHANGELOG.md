@@ -72,6 +72,22 @@ repo `opentv-core` (AGPL) holds what self-hosting needs. Do it later, on his go.
   gitleaks: no secrets (only the public Firebase and Nuvio publishable keys).
 - Size: 4–6 days.
 
+## Next update after 2.4.0 — queued, not started (build on Mahmood's go)
+
+- **A private profile hides its comments too** (Mahmood, 12 Nov). Today `is_private`
+  hides only the profile (library, stats, lists: `maySeeDetail` in
+  `backend/src/routes/profiles.ts`); `routes/comments.ts` has no privacy check, so a
+  private member's comments still show under every episode and show, with their name.
+  A member asked about it on 12 Nov. Wanted: when private, their comments are gone from
+  show and episode threads for everyone except themselves and accepted followers.
+  Open before building:
+  - replies to a hidden comment: hide the whole branch, or keep the replies under a
+    "comment from a private account" placeholder;
+  - the comment counts and likes on a thread: count hidden comments or not;
+  - the friends feed already respects follows, so it needs no change;
+  - the toggle's subtitle in Settings must say comments are included (all locales);
+  - privacy page (`docs/privacy.html`) wording.
+
 ## 2.5.0 — the website (planned 6 Nov 2026, not started; build on Mahmood's go)
 
 OpenTV in the browser for Plus members at `app.theopentv.com`: the app's own code built
